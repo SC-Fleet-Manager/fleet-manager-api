@@ -2,42 +2,39 @@
 
 namespace App\Domain;
 
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class Fleet
 {
     /**
-     * @var Uuid
+     * @var UuidInterface
      */
-    private $id;
+    public $id;
+
+    /**
+     * @var Citizen
+     */
+    public $owner;
 
     /**
      * @var iterable|Ship[]
      */
-    private $ships;
-
-    /**
-     * @var CitizenNumber
-     */
-    private $owner;
+    public $ships;
 
     /**
      * @var \DateTimeImmutable
      */
-    private $uploadDate;
+    public $uploadDate;
 
     /**
      * @var int
      */
-    private $version;
+    public $version;
 
-    /**
-     * @var \SplFileInfo
-     */
-    private $file;
-
-    public function __construct($id)
+    public function __construct(UuidInterface $id, Citizen $owner)
     {
         $this->id = $id;
+        $this->owner = $owner;
+        $this->ships = [];
     }
 }
