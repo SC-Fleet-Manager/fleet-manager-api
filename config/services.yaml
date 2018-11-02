@@ -41,6 +41,8 @@ services:
 
     App\Domain\FleetUploadHandler: ~
     App\Domain\FleetUploadHandlerInterface: '@App\Domain\FleetUploadHandler'
+    App\Domain\OrganisationFleetGenerator: ~
+    App\Domain\OrganisationFleetGeneratorInterface: '@App\Domain\OrganisationFleetGenerator'
     App\Domain\FleetRepositoryInterface: '@App\Infrastructure\Repository\FleetRepository'
     App\Domain\CitizenRepositoryInterface: '@App\Infrastructure\Repository\CitizenRepository'
     App\Domain\CitizenInfosProviderInterface: '@App\Infrastructure\Service\ApiCitizenInfosProvider'

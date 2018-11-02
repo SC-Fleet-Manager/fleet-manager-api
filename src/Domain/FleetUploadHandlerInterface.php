@@ -6,7 +6,7 @@ interface FleetUploadHandlerInterface
 {
     /**
      * @param HandleSC $handleSC
-     * @param array $fleetData
+     * @param array    $fleetData
      */
-    function handle(HandleSC $handleSC, array $fleetData): void;
+    public function handle(HandleSC $handleSC, array $fleetData): void;
 }

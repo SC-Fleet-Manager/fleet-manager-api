@@ -19,7 +19,7 @@ cp .env.dist .env
 
 * `APP_SECRET` a long random value
 * `DB_ROOT_PASSWORD` a long random value
-* `TRUSTED_PROXIES` to the ip / range ip of your potential proxies
+* `TRUSTED_PROXIES` the ip / range ip of your potential proxies
 
 **(Optional but recommended) override docker-compose.yml**
 

@@ -21,7 +21,7 @@ class Fleet
     /**
      * @var Citizen
      *
-     * @ORM\ManyToOne(targetEntity="App\Infrastructure\Entity\Citizen")
+     * @ORM\ManyToOne(targetEntity="App\Infrastructure\Entity\Citizen", inversedBy="fleets")
      */
     public $owner;
 
@@ -39,7 +39,19 @@ class Fleet
      */
     public $version;
 
-    public static function fromFleet(\App\Domain\Fleet $fleet): Fleet
+    /**
+     * @var iterable|Ship[]
+     *
+     * @ORM\OneToMany(targetEntity="App\Infrastructure\Entity\Ship", mappedBy="fleet", fetch="EAGER")
+     */
+    public $ships;
+
+    public function __construct()
+    {
+        $this->ships = [];
+    }
+
+    public static function fromFleet(\App\Domain\Fleet $fleet): self
     {
         $f = new self();
         $f->id = clone $fleet->id;

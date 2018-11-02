@@ -37,4 +37,19 @@ class Fleet
         $this->owner = $owner;
         $this->ships = [];
     }
+
+    public function isUploadedDateTooClose(): bool
+    {
+        return $this->uploadDate >= new \DateTimeImmutable('-30 minutes');
+    }
+
+    public function createRawData(): array
+    {
+        $res = [];
+        foreach ($this->ships as $ship) {
+            $res[] = $ship->rawData;
+        }
+
+        return $res;
+    }
 }

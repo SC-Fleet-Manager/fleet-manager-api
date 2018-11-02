@@ -4,7 +4,14 @@ namespace App\Domain;
 
 interface CitizenRepositoryInterface
 {
-    function getByHandle(HandleSC $handle): ?Citizen;
+    public function getByHandle(HandleSC $handle): ?Citizen;
 
-    function create(Citizen $citizen): void;
+    public function create(Citizen $citizen): void;
+
+    public function update(Citizen $citizen): void;
+
+    /**
+     * @return iterable|Citizen[]
+     */
+    public function getByOrganisation(Trigram $organisationTrigram): iterable;
 }

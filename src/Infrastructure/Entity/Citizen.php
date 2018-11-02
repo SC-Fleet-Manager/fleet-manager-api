@@ -39,9 +39,17 @@ class Citizen
      */
     public $organisations;
 
+    /**
+     * @var iterable|Fleet[]
+     *
+     * @ORM\OneToMany(targetEntity="App\Infrastructure\Entity\Fleet", mappedBy="owner")
+     */
+    public $fleets;
+
     public function __construct()
     {
         $this->organisations = [];
+        $this->fleets = [];
     }
 
     public static function fromCitizen(\App\Domain\Citizen $citizen): self

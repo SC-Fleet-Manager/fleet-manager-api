@@ -4,5 +4,5 @@ namespace App\Domain;
 
 interface CitizenInfosProviderInterface
 {
-    function retrieveInfos(HandleSC $handleSC): CitizenInfos;
+    public function retrieveInfos(HandleSC $handleSC): CitizenInfos;
 }

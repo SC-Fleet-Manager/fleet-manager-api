@@ -4,7 +4,7 @@ namespace App\Domain;
 
 interface FleetRepositoryInterface
 {
-    function save(Fleet $fleet): void;
+    public function save(Fleet $fleet): void;
 
-    function getLastVersionFleet(Citizen $citizen): int;
+    public function getLastVersionFleet(Citizen $citizen): ?Fleet;
 }

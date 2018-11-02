@@ -2,6 +2,7 @@
 
 namespace App\Domain;
 
+use App\Domain\Exception\FleetUploadedTooCloseException;
 use Ramsey\Uuid\Uuid;
 
 class FleetUploadHandler implements FleetUploadHandlerInterface
@@ -32,13 +33,11 @@ class FleetUploadHandler implements FleetUploadHandlerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    function handle(HandleSC $handleSC, array $fleetData): void
+    public function handle(HandleSC $handleSC, array $fleetData): void
     {
         $infos = $this->citizenInfosProvider->retrieveInfos($handleSC);
-
-        // TODO : add check for organisation ?
 
         // Citizen already persisted ?
         $citizen = $this->citizenRepository->getByHandle($handleSC);
@@ -47,18 +46,38 @@ class FleetUploadHandler implements FleetUploadHandlerInterface
             $citizen = new Citizen(Uuid::uuid4());
             $citizen->number = clone $infos->numberSC;
             $citizen->actualHandle = clone $infos->handle;
+            $citizen->organisations = [];
             foreach ($infos->organisations as $organisation) {
                 $citizen->organisations[] = clone $organisation;
             }
             $this->citizenRepository->create($citizen);
+        } else {
+            // update citizen
+            $citizen->number = clone $infos->numberSC;
+            $citizen->actualHandle = clone $infos->handle;
+            $citizen->organisations = [];
+            foreach ($infos->organisations as $organisation) {
+                $citizen->organisations[] = clone $organisation;
+            }
+            $this->citizenRepository->update($citizen);
         }
 
-        // get last version fleet
         $lastVersion = $this->fleetRepository->getLastVersionFleet($citizen);
 
-        // add new fleet for this citizen
+        if ($lastVersion !== null && $lastVersion->isUploadedDateTooClose()) {
+            throw new FleetUploadedTooCloseException(
+                sprintf('Last version of the fleet was uploaded on %s', $lastVersion->uploadDate->format('Y-m-d H:i')));
+        }
+
+        $fleet = $this->createNewFleet($citizen, $fleetData);
+
+        $this->fleetRepository->save($fleet);
+    }
+
+    private function createNewFleet(Citizen $citizen, array $fleetData): Fleet
+    {
         $fleet = new Fleet(Uuid::uuid4(), $citizen);
-        $fleet->version = $lastVersion + 1;
+        $fleet->version = ($lastVersion->version ?? 0) + 1;
         $fleet->uploadDate = new \DateTimeImmutable();
         foreach ($fleetData as $shipData) {
             $ship = new Ship(Uuid::uuid4(), $citizen);
@@ -71,6 +90,6 @@ class FleetUploadHandler implements FleetUploadHandlerInterface
             $fleet->ships[] = $ship;
         }
 
-        $this->fleetRepository->save($fleet);
+        return $fleet;
     }
 }
