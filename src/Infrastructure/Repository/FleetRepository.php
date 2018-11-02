@@ -44,7 +44,10 @@ class FleetRepository extends ServiceEntityRepository implements FleetRepository
             ->orderBy('f.version', 'DESC')
             ->setParameter('owner', $citizen->id)
             ->setMaxResults(1);
-        $lastVersion = $qb->getQuery()->getOneOrNullResult(AbstractQuery::HYDRATE_SINGLE_SCALAR) ?? 0;
+        $q = $qb->getQuery();
+        $q->useResultCache(true);
+        $q->setResultCacheLifetime(3600);
+        $lastVersion = $q->getOneOrNullResult(AbstractQuery::HYDRATE_SINGLE_SCALAR) ?? 0;
 
         return $lastVersion;
     }
