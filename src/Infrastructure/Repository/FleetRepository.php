@@ -87,4 +87,18 @@ class FleetRepository extends ServiceEntityRepository implements FleetRepository
 
         return $this->createFleet($fleet);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function all(): iterable
+    {
+        $fleetsEntity = $this->findAll();
+        $fleets = [];
+        foreach ($fleetsEntity as $fleetEntity) {
+            $fleets[] = $this->createFleet($fleetEntity);
+        }
+
+        return $fleets;
+    }
 }

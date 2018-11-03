@@ -28,7 +28,7 @@ services:
         networks:
             - app
         ports:
-            - 127.0.0.1:8000:80
+            - 8000:80
     mariadb:
         image: mariadb:10.3
         hostname: mariadb

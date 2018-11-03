@@ -40,6 +40,7 @@ class FleetUploadHandler implements FleetUploadHandlerInterface
         $infos = $this->citizenInfosProvider->retrieveInfos($handleSC);
 
         // Citizen already persisted ?
+        // TODO : getByNumber instead ?
         $citizen = $this->citizenRepository->getByHandle($handleSC);
         if ($citizen === null) {
             // create new citizen
