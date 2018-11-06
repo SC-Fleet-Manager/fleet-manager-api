@@ -1,4 +1,4 @@
-version: '3'
+version: '3.4'
 networks:
     app: ~
 volumes:
@@ -7,22 +7,21 @@ volumes:
 services:
     php:
         build:
-            context: ./docker/php
+            context: .
+            target: build_php
         hostname: php
-        volumes:
-            - ./:/var/www/html
-        working_dir: /var/www/html
-        environment:
-            - COMPOSER_CACHE_DIR=/dev/null
+#        volumes:
+#            - ./:/app
         networks:
             - app
     apache:
-        image: httpd:2.4
+        build:
+            context: .
+            target: build_apache
         hostname: apache
-        volumes:
-            - ./docker/apache/httpd.conf:/usr/local/apache2/conf/httpd.conf
-            - ./public:/var/www/html/public
-        working_dir: /var/www/html
+#        volumes:
+#            - ./docker/apache/httpd.conf:/usr/local/apache2/conf/httpd.conf
+#            - ./public:/var/www/html/public
         environment:
             - PHP_HANDLER_HOST=php:9000
         networks:
@@ -30,7 +29,9 @@ services:
         ports:
             - 8000:80
     mariadb:
-        image: mariadb:10.3
+        build:
+            context: .
+            target: build_mariadb
         hostname: mariadb
         volumes:
             - db:/var/lib/mysql

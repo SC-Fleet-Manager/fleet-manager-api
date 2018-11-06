@@ -25,18 +25,28 @@ cp .env.dist .env
 
 * Configure for example the port mapping.
 
+### For development purposes ###
+**Update .env**
+
+* `APP_ENV=dev`
+
 **Launch the stack**
 
 ```
 docker-compose up -d --build
 ```
 
-**Install dependencies**
-```
-docker-compose exec -u $(id -u):$(id -g) php composer install -o
-```
-
 **Apply DB migrations**
 ```
 docker-compose exec -u $(id -u):$(id -g) php bin/console d:m:m -n
+```
+
+**Install dependencies**
+```
+make yarn c=install
+```
+
+**Compile & Watch assets**
+```
+make yarn c=watch
 ```

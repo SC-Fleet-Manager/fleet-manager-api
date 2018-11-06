@@ -1,3 +1,7 @@
+parameters:
+    env(DB_ROOT_PASSWORD): ''
+    env(DB_NAME): ''
+
 doctrine:
     dbal:
         # configure these for your database server

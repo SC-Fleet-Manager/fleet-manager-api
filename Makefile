@@ -3,7 +3,7 @@ UID := $(shell id -u)
 GID := $(shell id -g)
 
 yarn:
-	docker run --rm -it -u ${UID}:${GID} -v ${PROJECT_DIR}:/app -w /app node:10 yarn $(c)
+	docker container run --rm -it -u ${UID}:${GID} -v ${PROJECT_DIR}:/app -w /app node:10-slim yarn $(c)
 
 composer:
 	docker-compose exec -u ${UID}:${GID} php composer $(c)
