@@ -9,29 +9,27 @@ services:
         build:
             context: .
             target: build_php
+            dockerfile: ./docker/Dockerfile
         hostname: php
-#        volumes:
-#            - ./:/app
         networks:
             - app
     apache:
         build:
             context: .
             target: build_apache
+            dockerfile: ./docker/Dockerfile
         hostname: apache
-#        volumes:
-#            - ./docker/apache/httpd.conf:/usr/local/apache2/conf/httpd.conf
-#            - ./public:/var/www/html/public
         environment:
             - PHP_HANDLER_HOST=php:9000
         networks:
             - app
         ports:
-            - 8000:80
+            - 127.0.0.1:8000:80
     mariadb:
         build:
             context: .
             target: build_mariadb
+            dockerfile: ./docker/Dockerfile
         hostname: mariadb
         volumes:
             - db:/var/lib/mysql

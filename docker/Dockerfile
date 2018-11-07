@@ -45,20 +45,28 @@ RUN apk add --no-cache --virtual .build-deps \
     && docker-php-ext-enable --ini-name 05-opcache.ini opcache \
     && docker-php-ext-enable --ini-name 20-redis.ini redis
 
-COPY docker/php/php.ini /usr/local/etc/php/php.ini
+COPY docker/php/php.prod.ini /usr/local/etc/php/php.ini
 COPY docker/php/entrypoint.sh /usr/local/bin/docker-app-entrypoint
 RUN chmod +x /usr/local/bin/docker-app-entrypoint
 
 WORKDIR /app
-COPY . .
+COPY bin bin
+COPY config config
+COPY public public
+COPY src src
+COPY templates templates
+COPY translations translations
+COPY .env Makefile composer.json composer.lock ./
 COPY --from=node_deps /app/public/build/manifest.json public/build/manifest.json
 COPY --from=composer_deps /app/vendor vendor
 
-RUN mkdir -p public/bundles && APP_ENV=prod bin/console assets:install \
-    && APP_ENV=prod bin/console cache:clear --no-warmup \
-    && APP_ENV=prod bin/console cache:warmup \
+RUN sed -i 's/^APP_ENV=.*$/APP_ENV=prod/' .env
+RUN mkdir -p public/bundles && bin/console assets:install \
+    && rm -fr var/cache/* \
+    && bin/console cache:warmup \
     && mkdir -p var/log && chown -R www-data var/log
 
+ENV BUILD_ENV prod
 ENTRYPOINT ["docker-app-entrypoint"]
 CMD ["php-fpm"]
 
@@ -86,3 +94,7 @@ RUN set -eux; \
 	pecl install xdebug-$XDEBUG_VERSION; \
 	docker-php-ext-enable xdebug; \
 	apk del .build-deps
+
+COPY docker/php/php.dev.ini /usr/local/etc/php/php.ini
+
+ENV BUILD_ENV dev
