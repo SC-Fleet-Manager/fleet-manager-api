@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: apache-deployment
+spec:
+    replicas: 5
+    selector:
+        matchLabels:
+            component: web
+    template:
+        metadata:
+            labels:
+                component: web
+        spec:
+            containers:
+#                -
+#                    name: apache
+#                    image: ioni/sc-fleet-manager_apache:latest
+#                    ports:
+#                        - containerPort: 80
+                -
+                    name: whoami
+                    image: containous/whoami
+                    ports:
+                    - containerPort: 80
