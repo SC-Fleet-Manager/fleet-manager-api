@@ -36,7 +36,7 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
     {
         $response = $this->client->get('/', [
             'query' => [
-                'api_source' => 'cache',
+                'api_source' => 'live',
                 'system' => 'accounts',
                 'action' => 'full_profile',
                 'target_id' => (string) $handleSC,
@@ -72,9 +72,11 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
             new CitizenNumber($json['data']['citizen_number']),
             new HandleSC($json['data']['handle'])
         );
-        $ci->organisations = array_map(function (array $orga): Trigram {
-            return new Trigram($orga['sid']);
-        }, $json['data']['organizations']);
+        if ($json['data']['organizations'] !== null) {
+            $ci->organisations = array_map(function (array $orga): Trigram {
+                return new Trigram($orga['sid']);
+            }, $json['data']['organizations']);
+        }
         $ci->avatarUrl = $json['data']['avatar'];
         $ci->registered = \DateTimeImmutable::createFromFormat('U', $json['data']['enlisted']);
 

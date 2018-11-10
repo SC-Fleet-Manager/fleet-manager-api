@@ -48,3 +48,4 @@ services:
     App\Domain\FleetRepositoryInterface: '@App\Infrastructure\Repository\FleetRepository'
     App\Domain\CitizenRepositoryInterface: '@App\Infrastructure\Repository\CitizenRepository'
     App\Domain\CitizenInfosProviderInterface: '@App\Infrastructure\Service\ApiCitizenInfosProvider'
+    App\Domain\ShipInfosProviderInterface: '@App\Infrastructure\Service\ApiShipInfosProvider'

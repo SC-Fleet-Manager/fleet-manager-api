@@ -70,15 +70,15 @@ class FleetUploadHandler implements FleetUploadHandlerInterface
                 sprintf('Last version of the fleet was uploaded on %s', $lastVersion->uploadDate->format('Y-m-d H:i')));
         }
 
-        $fleet = $this->createNewFleet($citizen, $fleetData);
+        $fleet = $this->createNewFleet($citizen, $fleetData, $lastVersion);
 
         $this->fleetRepository->save($fleet);
     }
 
-    private function createNewFleet(Citizen $citizen, array $fleetData): Fleet
+    private function createNewFleet(Citizen $citizen, array $fleetData, ?Fleet $lastVersionFleet = null): Fleet
     {
         $fleet = new Fleet(Uuid::uuid4(), $citizen);
-        $fleet->version = ($lastVersion->version ?? 0) + 1;
+        $fleet->version = ($lastVersionFleet->version ?? 0) + 1;
         $fleet->uploadDate = new \DateTimeImmutable();
         foreach ($fleetData as $shipData) {
             $ship = new Ship(Uuid::uuid4(), $citizen);

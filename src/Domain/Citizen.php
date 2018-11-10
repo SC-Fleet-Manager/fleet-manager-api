@@ -44,6 +44,7 @@ class Citizen
         $lastFleet = null;
         foreach ($this->fleets as $fleet) {
             if ($fleet->version > $maxVersion) {
+                $maxVersion = $fleet->version;
                 $lastFleet = $fleet;
             }
         }
