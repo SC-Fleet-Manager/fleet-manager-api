@@ -50,15 +50,4 @@ class Fleet
     {
         $this->ships = [];
     }
-
-    public static function fromFleet(\App\Domain\Fleet $fleet): self
-    {
-        $f = new self();
-        $f->id = clone $fleet->id;
-        $f->owner = Citizen::fromCitizen($fleet->owner);
-        $f->uploadDate = clone $fleet->uploadDate;
-        $f->version = $fleet->version;
-
-        return $f;
-    }
 }

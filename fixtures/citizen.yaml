@@ -1,0 +1,6 @@
+App\Infrastructure\Entity\Citizen:
+    citizen_ionni:
+        id: '7275c744-6a69-43c2-9ebf-1491a104d5e7'
+        number: '123456'
+        actualHandle: 'ionni'
+        organisations: ['flk']

@@ -10,3 +10,8 @@ composer:
 
 console:
 	docker-compose exec -u ${UID}:${GID} php bin/console $(c)
+
+do_tests:
+	docker-compose up -d php_test
+	docker-compose exec php_test bin/console d:m:m -n
+	docker-compose exec php_test vendor/bin/simple-phpunit

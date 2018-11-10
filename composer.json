@@ -4,7 +4,7 @@
     "type": "project",
     "license": "proprietary",
     "require": {
-        "php": "^7.1.3",
+        "php": "^7.2",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-json": "*",
@@ -26,7 +26,11 @@
         "symfony/yaml": "*"
     },
     "require-dev": {
-        "symfony/debug-pack": "^1.0"
+        "doctrine/data-fixtures": "^1.3",
+        "hautelook/alice-bundle": "^2.3",
+        "symfony/browser-kit": "*",
+        "symfony/debug-pack": "^1.0",
+        "symfony/phpunit-bridge": "*"
     },
     "config": {
         "preferred-install": {

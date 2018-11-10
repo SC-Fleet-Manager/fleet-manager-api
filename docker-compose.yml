@@ -11,6 +11,14 @@ services:
             target: build_php
             dockerfile: ./docker/Dockerfile
         hostname: php
+        environment:
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+            - DB_USER=root
+            - DB_PASSWORD=root
+            - DB_HOST=mariadb
+            - DB_PORT=3306
+            - DB_NAME=fleet_manager
         networks:
             - app
     apache:
@@ -26,16 +34,13 @@ services:
         ports:
             - 127.0.0.1:8000:80
     mariadb:
-        build:
-            context: .
-            target: build_mariadb
-            dockerfile: ./docker/Dockerfile
+        image: mariadb:10.3
         hostname: mariadb
         volumes:
             - db:/var/lib/mysql
         environment:
-            - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
-            - MYSQL_DATABASE=${DB_NAME}
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_DATABASE=fleet_manager
         networks:
             - app
         ports:

@@ -51,17 +51,4 @@ class Citizen
         $this->organisations = [];
         $this->fleets = [];
     }
-
-    public static function fromCitizen(\App\Domain\Citizen $citizen): self
-    {
-        $e = new self();
-        $e->id = clone $citizen->id;
-        $e->number = (string) $citizen->number;
-        $e->actualHandle = (string) $citizen->actualHandle;
-        foreach ($citizen->organisations as $orga) {
-            $e->organisations[] = (string) $orga;
-        }
-
-        return $e;
-    }
 }

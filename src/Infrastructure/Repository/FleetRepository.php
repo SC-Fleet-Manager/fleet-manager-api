@@ -2,59 +2,42 @@
 
 namespace App\Infrastructure\Repository;
 
-use App\Domain\CitizenNumber;
+use App\Domain\Fleet as DomainFleet;
 use App\Domain\FleetRepositoryInterface;
-use App\Domain\HandleSC;
-use App\Domain\Money;
-use App\Domain\Trigram;
 use App\Infrastructure\Entity\Fleet;
-use App\Infrastructure\Entity\Ship;
+use App\Infrastructure\Repository\Serializer\FleetSerializer;
+use App\Infrastructure\Repository\Serializer\ShipSerializer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
 class FleetRepository extends ServiceEntityRepository implements FleetRepositoryInterface
 {
-    public function __construct(ManagerRegistry $registry)
+    /**
+     * @var FleetSerializer
+     */
+    private $fleetSerializer;
+
+    /**
+     * @var ShipSerializer
+     */
+    private $shipSerializer;
+
+    public function __construct(ManagerRegistry $registry, FleetSerializer $fleetSerializer, ShipSerializer $shipSerializer)
     {
         parent::__construct($registry, Fleet::class);
+        $this->fleetSerializer = $fleetSerializer;
+        $this->shipSerializer = $shipSerializer;
     }
 
-    private function createFleet(Fleet $fleetEntity): \App\Domain\Fleet
-    {
-        $citizenEntity = $fleetEntity->owner;
-        $citizen = new \App\Domain\Citizen($citizenEntity->id);
-        $citizen->number = new CitizenNumber($citizenEntity->number);
-        $citizen->actualHandle = new HandleSC($citizenEntity->actualHandle);
-        foreach ($citizenEntity->organisations as $orga) {
-            $citizen->organisations[] = new Trigram($orga);
-        }
-
-        $fleet = new \App\Domain\Fleet($fleetEntity->id, $citizen);
-        foreach ($fleetEntity->ships as $shipEntity) {
-            $ship = new \App\Domain\Ship($shipEntity->id, $citizen);
-            $ship->name = $shipEntity->name;
-            $ship->cost = new Money($shipEntity->cost);
-            $ship->insured = $shipEntity->insured;
-            $ship->manufacturer = $shipEntity->manufacturer;
-            $ship->pledgeDate = clone $shipEntity->pledgeDate;
-            $ship->rawData = $shipEntity->rawData;
-            $fleet->ships[] = $ship;
-        }
-        $fleet->uploadDate = clone $fleetEntity->uploadDate;
-        $fleet->version = $fleetEntity->version;
-
-        return $fleet;
-    }
-
-    public function save(\App\Domain\Fleet $fleet): void
+    public function save(DomainFleet $fleet): void
     {
         $em = $this->getEntityManager();
         $em->clear();
 
-        $fleetEntity = Fleet::fromFleet($fleet);
+        $fleetEntity = $this->fleetSerializer->fromDomain($fleet);
         $fleetEntity->owner = $em->merge($fleetEntity->owner);
         foreach ($fleet->ships as $ship) {
-            $shipEntity = Ship::fromShip($ship);
+            $shipEntity = $this->shipSerializer->fromDomain($ship);
             $shipEntity->fleet = $fleetEntity;
             $shipEntity->owner = $em->merge($shipEntity->owner);
             $em->persist($shipEntity);
@@ -64,7 +47,10 @@ class FleetRepository extends ServiceEntityRepository implements FleetRepository
         $em->flush();
     }
 
-    public function getLastVersionFleet(\App\Domain\Citizen $citizen): ?\App\Domain\Fleet
+    /**
+     * {@inheritdoc}
+     */
+    public function getLastVersionFleet(\App\Domain\Citizen $citizen): ?DomainFleet
     {
         $qb = $this->createQueryBuilder('f');
         $qb
@@ -80,12 +66,12 @@ class FleetRepository extends ServiceEntityRepository implements FleetRepository
         $q = $qb->getQuery();
         $q->useResultCache(true);
         $q->setResultCacheLifetime(3600);
-        $fleet = $q->getOneOrNullResult();
-        if ($fleet === null) {
+        $fleetEntity = $q->getOneOrNullResult();
+        if ($fleetEntity === null) {
             return null;
         }
 
-        return $this->createFleet($fleet);
+        return $this->fleetSerializer->toDomain($fleetEntity);
     }
 
     /**
@@ -96,7 +82,7 @@ class FleetRepository extends ServiceEntityRepository implements FleetRepository
         $fleetsEntity = $this->findAll();
         $fleets = [];
         foreach ($fleetsEntity as $fleetEntity) {
-            $fleets[] = $this->createFleet($fleetEntity);
+            $fleets[] = $this->fleetSerializer->toDomain($fleetEntity);
         }
 
         return $fleets;

@@ -73,19 +73,4 @@ class Ship
      * @ORM\ManyToOne(targetEntity="App\Infrastructure\Entity\Fleet", inversedBy="ships")
      */
     public $fleet;
-
-    public static function fromShip(\App\Domain\Ship $ship): self
-    {
-        $f = new self();
-        $f->id = clone $ship->id;
-        $f->owner = Citizen::fromCitizen($ship->owner);
-        $f->rawData = $ship->rawData;
-        $f->pledgeDate = clone $ship->pledgeDate;
-        $f->cost = $ship->cost->getCost();
-        $f->insured = $ship->insured;
-        $f->name = $ship->name;
-        $f->manufacturer = $ship->manufacturer;
-
-        return $f;
-    }
 }

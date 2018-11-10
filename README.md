@@ -18,7 +18,6 @@ cp .env.dist .env
 **(Optional but recommended) configure .env**
 
 * `APP_SECRET` a long random value
-* `DB_ROOT_PASSWORD` a long random value
 * `TRUSTED_PROXIES` the ip / range ip of your potential proxies
 
 **(Optional but recommended) override docker-compose.yml**
@@ -26,6 +25,11 @@ cp .env.dist .env
 * Configure for example the port mapping.
 
 ### For development purposes ###
+
+**Override the docker-compose stack**
+* `cp docker-compose.override.yml.dist docker-compose.override.yml`
+* Configure your `docker-compose.override.yml`
+
 **Update .env**
 
 * `APP_ENV=dev`
@@ -49,4 +53,9 @@ make yarn c=install
 **Compile & Watch assets**
 ```
 make yarn c=watch
+```
+
+**Launch tests**
+```
+make do_tests
 ```

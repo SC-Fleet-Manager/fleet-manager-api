@@ -31,7 +31,7 @@ class Citizen
      */
     public $fleets;
 
-    public function __construct(UuidInterface $id)
+    public function __construct(?UuidInterface $id)
     {
         $this->id = $id;
         $this->organisations = [];

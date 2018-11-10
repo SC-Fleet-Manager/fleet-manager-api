@@ -80,9 +80,6 @@ COPY --from=build_php /app/public/bundles public/bundles
 
 COPY docker/apache/httpd.conf /usr/local/apache2/conf/httpd.conf
 
-################################
-FROM mariadb:10.3 as build_mariadb
-
 ###############################
 FROM build_php as build_php_dev
 

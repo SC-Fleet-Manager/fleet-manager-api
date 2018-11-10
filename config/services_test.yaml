@@ -1,0 +1,2 @@
+services:
+    App\Domain\CitizenInfosProviderInterface: '@App\Infrastructure\Service\FakeCitizenInfosProvider'

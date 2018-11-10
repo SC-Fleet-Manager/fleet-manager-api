@@ -1,0 +1,9 @@
+include:
+    - citizen.yaml
+
+App\Infrastructure\Entity\Fleet:
+    fleet_ionni_v1:
+        id: '8fb44dad-8d40-447e-a670-62b3192d5521'
+        owner: '@citizen_ionni'
+        uploadDate: '<(new \DateTime("2018-03-15"))>'
+        version: 1

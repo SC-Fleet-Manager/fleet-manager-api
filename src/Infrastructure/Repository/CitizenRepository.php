@@ -2,56 +2,40 @@
 
 namespace App\Infrastructure\Repository;
 
-use App\Domain\CitizenNumber;
+use App\Domain\Citizen as DomainCitizen;
 use App\Domain\CitizenRepositoryInterface;
-use App\Domain\Fleet;
+use App\Domain\Fleet as DomainFleet;
 use App\Domain\HandleSC;
-use App\Domain\Money;
-use App\Domain\Ship;
 use App\Domain\Trigram;
 use App\Infrastructure\Entity\Citizen;
+use App\Infrastructure\Repository\Serializer\CitizenSerializer;
+use App\Infrastructure\Repository\Serializer\FleetSerializer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
 class CitizenRepository extends ServiceEntityRepository implements CitizenRepositoryInterface
 {
-    public function __construct(ManagerRegistry $registry)
+    /**
+     * @var CitizenSerializer
+     */
+    private $citizenSerializer;
+
+    /**
+     * @var FleetSerializer
+     */
+    private $fleetSerializer;
+
+    public function __construct(ManagerRegistry $registry, CitizenSerializer $citizenSerializer, FleetSerializer $fleetSerializer)
     {
         parent::__construct($registry, Citizen::class);
-    }
-
-    private function createCitizen(Citizen $citizenEntity): \App\Domain\Citizen
-    {
-        $citizen = new \App\Domain\Citizen($citizenEntity->id);
-        $citizen->number = new CitizenNumber($citizenEntity->number);
-        $citizen->actualHandle = new HandleSC($citizenEntity->actualHandle);
-        foreach ($citizenEntity->organisations as $orga) {
-            $citizen->organisations[] = new Trigram($orga);
-        }
-        foreach ($citizenEntity->fleets as $fleetEntity) {
-            $fleet = new Fleet($fleetEntity->id, $citizen);
-            $fleet->uploadDate = clone $fleetEntity->uploadDate;
-            $fleet->version = $fleetEntity->version;
-            foreach ($fleetEntity->ships as $shipEntity) {
-                $ship = new Ship($shipEntity->id, $citizen);
-                $ship->name = $shipEntity->name;
-                $ship->manufacturer = $shipEntity->manufacturer;
-                $ship->rawData = $shipEntity->rawData;
-                $ship->pledgeDate = clone $shipEntity->pledgeDate;
-                $ship->insured = $shipEntity->insured;
-                $ship->cost = new Money($shipEntity->cost);
-                $fleet->ships[] = $ship;
-            }
-            $citizen->fleets[] = $fleet;
-        }
-
-        return $citizen;
+        $this->citizenSerializer = $citizenSerializer;
+        $this->fleetSerializer = $fleetSerializer;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getByHandle(HandleSC $handle): ?\App\Domain\Citizen
+    public function getByHandle(HandleSC $handle): ?DomainCitizen
     {
         $qb = $this->createQueryBuilder('c');
         $qb->where('c.actualHandle = :handle')->setParameter('handle', (string) $handle);
@@ -64,15 +48,22 @@ class CitizenRepository extends ServiceEntityRepository implements CitizenReposi
             return null;
         }
 
-        return $this->createCitizen($citizenEntity);
+        $citizen = $this->citizenSerializer->toDomain($citizenEntity);
+        foreach ($citizenEntity->fleets as $fleetEntity) {
+            $fleet = new DomainFleet($fleetEntity->id, $citizen);
+            $this->fleetSerializer->toDomain($fleetEntity, $fleet);
+            $citizen->fleets[] = $fleet;
+        }
+
+        return $citizen;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function create(\App\Domain\Citizen $citizen): void
+    public function create(DomainCitizen $citizen): void
     {
-        $entity = Citizen::fromCitizen($citizen);
+        $entity = $this->citizenSerializer->fromDomain($citizen);
 
         $em = $this->getEntityManager();
         $em->clear();
@@ -83,9 +74,9 @@ class CitizenRepository extends ServiceEntityRepository implements CitizenReposi
     /**
      * {@inheritdoc}
      */
-    public function update(\App\Domain\Citizen $citizen): void
+    public function update(DomainCitizen $citizen): void
     {
-        $entity = Citizen::fromCitizen($citizen);
+        $entity = $this->citizenSerializer->fromDomain($citizen);
 
         $em = $this->getEntityManager();
         $em->clear();
@@ -113,7 +104,13 @@ class CitizenRepository extends ServiceEntityRepository implements CitizenReposi
         $citizenEntities = $q->getResult();
         $citizens = [];
         foreach ($citizenEntities as $citizenEntity) {
-            $citizens[] = $this->createCitizen($citizenEntity);
+            $citizen = $this->citizenSerializer->toDomain($citizenEntity);
+            foreach ($citizenEntity->fleets as $fleetEntity) {
+                $fleet = new DomainFleet($fleetEntity->id, $citizen);
+                $this->fleetSerializer->toDomain($fleetEntity, $fleet);
+                $citizen->fleets[] = $fleet;
+            }
+            $citizens[] = $citizen;
         }
 
         return $citizens;
