@@ -5,6 +5,7 @@ namespace App\Infrastructure\Service;
 use App\Domain\CitizenInfos;
 use App\Domain\CitizenInfosProviderInterface;
 use App\Domain\CitizenNumber;
+use App\Domain\Exception\NotFoundHandleSCException;
 use App\Domain\HandleSC;
 use App\Domain\Trigram;
 use GuzzleHttp\Client;
@@ -60,6 +61,12 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
                 'json_error_msg' => json_last_error_msg(),
             ]);
             throw new \RuntimeException('Cannot retrieve citizen infos.');
+        }
+        if (!isset($json['data'])) {
+            $this->logger->error(sprintf('Handle %s does not exist', (string) $handleSC), [
+                'payload' => $json,
+            ]);
+            throw new NotFoundHandleSCException(sprintf('Handle %s does not exist', (string) $handleSC));
         }
 
         $this->logger->info('Citizen infos retrieved.', [

@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Controller;
 
 use App\Domain\Exception\FleetUploadedTooCloseException;
+use App\Domain\Exception\NotFoundHandleSCException;
 use App\Domain\FleetUploadHandlerInterface;
 use App\Domain\HandleSC;
 use App\Domain\OrganisationFleetGeneratorInterface;
@@ -81,6 +82,11 @@ class ApiController extends AbstractController
             return $this->json([
                 'error' => 'uploaded_too_close',
                 'errorMessage' => 'Your fleet has been uploaded recently. Please wait before re-uploading.',
+            ], 400);
+        } catch (NotFoundHandleSCException $e) {
+            return $this->json([
+                'error' => 'not_found_handle',
+                'errorMessage' => sprintf('The handle SC %s does not exist.', $fleetUpload->handleSC),
             ], 400);
         } catch (\Exception $e) {
             $this->logger->error('cannot handle fleet file', ['exception' => $e]);
