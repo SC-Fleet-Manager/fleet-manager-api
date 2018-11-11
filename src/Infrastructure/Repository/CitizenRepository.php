@@ -40,8 +40,8 @@ class CitizenRepository extends ServiceEntityRepository implements CitizenReposi
         $qb = $this->createQueryBuilder('c');
         $qb->where('c.actualHandle = :handle')->setParameter('handle', (string) $handle);
         $q = $qb->getQuery();
-        $q->useResultCache(true);
-        $q->setResultCacheLifetime(3600);
+//        $q->useResultCache(true);
+//        $q->setResultCacheLifetime(900);
         /** @var Citizen $citizenEntity */
         $citizenEntity = $q->getOneOrNullResult();
         if ($citizenEntity === null) {
@@ -100,7 +100,7 @@ class CitizenRepository extends ServiceEntityRepository implements CitizenReposi
             ->setParameter('orga', '%'.$organisationTrigram.'%');
         $q = $qb->getQuery();
         $q->useResultCache(true);
-        $q->setResultCacheLifetime(900);
+        $q->setResultCacheLifetime(30);
         $citizenEntities = $q->getResult();
         $citizens = [];
         foreach ($citizenEntities as $citizenEntity) {

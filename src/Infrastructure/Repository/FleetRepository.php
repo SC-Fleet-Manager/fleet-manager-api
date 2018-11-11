@@ -64,8 +64,8 @@ class FleetRepository extends ServiceEntityRepository implements FleetRepository
             ->setParameter('owner', $citizen->id)
             ->setMaxResults(1);
         $q = $qb->getQuery();
-        $q->useResultCache(true);
-        $q->setResultCacheLifetime(3600);
+//        $q->useResultCache(true);
+//        $q->setResultCacheLifetime(300);
         $fleetEntity = $q->getOneOrNullResult();
         if ($fleetEntity === null) {
             return null;
