@@ -15,6 +15,11 @@
         <env name="SHELL_VERBOSITY" value="-1" />
         <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak_vendors" />
         <env name="SYMFONY_PHPUNIT_VERSION" value="6.5" />
+
+        <!-- ###+ hwi/oauth-bundle ### -->
+        <env name="DISCORD_ID" value=""/>
+        <env name="DISCORD_SECRET" value=""/>
+        <!-- ###- hwi/oauth-bundle ### -->
     </php>
 
     <testsuites>

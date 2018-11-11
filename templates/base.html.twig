@@ -41,8 +41,8 @@
             <div id="app"></div>
         {% endblock %}
 
+        {#<script src="{{ preload(asset('build/manifest.js')) }}"></script>#}
         {% block javascripts %}
-            <script src="{{ preload(asset('build/manifest.js')) }}"></script>
             <script src="{{ preload(asset('build/main.js')) }}"></script>
         {% endblock %}
     </body>

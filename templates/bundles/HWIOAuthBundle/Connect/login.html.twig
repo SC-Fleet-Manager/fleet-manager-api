@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block body_attr 'app flex-row align-items-center' %}
+
+{% block body %}
+    <div id="app" data-discord-login-url="{{ hwi_oauth_login_url('discord') }}"></div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ preload(asset('build/login.js')) }}"></script>
+{% endblock %}

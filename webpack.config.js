@@ -1,4 +1,4 @@
-var Encore = require('@symfony/webpack-encore');
+const Encore = require('@symfony/webpack-encore');
 
 Encore
     // directory where compiled assets will be stored
@@ -8,8 +8,8 @@ Encore
     // only needed for CDN's or sub-directory deploy
     //.setManifestKeyPrefix('build/')
 
-    .createSharedEntry('main', './assets/js/main.js')
-    // .addEntry('app', './assets/js/app.js')
+    .addEntry('main', './assets/js/main.js')
+    .addEntry('login', './assets/js/login.js')
 
     /*
      * FEATURE CONFIG
