@@ -12,7 +12,8 @@
                         <label style="width: 50%">Vaisseaux :
                         <select2 :options="ships" v-model="shipSelected" multiple style="width: 50%" @input="refreshTable"></select2></label>
                     </div>
-                    <b-table small foot-clone hover striped bordered responsive="lg" :items="fleets"></b-table>
+                    <b-table small foot-clone hover striped bordered responsive="lg" :items="fleets" :fields="tableHeaders">
+                    </b-table>
                 </b-card>
             </b-col>
         </b-row>
@@ -28,6 +29,8 @@
         components: {select2},
         data: function () {
             return {
+                shipInfos: [],
+                tableHeaders: [],
                 fleets: [],
                 fields: [],
                 citizenSelected: null,
@@ -47,7 +50,9 @@
                         ships: this.shipSelected,
                     }
                 }).then(response => {
+                    this.tableHeaders = response.data.tableHeaders;
                     this.fleets = response.data.fleets;
+                    this.shipInfos = response.data.shipInfos;
                     if (this.citizens.length === 0) {
                         for (let citizenId in response.data.citizens) {
                             if (!response.data.citizens.hasOwnProperty(citizenId)) continue;
@@ -69,7 +74,7 @@
                 }).catch(e => {
                     console.error(e);
                 });
-            }
+            },
         }
     }
 </script>

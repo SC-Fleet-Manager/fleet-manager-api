@@ -65,22 +65,44 @@ class FleetController extends AbstractController
                 }
             }
         }
-        dump($shipCounter);
 
         $shipInfosFiltered = \array_filter($shipInfosFiltered, function (ShipInfo $shipInfo) use (&$shipCounter): bool {
             return \count($shipCounter[$shipInfo->name]) > 0;
         });
-        dump($shipInfosFiltered);
+
+        $tableHeaders = [
+            'shipName' => [
+                'label' => 'Vaisseaux',
+                'sortable' => true,
+            ],
+            'shipManufacturer' => [
+                'label' => 'Constructeurs',
+                'sortable' => true,
+            ],
+            'totalAvailable' => [
+                'label' => 'Total dispo',
+                'sortable' => true,
+            ],
+        ];
+        foreach ($citizensFiltered as $citizen) {
+            $tableHeaders[(string) $citizen->actualHandle] = [
+                'label' => (string) $citizen->actualHandle,
+                'sortable' => true,
+            ];
+        }
 
         $viewFleets = [];
         foreach ($shipInfosFiltered as $shipInfo) {
             $viewFleet = [
+                '_cellVariants' => ['shipName' => $shipInfo->productionStatus === ShipInfo::FLIGHT_READY ? 'success' : 'danger'],
                 'shipName' => $shipInfo->name,
                 'shipManufacturer' => $shipInfo->manufacturerCode,
                 'totalAvailable' => \count($shipCounter[$shipInfo->name]),
             ];
             foreach ($citizensFiltered as $citizen) {
-                $viewFleet[(string) $citizen->actualHandle] = $shipCounter[$shipInfo->name][$citizen->id->toString()] ?? 0;
+                $count = $shipCounter[$shipInfo->name][$citizen->id->toString()] ?? null;
+                $viewFleet[(string) $citizen->actualHandle] = $count;
+                $viewFleet['_cellVariants'][(string) $citizen->actualHandle] = $count ? 'success' : '';
             }
             $viewFleets[] = $viewFleet;
         }
@@ -98,9 +120,11 @@ class FleetController extends AbstractController
         // TODO : JMS or SF Serializer ?
 
         return $this->json([
+            'tableHeaders' => $tableHeaders,
             'fleets' => $viewFleets,
             'ships' => $viewShips,
             'citizens' => $viewCitizens,
+            'shipInfos' => $shipInfosFiltered,
         ]);
     }
 }
