@@ -92,6 +92,12 @@ RUN set -eux; \
 	docker-php-ext-enable xdebug; \
 	apk del .build-deps
 
+RUN apk add --no-cache \
+        chromium \
+        chromium-chromedriver
+ENV PANTHER_CHROME_DRIVER_BINARY /usr/lib/chromium/chromedriver
+ENV PANTHER_NO_SANDBOX 1
+
 COPY docker/php/php.dev.ini /usr/local/etc/php/php.ini
 
 ENV BUILD_ENV dev
