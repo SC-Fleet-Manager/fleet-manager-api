@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: apache-deployment
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: apache
+    template:
+        metadata:
+            labels:
+                app: apache
+        spec:
+            containers:
+                -
+                    name: apache
+                    image: ioni/sc-fleet-manager_apache:latest
+                    env:
+                        - { name: PHP_HANDLER_HOST, value: 'php-cluster-ip:9000' }
+                    ports:
+                        - { name: http, containerPort: 80 }
