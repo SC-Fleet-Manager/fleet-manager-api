@@ -34,6 +34,7 @@
         "hautelook/alice-bundle": "^2.3",
         "symfony/browser-kit": "*",
         "symfony/debug-pack": "^1.0",
+        "symfony/panther": "^0.2.0",
         "symfony/phpunit-bridge": "*"
     },
     "config": {

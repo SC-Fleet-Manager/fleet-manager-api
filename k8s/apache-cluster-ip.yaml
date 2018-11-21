@@ -1,0 +1,43 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+    name: apache-green-cluster-ip
+spec:
+    type: ClusterIP
+    selector:
+        app: apache
+        role: green
+    ports:
+        -
+            name: web
+            port: 80
+            targetPort: http
+---
+kind: Service
+apiVersion: v1
+metadata:
+    name: apache-blue-cluster-ip
+spec:
+    type: ClusterIP
+    selector:
+        app: apache
+        role: blue
+    ports:
+        -
+            name: web
+            port: 80
+            targetPort: http
+#---
+#kind: Service
+#apiVersion: v1
+#metadata:
+#    name: apache-node-port
+#spec:
+#    type: NodePort
+#    ports:
+#        -
+#            port: 80
+#            nodePort: 31000
+#    selector:
+#        app: apache

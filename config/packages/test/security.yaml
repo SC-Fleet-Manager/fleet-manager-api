@@ -1,0 +1,13 @@
+security:
+    encoders:
+        Symfony\Component\Security\Core\User\User: plaintext
+    providers:
+        in_memory:
+            memory:
+                users:
+                    user:  { password: '123456', roles: [ 'ROLE_USER' ] }
+    firewalls:
+        main:
+            anonymous: true
+            http_basic: ~
+            provider: in_memory

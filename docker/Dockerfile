@@ -84,6 +84,8 @@ COPY docker/apache/httpd.conf /usr/local/apache2/conf/httpd.conf
 FROM build_php as build_php_dev
 
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+ENV COMPOSER_MEMORY_LIMIT -1
+ENV COMPOSER_ALLOW_SUPERUSER 1
 
 ARG XDEBUG_VERSION=2.6.0
 RUN set -eux; \
@@ -91,6 +93,12 @@ RUN set -eux; \
 	pecl install xdebug-$XDEBUG_VERSION; \
 	docker-php-ext-enable xdebug; \
 	apk del .build-deps
+
+RUN apk add --no-cache \
+        chromium \
+        chromium-chromedriver
+ENV PANTHER_CHROME_DRIVER_BINARY /usr/lib/chromium/chromedriver
+ENV PANTHER_NO_SANDBOX 1
 
 COPY docker/php/php.dev.ini /usr/local/etc/php/php.ini
 

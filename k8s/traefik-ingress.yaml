@@ -1,0 +1,28 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+    name: traefik-sc-fleet-manager
+    annotations:
+        kubernetes.io/ingress.class: traefik
+        traefik.ingress.kubernetes.io/service-weights: |
+            apache-green-cluster-ip: 50%
+            apache-blue-cluster-ip: 50%
+spec:
+    tls:
+        -
+            secretName: sc-fleet-manager-tls-cert
+    rules:
+        -
+            host: sc-fleet-manager.minikube
+            http:
+                paths:
+                    -
+                        path: /
+                        backend:
+                            serviceName: apache-green-cluster-ip
+                            servicePort: web
+                    -
+                        path: /
+                        backend:
+                            serviceName: apache-blue-cluster-ip
+                            servicePort: web

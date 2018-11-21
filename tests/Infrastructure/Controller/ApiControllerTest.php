@@ -49,18 +49,25 @@ class ApiControllerTest extends WebTestCase
 ]
 EOT
 );
-        $client = static::createClient();
+        $client = static::createClient([], [
+            'PHP_AUTH_USER' => 'user',
+            'PHP_AUTH_PW'   => '123456',
+        ]);
         $client->request('POST', '/upload', [
             'handleSC' => 'not-yet-persisted',
         ], [
             'fleetFile' => new UploadedFile('/tmp/test-fleet.json', 'test-fleet.json', 'application/json', null),
         ]);
+        dump($client->getResponse()->getContent());
         $this->assertSame(204, $client->getResponse()->getStatusCode());
     }
 
     public function testMustUploadFleetFileUpload(): void
     {
-        $client = static::createClient();
+        $client = static::createClient([], [
+            'PHP_AUTH_USER' => 'user',
+            'PHP_AUTH_PW'   => '123456',
+        ]);
         $client->request('POST', '/upload', [
             'handleSC' => 'ionni',
         ], []); // no file
