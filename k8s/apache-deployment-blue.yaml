@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: apache-deployment-blue
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: apache
+            role: blue
+    template:
+        metadata:
+            labels:
+                app: apache
+                role: blue
+        spec:
+            containers:
+                -
+                    name: apache
+                    image: ioni/sc-fleet-manager_apache:0.1
+                    env:
+                        - { name: PHP_HANDLER_HOST, value: 'php-cluster-ip-blue:9000' }
+                    ports:
+                        - { name: http, containerPort: 80 }

@@ -84,6 +84,8 @@ COPY docker/apache/httpd.conf /usr/local/apache2/conf/httpd.conf
 FROM build_php as build_php_dev
 
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+ENV COMPOSER_MEMORY_LIMIT -1
+ENV COMPOSER_ALLOW_SUPERUSER 1
 
 ARG XDEBUG_VERSION=2.6.0
 RUN set -eux; \

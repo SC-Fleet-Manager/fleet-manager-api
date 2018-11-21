@@ -45,21 +45,21 @@ spec:
                         - --defaultentrypoints=http,https
                         - --entrypoints=Name:https Address::443 TLS
                         - --entrypoints=Name:http Address::80
----
-kind: Service
-apiVersion: v1
-metadata:
-    name: traefik-ingress-service
-    namespace: kube-system
-spec:
-    selector:
-        k8s-app: traefik-ingress-lb
-    ports:
-        -
-            protocol: TCP
-            port: 80
-            name: web
-        -
-            protocol: TCP
-            port: 8080
-            name: admin
+#---
+#kind: Service
+#apiVersion: v1
+#metadata:
+#    name: traefik-ingress-service
+#    namespace: kube-system
+#spec:
+#    selector:
+#        k8s-app: traefik-ingress-lb
+#    ports:
+#        -
+#            protocol: TCP
+#            port: 80
+#            name: web
+#        -
+#            protocol: TCP
+#            port: 8080
+#            name: admin

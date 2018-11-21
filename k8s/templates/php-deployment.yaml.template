@@ -1,21 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: php-deployment
+    name: php-deployment-${TARGET_ROLE}
 spec:
     replicas: 1
     selector:
         matchLabels:
             app: php
+            role: ${TARGET_ROLE}
     template:
         metadata:
             labels:
                 app: php
+                role: ${TARGET_ROLE}
         spec:
             containers:
                 -
                     name: php
-                    image: ioni/sc-fleet-manager_php:latest
+                    image: ioni/sc-fleet-manager_php:${APP_VERSION}
                     env:
                         - { name: REDIS_HOST, value: redis-cluster-ip }
                         - { name: REDIS_PORT, value: '6379' }
@@ -25,4 +27,4 @@ spec:
                         - { name: DB_PORT, value: '3306' }
                         - { name: DB_NAME, value: fleet_manager }
                     ports:
-                        - { containerPort: 9000 } # fcgi
+                        - { name: fcgi, containerPort: 9000 }

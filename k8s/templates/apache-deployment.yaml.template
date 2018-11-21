@@ -1,22 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: apache-deployment
+    name: apache-deployment-${TARGET_ROLE}
 spec:
     replicas: 1
     selector:
         matchLabels:
             app: apache
+            role: ${TARGET_ROLE}
     template:
         metadata:
             labels:
                 app: apache
+                role: ${TARGET_ROLE}
         spec:
             containers:
                 -
                     name: apache
-                    image: ioni/sc-fleet-manager_apache:latest
+                    image: ioni/sc-fleet-manager_apache:${APP_VERSION}
                     env:
-                        - { name: PHP_HANDLER_HOST, value: 'php-cluster-ip:9000' }
+                        - { name: PHP_HANDLER_HOST, value: 'php-cluster-ip-${TARGET_ROLE}:9000' }
                     ports:
                         - { name: http, containerPort: 80 }

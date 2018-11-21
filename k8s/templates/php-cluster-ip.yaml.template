@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+    name: php-cluster-ip-${TARGET_ROLE}
+spec:
+    type: ClusterIP
+    selector:
+        app: php
+        role: ${TARGET_ROLE}
+    ports:
+        - { name: fcgi, port: 9000, targetPort: fcgi }
