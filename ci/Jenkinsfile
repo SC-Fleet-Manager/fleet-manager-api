@@ -19,14 +19,14 @@ node {
             }
 
             echo "Build PHP-FPM image..."
-            //sh "docker build -t ioni/sc-fleet-manager_php:${env.APP_VERSION} -t ioni/sc-fleet-manager_php:latest --target build_php -f docker/Dockerfile ."
-            //sh "docker push ioni/sc-fleet-manager_php:${env.APP_VERSION}"
-            //sh "docker push ioni/sc-fleet-manager_php:latest"
+            sh "docker build -t ioni/sc-fleet-manager_php:${env.APP_VERSION} -t ioni/sc-fleet-manager_php:latest --target build_php -f docker/Dockerfile ."
+            sh "docker push ioni/sc-fleet-manager_php:${env.APP_VERSION}"
+            sh "docker push ioni/sc-fleet-manager_php:latest"
 
             echo "Build Apache image..."
-            //sh "docker build -t ioni/sc-fleet-manager_apache:${env.APP_VERSION} -t ioni/sc-fleet-manager_apache:latest --target build_apache -f docker/Dockerfile ."
-            //sh "docker push ioni/sc-fleet-manager_apache:${env.APP_VERSION}"
-            //sh "docker push ioni/sc-fleet-manager_apache:latest"
+            sh "docker build -t ioni/sc-fleet-manager_apache:${env.APP_VERSION} -t ioni/sc-fleet-manager_apache:latest --target build_apache -f docker/Dockerfile ."
+            sh "docker push ioni/sc-fleet-manager_apache:${env.APP_VERSION}"
+            sh "docker push ioni/sc-fleet-manager_apache:latest"
 
             echo "Remove dangling images..."
             sh 'docker image rm $(docker image ls -q -f dangling=true) 2>/dev/null || :'
@@ -59,6 +59,8 @@ node {
                 contextName: "${K8S_CLUSTER_CONTEXT}"
             ]) {
                 sh 'kubectl apply -f k8s/'
+
+                // sh 'kubectl annotate ingress traefik-sc-fleet-manager --overwrite traefik.ingress.kubernetes.io/service-weights="{apache-green-cluster-ip: 0%, apache-blue-cluster-ip: 100%}"'
             }
         }
     } catch (err) {
