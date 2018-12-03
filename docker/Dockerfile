@@ -71,7 +71,7 @@ ENTRYPOINT ["docker-app-entrypoint"]
 CMD ["php-fpm"]
 
 ##############################
-FROM httpd:2.4 as build_apache
+FROM httpd:2.4-alpine as build_apache
 
 WORKDIR /app
 COPY public public

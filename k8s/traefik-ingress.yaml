@@ -5,8 +5,8 @@ metadata:
     annotations:
         kubernetes.io/ingress.class: traefik
         traefik.ingress.kubernetes.io/service-weights: |
-            apache-green-cluster-ip: 50%
-            apache-blue-cluster-ip: 50%
+            apache-green-cluster-ip: 0%
+            apache-blue-cluster-ip: 100%
 spec:
     tls:
         -
