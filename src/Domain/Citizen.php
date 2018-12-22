@@ -31,6 +31,11 @@ class Citizen
      */
     public $fleets;
 
+    /**
+     * @var string
+     */
+    public $bio;
+
     public function __construct(?UuidInterface $id)
     {
         $this->id = $id;

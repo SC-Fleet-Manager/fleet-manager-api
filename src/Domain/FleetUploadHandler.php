@@ -42,24 +42,23 @@ class FleetUploadHandler implements FleetUploadHandlerInterface
         // Citizen already persisted ?
         // TODO : getByNumber instead ?
         $citizen = $this->citizenRepository->getByHandle($handleSC);
-        if ($citizen === null) {
+        $isNew = $citizen === null;
+        if ($isNew) {
             // create new citizen
             $citizen = new Citizen(Uuid::uuid4());
-            $citizen->number = clone $infos->numberSC;
-            $citizen->actualHandle = clone $infos->handle;
-            $citizen->organisations = [];
-            foreach ($infos->organisations as $organisation) {
-                $citizen->organisations[] = clone $organisation;
-            }
+        }
+
+        $citizen->number = clone $infos->numberSC;
+        $citizen->actualHandle = clone $infos->handle;
+        $citizen->bio = $infos->bio;
+        $citizen->organisations = [];
+        foreach ($infos->organisations as $organisation) {
+            $citizen->organisations[] = clone $organisation;
+        }
+
+        if ($isNew) {
             $this->citizenRepository->create($citizen);
         } else {
-            // update citizen
-            $citizen->number = clone $infos->numberSC;
-            $citizen->actualHandle = clone $infos->handle;
-            $citizen->organisations = [];
-            foreach ($infos->organisations as $organisation) {
-                $citizen->organisations[] = clone $organisation;
-            }
             $this->citizenRepository->update($citizen);
         }
 

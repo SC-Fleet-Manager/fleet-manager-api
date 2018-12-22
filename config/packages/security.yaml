@@ -2,7 +2,7 @@ security:
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
         oauth_user_provider:
-            id: hwi_oauth.user.provider
+            id: App\Infrastructure\Security\OAuthUserProvider
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -18,7 +18,7 @@ security:
                 failure_path: /login
 
                 oauth_user_provider:
-                    service: hwi_oauth.user.provider
+                    service: App\Infrastructure\Security\OAuthUserProvider
 
             logout:
                 path: logout

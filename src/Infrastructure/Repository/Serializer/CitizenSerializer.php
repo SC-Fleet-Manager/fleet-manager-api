@@ -20,6 +20,7 @@ class CitizenSerializer
         $citizen = new DomainCitizen($citizenEntity->id);
         $citizen->number = new CitizenNumber($citizenEntity->number);
         $citizen->actualHandle = new HandleSC($citizenEntity->actualHandle);
+        $citizen->bio = $citizenEntity->bio;
         foreach ($citizenEntity->organisations as $orga) {
             $citizen->organisations[] = new SpectrumIdentification($orga);
         }
@@ -33,6 +34,7 @@ class CitizenSerializer
         $e->id = clone $citizen->id;
         $e->number = (string) $citizen->number;
         $e->actualHandle = (string) $citizen->actualHandle;
+        $e->bio = $citizen->bio;
         foreach ($citizen->organisations as $orga) {
             $e->organisations[] = (string) $orga;
         }

@@ -47,5 +47,6 @@ services:
     App\Domain\OrganisationFleetGeneratorInterface: '@App\Domain\OrganisationFleetGenerator'
     App\Domain\FleetRepositoryInterface: '@App\Infrastructure\Repository\FleetRepository'
     App\Domain\CitizenRepositoryInterface: '@App\Infrastructure\Repository\CitizenRepository'
+    App\Domain\UserRepositoryInterface: '@App\Infrastructure\Repository\UserRepository'
     App\Domain\CitizenInfosProviderInterface: '@App\Infrastructure\Service\ApiCitizenInfosProvider'
     App\Domain\ShipInfosProviderInterface: '@App\Infrastructure\Service\ApiShipInfosProvider'
