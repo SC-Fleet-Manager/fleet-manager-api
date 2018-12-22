@@ -25,7 +25,6 @@ class FleetController extends AbstractController
         ShipInfosProviderInterface $shipInfosProvider): Response
     {
         $citizens = $citizenRepository->getByOrganisation(new SpectrumIdentification($organisation));
-        dump($citizens);
         $citizensFiltered = $citizens;
 
         $citizenIdsFilter = $request->query->get('citizens', null);
