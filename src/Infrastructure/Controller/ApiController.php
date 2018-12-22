@@ -8,6 +8,7 @@ use App\Domain\FleetUploadHandlerInterface;
 use App\Domain\HandleSC;
 use App\Domain\OrganisationFleetGeneratorInterface;
 use App\Domain\SpectrumIdentification;
+use App\Domain\User;
 use App\Infrastructure\Form\Dto\FleetUpload;
 use App\Infrastructure\Form\FleetUploadForm;
 use Psr\Log\LoggerInterface;
@@ -18,6 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class ApiController extends AbstractController
@@ -32,10 +34,16 @@ class ApiController extends AbstractController
      */
     private $translator;
 
-    public function __construct(LoggerInterface $logger, TranslatorInterface $translator)
+    /**
+     * @var Security
+     */
+    private $security;
+
+    public function __construct(LoggerInterface $logger, TranslatorInterface $translator, Security $security)
     {
         $this->logger = $logger;
         $this->translator = $translator;
+        $this->security = $security;
     }
 
     /**
@@ -76,8 +84,17 @@ class ApiController extends AbstractController
 
         $fleetData = \json_decode(file_get_contents($fleetUpload->fleetFile->getRealPath()), true);
 
+        /** @var User $user */
+        $user = $this->security->getUser();
+        if ($user->citizen === null) {
+            return $this->json([
+                'error' => 'no_citizen_created',
+                'errorMessage' => 'Your RSI account must be linked first. Go to the profile page.',
+            ], 400);
+        }
+
         try {
-            $fleetUploadHandler->handle(new HandleSC($fleetUpload->handleSC), $fleetData);
+            $fleetUploadHandler->handle(new HandleSC($user->citizen->actualHandle), $fleetData);
         } catch (FleetUploadedTooCloseException $e) {
             return $this->json([
                 'error' => 'uploaded_too_close',

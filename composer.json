@@ -24,6 +24,7 @@
         "symfony/orm-pack": "^1.0",
         "symfony/security-bundle": "*",
         "symfony/serializer-pack": "^1.0",
+        "symfony/translation": "4.2.*",
         "symfony/twig-bundle": "*",
         "symfony/validator": "*",
         "symfony/web-link": "*",
@@ -80,7 +81,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": true,
-            "require": "4.1.*"
+            "require": "4.2.*"
         }
     }
 }

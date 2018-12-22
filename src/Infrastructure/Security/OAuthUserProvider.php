@@ -34,7 +34,6 @@ class OAuthUserProvider extends BaseProvider
     public function loadUserByUsername($username)
     {
         $citizen = $this->userRepository->getByUsername($username);
-        dump($citizen);
         if ($citizen !== null) {
             return $citizen;
         }
@@ -47,9 +46,10 @@ class OAuthUserProvider extends BaseProvider
     {
         $newUser = new User(Uuid::uuid4(), $username);
         $newUser->createdAt = new \DateTimeImmutable();
+        $newUser->token = User::generateToken();
 
         $this->userRepository->create($newUser);
-dump($newUser);
+
         return $newUser;
     }
 
@@ -58,7 +58,6 @@ dump($newUser);
      */
     public function supportsClass($class)
     {
-        dump($class);
         return User::class === $class;
     }
 }

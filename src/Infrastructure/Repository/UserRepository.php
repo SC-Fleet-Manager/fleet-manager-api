@@ -35,7 +35,13 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
     public function getByUsername(string $username): ?DomainUser
     {
         /** @var User $userEntity */
-        $userEntity = $this->findOneBy(['username' => $username]);
+        $userEntity = $this->createQueryBuilder('u')
+            ->addSelect('c')
+            ->leftJoin('u.citizen', 'c')
+            ->where('u.username = :username')
+            ->setParameter('username', $username)
+            ->getQuery()
+            ->getOneOrNullResult();
         if ($userEntity === null) {
             return null;
         }
@@ -55,6 +61,19 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
         $em = $this->getEntityManager();
         $em->clear();
         $em->persist($entity);
+        $em->flush();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function update(DomainUser $user): void
+    {
+        $entity = $this->userSerializer->fromDomain($user);
+
+        $em = $this->getEntityManager();
+        $em->clear();
+        $em->merge($entity);
         $em->flush();
     }
 }

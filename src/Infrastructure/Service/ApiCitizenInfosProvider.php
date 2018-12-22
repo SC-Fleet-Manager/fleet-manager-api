@@ -5,6 +5,7 @@ namespace App\Infrastructure\Service;
 use App\Domain\CitizenInfos;
 use App\Domain\CitizenInfosProviderInterface;
 use App\Domain\CitizenNumber;
+use App\Domain\Exception\NotFoundHandleSCException;
 use App\Domain\HandleSC;
 use App\Domain\SpectrumIdentification;
 use Goutte\Client as GoutteClient;
@@ -57,7 +58,7 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
         $bio = null;
         $bioCrawler = $profileCrawler->filter('.bio .value');
         if ($bioCrawler->count() > 0) {
-            $bio = $bioCrawler->text();
+            $bio = trim($bioCrawler->text());
         }
 
         $sids = [];
@@ -67,6 +68,11 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
             $sids = $sidCrawler->each(function (Crawler $node) {
                 return $node->text();
             });
+        }
+
+        if ($citizenNumber === null) {
+            $this->logger->error(sprintf('Handle %s does not exist', (string) $handleSC), []);
+            throw new NotFoundHandleSCException(sprintf('Handle %s does not exist', (string) $handleSC));
         }
 
         $ci = new CitizenInfos(

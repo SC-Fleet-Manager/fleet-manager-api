@@ -26,9 +26,16 @@ class User
     public $username;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=64)
+     */
+    public $token;
+
+    /**
      * @var Citizen
      *
-     * @ORM\OneToOne(targetEntity="App\Infrastructure\Entity\Citizen")
+     * @ORM\OneToOne(targetEntity="App\Infrastructure\Entity\Citizen", cascade={"persist"})
      */
     public $citizen;
 
