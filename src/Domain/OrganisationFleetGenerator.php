@@ -15,7 +15,7 @@ class OrganisationFleetGenerator implements OrganisationFleetGeneratorInterface
         $this->citizenRepository = $citizenRepository;
     }
 
-    public function generateFleetFile(Trigram $organisationTrigram): \SplFileInfo
+    public function generateFleetFile(SpectrumIdentification $organisationTrigram): \SplFileInfo
     {
         $citizens = $this->citizenRepository->getByOrganisation($organisationTrigram);
 

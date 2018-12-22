@@ -5,18 +5,18 @@ namespace App\Infrastructure\Service;
 use App\Domain\CitizenInfos;
 use App\Domain\CitizenInfosProviderInterface;
 use App\Domain\CitizenNumber;
-use App\Domain\Exception\NotFoundHandleSCException;
 use App\Domain\HandleSC;
-use App\Domain\Trigram;
-use GuzzleHttp\Client;
+use App\Domain\SpectrumIdentification;
+use Goutte\Client as GoutteClient;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DomCrawler\Crawler;
 
 class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
 {
-    private const BASE_URL = 'http://sc-api.com';
+    private const BASE_URL = 'https://robertsspaceindustries.com';
 
     /**
-     * @var Client
+     * @var GoutteClient
      */
     private $client;
 
@@ -27,65 +27,63 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
 
     public function __construct(LoggerInterface $logger)
     {
-        $this->client = new Client([
-            'base_uri' => self::BASE_URL,
-        ]);
+        $this->client = new GoutteClient();
         $this->logger = $logger;
     }
 
     public function retrieveInfos(HandleSC $handleSC): CitizenInfos
     {
-        $response = $this->client->get('/', [
-            'query' => [
-                'api_source' => 'live',
-                'system' => 'accounts',
-                'action' => 'full_profile',
-                'target_id' => (string) $handleSC,
-            ],
-        ]);
+        $crawler = $this->client->request('GET', self::BASE_URL . '/citizens/' . $handleSC);
+        $profileCrawler = $crawler->filter('#public-profile');
 
-        if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300) {
-            $this->logger->error(sprintf('Bad response status code from %s', self::BASE_URL), [
-                'status_code' => $response->getStatusCode(),
-                'raw_content' => $response->getBody()->getContents(),
-            ]);
-            throw new \RuntimeException('Cannot retrieve citizen infos.');
+        $avatarUrl = null;
+        $avatarCrawler = $profileCrawler->filter('.profile .thumb img');
+        if ($avatarCrawler->count() > 0) {
+            $avatarUrl = self::BASE_URL . $avatarCrawler->attr('src');
         }
 
-        $contents = $response->getBody()->getContents();
-        $json = \json_decode($contents, true);
-        if (!$json) {
-            $this->logger->error(sprintf('Bad json response from %s', self::BASE_URL), [
-                'raw_content' => $contents,
-                'json_error' => json_last_error(),
-                'json_error_msg' => json_last_error_msg(),
-            ]);
-            throw new \RuntimeException('Cannot retrieve citizen infos.');
-        }
-        if (!isset($json['data'])) {
-            $this->logger->error(sprintf('Handle %s does not exist', (string) $handleSC), [
-                'payload' => $json,
-            ]);
-            throw new NotFoundHandleSCException(sprintf('Handle %s does not exist', (string) $handleSC));
+        $citizenNumber = null;
+        $citizenNumberCrawler = $profileCrawler->filter('.citizen-record .value');
+        if ($citizenNumberCrawler->count() > 0) {
+            $citizenNumber = preg_replace('/[^0-9]/', '', $citizenNumberCrawler->text());
         }
 
-        $this->logger->info('Citizen infos retrieved.', [
-            'handle' => $json['data']['handle'],
-            'citizen_number' => $json['data']['citizen_number'],
-            'payload' => $json['data'],
-        ]);
+        $enlisted = null;
+        $enlistedCrawler = $profileCrawler->filterXPath('//p[contains(.//*/text(), "Enlisted")]/*[contains(@class, "value")]');
+        if ($enlistedCrawler->count() > 0) {
+            $enlisted = \DateTimeImmutable::createFromFormat('F j, Y', $enlistedCrawler->text())->setTime(0, 0);
+        }
+
+        $bio = null;
+        $bioCrawler = $profileCrawler->filter('.bio .value');
+        if ($bioCrawler->count() > 0) {
+            $bio = $bioCrawler->text();
+        }
+
+        $sids = [];
+        $crawler = $this->client->request('GET', self::BASE_URL . '/citizens/' . $handleSC . '/organizations');
+        $sidCrawler = $crawler->filterXPath('//p[contains(.//*/text(), "Spectrum Identification (SID)")]/*[contains(@class, "value")]');
+        if ($sidCrawler->count() > 0) {
+            $sids = $sidCrawler->each(function (Crawler $node) {
+                return $node->text();
+            });
+        }
 
         $ci = new CitizenInfos(
-            new CitizenNumber($json['data']['citizen_number']),
-            new HandleSC($json['data']['handle'])
+            new CitizenNumber($citizenNumber),
+            clone $handleSC
         );
-        if ($json['data']['organizations'] !== null) {
-            $ci->organisations = array_map(function (array $orga): Trigram {
-                return new Trigram($orga['sid']);
-            }, $json['data']['organizations']);
-        }
-        $ci->avatarUrl = $json['data']['avatar'];
-        $ci->registered = \DateTimeImmutable::createFromFormat('U', $json['data']['enlisted']);
+        $ci->organisations = array_map(function (string $sid): SpectrumIdentification {
+            return new SpectrumIdentification($sid);
+        }, $sids);
+        $ci->bio = $bio;
+        $ci->avatarUrl = $avatarUrl;
+        $ci->registered = $enlisted;
+
+        $this->logger->info('Citizen infos retrieved.', [
+            'handle' => (string)$handleSC,
+            'citizen_number' => $citizenNumber,
+        ]);
 
         return $ci;
     }

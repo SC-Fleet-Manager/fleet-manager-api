@@ -22,7 +22,7 @@ class Citizen
     public $actualHandle;
 
     /**
-     * @var iterable|Trigram[]
+     * @var iterable|SpectrumIdentification[]
      */
     public $organisations;
 

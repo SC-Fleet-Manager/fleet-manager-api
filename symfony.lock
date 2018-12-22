@@ -80,6 +80,9 @@
             "ref": "70062abc2cd58794d2a90274502f81b55cd9951b"
         }
     },
+    "fabpot/goutte": {
+        "version": "v3.2.3"
+    },
     "facebook/webdriver": {
         "version": "1.6.0"
     },
@@ -206,6 +209,9 @@
     "psr/simple-cache": {
         "version": "1.0.1"
     },
+    "ralouphie/getallheaders": {
+        "version": "2.0.5"
+    },
     "ramsey/uuid": {
         "version": "3.8.0"
     },
@@ -250,6 +256,9 @@
             "version": "3.3",
             "ref": "e3868d2f4a5104f19f844fe551099a00c6562527"
         }
+    },
+    "symfony/css-selector": {
+        "version": "v4.1.9"
     },
     "symfony/debug": {
         "version": "v4.1.6"

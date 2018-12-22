@@ -15,7 +15,7 @@ class CitizenInfos
     public $handle;
 
     /**
-     * @var iterable|Trigram[]
+     * @var iterable|SpectrumIdentification[]
      */
     public $organisations;
 
@@ -28,6 +28,11 @@ class CitizenInfos
      * @var bool
      */
     public $registered;
+
+    /**
+     * @var string
+     */
+    public $bio;
 
     public function __construct(CitizenNumber $numberSC, HandleSC $handle)
     {

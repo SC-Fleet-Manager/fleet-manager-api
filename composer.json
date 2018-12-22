@@ -8,6 +8,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-json": "*",
+        "fabpot/goutte": "^3.2",
         "guzzlehttp/guzzle": "^6.3",
         "hwi/oauth-bundle": "^0.6.3",
         "php-http/guzzle6-adapter": "^1.1",

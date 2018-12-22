@@ -7,7 +7,7 @@ use App\Domain\Exception\NotFoundHandleSCException;
 use App\Domain\FleetUploadHandlerInterface;
 use App\Domain\HandleSC;
 use App\Domain\OrganisationFleetGeneratorInterface;
-use App\Domain\Trigram;
+use App\Domain\SpectrumIdentification;
 use App\Infrastructure\Form\Dto\FleetUpload;
 use App\Infrastructure\Form\FleetUploadForm;
 use Psr\Log\LoggerInterface;
@@ -118,7 +118,7 @@ class ApiController extends AbstractController
                 'errorMessage' => 'The organisation parameter must be 3 characters long.',
             ], 400);
         }
-        $file = $fleetGenerator->generateFleetFile(new Trigram($organisation));
+        $file = $fleetGenerator->generateFleetFile(new SpectrumIdentification($organisation));
         $filename = 'organisation_fleet.json';
 
         $response = new BinaryFileResponse($file);

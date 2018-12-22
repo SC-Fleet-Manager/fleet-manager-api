@@ -13,5 +13,5 @@ interface CitizenRepositoryInterface
     /**
      * @return iterable|Citizen[]
      */
-    public function getByOrganisation(Trigram $organisationTrigram): iterable;
+    public function getByOrganisation(SpectrumIdentification $organisationTrigram): iterable;
 }

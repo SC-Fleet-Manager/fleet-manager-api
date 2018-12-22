@@ -7,7 +7,7 @@ use App\Domain\CitizenRepositoryInterface;
 use App\Domain\Ship;
 use App\Domain\ShipInfo;
 use App\Domain\ShipInfosProviderInterface;
-use App\Domain\Trigram;
+use App\Domain\SpectrumIdentification;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,9 +18,14 @@ class FleetController extends AbstractController
     /**
      * @Route("/fleets/{organisation}", name="fleets", options={"expose":true})
      */
-    public function fleets(Request $request, string $organisation, CitizenRepositoryInterface $citizenRepository, ShipInfosProviderInterface $shipInfosProvider): Response
+    public function fleets(
+        Request $request,
+        string $organisation,
+        CitizenRepositoryInterface $citizenRepository,
+        ShipInfosProviderInterface $shipInfosProvider): Response
     {
-        $citizens = $citizenRepository->getByOrganisation(new Trigram($organisation));
+        $citizens = $citizenRepository->getByOrganisation(new SpectrumIdentification($organisation));
+        dump($citizens);
         $citizensFiltered = $citizens;
 
         $citizenIdsFilter = $request->query->get('citizens', null);
@@ -116,8 +121,6 @@ class FleetController extends AbstractController
         foreach ($citizens as $citizen) {
             $viewCitizens[$citizen->id->toString()] = (string) $citizen->actualHandle;
         }
-
-        // TODO : JMS or SF Serializer ?
 
         return $this->json([
             'tableHeaders' => $tableHeaders,

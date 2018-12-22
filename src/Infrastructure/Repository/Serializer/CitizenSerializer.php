@@ -7,7 +7,7 @@ namespace App\Infrastructure\Repository\Serializer;
 use App\Domain\Citizen as DomainCitizen;
 use App\Domain\CitizenNumber;
 use App\Domain\HandleSC;
-use App\Domain\Trigram;
+use App\Domain\SpectrumIdentification;
 use App\Infrastructure\Entity\Citizen;
 
 class CitizenSerializer
@@ -21,7 +21,7 @@ class CitizenSerializer
         $citizen->number = new CitizenNumber($citizenEntity->number);
         $citizen->actualHandle = new HandleSC($citizenEntity->actualHandle);
         foreach ($citizenEntity->organisations as $orga) {
-            $citizen->organisations[] = new Trigram($orga);
+            $citizen->organisations[] = new SpectrumIdentification($orga);
         }
 
         return $citizen;

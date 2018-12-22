@@ -6,7 +6,7 @@ use App\Domain\Citizen as DomainCitizen;
 use App\Domain\CitizenRepositoryInterface;
 use App\Domain\Fleet as DomainFleet;
 use App\Domain\HandleSC;
-use App\Domain\Trigram;
+use App\Domain\SpectrumIdentification;
 use App\Infrastructure\Entity\Citizen;
 use App\Infrastructure\Repository\Serializer\CitizenSerializer;
 use App\Infrastructure\Repository\Serializer\FleetSerializer;
@@ -87,7 +87,7 @@ class CitizenRepository extends ServiceEntityRepository implements CitizenReposi
     /**
      * {@inheritdoc}
      */
-    public function getByOrganisation(Trigram $organisationTrigram): iterable
+    public function getByOrganisation(SpectrumIdentification $organisationTrigram): iterable
     {
         $qb = $this->createQueryBuilder('c');
         $qb
