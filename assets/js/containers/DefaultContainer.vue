@@ -8,9 +8,7 @@
       </b-link>
       <SidebarToggler class="d-md-down-none" display="lg" />
       <b-navbar-nav class="d-md-down-none mr-auto">
-        <b-nav-item class="px-3" to="/dashboard">Dashboard</b-nav-item>
-        <!--<b-nav-item class="px-3" to="/users" exact>Users</b-nav-item>-->
-        <!--<b-nav-item class="px-3">Settings</b-nav-item>-->
+        <!--<b-nav-item class="px-3" to="/dashboard">Dashboard</b-nav-item>-->
       </b-navbar-nav>
       <b-navbar-nav class="ml-auto">
         <b-nav-item class="px-3">
@@ -57,8 +55,8 @@
         <span class="ml-1">&copy; 2018.</span>
       </div>
       <div class="ml-auto">
-        <span class="mr-1">Réalisé par</span>
-        <a href="https://coreui.io">Thomas "Ioni" Talbot</a>
+        <span class="mr-1">Created by</span>
+        <a href="/">Thomas "Ioni" Talbot</a>
       </div>
     </TheFooter>
   </div>

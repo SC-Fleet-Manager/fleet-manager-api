@@ -8,6 +8,7 @@ const DefaultContainer = () => import('../containers/DefaultContainer');
 const Dashboard = () => import('../views/Dashboard');
 const UpdateFleetFile = () => import('../views/UpdateFleetFile');
 const Profile = () => import('../views/Profile');
+const MyFleet = () => import('../views/MyFleet');
 
 // Views - Pages
 const Page404 = () => import('../views/pages/Page404');
@@ -23,14 +24,19 @@ export default new Router({
     routes: [
         {
             path: '/',
-            redirect: '/dashboard',
+            redirect: '/my-fleet',
             name: 'Home',
             component: DefaultContainer,
             children: [
+                // {
+                //     path: 'dashboard',
+                //     name: 'Dashboard',
+                //     component: Dashboard
+                // },
                 {
-                    path: 'dashboard',
-                    name: 'Dashboard',
-                    component: Dashboard
+                    path: 'my-fleet',
+                    name: 'My Fleet',
+                    component: MyFleet
                 },
                 {
                     path: 'upload-fleet-file',
@@ -41,7 +47,7 @@ export default new Router({
                     path: 'profile',
                     name: 'Profil',
                     component: Profile
-                }
+                },
             ]
         },
         {

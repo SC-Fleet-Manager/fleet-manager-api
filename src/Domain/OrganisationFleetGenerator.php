@@ -2,7 +2,6 @@
 
 namespace App\Domain;
 
-
 class OrganisationFleetGenerator implements OrganisationFleetGeneratorInterface
 {
     /**

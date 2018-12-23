@@ -2,6 +2,8 @@
 
 namespace App\Infrastructure\Controller;
 
+use App\Domain\CitizenFleetGeneratorInterface;
+use App\Domain\CitizenNumber;
 use App\Domain\Exception\BadCitizenException;
 use App\Domain\Exception\FleetUploadedTooCloseException;
 use App\Domain\Exception\InvalidFleetDataException;
@@ -138,6 +140,37 @@ class ApiController extends AbstractController
     }
 
     /**
+     * @Route("/create-citizen-fleet-file/{citizenNumber}", name="create_citizen_fleet_file", methods={"GET"})
+     *
+     * Combines the last version fleet of the given citizen.
+     * Returns a downloadable json file.
+     */
+    public function createCitizenFleetFile(
+        Request $request,
+        string $citizenNumber,
+        CitizenFleetGeneratorInterface $citizenFleetGenerator): Response
+    {
+        try {
+            $file = $citizenFleetGenerator->generateFleetFile(new CitizenNumber($citizenNumber));
+        } catch (\Exception $e) {
+            throw $this->createNotFoundException('The fleet file could not be generated.');
+        }
+        $filename = 'citizen_fleet.json';
+
+        $response = new BinaryFileResponse($file);
+        $response->headers->set('Content-Type', 'application/json');
+        $response->deleteFileAfterSend();
+        $response::trustXSendfileTypeHeader();
+        $response->setContentDisposition(
+            ResponseHeaderBag::DISPOSITION_INLINE,
+            $filename,
+            $filename
+        );
+
+        return $response;
+    }
+
+    /**
      * @Route("/create-organisation-fleet-file/{organisation}", name="create_organisation_fleet_file", methods={"GET"})
      *
      * Combines all last version fleets of all citizen members of a specific organisation.
@@ -148,13 +181,6 @@ class ApiController extends AbstractController
         string $organisation,
         OrganisationFleetGeneratorInterface $fleetGenerator): Response
     {
-        if (\strlen($organisation) !== 3) {
-            return $this->json([
-                'error' => 'invalid_param',
-                'param' => 'organisation',
-                'errorMessage' => 'The organisation parameter must be 3 characters long.',
-            ], 400);
-        }
         $file = $fleetGenerator->generateFleetFile(new SpectrumIdentification($organisation));
         $filename = 'organisation_fleet.json';
 

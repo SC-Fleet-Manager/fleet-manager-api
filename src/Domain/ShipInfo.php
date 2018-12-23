@@ -53,4 +53,9 @@ class ShipInfo
      * @var string
      */
     public $mediaUrl;
+
+    /**
+     * @var string
+     */
+    public $mediaThumbUrl;
 }

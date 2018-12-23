@@ -81,7 +81,8 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
             $shipInfo->pledgeUrl = self::BASE_URL.$shipData['url'];
             $shipInfo->manufacturerName = $shipData['manufacturer']['name'];
             $shipInfo->manufacturerCode = $shipData['manufacturer']['code'];
-            $shipInfo->mediaUrl = \count($shipData['media']) > 0 ? self::BASE_URL.$shipData['media'][0]['source_url'] : null;
+            $shipInfo->mediaUrl = \count($shipData['media']) > 0 ? self::BASE_URL.$shipData['media'][0]['source_url'] ?? null : null;
+            $shipInfo->mediaThumbUrl = \count($shipData['media']) > 0 ? self::BASE_URL.$shipData['media'][0]['images']['store_small'] ?? null : null;
 
             $shipInfos[$shipInfo->id] = $shipInfo;
         }

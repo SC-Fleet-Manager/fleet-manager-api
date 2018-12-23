@@ -1,14 +1,19 @@
 export default {
   items: [
+    // {
+    //   name: 'Dashboard',
+    //   url: '/dashboard',
+    //   icon: 'fa fa-dashboard',
+    // },
     {
-      name: 'Dashboard',
-      url: '/dashboard',
-      icon: 'icon-speedometer',
+      name: 'My Fleet',
+      url: '/my-fleet',
+      icon: 'fa fa-plane',
     },
     {
       name: "Profile",
       url: '/profile',
-      icon: 'icon-user',
-    }
+      icon: 'fa fa-user',
+    },
   ]
 }
