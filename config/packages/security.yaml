@@ -2,7 +2,7 @@ security:
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
         oauth_user_provider:
-            id: hwi_oauth.user.provider
+            id: App\Infrastructure\Security\OAuthUserProvider
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -16,14 +16,16 @@ security:
                 login_path: /login
                 use_forward: false
                 failure_path: /login
+                always_use_default_target_path: true
+                default_target_path: '/#/profile'
 
                 oauth_user_provider:
-                    service: hwi_oauth.user.provider
+                    service: App\Infrastructure\Security\OAuthUserProvider
 
             logout:
                 path: logout
 
     access_control:
-        - { path: ^/login,  roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/connect,  roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/,       roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/login,      roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/connect,    roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/,           roles: IS_AUTHENTICATED_FULLY }

@@ -80,6 +80,9 @@
             "ref": "70062abc2cd58794d2a90274502f81b55cd9951b"
         }
     },
+    "fabpot/goutte": {
+        "version": "v3.2.3"
+    },
     "facebook/webdriver": {
         "version": "1.6.0"
     },
@@ -206,6 +209,9 @@
     "psr/simple-cache": {
         "version": "1.0.1"
     },
+    "ralouphie/getallheaders": {
+        "version": "2.0.5"
+    },
     "ramsey/uuid": {
         "version": "3.8.0"
     },
@@ -250,6 +256,12 @@
             "version": "3.3",
             "ref": "e3868d2f4a5104f19f844fe551099a00c6562527"
         }
+    },
+    "symfony/contracts": {
+        "version": "v1.0.2"
+    },
+    "symfony/css-selector": {
+        "version": "v4.1.9"
     },
     "symfony/debug": {
         "version": "v4.1.6"
@@ -380,9 +392,6 @@
             "ref": "5f514d9d3b8a8aac3d62ae6a86b18b90ed0c7826"
         }
     },
-    "symfony/security": {
-        "version": "v4.1.7"
-    },
     "symfony/security-bundle": {
         "version": "3.3",
         "recipe": {
@@ -391,6 +400,18 @@
             "version": "3.3",
             "ref": "f8a63faa0d9521526499c0a8f403c9964ecb0527"
         }
+    },
+    "symfony/security-core": {
+        "version": "v4.2.1"
+    },
+    "symfony/security-csrf": {
+        "version": "v4.2.1"
+    },
+    "symfony/security-guard": {
+        "version": "v4.2.1"
+    },
+    "symfony/security-http": {
+        "version": "v4.2.1"
     },
     "symfony/serializer": {
         "version": "v4.1.6"
@@ -436,6 +457,9 @@
     },
     "symfony/var-dumper": {
         "version": "v4.1.6"
+    },
+    "symfony/var-exporter": {
+        "version": "v4.2.1"
     },
     "symfony/web-link": {
         "version": "v4.1.7"

@@ -4,5 +4,5 @@ namespace App\Domain;
 
 interface OrganisationFleetGeneratorInterface
 {
-    public function generateFleetFile(Trigram $organisationTrigram): \SplFileInfo;
+    public function generateFleetFile(SpectrumIdentification $organisationTrigram): \SplFileInfo;
 }

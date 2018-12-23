@@ -2,7 +2,9 @@
 
 namespace App\Domain;
 
+use App\Domain\Exception\BadCitizenException;
 use App\Domain\Exception\FleetUploadedTooCloseException;
+use App\Domain\Exception\InvalidFleetDataException;
 use Ramsey\Uuid\Uuid;
 
 class FleetUploadHandler implements FleetUploadHandlerInterface
@@ -35,33 +37,23 @@ class FleetUploadHandler implements FleetUploadHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function handle(HandleSC $handleSC, array $fleetData): void
+    public function handle(Citizen $citizen, array $fleetData): void
     {
-        $infos = $this->citizenInfosProvider->retrieveInfos($handleSC);
-
-        // Citizen already persisted ?
-        // TODO : getByNumber instead ?
-        $citizen = $this->citizenRepository->getByHandle($handleSC);
-        if ($citizen === null) {
-            // create new citizen
-            $citizen = new Citizen(Uuid::uuid4());
-            $citizen->number = clone $infos->numberSC;
-            $citizen->actualHandle = clone $infos->handle;
-            $citizen->organisations = [];
-            foreach ($infos->organisations as $organisation) {
-                $citizen->organisations[] = clone $organisation;
-            }
-            $this->citizenRepository->create($citizen);
-        } else {
-            // update citizen
-            $citizen->number = clone $infos->numberSC;
-            $citizen->actualHandle = clone $infos->handle;
-            $citizen->organisations = [];
-            foreach ($infos->organisations as $organisation) {
-                $citizen->organisations[] = clone $organisation;
-            }
-            $this->citizenRepository->update($citizen);
+        try {
+            $infos = $this->citizenInfosProvider->retrieveInfos($citizen->actualHandle);
+        } catch (\Exception $e) {
+            throw new BadCitizenException($e->getMessage());
         }
+        if (!$infos->numberSC->equals($citizen->number)) {
+            throw new BadCitizenException('The citizen number is not the same.');
+        }
+
+        $citizen->bio = $infos->bio;
+        $citizen->organisations = [];
+        foreach ($infos->organisations as $organisation) {
+            $citizen->organisations[] = clone $organisation;
+        }
+        $this->citizenRepository->update($citizen);
 
         $lastVersion = $this->fleetRepository->getLastVersionFleet($citizen);
 
@@ -77,6 +69,10 @@ class FleetUploadHandler implements FleetUploadHandlerInterface
 
     private function createNewFleet(Citizen $citizen, array $fleetData, ?Fleet $lastVersionFleet = null): Fleet
     {
+        if (!$this->isFleetDataValid($fleetData)) {
+            throw new InvalidFleetDataException('The fleet data is invalid.');
+        }
+
         $fleet = new Fleet(Uuid::uuid4(), $citizen);
         $fleet->version = ($lastVersionFleet->version ?? 0) + 1;
         $fleet->uploadDate = new \DateTimeImmutable();
@@ -92,5 +88,29 @@ class FleetUploadHandler implements FleetUploadHandlerInterface
         }
 
         return $fleet;
+    }
+
+    private function isFleetDataValid(array $fleetData): bool
+    {
+        foreach ($fleetData as $shipData) {
+            if (!isset(
+                $shipData['pledge_date'],
+                $shipData['manufacturer'],
+                $shipData['name'],
+                $shipData['lti'],
+                $shipData['cost']
+            )) {
+                return false;
+            }
+            $date = \DateTimeImmutable::createFromFormat('F d, Y', $shipData['pledge_date']);
+            if ($date === false) {
+                return false;
+            }
+            if (preg_replace('/^\$(\d+\.\d+)/i', '$1', $shipData['cost']) === null) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

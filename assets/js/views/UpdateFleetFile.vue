@@ -5,14 +5,14 @@
                 <b-card header="Mettre à jour ma flotte">
                     <b-form @submit="onSubmit">
                         <b-alert variant="success" :show="showSuccess">Votre flotte a été mise à jour avec succès !</b-alert>
-                        <b-alert variant="danger" :show="showError">{{ errorMessage }}</b-alert>
-                        <b-form-group label="Handle Star Citizen" label-for="form_handle">
+                        <b-alert variant="danger" :show="showError" v-html="errorMessage"></b-alert>
+                        <!--<b-form-group label="Handle Star Citizen" label-for="form_handle">
                             <b-form-input id="form_handle"
                                           type="text"
                                           v-model="form.handle"
                                           required
                                           placeholder="Entrez votre Handle Star Citizen"></b-form-input>
-                        </b-form-group>
+                        </b-form-group>-->
                         <b-form-group label="Votre flotte (.json)" label-for="form_fleetfile">
                             <b-form-file id="form_fleetfile"
                                          v-model="form.fleetFile"
@@ -38,7 +38,7 @@
         data: function () {
             return {
                 form: {
-                    handle: null,
+                    // handle: null,
                     fleetFile: null,
                 },
                 showSuccess: false,
@@ -52,10 +52,9 @@
         methods: {
             onSubmit(ev) {
                 ev.preventDefault();
-                console.log(this.form);
 
                 const form = new FormData();
-                form.append('handleSC', this.form.handle);
+                // form.append('handleSC', this.form.handle);
                 form.append('fleetFile', this.form.fleetFile);
 
                 this.showError = false;
@@ -66,7 +65,6 @@
                     method: 'post',
                     url: '/upload',
                     data: form,
-                    // config: { headers: {'Content-Type': 'multipart/form-data' }},
                 }).then(response => {
                     this.submitDisabled = false;
                     this.showSuccess = true;
@@ -75,6 +73,8 @@
                     this.showError = true;
                     if (err.response.data.errorMessage) {
                         this.errorMessage = err.response.data.errorMessage;
+                    } else if (err.response.data.error === 'invalid_form') {
+                        this.errorMessage = err.response.data.formErrors.join("\n");
                     }
                     console.error(err);
                 });

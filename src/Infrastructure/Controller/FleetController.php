@@ -4,23 +4,79 @@ namespace App\Infrastructure\Controller;
 
 use App\Domain\Citizen;
 use App\Domain\CitizenRepositoryInterface;
-use App\Domain\Ship;
 use App\Domain\ShipInfo;
 use App\Domain\ShipInfosProviderInterface;
-use App\Domain\Trigram;
+use App\Domain\SpectrumIdentification;
+use App\Domain\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Serializer\Encoder\EncoderInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class FleetController extends AbstractController
 {
     /**
+     * @var Security
+     */
+    private $security;
+
+    /**
+     * @var CitizenRepositoryInterface
+     */
+    private $citizenRepository;
+
+    public function __construct(
+        Security $security,
+        CitizenRepositoryInterface $citizenRepository)
+    {
+        $this->security = $security;
+        $this->citizenRepository = $citizenRepository;
+    }
+
+    /**
+     * @Route("/my-fleet", name="my_fleet", options={"expose":true})
+     */
+    public function myFleet(
+        Request $request,
+        ShipInfosProviderInterface $shipInfosProvider,
+        NormalizerInterface $normalizer,
+        EncoderInterface $encoder): Response
+    {
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $citizen = $this->citizenRepository->getByNumber($user->citizen->number);
+
+        $fleet = $citizen->getLastVersionFleet();
+
+        $shipInfos = $shipInfosProvider->getAllShips();
+
+        $fleetJsonNormalized = $normalizer->normalize($fleet, 'object', ['groups' => 'my-fleet']);
+        $shipInfosNormalized = $normalizer->normalize($shipInfos, 'object');
+        $json = $encoder->encode([
+            'fleet' => $fleetJsonNormalized,
+            'shipInfos' => $shipInfosNormalized,
+        ], 'json');
+
+        return new JsonResponse($json, 200, [], true);
+    }
+
+    /**
      * @Route("/fleets/{organisation}", name="fleets", options={"expose":true})
      */
-    public function fleets(Request $request, string $organisation, CitizenRepositoryInterface $citizenRepository, ShipInfosProviderInterface $shipInfosProvider): Response
+    public function fleets(
+        Request $request,
+        string $organisation,
+        ShipInfosProviderInterface $shipInfosProvider): Response
     {
-        $citizens = $citizenRepository->getByOrganisation(new Trigram($organisation));
+        // TODO : check authorization
+//        $user = $this->security->getUser();
+
+        $citizens = $this->citizenRepository->getByOrganisation(new SpectrumIdentification($organisation));
         $citizensFiltered = $citizens;
 
         $citizenIdsFilter = $request->query->get('citizens', null);
@@ -116,8 +172,6 @@ class FleetController extends AbstractController
         foreach ($citizens as $citizen) {
             $viewCitizens[$citizen->id->toString()] = (string) $citizen->actualHandle;
         }
-
-        // TODO : JMS or SF Serializer ?
 
         return $this->json([
             'tableHeaders' => $tableHeaders,

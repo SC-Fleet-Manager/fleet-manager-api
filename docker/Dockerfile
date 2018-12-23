@@ -30,11 +30,13 @@ FROM php:7.2-fpm-alpine as build_php
 RUN apk add --no-cache --virtual .persistent-deps \
 		icu-libs \
         zlib \
-        libintl
+        libintl \
+        libzip
 RUN apk add --no-cache --virtual .build-deps \
         $PHPIZE_DEPS \
         icu-dev \
         libxml2-dev \
+        libzip-dev \
     && docker-php-ext-install \
         intl \
         zip \
@@ -88,6 +90,7 @@ ENV COMPOSER_MEMORY_LIMIT -1
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
 ARG XDEBUG_VERSION=2.6.0
+#ARG XDEBUG_VERSION=2.7.0beta1
 RUN set -eux; \
 	apk add --no-cache --virtual .build-deps $PHPIZE_DEPS; \
 	pecl install xdebug-$XDEBUG_VERSION; \

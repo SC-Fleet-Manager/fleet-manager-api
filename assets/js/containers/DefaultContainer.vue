@@ -8,9 +8,7 @@
       </b-link>
       <SidebarToggler class="d-md-down-none" display="lg" />
       <b-navbar-nav class="d-md-down-none mr-auto">
-        <b-nav-item class="px-3" to="/dashboard">Dashboard</b-nav-item>
-        <!--<b-nav-item class="px-3" to="/users" exact>Users</b-nav-item>-->
-        <!--<b-nav-item class="px-3">Settings</b-nav-item>-->
+        <!--<b-nav-item class="px-3" to="/dashboard">Dashboard</b-nav-item>-->
       </b-navbar-nav>
       <b-navbar-nav class="ml-auto">
         <b-nav-item class="px-3">
@@ -53,12 +51,12 @@
     <TheFooter>
       <!--footer-->
       <div>
-        <a href="https://coreui.io">CoreUI</a>
-        <span class="ml-1">&copy; 2018 creativeLabs.</span>
+        <a href="/">Star Citizen Fleet Manager</a>
+        <span class="ml-1">&copy; 2018.</span>
       </div>
       <div class="ml-auto">
-        <span class="mr-1">Powered by</span>
-        <a href="https://coreui.io">CoreUI for Vue</a>
+        <span class="mr-1">Created by</span>
+        <a href="/">Thomas "Ioni" Talbot</a>
       </div>
     </TheFooter>
   </div>
@@ -66,9 +64,7 @@
 
 <script>
 import nav from '../_nav'
-import { Header as AppHeader, SidebarToggler, Sidebar as AppSidebar, SidebarFooter, SidebarForm, SidebarHeader, SidebarMinimizer, SidebarNav, /*Aside as AppAside, */AsideToggler, Footer as TheFooter, Breadcrumb } from '@coreui/vue'
-// import DefaultAside from './DefaultAside'
-// import DefaultHeaderDropdownAccnt from './DefaultHeaderDropdownAccnt'
+import { Header as AppHeader, SidebarToggler, Sidebar as AppSidebar, SidebarFooter, SidebarForm, SidebarHeader, SidebarMinimizer, SidebarNav, AsideToggler, Footer as TheFooter, Breadcrumb } from '@coreui/vue'
 
 export default {
   name: 'DefaultContainer',
@@ -76,11 +72,8 @@ export default {
     AsideToggler,
     AppHeader,
     AppSidebar,
-    // AppAside,
     TheFooter,
     Breadcrumb,
-    // DefaultAside,
-    // DefaultHeaderDropdownAccnt,
     SidebarForm,
     SidebarFooter,
     SidebarToggler,

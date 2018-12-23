@@ -46,6 +46,13 @@ class Citizen
      */
     public $fleets;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="text", nullable=true)
+     */
+    public $bio;
+
     public function __construct()
     {
         $this->organisations = [];

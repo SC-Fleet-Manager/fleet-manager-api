@@ -2,10 +2,14 @@
 
 namespace App\Domain;
 
+use Symfony\Component\Serializer\Annotation\Groups;
+
 class HandleSC
 {
     /**
      * @var string
+     *
+     * @Groups({"profile"})
      */
     private $handle;
 
@@ -16,6 +20,11 @@ class HandleSC
 
     public function __toString()
     {
-        return $this->handle;
+        return $this->getHandle();
+    }
+
+    public function getHandle(): string
+    {
+        return (string) $this->handle;
     }
 }
