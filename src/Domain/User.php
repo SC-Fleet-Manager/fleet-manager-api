@@ -38,6 +38,8 @@ class User implements UserInterface
 
     /**
      * @var Citizen
+     *
+     * @Groups({"profile"})
      */
     public $citizen;
 

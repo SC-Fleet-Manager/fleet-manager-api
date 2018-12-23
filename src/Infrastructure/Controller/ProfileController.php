@@ -11,7 +11,9 @@ use App\Domain\HandleSC;
 use App\Domain\User;
 use App\Domain\UserRepositoryInterface;
 use App\Infrastructure\Form\Dto\LinkAccount;
+use App\Infrastructure\Form\Dto\UpdateHandle;
 use App\Infrastructure\Form\LinkAccountForm;
+use App\Infrastructure\Form\UpdateHandleForm;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -49,18 +51,32 @@ class ProfileController extends AbstractController
      */
     private $userRepository;
 
+    /**
+     * @var Security
+     */
+    private $security;
+
+    /**
+     * @var FormFactoryInterface
+     */
+    private $formFactory;
+
     public function __construct(
         LoggerInterface $logger,
         TranslatorInterface $translator,
         CitizenInfosProviderInterface $citizenInfosProvider,
         CitizenRepositoryInterface $citizenRepository,
-        UserRepositoryInterface $userRepository)
+        UserRepositoryInterface $userRepository,
+        Security $security,
+        FormFactoryInterface $formFactory)
     {
         $this->logger = $logger;
         $this->translator = $translator;
         $this->citizenInfosProvider = $citizenInfosProvider;
         $this->citizenRepository = $citizenRepository;
         $this->userRepository = $userRepository;
+        $this->security = $security;
+        $this->formFactory = $formFactory;
     }
 
     /**
@@ -77,17 +93,14 @@ class ProfileController extends AbstractController
     }
 
     /**
-     * @Route("/link-account", name="link_account", methods={"POST"})
+     * @Route("/update-handle", name="update_handle", methods={"POST"})
      *
-     * Link RSI Account (with SC Handle and Bio token) with the actual logged User.
+     * Update the SC Handle of logged User. Compare the current and target Citizen numbers.
      */
-    public function linkAccount(
-        Request $request,
-        FormFactoryInterface $formFactory,
-        Security $security): Response
+    public function updateHandle(Request $request): Response
     {
-        $linkAccount = new LinkAccount();
-        $form = $formFactory->createNamedBuilder('', LinkAccountForm::class, $linkAccount)->getForm();
+        $updateHandle = new UpdateHandle();
+        $form = $this->formFactory->createNamedBuilder('', UpdateHandleForm::class, $updateHandle)->getForm();
         $form->handleRequest($request);
 
         if (!$form->isSubmitted()) {
@@ -110,7 +123,61 @@ class ProfileController extends AbstractController
         }
 
         /** @var User $user */
-        $user = $security->getUser();
+        $user = $this->security->getUser();
+
+        try {
+            $citizenInfos = $this->citizenInfosProvider->retrieveInfos(new HandleSC($updateHandle->handleSC));
+            if (!$citizenInfos->numberSC->equals($user->citizen->number)) {
+                return $this->json([
+                    'error' => 'invalid_form',
+                    'formErrors' => ['This SC handle does not have the same citizen number than yours.'],
+                ], 400);
+            }
+
+            $user->citizen->actualHandle = new HandleSC($updateHandle->handleSC);
+            $this->citizenRepository->update($user->citizen);
+        } catch (NotFoundHandleSCException $e) {
+            return $this->json([
+                'error' => 'not_found_handle',
+                'errorMessage' => sprintf('The handle SC %s does not exist.', $updateHandle->handleSC),
+            ], 400);
+        }
+
+        return $this->json(null, 204);
+    }
+
+    /**
+     * @Route("/link-account", name="link_account", methods={"POST"})
+     *
+     * Link RSI Account (with SC Handle and Bio token) with the actual logged User.
+     */
+    public function linkAccount(Request $request): Response
+    {
+        $linkAccount = new LinkAccount();
+        $form = $this->formFactory->createNamedBuilder('', LinkAccountForm::class, $linkAccount)->getForm();
+        $form->handleRequest($request);
+
+        if (!$form->isSubmitted()) {
+            return $this->json([
+                'error' => 'not_submitted_form',
+                'errorMessage' => 'No data has been submitted.',
+            ], 400);
+        }
+        if (!$form->isValid()) {
+            $formErrors = $form->getErrors(true);
+            $errors = [];
+            foreach ($formErrors as $formError) {
+                $errors[] = $formError->getMessage();
+            }
+
+            return $this->json([
+                'error' => 'invalid_form',
+                'formErrors' => $errors,
+            ], 400);
+        }
+
+        /** @var User $user */
+        $user = $this->security->getUser();
 
         try {
             $citizenInfos = $this->citizenInfosProvider->retrieveInfos(new HandleSC($linkAccount->handleSC));

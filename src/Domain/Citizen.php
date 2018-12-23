@@ -3,26 +3,35 @@
 namespace App\Domain;
 
 use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 class Citizen
 {
     /**
      * @var UuidInterface
+     *
+     * @Groups({"profile"})
      */
     public $id;
 
     /**
      * @var CitizenNumber
+     *
+     * @Groups({"profile"})
      */
     public $number;
 
     /**
      * @var HandleSC
+     *
+     * @Groups({"profile"})
      */
     public $actualHandle;
 
     /**
      * @var iterable|SpectrumIdentification[]
+     *
+     * @Groups({"profile"})
      */
     public $organisations;
 
@@ -33,6 +42,8 @@ class Citizen
 
     /**
      * @var string
+     *
+     * @Groups({"profile"})
      */
     public $bio;
 

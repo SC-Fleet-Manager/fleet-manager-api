@@ -1,7 +1,7 @@
 <template>
     <div class="animated fadeIn">
         <b-row>
-            <b-col col md="6">
+            <b-col col md="6" v-if="showLinkAccount">
                 <b-card header="Link your RSI Account">
                     <b-alert variant="info" show>
                         To link your account you need to copy-paste the following token to your profile BIO then validate.
@@ -35,16 +35,20 @@
                     </b-form>
                 </b-card>
             </b-col>
+            <b-col col md="6" v-if="showUpdateHandle">
+                <UpdateScHandle></UpdateScHandle>
+            </b-col>
         </b-row>
     </div>
 </template>
 
 <script>
     import axios from 'axios';
+    import UpdateScHandle from "./UpdateSCHandle";
 
     export default {
         name: 'profile',
-        components: {},
+        components: {UpdateScHandle},
         data: function () {
             return {
                 form: {
@@ -56,12 +60,16 @@
                 showError: false,
                 showSuccess: false,
                 errorMessage: null,
+                showLinkAccount: false,
+                showUpdateHandle: false,
             }
         },
         created() {
             axios.get('/profile', {
                 params: {}
             }).then(response => {
+                this.showLinkAccount = !response.data.citizen;
+                this.showUpdateHandle = !!response.data.citizen;
                 this.userToken = response.data.token;
             }).catch(err => {
                 this.showError = true;
@@ -83,7 +91,7 @@
 
                 this.showError = false;
                 this.showSuccess = false;
-                this.errorMessage = 'Une erreur est survenue. Veuillez réessayer dans quelques instants.';
+                this.errorMessage = 'An error has been occurred. Please try again in a moment.';
                 this.submitDisabled = true;
                 axios({
                     method: 'post',

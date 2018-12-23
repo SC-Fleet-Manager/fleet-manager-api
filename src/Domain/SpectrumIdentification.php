@@ -2,10 +2,14 @@
 
 namespace App\Domain;
 
+use Symfony\Component\Serializer\Annotation\Groups;
+
 class SpectrumIdentification
 {
     /**
      * @var string
+     *
+     * @Groups({"profile"})
      */
     private $sid;
 
@@ -19,6 +23,11 @@ class SpectrumIdentification
 
     public function __toString()
     {
-        return $this->sid;
+        return $this->getSid();
+    }
+
+    public function getSid(): string
+    {
+        return (string) $this->sid;
     }
 }
