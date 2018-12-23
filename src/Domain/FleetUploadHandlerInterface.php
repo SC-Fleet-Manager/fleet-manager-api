@@ -5,8 +5,8 @@ namespace App\Domain;
 interface FleetUploadHandlerInterface
 {
     /**
-     * @param HandleSC $handleSC
-     * @param array    $fleetData
+     * @param Citizen $citizen
+     * @param array   $fleetData
      */
-    public function handle(HandleSC $handleSC, array $fleetData): void;
+    public function handle(Citizen $citizen, array $fleetData): void;
 }

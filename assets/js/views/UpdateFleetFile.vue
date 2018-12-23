@@ -5,7 +5,7 @@
                 <b-card header="Mettre à jour ma flotte">
                     <b-form @submit="onSubmit">
                         <b-alert variant="success" :show="showSuccess">Votre flotte a été mise à jour avec succès !</b-alert>
-                        <b-alert variant="danger" :show="showError">{{ errorMessage }}</b-alert>
+                        <b-alert variant="danger" :show="showError" v-html="errorMessage"></b-alert>
                         <!--<b-form-group label="Handle Star Citizen" label-for="form_handle">
                             <b-form-input id="form_handle"
                                           type="text"

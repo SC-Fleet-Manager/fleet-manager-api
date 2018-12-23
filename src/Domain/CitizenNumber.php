@@ -18,4 +18,9 @@ class CitizenNumber
     {
         return $this->number;
     }
+
+    public function equals(self $other): bool
+    {
+        return $this->number === $other->number;
+    }
 }

@@ -6,6 +6,8 @@ interface CitizenRepositoryInterface
 {
     public function getByHandle(HandleSC $handle): ?Citizen;
 
+    public function getByNumber(CitizenNumber $number): ?Citizen;
+
     public function create(Citizen $citizen): void;
 
     public function update(Citizen $citizen): void;

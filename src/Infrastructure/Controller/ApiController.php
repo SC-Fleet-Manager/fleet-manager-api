@@ -2,10 +2,11 @@
 
 namespace App\Infrastructure\Controller;
 
+use App\Domain\Exception\BadCitizenException;
 use App\Domain\Exception\FleetUploadedTooCloseException;
+use App\Domain\Exception\InvalidFleetDataException;
 use App\Domain\Exception\NotFoundHandleSCException;
 use App\Domain\FleetUploadHandlerInterface;
-use App\Domain\HandleSC;
 use App\Domain\OrganisationFleetGeneratorInterface;
 use App\Domain\SpectrumIdentification;
 use App\Domain\User;
@@ -82,7 +83,16 @@ class ApiController extends AbstractController
             ], 400);
         }
 
-        $fleetData = \json_decode(file_get_contents($fleetUpload->fleetFile->getRealPath()), true);
+        $fleetFileContents = file_get_contents($fleetUpload->fleetFile->getRealPath());
+        $fleetData = \json_decode($fleetFileContents, true);
+        if (JSON_ERROR_NONE !== $jsonError = json_last_error()) {
+            $this->logger->error('Failed to decode json from fleet file', ['json_error' => $jsonError, 'fleet_file_contents' => $fleetFileContents]);
+
+            return $this->json([
+                'error' => 'bad_json',
+                'errorMessage' => sprintf('Your fleet file is not JSON well formatted. Please check it.'),
+            ], 400);
+        }
 
         /** @var User $user */
         $user = $this->security->getUser();
@@ -94,7 +104,7 @@ class ApiController extends AbstractController
         }
 
         try {
-            $fleetUploadHandler->handle(new HandleSC($user->citizen->actualHandle), $fleetData);
+            $fleetUploadHandler->handle($user->citizen, $fleetData);
         } catch (FleetUploadedTooCloseException $e) {
             return $this->json([
                 'error' => 'uploaded_too_close',
@@ -103,7 +113,17 @@ class ApiController extends AbstractController
         } catch (NotFoundHandleSCException $e) {
             return $this->json([
                 'error' => 'not_found_handle',
-                'errorMessage' => sprintf('The handle SC %s does not exist.', $fleetUpload->handleSC),
+                'errorMessage' => sprintf('The handle SC %s does not exist.', $user->citizen->actualHandle),
+            ], 400);
+        } catch (BadCitizenException $e) {
+            return $this->json([
+                'error' => 'bad_citizen',
+                'errorMessage' => sprintf('Your handle SC has probably changed. Please update it in <a href="/#/profile">your Profile</a>.'),
+            ], 400);
+        } catch (InvalidFleetDataException $e) {
+            return $this->json([
+                'error' => 'invalid_fleet_data',
+                'errorMessage' => sprintf('The fleet data in your file is invalid. Please check it.'),
             ], 400);
         } catch (\Exception $e) {
             $this->logger->error('cannot handle fleet file', ['exception' => $e]);
