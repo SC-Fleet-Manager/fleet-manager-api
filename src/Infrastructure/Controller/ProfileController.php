@@ -6,29 +6,21 @@ use App\Domain\Citizen;
 use App\Domain\CitizenInfos;
 use App\Domain\CitizenInfosProviderInterface;
 use App\Domain\CitizenRepositoryInterface;
-use App\Domain\Exception\FleetUploadedTooCloseException;
 use App\Domain\Exception\NotFoundHandleSCException;
-use App\Domain\FleetUploadHandlerInterface;
 use App\Domain\HandleSC;
-use App\Domain\OrganisationFleetGeneratorInterface;
-use App\Domain\SpectrumIdentification;
 use App\Domain\User;
 use App\Domain\UserRepositoryInterface;
-use App\Infrastructure\Form\Dto\FleetUpload;
 use App\Infrastructure\Form\Dto\LinkAccount;
-use App\Infrastructure\Form\FleetUploadForm;
 use App\Infrastructure\Form\LinkAccountForm;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ProfileController extends AbstractController
 {
