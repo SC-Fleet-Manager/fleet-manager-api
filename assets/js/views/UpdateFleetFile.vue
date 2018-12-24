@@ -4,15 +4,15 @@
             <a target="_blank" href="https://chrome.google.com/webstore/detail/star-citizen-hangar-xplor/bhkgemjdepodofcnmekdobmmbifemhkc">Chrome</a> - <a target="_blank" href="https://addons.mozilla.org/en-US/firefox/addon/star-citizen-hangar-xplorer/">Firefox</a> - <a target="_blank" href="https://addons.opera.com/fr/extensions/details/star-citizen-hangar-xplorer/">Opera</a>.<br/>
             Then go to <a target="_blank" href="https://robertsspaceindustries.com/account/pledges">your Hangar in your RSI account</a> and click on <strong>Download JSON</strong> button.</b-alert>
         <b-alert variant="danger" :show="showError" v-html="errorMessage"></b-alert>
-        <b-form-group label="Your fleet (.json)" label-for="form_fleetfile">
+        <b-form-group>
             <b-form-file id="form_fleetfile"
                          v-model="form.fleetFile"
                          :state="Boolean(form.fleetFile)"
                          required
-                         placeholder="Choose/Drop your file..."
+                         placeholder="Choose/Drop your fleet file (.json)"
                          accept=".json"></b-form-file>
         </b-form-group>
-        <b-button type="submit" :disabled="submitDisabled" variant="success">Update</b-button>
+        <b-button type="submit" :disabled="submitDisabled" variant="success">Update my fleet</b-button>
     </b-form>
 </template>
 
