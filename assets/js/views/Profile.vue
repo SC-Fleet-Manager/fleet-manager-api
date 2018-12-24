@@ -8,7 +8,6 @@
                     </b-alert>
 
                     <b-form @submit="onSubmit">
-                        <b-alert variant="success" :show="showSuccess">Your RSI account has been successfully linked! You can remove the token from your bio.</b-alert>
                         <b-alert variant="danger" :show="showError">{{ errorMessage }}</b-alert>
                         <b-form-group label="Account Token" label-for="form_user_token">
                             <b-input-group>
@@ -44,6 +43,7 @@
 
 <script>
     import axios from 'axios';
+    import toastr from 'toastr';
     import UpdateScHandle from "./UpdateSCHandle";
 
     export default {
@@ -58,7 +58,6 @@
                 copied: false,
                 submitDisabled: false,
                 showError: false,
-                showSuccess: false,
                 errorMessage: null,
                 showLinkAccount: false,
                 showUpdateHandle: false,
@@ -90,7 +89,6 @@
                 form.append('handleSC', this.form.handle);
 
                 this.showError = false;
-                this.showSuccess = false;
                 this.errorMessage = 'An error has been occurred. Please try again in a moment.';
                 this.submitDisabled = true;
                 axios({
@@ -98,8 +96,10 @@
                     url: '/link-account',
                     data: form,
                 }).then(response => {
+                    toastr.success('Your RSI account has been successfully linked! You can remove the token from your bio.');
                     this.submitDisabled = false;
-                    this.showSuccess = true;
+                    this.showLinkAccount = false;
+                    this.showUpdateHandle = true;
                 }).catch(err => {
                     this.submitDisabled = false;
                     this.showError = true;

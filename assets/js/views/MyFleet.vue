@@ -7,8 +7,11 @@
                         <b-button v-b-modal.modal-upload-fleet variant="primary"><i class="icon-cloud-upload"></i> Update my fleet</b-button>
                         <b-button download :disabled="citizen == null" :href="citizen != null ? '/create-citizen-fleet-file/'+citizen.number.number : ''" variant="success"><i class="icon-cloud-download"></i> Export my fleet (.json)</b-button>
                     </div>
-                    <b-row>
-                        <b-col col xl="3" lg="4" md="6" v-for="ship in ships">
+                    <b-row v-if="ships !== null">
+                        <b-col v-if="ships.length === 0">
+                            <b-alert show variant="warning">Your fleet is empty, you should upload it.</b-alert>
+                        </b-col>
+                        <b-col col xl="3" lg="4" md="6" v-for="ship in ships" :key="ship.id">
                             <b-card class="mb-3"
                                     :img-src="getShipInfo(getFixShipName(ship.name)).mediaThumbUrl"
                                     img-top
@@ -42,7 +45,7 @@
         components: {UpdateFleetFile},
         data: function () {
             return {
-                ships: [],
+                ships: null,
                 shipInfos: [],
                 citizen: null,
             }
@@ -63,13 +66,19 @@
             date: (value, format) => {
                 return moment(value).format(format);
             },
+            empty: (value) => {
+                return value.length === 0;
+            },
         },
         methods: {
             refreshMyFleet() {
                 axios.get('/my-fleet', {
                     params: {}
                 }).then(response => {
-                    this.ships = response.data.fleet.ships;
+                    this.ships = [];
+                    if (response.data.fleet !== null) {
+                        this.ships = response.data.fleet.ships;
+                    }
                     this.shipInfos = response.data.shipInfos;
                 }).catch(e => {
                     toastr.error('Cannot retrieve your fleet.');
