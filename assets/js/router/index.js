@@ -5,7 +5,7 @@ import Router from 'vue-router'
 const DefaultContainer = () => import('../containers/DefaultContainer');
 
 // Views
-const Dashboard = () => import('../views/Dashboard');
+const CorpoFleets = () => import('../views/CorpoFleets');
 const UpdateFleetFile = () => import('../views/UpdateFleetFile');
 const Profile = () => import('../views/Profile');
 const MyFleet = () => import('../views/MyFleet');
@@ -28,24 +28,19 @@ export default new Router({
             name: 'Home',
             component: DefaultContainer,
             children: [
-                // {
-                //     path: 'dashboard',
-                //     name: 'Dashboard',
-                //     component: Dashboard
-                // },
+                {
+                    path: 'corpo-fleets',
+                    name: 'My corpo fleets',
+                    component: CorpoFleets
+                },
                 {
                     path: 'my-fleet',
                     name: 'My Fleet',
                     component: MyFleet
                 },
                 {
-                    path: 'upload-fleet-file',
-                    name: 'Mettre à jour ma flotte',
-                    component: UpdateFleetFile
-                },
-                {
                     path: 'profile',
-                    name: 'Profil',
+                    name: 'Profile',
                     component: Profile
                 },
             ]

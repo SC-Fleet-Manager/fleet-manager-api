@@ -45,7 +45,7 @@ class FleetUploadHandler implements FleetUploadHandlerInterface
             throw new BadCitizenException($e->getMessage());
         }
         if (!$infos->numberSC->equals($citizen->number)) {
-            throw new BadCitizenException('The citizen number is not the same.');
+            throw new BadCitizenException(sprintf('The SC number %s is not equal to %s.', $citizen->number, $infos->numberSC));
         }
 
         $citizen->bio = $infos->bio;

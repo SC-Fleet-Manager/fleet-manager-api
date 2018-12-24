@@ -130,7 +130,7 @@ class ProfileController extends AbstractController
             if (!$citizenInfos->numberSC->equals($user->citizen->number)) {
                 return $this->json([
                     'error' => 'invalid_form',
-                    'formErrors' => ['This SC handle does not have the same citizen number than yours.'],
+                    'formErrors' => ['This SC handle does not have the same SC number than yours.'],
                 ], 400);
             }
 
@@ -139,7 +139,7 @@ class ProfileController extends AbstractController
         } catch (NotFoundHandleSCException $e) {
             return $this->json([
                 'error' => 'not_found_handle',
-                'errorMessage' => sprintf('The handle SC %s does not exist.', $updateHandle->handleSC),
+                'errorMessage' => sprintf('The SC handle %s does not exist.', $updateHandle->handleSC),
             ], 400);
         }
 
@@ -192,7 +192,7 @@ class ProfileController extends AbstractController
         } catch (NotFoundHandleSCException $e) {
             return $this->json([
                 'error' => 'not_found_handle',
-                'errorMessage' => sprintf('The handle SC %s does not exist.', $linkAccount->handleSC),
+                'errorMessage' => sprintf('The SC handle %s does not exist.', $linkAccount->handleSC),
             ], 400);
         }
 

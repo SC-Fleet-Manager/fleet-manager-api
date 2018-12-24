@@ -1,47 +1,33 @@
 <template>
-    <div class="animated fadeIn">
-        <b-row>
-            <b-col>
-                <b-card header="Mettre à jour ma flotte">
-                    <b-form @submit="onSubmit">
-                        <b-alert variant="success" :show="showSuccess">Votre flotte a été mise à jour avec succès !</b-alert>
-                        <b-alert variant="danger" :show="showError" v-html="errorMessage"></b-alert>
-                        <!--<b-form-group label="Handle Star Citizen" label-for="form_handle">
-                            <b-form-input id="form_handle"
-                                          type="text"
-                                          v-model="form.handle"
-                                          required
-                                          placeholder="Entrez votre Handle Star Citizen"></b-form-input>
-                        </b-form-group>-->
-                        <b-form-group label="Votre flotte (.json)" label-for="form_fleetfile">
-                            <b-form-file id="form_fleetfile"
-                                         v-model="form.fleetFile"
-                                         :state="Boolean(form.fleetFile)"
-                                         required
-                                         placeholder="Choisissez/Glissez votre fichier..."
-                                         accept=".json"></b-form-file>
-                        </b-form-group>
-                        <b-button type="submit" :disabled="submitDisabled" variant="success">Mettre à jour</b-button>
-                    </b-form>
-                </b-card>
-            </b-col>
-        </b-row>
-    </div>
+    <b-form @submit="onSubmit">
+        <b-alert variant="info" show>To <strong>generate your fleet file</strong>, you need to install the browser plugin <strong>Hangar EXPLORer</strong> :
+            <a target="_blank" href="https://chrome.google.com/webstore/detail/star-citizen-hangar-xplor/bhkgemjdepodofcnmekdobmmbifemhkc">Chrome</a> - <a target="_blank" href="https://addons.mozilla.org/en-US/firefox/addon/star-citizen-hangar-xplorer/">Firefox</a> - <a target="_blank" href="https://addons.opera.com/fr/extensions/details/star-citizen-hangar-xplorer/">Opera</a>.<br/>
+            Then go to <a target="_blank" href="https://robertsspaceindustries.com/account/pledges">your Hangar in your RSI account</a> and click on <strong>Download JSON</strong> button.</b-alert>
+        <b-alert variant="danger" :show="showError" v-html="errorMessage"></b-alert>
+        <b-form-group>
+            <b-form-file id="form_fleetfile"
+                         v-model="form.fleetFile"
+                         :state="Boolean(form.fleetFile)"
+                         required
+                         placeholder="Choose/Drop your fleet file (.json)"
+                         accept=".json"></b-form-file>
+        </b-form-group>
+        <b-button type="submit" :disabled="submitDisabled" variant="success">Update my fleet</b-button>
+    </b-form>
 </template>
 
 <script>
     import axios from 'axios';
+    import toastr from "toastr";
 
     export default {
-        name: 'upload-fleet-file',
+        name: 'update-fleet-file',
         components: {},
         data: function () {
             return {
                 form: {
-                    // handle: null,
                     fleetFile: null,
                 },
-                showSuccess: false,
                 showError: false,
                 errorMessage: '',
                 submitDisabled: false,
@@ -54,12 +40,10 @@
                 ev.preventDefault();
 
                 const form = new FormData();
-                // form.append('handleSC', this.form.handle);
                 form.append('fleetFile', this.form.fleetFile);
 
                 this.showError = false;
-                this.showSuccess = false;
-                this.errorMessage = 'Une erreur est survenue. Veuillez réessayer dans quelques instants.';
+                this.errorMessage = 'An error has been occurred. Please try again in a moment.';
                 this.submitDisabled = true;
                 axios({
                     method: 'post',
@@ -67,7 +51,8 @@
                     data: form,
                 }).then(response => {
                     this.submitDisabled = false;
-                    this.showSuccess = true;
+                    toastr.success('Your fleet has been successfully updated!');
+                    this.$emit('success');
                 }).catch(err => {
                     this.submitDisabled = false;
                     this.showError = true;

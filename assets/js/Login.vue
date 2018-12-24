@@ -7,9 +7,9 @@
             <b-card no-body class="p-4">
               <b-card-body>
                 <b-form>
-                  <h1>Connexion</h1>
-                  <p class="text-muted">Connectez-vous à votre compte Discord</p>
-                  <b-button size="lg" block style="background-color: #7289da; color: #fff;" class="px-4" :href="discordLoginUrl">Se connecter avec Discord</b-button>
+                  <h1>Welcome to<br/>SC Fleet Manager</h1>
+                  <p class="text-muted">This application helps you to manage and share your Star Citizen organisations' fleet</p>
+                  <b-button size="lg" block style="background-color: #7289da; color: #fff;" class="px-4" :href="discordLoginUrl">Connect with Discord</b-button>
                 </b-form>
               </b-card-body>
             </b-card>
