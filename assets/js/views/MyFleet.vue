@@ -4,9 +4,10 @@
             <b-col>
                 <b-card>
                     <div class="mb-3">
-                        <b-button v-b-modal.modal-upload-fleet variant="primary"><i class="icon-cloud-upload"></i> Update my fleet</b-button>
+                        <b-button v-b-modal.modal-upload-fleet variant="primary" :disabled="citizen == null"><i class="icon-cloud-upload"></i> Update my fleet</b-button>
                         <b-button download :disabled="citizen == null" :href="citizen != null ? '/create-citizen-fleet-file/'+citizen.number.number : ''" variant="success"><i class="icon-cloud-download"></i> Export my fleet (.json)</b-button>
                     </div>
+                    <b-alert :show="showError" variant="danger" v-html="errorMessage"></b-alert>
                     <b-row v-if="ships !== null">
                         <b-col v-if="ships.length === 0">
                             <b-alert show variant="warning">Your fleet is empty, you should upload it.</b-alert>
@@ -28,7 +29,7 @@
                 </b-card>
             </b-col>
         </b-row>
-        <b-modal id="modal-upload-fleet" ref="modalUploadFleet" centered title="Update my fleet" hide-footer>
+        <b-modal id="modal-upload-fleet" ref="modalUploadFleet" size="lg" centered title="Update my fleet" hide-footer>
             <UpdateFleetFile @success="onUploadSuccess"></UpdateFleetFile>
         </b-modal>
     </div>
@@ -48,6 +49,8 @@
                 ships: null,
                 shipInfos: [],
                 citizen: null,
+                showError: false,
+                errorMessage: '',
             }
         },
         created() {
@@ -66,9 +69,6 @@
             date: (value, format) => {
                 return moment(value).format(format);
             },
-            empty: (value) => {
-                return value.length === 0;
-            },
         },
         methods: {
             refreshMyFleet() {
@@ -80,9 +80,14 @@
                         this.ships = response.data.fleet.ships;
                     }
                     this.shipInfos = response.data.shipInfos;
-                }).catch(e => {
-                    toastr.error('Cannot retrieve your fleet.');
-                    console.error(e);
+                }).catch(err => {
+                    this.showError = true;
+                    if (err.response.data.error === 'no_citizen_created') {
+                        this.errorMessage = err.response.data.errorMessage;
+                    } else {
+                        toastr.error('Cannot retrieve your fleet.');
+                    }
+                    console.error(err);
                 });
             },
             onUploadSuccess(ev) {

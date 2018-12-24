@@ -1,9 +1,13 @@
 <template>
-    <b-card header="Update your SC Handle">
+    <b-card>
+        <p>
+            <strong>Your SC Handle : </strong>{{ citizen != null ? citizen.actualHandle.handle : '' }}<br/>
+            <strong>Your SC Number : </strong>{{ citizen != null ? citizen.number.number : '' }}
+        </p>
         <b-form @submit="onSubmit">
-            <b-alert variant="success" :show="showSuccess">Your new SC Handle has been successfully updated!</b-alert>
-            <b-alert variant="danger" :show="showError">{{ errorMessage }}</b-alert>
-            <b-form-group label="Your new Star Citizen Handle" label-for="form_update_sc_handle">
+            <b-alert variant="success" :show="showSuccess" dismissible>Your new SC Handle has been successfully updated!</b-alert>
+            <b-alert variant="danger" :show="showError" v-html="errorMessage"></b-alert>
+            <b-form-group>
                 <b-form-input id="form_update_sc_handle"
                               type="text"
                               v-model="form.handle"
@@ -34,6 +38,7 @@
         },
         created() {
         },
+        props: ['citizen'],
         methods: {
             onSubmit(ev) {
                 ev.preventDefault();

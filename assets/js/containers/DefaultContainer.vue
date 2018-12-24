@@ -16,13 +16,8 @@
         <!--<b-nav-item class="d-md-down-none">
           <i class="icon-bell"></i>
           <b-badge pill variant="danger">5</b-badge>
-        </b-nav-item>
-        <b-nav-item class="d-md-down-none">
-          <i class="icon-list"></i>
         </b-nav-item>-->
-        <b-nav-item class="px-3">
-            <a href="/logout" class="nav-link"><i class="icon-logout"></i> Logout</a>
-        </b-nav-item>
+        <b-nav-item class="px-3" href="/logout"><i class="icon-logout"></i> Logout</b-nav-item>
         <!--<DefaultHeaderDropdownAccnt/>-->
       </b-navbar-nav>
       <!--<AsideToggler class="d-none d-lg-block" />-->

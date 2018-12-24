@@ -101,7 +101,7 @@ class ApiController extends AbstractController
         if ($user->citizen === null) {
             return $this->json([
                 'error' => 'no_citizen_created',
-                'errorMessage' => 'Your RSI account must be linked first. Go to the profile page.',
+                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/#/profile">profile page</a>.',
             ], 400);
         }
 
@@ -115,12 +115,12 @@ class ApiController extends AbstractController
         } catch (NotFoundHandleSCException $e) {
             return $this->json([
                 'error' => 'not_found_handle',
-                'errorMessage' => sprintf('The handle SC %s does not exist.', $user->citizen->actualHandle),
+                'errorMessage' => sprintf('The SC handle %s does not exist.', $user->citizen->actualHandle),
             ], 400);
         } catch (BadCitizenException $e) {
             return $this->json([
                 'error' => 'bad_citizen',
-                'errorMessage' => sprintf('Your handle SC has probably changed. Please update it in <a href="/#/profile">your Profile</a>.'),
+                'errorMessage' => sprintf('Your SC handle has probably changed. Please update it in <a href="/#/profile">your Profile</a>.'),
             ], 400);
         } catch (InvalidFleetDataException $e) {
             return $this->json([
