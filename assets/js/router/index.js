@@ -39,11 +39,6 @@ export default new Router({
                     component: MyFleet
                 },
                 {
-                    path: 'upload-fleet-file',
-                    name: 'Update my fleet',
-                    component: UpdateFleetFile
-                },
-                {
                     path: 'profile',
                     name: 'Profile',
                     component: Profile

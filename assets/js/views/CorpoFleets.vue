@@ -8,7 +8,7 @@
                             <b-dropdown-item>{{ corpo }}</b-dropdown-item>
                         </b-dropdown>
                     </div>
-                    <b-button download :disabled="false" class="mb-3" href="/create-organisation-fleet-file/flk" variant="success">Export entire fleet (.json)</b-button>
+                    <b-button download :disabled="false" class="mb-3" href="/create-organisation-fleet-file/flk" variant="success"><i class="icon-cloud-download"></i> Export entire fleet (.json)</b-button>
                     <div class="mb-1">
                         <label style="width: 50%">Citizens :
                         <select2 :options="citizens" v-model="citizenSelected" multiple style="width: 50%" @input="refreshTable"></select2></label>

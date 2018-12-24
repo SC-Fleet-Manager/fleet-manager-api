@@ -1,40 +1,30 @@
 <template>
-    <div class="animated fadeIn">
-        <b-row>
-            <b-col>
-                <b-card header="Update my fleet">
-                    <b-form @submit="onSubmit">
-                        <b-alert variant="success" :show="showSuccess">Your fleet has been successfully updated!</b-alert>
-                        <b-alert variant="danger" :show="showError" v-html="errorMessage"></b-alert>
-                        <b-form-group label="Your fleet (.json)" label-for="form_fleetfile">
-                            <b-form-file id="form_fleetfile"
-                                         v-model="form.fleetFile"
-                                         :state="Boolean(form.fleetFile)"
-                                         required
-                                         placeholder="Choose/Drop your file..."
-                                         accept=".json"></b-form-file>
-                        </b-form-group>
-                        <b-button type="submit" :disabled="submitDisabled" variant="success">Update</b-button>
-                    </b-form>
-                </b-card>
-            </b-col>
-        </b-row>
-    </div>
+    <b-form @submit="onSubmit">
+        <b-alert variant="danger" :show="showError" v-html="errorMessage"></b-alert>
+        <b-form-group label="Your fleet (.json)" label-for="form_fleetfile">
+            <b-form-file id="form_fleetfile"
+                         v-model="form.fleetFile"
+                         :state="Boolean(form.fleetFile)"
+                         required
+                         placeholder="Choose/Drop your file..."
+                         accept=".json"></b-form-file>
+        </b-form-group>
+        <b-button type="submit" :disabled="submitDisabled" variant="success">Update</b-button>
+    </b-form>
 </template>
 
 <script>
     import axios from 'axios';
+    import toastr from "toastr";
 
     export default {
-        name: 'upload-fleet-file',
+        name: 'update-fleet-file',
         components: {},
         data: function () {
             return {
                 form: {
-                    // handle: null,
                     fleetFile: null,
                 },
-                showSuccess: false,
                 showError: false,
                 errorMessage: '',
                 submitDisabled: false,
@@ -47,11 +37,9 @@
                 ev.preventDefault();
 
                 const form = new FormData();
-                // form.append('handleSC', this.form.handle);
                 form.append('fleetFile', this.form.fleetFile);
 
                 this.showError = false;
-                this.showSuccess = false;
                 this.errorMessage = 'An error has been occurred. Please try again in a moment.';
                 this.submitDisabled = true;
                 axios({
@@ -60,7 +48,8 @@
                     data: form,
                 }).then(response => {
                     this.submitDisabled = false;
-                    this.showSuccess = true;
+                    toastr.success('Your fleet has been successfully updated!');
+                    this.$emit('success');
                 }).catch(err => {
                     this.submitDisabled = false;
                     this.showError = true;

@@ -2,10 +2,10 @@
     <div class="animated fadeIn">
         <b-row>
             <b-col>
-                <b-card header="My fleet">
+                <b-card>
                     <div class="mb-3">
-                        <b-button to="/upload-fleet-file" variant="primary"><i class="icon-cloud-upload"></i> Update my fleet</b-button>
-                        <b-button download :disabled="citizen == null" :href="citizen != null ? '/create-citizen-fleet-file/'+citizen.number.number : ''" variant="success">Export my fleet (.json)</b-button>
+                        <b-button v-b-modal.modal-upload-fleet variant="primary"><i class="icon-cloud-upload"></i> Update my fleet</b-button>
+                        <b-button download :disabled="citizen == null" :href="citizen != null ? '/create-citizen-fleet-file/'+citizen.number.number : ''" variant="success"><i class="icon-cloud-download"></i> Export my fleet (.json)</b-button>
                     </div>
                     <b-row>
                         <b-col col xl="3" lg="4" md="6" v-for="ship in ships">
@@ -25,6 +25,9 @@
                 </b-card>
             </b-col>
         </b-row>
+        <b-modal id="modal-upload-fleet" ref="modalUploadFleet" centered title="Update my fleet" hide-footer>
+            <UpdateFleetFile @success="onUploadSuccess"></UpdateFleetFile>
+        </b-modal>
     </div>
 </template>
 
@@ -32,10 +35,11 @@
     import axios from 'axios';
     import toastr from 'toastr';
     import moment from 'moment-timezone';
+    import UpdateFleetFile from './UpdateFleetFile';
 
     export default {
         name: 'my-fleet',
-        components: {},
+        components: {UpdateFleetFile},
         data: function () {
             return {
                 ships: [],
@@ -44,15 +48,7 @@
             }
         },
         created() {
-            axios.get('/my-fleet', {
-                params: {}
-            }).then(response => {
-                this.ships = response.data.fleet.ships;
-                this.shipInfos = response.data.shipInfos;
-            }).catch(e => {
-                toastr.error('Cannot retrieve your fleet.');
-                console.error(e);
-            });
+            this.refreshMyFleet();
 
             axios.get('/profile', {
                 params: {}
@@ -69,6 +65,21 @@
             },
         },
         methods: {
+            refreshMyFleet() {
+                axios.get('/my-fleet', {
+                    params: {}
+                }).then(response => {
+                    this.ships = response.data.fleet.ships;
+                    this.shipInfos = response.data.shipInfos;
+                }).catch(e => {
+                    toastr.error('Cannot retrieve your fleet.');
+                    console.error(e);
+                });
+            },
+            onUploadSuccess(ev) {
+                this.refreshMyFleet();
+                this.$refs.modalUploadFleet.hide();
+            },
             getShipInfo(shipName) {
                 for (let i in this.shipInfos) {
                     let shipInfo = this.shipInfos[i];

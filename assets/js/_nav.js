@@ -15,11 +15,5 @@ export default {
       url: '/profile',
       icon: 'fa fa-user',
     },
-    {
-      name: "Update Fleet",
-      url: '/upload-fleet-file',
-      icon: 'icon-cloud-upload',
-      class: 'd-lg-none', // visible below lg
-    },
   ]
 }
