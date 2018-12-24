@@ -162,7 +162,7 @@ class ApiController extends AbstractController
         $response->deleteFileAfterSend();
         $response::trustXSendfileTypeHeader();
         $response->setContentDisposition(
-            ResponseHeaderBag::DISPOSITION_INLINE,
+            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
             $filename,
             $filename
         );
@@ -189,7 +189,7 @@ class ApiController extends AbstractController
         $response->deleteFileAfterSend();
         $response::trustXSendfileTypeHeader();
         $response->setContentDisposition(
-            ResponseHeaderBag::DISPOSITION_INLINE,
+            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
             $filename,
             $filename
         );

@@ -2,18 +2,22 @@
     <div class="animated fadeIn">
         <b-row>
             <b-col>
-                <b-card header="Ensemble de la flotte">
-                    <b-button class="mb-3" href="/create-organisation-fleet-file/flk" variant="success">Exporter toute la flotte (.json)</b-button>
+                <b-card header="Your organisations' fleets">
+                    <div class="mb-3">
+                        <b-dropdown text="Corpo" v-for="corpo in corpos" :key="corpo.id">
+                            <b-dropdown-item>{{ corpo }}</b-dropdown-item>
+                        </b-dropdown>
+                    </div>
+                    <b-button download :disabled="false" class="mb-3" href="/create-organisation-fleet-file/flk" variant="success">Export entire fleet (.json)</b-button>
                     <div class="mb-1">
-                        <label style="width: 50%">Citoyens :
+                        <label style="width: 50%">Citizens :
                         <select2 :options="citizens" v-model="citizenSelected" multiple style="width: 50%" @input="refreshTable"></select2></label>
                     </div>
                     <div class="mb-3">
-                        <label style="width: 50%">Vaisseaux :
+                        <label style="width: 50%">Ships :
                         <select2 :options="ships" v-model="shipSelected" multiple style="width: 50%" @input="refreshTable"></select2></label>
                     </div>
-                    <b-table small foot-clone hover striped bordered responsive="lg" :items="fleets" :fields="tableHeaders">
-                    </b-table>
+                    <b-table small foot-clone hover striped bordered responsive="lg" :items="fleets" :fields="tableHeaders"></b-table>
                 </b-card>
             </b-col>
         </b-row>
@@ -29,6 +33,8 @@
         components: {select2},
         data: function () {
             return {
+                corpos: [],
+
                 shipInfos: [],
                 tableHeaders: [],
                 fleets: [],

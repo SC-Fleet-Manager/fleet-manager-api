@@ -2,8 +2,11 @@
     <div class="animated fadeIn">
         <b-row>
             <b-col>
-                <b-card header="Ma flotte actuelle">
-                    <b-button v-if="citizen != null" class="mb-3" :href="'/create-citizen-fleet-file/'+citizen.number.number" variant="success">Exporter ma flotte actuelle (.json)</b-button>
+                <b-card header="My fleet">
+                    <div class="mb-3">
+                        <b-button to="/upload-fleet-file" variant="primary"><i class="icon-cloud-upload"></i> Update my fleet</b-button>
+                        <b-button download :disabled="citizen == null" :href="citizen != null ? '/create-citizen-fleet-file/'+citizen.number.number : ''" variant="success">Export my fleet (.json)</b-button>
+                    </div>
                     <b-row>
                         <b-col col xl="3" lg="4" md="6" v-for="ship in ships">
                             <b-card class="mb-3"

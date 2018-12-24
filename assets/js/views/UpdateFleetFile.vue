@@ -2,26 +2,19 @@
     <div class="animated fadeIn">
         <b-row>
             <b-col>
-                <b-card header="Mettre à jour ma flotte">
+                <b-card header="Update my fleet">
                     <b-form @submit="onSubmit">
-                        <b-alert variant="success" :show="showSuccess">Votre flotte a été mise à jour avec succès !</b-alert>
+                        <b-alert variant="success" :show="showSuccess">Your fleet has been successfully updated!</b-alert>
                         <b-alert variant="danger" :show="showError" v-html="errorMessage"></b-alert>
-                        <!--<b-form-group label="Handle Star Citizen" label-for="form_handle">
-                            <b-form-input id="form_handle"
-                                          type="text"
-                                          v-model="form.handle"
-                                          required
-                                          placeholder="Entrez votre Handle Star Citizen"></b-form-input>
-                        </b-form-group>-->
-                        <b-form-group label="Votre flotte (.json)" label-for="form_fleetfile">
+                        <b-form-group label="Your fleet (.json)" label-for="form_fleetfile">
                             <b-form-file id="form_fleetfile"
                                          v-model="form.fleetFile"
                                          :state="Boolean(form.fleetFile)"
                                          required
-                                         placeholder="Choisissez/Glissez votre fichier..."
+                                         placeholder="Choose/Drop your file..."
                                          accept=".json"></b-form-file>
                         </b-form-group>
-                        <b-button type="submit" :disabled="submitDisabled" variant="success">Mettre à jour</b-button>
+                        <b-button type="submit" :disabled="submitDisabled" variant="success">Update</b-button>
                     </b-form>
                 </b-card>
             </b-col>
@@ -59,7 +52,7 @@
 
                 this.showError = false;
                 this.showSuccess = false;
-                this.errorMessage = 'Une erreur est survenue. Veuillez réessayer dans quelques instants.';
+                this.errorMessage = 'An error has been occurred. Please try again in a moment.';
                 this.submitDisabled = true;
                 axios({
                     method: 'post',

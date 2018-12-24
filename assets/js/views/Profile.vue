@@ -31,7 +31,7 @@
                                           required
                                           placeholder="Your Handle Star Citizen"></b-form-input>
                         </b-form-group>
-                        <b-button type="submit" :disabled="submitDisabled" variant="success">Link !</b-button>
+                        <b-button type="submit" :disabled="submitDisabled" variant="success">Link my RSI account</b-button>
                     </b-form>
                 </b-card>
             </b-col>

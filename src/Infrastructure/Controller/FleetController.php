@@ -49,6 +49,12 @@ class FleetController extends AbstractController
     {
         /** @var User $user */
         $user = $this->security->getUser();
+        if ($user->citizen === null) {
+            return $this->json([
+                'error' => 'no_citizen_created',
+                'errorMessage' => 'Your RSI account must be linked first. Go to the profile page.',
+            ], 400);
+        }
         $citizen = $this->citizenRepository->getByNumber($user->citizen->number);
 
         $fleet = $citizen->getLastVersionFleet();
@@ -128,15 +134,15 @@ class FleetController extends AbstractController
 
         $tableHeaders = [
             'shipName' => [
-                'label' => 'Vaisseaux',
+                'label' => 'Ships',
                 'sortable' => true,
             ],
             'shipManufacturer' => [
-                'label' => 'Constructeurs',
+                'label' => 'Manufacturers',
                 'sortable' => true,
             ],
             'totalAvailable' => [
-                'label' => 'Total dispo',
+                'label' => 'Total available',
                 'sortable' => true,
             ],
         ];

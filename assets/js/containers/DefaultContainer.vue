@@ -2,28 +2,27 @@
   <div class="app">
     <AppHeader fixed>
       <SidebarToggler class="d-lg-none" display="md" mobile />
-      <b-link class="navbar-brand" to="#">
-        <img class="navbar-brand-full" src="img/logo.png" alt="FLK Logo">
-        <img class="navbar-brand-minimized" src="img/logo.png" width="30" height="30" alt="CoreUI Logo">
+      <b-link class="navbar-brand" to="/">
+        <span class="navbar-brand-full">SC Fleet Manager</span>
+        <span class="navbar-brand-minimized">FM</span>
+        <!--<img class="navbar-brand-full" src="img/logo.png" alt="FLK Logo">
+        <img class="navbar-brand-minimized" src="img/logo.png" width="30" height="30" alt="CoreUI Logo">-->
       </b-link>
       <SidebarToggler class="d-md-down-none" display="lg" />
       <b-navbar-nav class="d-md-down-none mr-auto">
         <!--<b-nav-item class="px-3" to="/dashboard">Dashboard</b-nav-item>-->
       </b-navbar-nav>
       <b-navbar-nav class="ml-auto">
-        <b-nav-item class="px-3">
-          <b-button to="/upload-fleet-file" variant="primary">Mettre à jour ma flotte</b-button>
-        </b-nav-item>
         <!--<b-nav-item class="d-md-down-none">
           <i class="icon-bell"></i>
           <b-badge pill variant="danger">5</b-badge>
         </b-nav-item>
         <b-nav-item class="d-md-down-none">
           <i class="icon-list"></i>
-        </b-nav-item>
-        <b-nav-item class="d-md-down-none">
-          <i class="icon-location-pin"></i>
         </b-nav-item>-->
+        <b-nav-item class="px-3">
+            <a href="/logout" class="nav-link"><i class="icon-logout"></i> Logout</a>
+        </b-nav-item>
         <!--<DefaultHeaderDropdownAccnt/>-->
       </b-navbar-nav>
       <!--<AsideToggler class="d-none d-lg-block" />-->
@@ -38,8 +37,8 @@
         <SidebarMinimizer/>
       </AppSidebar>
       <main class="main">
-        <Breadcrumb :list="list"/>
-        <div class="container-fluid">
+        <!--<Breadcrumb :list="list"/>-->
+        <div class="container-fluid mt-4">
           <router-view></router-view>
         </div>
       </main>
@@ -52,11 +51,13 @@
       <!--footer-->
       <div>
         <a href="/">Star Citizen Fleet Manager</a>
-        <span class="ml-1">&copy; 2018.</span>
+        <span class="ml-1">&copy; 2018</span>
       </div>
       <div class="ml-auto">
+        <a target="_blank" href="https://github.com/Ioni14/starcitizen-fleet-manager/issues">Bugs, feedbacks, ideas</a>
+        -
         <span class="mr-1">Created by</span>
-        <a href="/">Thomas "Ioni" Talbot</a>
+        <a target="_blank" href="https://github.com/ioni14">Thomas "Ioni" Talbot</a>
       </div>
     </TheFooter>
   </div>
