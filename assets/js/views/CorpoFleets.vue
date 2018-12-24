@@ -3,12 +3,16 @@
         <b-row>
             <b-col>
                 <b-card header="Your organisations' fleets">
-                    <div class="mb-3">
-                        <b-dropdown text="Corpo" v-for="corpo in corpos" :key="corpo.id">
-                            <b-dropdown-item>{{ corpo }}</b-dropdown-item>
-                        </b-dropdown>
-                    </div>
-                    <b-button download :disabled="false" class="mb-3" href="/create-organisation-fleet-file/flk" variant="success"><i class="icon-cloud-download"></i> Export entire fleet (.json)</b-button>
+                    <b-row>
+                        <b-col col xl="3" lg="4" md="6" v-if="this.citizen != null">
+                            <b-form-group label="Select an organisation" label-for="select-orga">
+                                <b-form-select id="select-orga" v-model="selectedSid" class="mb-3">
+                                    <option v-for="orga in this.citizen.organisations" :key="orga.sid" :value="orga.sid">{{ orga.sid }}</option>
+                                </b-form-select>
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
+                    <b-button download :disabled="selectedSid == null" class="mb-3" :href="'/create-organisation-fleet-file/'+selectedSid" variant="success"><i class="icon-cloud-download"></i> Export entire fleet of <strong>{{ selectedSid != null ? selectedSid : 'N/A' }}</strong> (.json)</b-button>
                     <div class="mb-1">
                         <label style="width: 50%">Citizens :
                         <select2 :options="citizens" v-model="citizenSelected" multiple style="width: 50%" @input="refreshTable"></select2></label>
@@ -26,6 +30,7 @@
 
 <script>
     import axios from 'axios';
+    import toastr from 'toastr';
     import select2 from '../components/Select2';
 
     export default {
@@ -33,7 +38,8 @@
         components: {select2},
         data: function () {
             return {
-                corpos: [],
+                citizen: null,
+                selectedSid: null,
 
                 shipInfos: [],
                 tableHeaders: [],
@@ -46,11 +52,30 @@
             }
         },
         created() {
+            this.refreshProfile();
             this.refreshTable();
         },
+        watch: {
+            selectedSid(value) {
+                this.refreshTable();
+            },
+        },
         methods: {
+            refreshProfile() {
+                axios.get('/profile').then(response => {
+                    this.citizen = response.data.citizen;
+                    if (this.citizen !== null && this.citizen.organisations.length > 0) {
+                        this.selectedSid = this.citizen.organisations[0].sid;
+                    }
+                }).catch(err => {
+                    if (err.response.data.errorMessage) {
+                        toastr.error(err.response.data.errorMessage);
+                    }
+                    console.error(err);
+                });
+            },
             refreshTable() {
-                axios.get('/fleets/flk', {
+                axios.get('/fleets/'+this.selectedSid, {
                     params: {
                         citizens: this.citizenSelected,
                         ships: this.shipSelected,
@@ -77,8 +102,11 @@
                             });
                         }
                     }
-                }).catch(e => {
-                    console.error(e);
+                }).catch(err => {
+                    if (err.response.data.errorMessage) {
+                        toastr.error(err.response.data.errorMessage);
+                    }
+                    console.error(err);
                 });
             },
         }
