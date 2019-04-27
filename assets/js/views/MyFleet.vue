@@ -112,6 +112,14 @@
                     case 'Hercules Starlifter C2': return 'C2 Hercules';
                     case 'Hercules Starlifter A2': return 'A2 Hercules';
                     case 'Hercules Starlifter M2': return 'M2 Hercules';
+                    case 'Nova Tank': return 'Nova';
+                    case '325a Fighter': return '325a';
+                    case 'Reliant Kore - Mini Hauler': return 'Reliant Kore';
+                    case 'Reliant Mako - News Van': return 'Reliant Mako';
+                    case 'Reliant Sen - Researcher': return 'Reliant Sen';
+                    case 'Reliant Tana - Skirmisher': return 'Reliant Tana';
+                    case 'Argo SRV': return 'SRV';
+                    case 'Hornet F7C-M Heartseeker': return 'F7C-M Super Hornet Heartseeker';
                 }
 
                 return hangarShipName;
