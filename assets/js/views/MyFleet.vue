@@ -108,18 +108,44 @@
             },
             getFixShipName(hangarShipName) {
                 switch (hangarShipName) {
-                    case 'Crusader Mercury Star Runner': return 'Mercury Star Runner';
-                    case 'Hercules Starlifter C2': return 'C2 Hercules';
-                    case 'Hercules Starlifter A2': return 'A2 Hercules';
-                    case 'Hercules Starlifter M2': return 'M2 Hercules';
-                    case 'Nova Tank': return 'Nova';
+                    case '315p Explorer': return '315p';
                     case '325a Fighter': return '325a';
+                    case '350r Racer': return '350r';
+                    case '600i Exploration Module': return '600i Explorer';
+                    case '600i Touring Module': return '600i Touring';
+                    case '890 JUMP': return '890 Jump';
+                    case 'Aopoa San\'tok.yāi': return 'San\'tok.yāi';
+                    case 'Argo SRV': return 'SRV';
+                    case 'Crusader Mercury Star Runner': return 'Mercury Star Runner';
+                    case 'Cyclone RC': return 'Cyclone-RC';
+                    case 'Cyclone RN': return 'Cyclone-RN';
+                    case 'Cyclone TR': return 'Cyclone-TR';
+                    case 'Cyclone AA': return 'Cyclone-AA';
+                    case 'Dragonfly Star Kitten Edition': return 'Dragonfly Yellowjacket';
+                    case 'Hercules Starlifter C2': return 'C2 Hercules';
+                    case 'Hercules Starlifter M2': return 'M2 Hercules';
+                    case 'Hercules Starlifter A2': return 'A2 Hercules';
+                    case 'Hornet F7C': return 'F7C Hornet';
+                    case 'F7A Hornet': return 'F7A Hornet';
+                    case 'Hornet F7C-M Heartseeker': return 'F7C-M Super Hornet Heartseeker';
+                    case 'Hornet F7C-S Ghost': return 'F7C-S Super Hornet Ghost';
+                    case 'Hornet F7C-R Tracker': return 'F7C-R Super Hornet Tracker';
+                    case 'Hornet F7C-M Hornet': return 'F7C-M Super Hornet Hornet';
+                    case 'Idris-P Frigate': return 'Idris-P';
+                    case 'Khartu-al': return 'Khartu-Al';
+                    case 'Mustang Omega : AMD Edition': return 'Mustang Omega';
+                    case 'Nova Tank': return 'Nova';
+                    case 'P-52 Merlin': return 'P52 Merlin';
+                    case 'P-72 Archimedes': return 'P72 Archimedes';
                     case 'Reliant Kore - Mini Hauler': return 'Reliant Kore';
                     case 'Reliant Mako - News Van': return 'Reliant Mako';
                     case 'Reliant Sen - Researcher': return 'Reliant Sen';
                     case 'Reliant Tana - Skirmisher': return 'Reliant Tana';
-                    case 'Argo SRV': return 'SRV';
-                    case 'Hornet F7C-M Heartseeker': return 'F7C-M Super Hornet Heartseeker';
+                    case 'Valkyrie ': return 'Valkyrie';
+                    case 'Valkyrie Liberator Edition ': return 'Valkyrie Liberator Edition';
+                    case 'X1': return 'X1 Base';
+                    case 'X1 - FORCE': return 'X1 Force';
+                    case 'X1 - VELOCITY': return 'X1 Velocity';
                 }
 
                 return hangarShipName;
