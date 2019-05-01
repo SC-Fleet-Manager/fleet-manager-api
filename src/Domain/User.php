@@ -23,6 +23,13 @@ class User implements UserInterface
     public $username;
 
     /**
+     * @var string
+     *
+     * @Groups({"profile"})
+     */
+    public $discordId;
+
+    /**
      * @var \DateTimeInterface
      *
      * @Groups({"profile"})
@@ -43,10 +50,10 @@ class User implements UserInterface
      */
     public $citizen;
 
-    public function __construct(?UuidInterface $id, string $username)
+    public function __construct(?UuidInterface $id, string $discordId)
     {
         $this->id = $id;
-        $this->username = $username;
+        $this->discordId = $discordId;
     }
 
     public static function generateToken(): string
@@ -71,7 +78,7 @@ class User implements UserInterface
 
     public function getUsername()
     {
-        return $this->username;
+        return $this->discordId;
     }
 
     public function eraseCredentials()

@@ -53,7 +53,6 @@
         },
         created() {
             this.refreshProfile();
-            this.refreshTable();
         },
         watch: {
             selectedSid(value) {

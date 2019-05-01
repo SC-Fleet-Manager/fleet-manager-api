@@ -4,14 +4,12 @@ namespace App\Infrastructure\Security;
 
 use App\Domain\User;
 use App\Domain\UserRepositoryInterface;
+use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthUserProvider as BaseProvider;
 use Ramsey\Uuid\Uuid;
 
 class OAuthUserProvider extends BaseProvider
 {
-    /**
-     * @var UserRepositoryInterface
-     */
     private $userRepository;
 
     public function __construct(UserRepositoryInterface $userRepository)
@@ -19,23 +17,38 @@ class OAuthUserProvider extends BaseProvider
         $this->userRepository = $userRepository;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function loadUserByUsername($username)
+    public function loadUserByOAuthUserResponse(UserResponseInterface $response)
     {
-        $citizen = $this->userRepository->getByUsername($username);
-        if ($citizen !== null) {
-            return $citizen;
-        }
+        $this->persistOAuthInfos($response);
 
-        // register one
-        return $this->registerNewUser($username);
+        return $this->loadUserByUsername($response->getUsername());
     }
 
-    private function registerNewUser(string $username): User
+    private function persistOAuthInfos(UserResponseInterface $response): void
     {
-        $newUser = new User(Uuid::uuid4(), $username);
+        $user = $this->userRepository->getByDiscordId($response->getUsername());
+        if ($user === null) {
+            $user = $this->userRepository->getByUsername($response->getNickname());
+        }
+
+        if ($user !== null) {
+            $user->discordId = $response->getUsername();
+            $user->username = $response->getNickname();
+            $this->userRepository->update($user);
+        } else {
+            $this->registerNewUser($response->getUsername(), $response->getNickname());
+        }
+    }
+
+    public function loadUserByUsername($discordId)
+    {
+        return $this->userRepository->getByDiscordId($discordId);
+    }
+
+    private function registerNewUser(string $discordId, string $username): User
+    {
+        $newUser = new User(Uuid::uuid4(), $discordId);
+        $newUser->username = $username;
         $newUser->createdAt = new \DateTimeImmutable();
         $newUser->token = User::generateToken();
 
@@ -44,9 +57,6 @@ class OAuthUserProvider extends BaseProvider
         return $newUser;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function supportsClass($class)
     {
         return User::class === $class;

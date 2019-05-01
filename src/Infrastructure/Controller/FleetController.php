@@ -159,7 +159,9 @@ class FleetController extends AbstractController
                 '_cellVariants' => ['shipName' => $shipInfo->productionStatus === ShipInfo::FLIGHT_READY ? 'success' : 'danger'],
                 'shipName' => $shipInfo->name,
                 'shipManufacturer' => $shipInfo->manufacturerCode,
-                'totalAvailable' => \count($shipCounter[$shipInfo->name]),
+                'totalAvailable' => \array_reduce($shipCounter[$shipInfo->name], function (int $carry, int $countPerUser): int {
+                    return $carry + $countPerUser;
+                }, 0),
             ];
             foreach ($citizensFiltered as $citizen) {
                 $count = $shipCounter[$shipInfo->name][$citizen->id->toString()] ?? null;
