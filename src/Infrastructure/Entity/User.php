@@ -21,9 +21,16 @@ class User
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255, unique=true)
+     * @ORM\Column(type="string", length=255)
      */
     public $username;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, unique=false)
+     */
+    public $discordId;
 
     /**
      * @var string

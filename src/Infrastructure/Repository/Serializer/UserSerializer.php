@@ -26,6 +26,7 @@ class UserSerializer
         }
         $user = new DomainUser($userEntity->id, $userEntity->username);
         $user->token = $userEntity->token;
+        $user->discordId = $userEntity->discordId;
         $user->createdAt = clone $userEntity->createdAt;
         if ($userEntity->citizen !== null) {
             $user->citizen = $this->citizenSerializer->toDomain($userEntity->citizen);
@@ -39,6 +40,7 @@ class UserSerializer
         $e = new User();
         $e->id = clone $user->id;
         $e->username = $user->username;
+        $e->discordId = $user->discordId;
         $e->token = $user->token;
         if ($user->citizen !== null) {
             $e->citizen = $this->citizenSerializer->fromDomain($user->citizen);

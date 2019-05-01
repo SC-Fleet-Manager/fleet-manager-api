@@ -51,6 +51,25 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
         return $user;
     }
 
+    public function getByDiscordId(string $id): ?DomainUser
+    {
+        /** @var User $userEntity */
+        $userEntity = $this->createQueryBuilder('u')
+            ->addSelect('c')
+            ->leftJoin('u.citizen', 'c')
+            ->where('u.discordId = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+        if ($userEntity === null) {
+            return null;
+        }
+
+        $user = $this->userSerializer->toDomain($userEntity);
+
+        return $user;
+    }
+
     /**
      * {@inheritdoc}
      */
