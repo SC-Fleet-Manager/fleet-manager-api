@@ -65,6 +65,13 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
 
     public function start(Request $request, AuthenticationException $authException = null)
     {
+        if ($request->isMethod('OPTIONS')) {
+            return new JsonResponse(null, 204, [
+                'Access-Control-Allow-Headers' => 'Authorization,Content-Type',
+                'Access-Control-Allow-Methods' => 'POST',
+            ]);
+        }
+
         return new JsonResponse([
             'error' => 'auth_needed',
             'message' => 'Authentication Required',

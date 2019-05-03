@@ -18,6 +18,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
@@ -52,6 +53,14 @@ class ApiController extends AbstractController
         $user = $this->getUser();
 
         return $this->json($user, 200, [], ['groups' => 'me:read']);
+    }
+
+    /**
+     * @Route("/export", name="export_options", methods={"OPTIONS"})
+     */
+    public function exportOptions(): Response
+    {
+        return new JsonResponse(null, 204);
     }
 
     /**
