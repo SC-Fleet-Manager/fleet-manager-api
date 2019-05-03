@@ -27,26 +27,91 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ApiController extends AbstractController
 {
-    /**
-     * @var LoggerInterface
-     */
     private $logger;
-
-    /**
-     * @var TranslatorInterface
-     */
     private $translator;
-
-    /**
-     * @var Security
-     */
     private $security;
+    private $fleetUploadHandler;
 
-    public function __construct(LoggerInterface $logger, TranslatorInterface $translator, Security $security)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        TranslatorInterface $translator,
+        Security $security,
+        FleetUploadHandlerInterface $fleetUploadHandler
+    ) {
         $this->logger = $logger;
         $this->translator = $translator;
         $this->security = $security;
+        $this->fleetUploadHandler = $fleetUploadHandler;
+    }
+
+    /**
+     * @Route("/me", name="me", methods={"GET"})
+     */
+    public function me(): Response
+    {
+        $user = $this->getUser();
+
+        return $this->json($user, 200, [], ['groups' => 'me:read']);
+    }
+
+    /**
+     * @Route("/export", name="export", methods={"POST"}, condition="request.getContentType() == 'json'")
+     */
+    public function export(Request $request): Response
+    {
+        $contents = $request->getContent();
+        $fleetData = \json_decode($contents, true);
+
+        if (JSON_ERROR_NONE !== $jsonError = json_last_error()) {
+            $this->logger->error('Failed to decode json from fleet file', ['json_error' => $jsonError, 'fleet_file_contents' => $contents]);
+
+            return $this->json([
+                'error' => 'bad_json',
+                'errorMessage' => sprintf('Your fleet file is not JSON well formatted. Please check it.'),
+            ], 400);
+        }
+
+        /** @var User $user */
+        $user = $this->security->getUser();
+        if ($user->citizen === null) {
+            return $this->json([
+                'error' => 'no_citizen_created',
+                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/#/profile">profile page</a>.',
+            ], 400);
+        }
+
+        try {
+            $this->fleetUploadHandler->handle($user->citizen, $fleetData);
+        } catch (FleetUploadedTooCloseException $e) {
+            return $this->json([
+                'error' => 'uploaded_too_close',
+                'errorMessage' => 'Your fleet has been uploaded recently. Please wait before re-uploading.',
+            ], 400);
+        } catch (NotFoundHandleSCException $e) {
+            return $this->json([
+                'error' => 'not_found_handle',
+                'errorMessage' => sprintf('The SC handle %s does not exist.', $user->citizen->actualHandle),
+            ], 400);
+        } catch (BadCitizenException $e) {
+            return $this->json([
+                'error' => 'bad_citizen',
+                'errorMessage' => sprintf('Your SC handle has probably changed. Please update it in <a href="/#/profile">your Profile</a>.'),
+            ], 400);
+        } catch (InvalidFleetDataException $e) {
+            return $this->json([
+                'error' => 'invalid_fleet_data',
+                'errorMessage' => sprintf('The fleet data in your file is invalid. Please check it.'),
+            ], 400);
+        } catch (\Exception $e) {
+            $this->logger->error('cannot handle fleet file', ['exception' => $e]);
+
+            return $this->json([
+                'error' => 'cannot_handle_file',
+                'errorMessage' => 'Cannot handle the fleet file. Try again !',
+            ], 400);
+        }
+
+        return $this->json(null, 204);
     }
 
     /**
@@ -56,8 +121,7 @@ class ApiController extends AbstractController
      */
     public function upload(
         Request $request,
-        FormFactoryInterface $formFactory,
-        FleetUploadHandlerInterface $fleetUploadHandler): Response
+        FormFactoryInterface $formFactory): Response
     {
         $fleetUpload = new FleetUpload();
         $form = $formFactory->createNamedBuilder('', FleetUploadForm::class, $fleetUpload)->getForm();
@@ -106,7 +170,7 @@ class ApiController extends AbstractController
         }
 
         try {
-            $fleetUploadHandler->handle($user->citizen, $fleetData);
+            $this->fleetUploadHandler->handle($user->citizen, $fleetData);
         } catch (FleetUploadedTooCloseException $e) {
             return $this->json([
                 'error' => 'uploaded_too_close',

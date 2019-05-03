@@ -70,6 +70,19 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
         return $user;
     }
 
+    public function getByToken(string $token): ?DomainUser
+    {
+        /** @var User|null $userEntity */
+        $userEntity = $this->findOneBy(['apiToken' => $token]);
+        if ($userEntity === null) {
+            return null;
+        }
+
+        $user = $this->userSerializer->toDomain($userEntity);
+
+        return $user;
+    }
+
     /**
      * {@inheritdoc}
      */

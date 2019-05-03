@@ -11,14 +11,12 @@ class User implements UserInterface
     /**
      * @var UuidInterface
      *
-     * @Groups({"profile"})
+     * @Groups({"profile", "me:read"})
      */
     public $id;
 
     /**
      * @var string
-     *
-     * @Groups({"profile"})
      */
     public $username;
 
@@ -32,16 +30,23 @@ class User implements UserInterface
     /**
      * @var \DateTimeInterface
      *
-     * @Groups({"profile"})
+     * @Groups({"profile", "me:read"})
      */
     public $createdAt;
 
     /**
      * @var string
      *
-     * @Groups({"profile"})
+     * @Groups({"profile", "me:read"})
      */
     public $token;
+
+    /**
+     * @var string
+     *
+     * @Groups({"me:read"})
+     */
+    public $apiToken;
 
     /**
      * @var Citizen
@@ -74,6 +79,14 @@ class User implements UserInterface
     public function getSalt()
     {
         return null;
+    }
+
+    /**
+     * @Groups({"profile", "me:read"})
+     */
+    public function getNickname(): ?string
+    {
+        return $this->username;
     }
 
     public function getUsername()

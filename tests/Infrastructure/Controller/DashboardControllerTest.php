@@ -25,7 +25,6 @@ class DashboardControllerTest extends PantherTestCase
             'PHP_AUTH_USER' => 'user',
             'PHP_AUTH_PW'   => '123456',*/
 
-        dump($crawler->html());
 //        $this->assertSame('Ensemble de la flotte', $crawler->filter('.card-header')->text());
     }
 }

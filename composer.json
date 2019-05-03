@@ -17,6 +17,7 @@
         "ramsey/uuid-doctrine": "^1.5",
         "symfony/console": "*",
         "symfony/dotenv": "*",
+        "symfony/expression-language": "4.2.*",
         "symfony/flex": "^1.1",
         "symfony/form": "*",
         "symfony/framework-bundle": "*",

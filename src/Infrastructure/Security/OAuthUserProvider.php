@@ -34,6 +34,9 @@ class OAuthUserProvider extends BaseProvider
         if ($user !== null) {
             $user->discordId = $response->getUsername();
             $user->username = $response->getNickname();
+            if (!$user->apiToken) {
+                $user->apiToken = User::generateToken();
+            }
             $this->userRepository->update($user);
         } else {
             $this->registerNewUser($response->getUsername(), $response->getNickname());
@@ -51,6 +54,7 @@ class OAuthUserProvider extends BaseProvider
         $newUser->username = $username;
         $newUser->createdAt = new \DateTimeImmutable();
         $newUser->token = User::generateToken();
+        $newUser->apiToken = User::generateToken();
 
         $this->userRepository->create($newUser);
 

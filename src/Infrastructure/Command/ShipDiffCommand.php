@@ -30,13 +30,8 @@ class ShipDiffCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
-        $io = new SymfonyStyle($input, $output);
-
         $theirShips = $this->shipInfosProvider->getAllShips();
-//        dump($theirShips);
-
         $ourShipNames = $this->shipRepository->distinctNames();
-//        dump($ourShipNames);
 
         $taggedShips = [];
         foreach ($ourShipNames as $ourShipName) {
@@ -73,6 +68,7 @@ class ShipDiffCommand extends Command
                 $taggedShip['potentialMatches'] = $potentialMatches;
             }
         }
-        dump($taggedShips);
+
+        $output->writeln(json_encode($taggedShips));
     }
 }

@@ -8,6 +8,8 @@ interface UserRepositoryInterface
 
     public function getByDiscordId(string $id): ?User;
 
+    public function getByToken(string $token): ?User;
+
     public function create(User $user): void;
 
     public function update(User $user): void;

@@ -35,9 +35,16 @@ class User
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=64)
+     * @ORM\Column(type="string", length=64, options={"fixed":true})
      */
     public $token;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=64, options={"fixed":true})
+     */
+    public $apiToken;
 
     /**
      * @var Citizen

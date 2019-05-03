@@ -7,9 +7,13 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        token:
+            pattern: ^/(export)
+            stateless: true
+            guard:
+                authenticators: ['App\Infrastructure\Security\TokenAuthenticator']
         main:
             anonymous: true
-
             oauth:
                 resource_owners:
                     discord: /login/check-discord
