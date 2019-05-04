@@ -100,6 +100,7 @@ class ApiController extends AbstractController
             return $this->json([
                 'error' => 'not_found_handle',
                 'errorMessage' => sprintf('The SC handle %s does not exist.', $user->citizen->actualHandle),
+                'context' => ['handle' => $user->citizen->actualHandle],
             ], 400);
         } catch (BadCitizenException $e) {
             return $this->json([
