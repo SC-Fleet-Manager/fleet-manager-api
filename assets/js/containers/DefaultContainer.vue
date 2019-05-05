@@ -46,7 +46,7 @@
       <!--footer-->
       <div>
         <a href="/">Star Citizen Fleet Manager</a>
-        <span class="ml-1">&copy; 2018</span>
+        <span class="ml-1">&copy; 2018 - {{ actualYear }}</span>
       </div>
       <div class="ml-auto">
         <a target="_blank" href="https://github.com/Ioni14/starcitizen-fleet-manager/issues">Bugs, feedbacks, ideas</a>
@@ -79,7 +79,8 @@ export default {
   },
   data () {
     return {
-      nav: nav.items
+      nav: nav.items,
+      actualYear: (new Date()).getFullYear(),
     }
   },
   computed: {

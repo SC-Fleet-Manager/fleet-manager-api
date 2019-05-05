@@ -46,7 +46,7 @@
                 this.errorMessage = 'An error has been occurred. Please try again in a moment.';
                 this.submitDisabled = true;
                 axios({
-                    method: 'post',
+                    method: 'POST',
                     url: '/upload',
                     data: form,
                 }).then(response => {

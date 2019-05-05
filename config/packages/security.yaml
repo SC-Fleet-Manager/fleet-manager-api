@@ -1,8 +1,7 @@
 security:
-    # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
         oauth_user_provider:
-            id: App\Infrastructure\Security\OAuthUserProvider
+            id: App\Security\OAuthUserProvider
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -11,7 +10,7 @@ security:
             pattern: ^/(export)
             stateless: true
             guard:
-                authenticators: ['App\Infrastructure\Security\TokenAuthenticator']
+                authenticators: ['App\Security\TokenAuthenticator']
         main:
             anonymous: true
             oauth:
@@ -24,7 +23,7 @@ security:
                 default_target_path: '/#/profile'
 
                 oauth_user_provider:
-                    service: App\Infrastructure\Security\OAuthUserProvider
+                    service: App\Security\OAuthUserProvider
 
             logout:
                 path: logout

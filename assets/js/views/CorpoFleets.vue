@@ -7,7 +7,7 @@
                         <b-col col xl="3" lg="4" md="6" v-if="this.citizen != null">
                             <b-form-group label="Select an organisation" label-for="select-orga">
                                 <b-form-select id="select-orga" v-model="selectedSid" class="mb-3">
-                                    <option v-for="orga in this.citizen.organisations" :key="orga.sid" :value="orga.sid">{{ orga.sid }}</option>
+                                    <option v-for="orga in this.citizen.organisations" :key="orga" :value="orga">{{ orga }}</option>
                                 </b-form-select>
                             </b-form-group>
                         </b-col>
@@ -63,8 +63,9 @@
             refreshProfile() {
                 axios.get('/profile').then(response => {
                     this.citizen = response.data.citizen;
+                    console.log();
                     if (this.citizen !== null && this.citizen.organisations.length > 0) {
-                        this.selectedSid = this.citizen.organisations[0].sid;
+                        this.selectedSid = this.citizen.organisations[0];
                     }
                 }).catch(err => {
                     if (err.response.data.errorMessage) {

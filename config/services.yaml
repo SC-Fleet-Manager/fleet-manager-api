@@ -9,14 +9,14 @@ services:
         autoconfigure: true
         public: false
 
-    App\Infrastructure\:
-        resource: '../src/Infrastructure/*'
-        exclude: '../src/Infrastructure/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
+    App\:
+        resource: '../src/*'
+        exclude: '../src/{Entity,Migrations,Kernel.php}'
 
     redis:
         class: Redis
         calls:
-        - [connect, ['%env(REDIS_HOST)%', '%env(REDIS_PORT)%']]
+            - [connect, ['%env(REDIS_HOST)%', '%env(REDIS_PORT)%']]
 
     Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler:
         arguments: ['@redis']
@@ -25,17 +25,5 @@ services:
         calls:
             - [setRedis, ['@redis']]
 
-    App\Domain\FleetUploadHandler: ~
-    App\Domain\FleetUploadHandlerInterface: '@App\Domain\FleetUploadHandler'
-    App\Domain\OrganisationFleetGenerator: ~
-    App\Domain\OrganisationFleetGeneratorInterface: '@App\Domain\OrganisationFleetGenerator'
-    App\Domain\CitizenFleetGenerator: ~
-    App\Domain\CitizenFleetGeneratorInterface: '@App\Domain\CitizenFleetGenerator'
-
-    App\Domain\ShipRepositoryInterface: '@App\Infrastructure\Repository\ShipRepository'
-    App\Domain\FleetRepositoryInterface: '@App\Infrastructure\Repository\FleetRepository'
-    App\Domain\CitizenRepositoryInterface: '@App\Infrastructure\Repository\CitizenRepository'
-    App\Domain\UserRepositoryInterface: '@App\Infrastructure\Repository\UserRepository'
-
-    App\Domain\CitizenInfosProviderInterface: '@App\Infrastructure\Service\ApiCitizenInfosProvider'
-    App\Domain\ShipInfosProviderInterface: '@App\Infrastructure\Service\ApiShipInfosProvider'
+    App\Service\CitizenInfosProviderInterface: '@App\Service\ApiCitizenInfosProvider'
+    App\Service\ShipInfosProviderInterface: '@App\Service\ApiShipInfosProvider'
