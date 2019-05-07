@@ -42,9 +42,9 @@
                 <b-card header="Preferences">
                     <b-form>
                         <b-form-group label="Personal fleet policy">
-                            <b-form-radio v-model="publicChoice" @change="savePreferences" :disabled="savingPreferences" name="public-choice" value="private">Private</b-form-radio>
-                            <b-form-radio v-model="publicChoice" @change="savePreferences" :disabled="savingPreferences" name="public-choice" value="orga">Organizations only</b-form-radio>
-                            <b-form-radio v-model="publicChoice" @change="savePreferences" :disabled="savingPreferences" name="public-choice" value="public">Public</b-form-radio>
+                            <b-form-radio v-model="publicChoice" @change="savePublicChoice" :disabled="savingPreferences" name="public-choice" value="private">Private</b-form-radio>
+                            <b-form-radio v-model="publicChoice" @change="savePublicChoice" :disabled="savingPreferences" name="public-choice" value="orga">Organizations only</b-form-radio>
+                            <b-form-radio v-model="publicChoice" @change="savePublicChoice" :disabled="savingPreferences" name="public-choice" value="public">Public</b-form-radio>
                         </b-form-group>
                         <!--<b-form-group label="Orga fleet policy">
                             <b-form-radio v-model="publicChoice" name="some-radios" value="A">Option A</b-form-radio>
@@ -102,6 +102,10 @@
             this.refreshProfile();
         },
         methods: {
+            savePublicChoice(value) {
+                this.publicChoice = value;
+                this.savePreferences();
+            },
             savePreferences() {
                 this.savingPreferences = true;
                 axios.post('/save-preferences', {
