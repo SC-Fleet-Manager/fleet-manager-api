@@ -2,7 +2,7 @@ include:
     - citizen.yaml
     - fleet.yaml
 
-App\Infrastructure\Entity\Ship:
+App\Entity\Ship:
     ship_ionni_cutlassblack_v1:
         id: 'a75256db-07fa-4f49-95f9-9f44bd7fbd72'
         rawData: >-

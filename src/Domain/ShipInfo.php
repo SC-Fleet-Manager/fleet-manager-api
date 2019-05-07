@@ -1,8 +1,8 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Domain;
+
+use Symfony\Component\Serializer\Annotation\Groups;
 
 class ShipInfo
 {
@@ -11,51 +11,70 @@ class ShipInfo
 
     /**
      * @var string
+     *
+     * @Groups({"my-fleet"})
      */
     public $id;
 
     /**
      * @var string self::FLIGHT_READY|self::NOT_READY
+     *
+     * @Groups({"my-fleet"})
      */
     public $productionStatus;
 
     /**
      * @var int
+     * @Groups({"my-fleet"})
      */
     public $minCrew;
 
     /**
      * @var int
+     *
+     * @Groups({"my-fleet"})
      */
     public $maxCrew;
 
     /**
      * @var string
+     *
+     * @Groups({"my-fleet"})
      */
     public $name;
 
     /**
      * @var string
+     *
+     * @Groups({"my-fleet"})
      */
     public $pledgeUrl;
 
     /**
      * @var string
+     *
+     * @Groups({"my-fleet"})
      */
     public $manufacturerName;
 
     /**
      * @var string
+     *
+     * @Groups({"my-fleet"})
      */
     public $manufacturerCode;
 
     /**
      * @var string
+     *
+     * @Groups({"my-fleet"})
      */
     public $mediaUrl;
 
     /**
      * @var string
+     *
+     * @Groups({"my-fleet"})
      */
     public $mediaThumbUrl;
 }

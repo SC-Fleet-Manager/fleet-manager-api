@@ -1,15 +1,23 @@
 security:
-    # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
         oauth_user_provider:
-            id: App\Infrastructure\Security\OAuthUserProvider
+            id: App\Security\OAuthUserProvider
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        token:
+            pattern: ^/(export)
+            stateless: true
+            guard:
+                authenticators: ['App\Security\TokenAuthenticator']
         main:
             anonymous: true
-
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 604800 # 1 week
+                path: /
+                always_remember_me: true
             oauth:
                 resource_owners:
                     discord: /login/check-discord
@@ -18,14 +26,13 @@ security:
                 failure_path: /login
                 always_use_default_target_path: true
                 default_target_path: '/#/profile'
-
                 oauth_user_provider:
-                    service: App\Infrastructure\Security\OAuthUserProvider
-
+                    service: App\Security\OAuthUserProvider
+                remember_me:  true
             logout:
                 path: logout
 
     access_control:
         - { path: ^/login,      roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/connect,    roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/,           roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/,           roles: IS_AUTHENTICATED_REMEMBERED }

@@ -1,2 +1,2 @@
 services:
-    App\Domain\CitizenInfosProviderInterface: '@App\Infrastructure\Service\FakeCitizenInfosProvider'
+    App\Service\CitizenInfosProviderInterface: '@App\Service\FakeCitizenInfosProvider'

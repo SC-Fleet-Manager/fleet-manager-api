@@ -7,7 +7,6 @@ parameters:
 
 doctrine:
     dbal:
-        # configure these for your database server
         driver: 'pdo_mysql'
         server_version: '5.7'
         charset: utf8mb4
@@ -24,6 +23,6 @@ doctrine:
             App:
                 is_bundle: false
                 type: annotation
-                dir: '%kernel.project_dir%/src/Infrastructure/Entity'
-                prefix: 'App\Infrastructure\Entity'
+                dir: '%kernel.project_dir%/src/Entity'
+                prefix: 'App\Entity'
                 alias: App
