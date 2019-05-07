@@ -2,8 +2,9 @@
     <div class="animated fadeIn">
         <b-row>
             <b-col>
-                <b-card>
-                    <div class="mb-3">
+                <b-card :title="userHandle ? 'Citizen ' + userHandle : ''">
+<!--                    <h1 v-if="userHandle != null">Citizen {{ userHandle }}</h1>-->
+                    <div class="mb-3" v-if="userHandle == null">
                         <b-button v-b-modal.modal-upload-fleet variant="primary" :disabled="citizen == null"><i class="icon-cloud-upload"></i> Update my fleet</b-button>
                         <b-button download :disabled="citizen == null" :href="citizen != null ? '/create-citizen-fleet-file/'+citizen.number.number : ''" variant="success"><i class="icon-cloud-download"></i> Export my fleet (.json)</b-button>
                     </div>
@@ -53,17 +54,22 @@
                 errorMessage: '',
             }
         },
+        props: {
+            userHandle: null,
+        },
         created() {
             this.refreshMyFleet();
 
-            axios.get('/profile', {
-                params: {}
-            }).then(response => {
-                this.citizen = response.data.citizen;
-            }).catch(err => {
-                toastr.error('Cannot retrieve your profile.');
-                console.error(err);
-            });
+            if (!this.userHandle) { // it is my fleet page
+                axios.get('/profile', {
+                    params: {}
+                }).then(response => {
+                    this.citizen = response.data.citizen;
+                }).catch(err => {
+                    toastr.error('Cannot retrieve your profile.');
+                    console.error(err);
+                });
+            }
         },
         filters: {
             date: (value, format) => {
@@ -72,7 +78,7 @@
         },
         methods: {
             refreshMyFleet() {
-                axios.get('/my-fleet', {
+                axios.get(this.userHandle ? `/user-fleet/${this.userHandle}` : '/my-fleet', {
                     params: {}
                 }).then(response => {
                     this.ships = [];
@@ -83,6 +89,8 @@
                 }).catch(err => {
                     this.showError = true;
                     if (err.response.data.error === 'no_citizen_created') {
+                        this.errorMessage = err.response.data.errorMessage;
+                    } else if (err.response.data.error === 'no_rights') {
                         this.errorMessage = err.response.data.errorMessage;
                     } else {
                         toastr.error('Cannot retrieve your fleet.');

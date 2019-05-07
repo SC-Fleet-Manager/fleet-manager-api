@@ -29,8 +29,8 @@ export default new Router({
             component: DefaultContainer,
             children: [
                 {
-                    path: 'corpo-fleets',
-                    name: 'My corpo fleets',
+                    path: 'organizations-fleets',
+                    name: 'Organizations\' fleets',
                     component: CorpoFleets
                 },
                 {
@@ -39,10 +39,16 @@ export default new Router({
                     component: MyFleet
                 },
                 {
+                    path: 'user/:userHandle',
+                    name: 'User fleet',
+                    component: MyFleet,
+                    props: true
+                },
+                {
                     path: 'profile',
                     name: 'Profile',
                     component: Profile
-                },
+                }
             ]
         },
         {
