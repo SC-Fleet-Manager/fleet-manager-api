@@ -1,5 +1,5 @@
 <template>
-    <b-card>
+    <b-card header="Update Star Citizen handle">
         <p>
             <strong>Your SC Handle : </strong>{{ citizen != null ? citizen.actualHandle.handle : '' }}<br/>
             <strong>Your SC Number : </strong>{{ citizen != null ? citizen.number.number : '' }}

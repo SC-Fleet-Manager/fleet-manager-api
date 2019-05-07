@@ -12,6 +12,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
  */
 class User implements UserInterface
 {
+    public const PUBLIC_CHOICE_PRIVATE = 'private';
+    public const PUBLIC_CHOICE_ORGANIZATION = 'orga';
+    public const PUBLIC_CHOICE_PUBLIC = 'public';
+
     /**
      * @var UuidInterface
      *
@@ -61,6 +65,14 @@ class User implements UserInterface
     private $citizen;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=15, options={"default":"private"})
+     * @Groups({"profile"})
+     */
+    private $publicChoice;
+
+    /**
      * @var \DateTimeImmutable
      *
      * @ORM\Column(type="datetimetz_immutable")
@@ -71,6 +83,7 @@ class User implements UserInterface
     public function __construct(?UuidInterface $id = null)
     {
         $this->id = $id;
+        $this->publicChoice = self::PUBLIC_CHOICE_PRIVATE;
         $this->createdAt = new \DateTimeImmutable();
     }
 
@@ -162,6 +175,24 @@ class User implements UserInterface
     public function setCitizen(?Citizen $citizen): self
     {
         $this->citizen = $citizen;
+
+        return $this;
+    }
+
+    public function getPublicChoice(): string
+    {
+        return $this->publicChoice;
+    }
+
+    public function setPublicChoice(string $publicChoice): self
+    {
+        if (in_array($publicChoice, [
+            self::PUBLIC_CHOICE_PRIVATE,
+            self::PUBLIC_CHOICE_ORGANIZATION,
+            self::PUBLIC_CHOICE_PUBLIC
+        ], true)) {
+            $this->publicChoice = $publicChoice;
+        }
 
         return $this;
     }

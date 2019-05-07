@@ -61,12 +61,30 @@ class ProfileController extends AbstractController
      *
      * Retrieves profile infos : user properties.
      */
-    public function index(Request $request, Security $security): Response
+    public function index(Request $request): Response
     {
         /** @var User $user */
-        $user = $security->getUser();
+        $user = $this->security->getUser();
 
         return $this->json($user, 200, [], ['groups' => 'profile']);
+    }
+
+    /**
+     * @Route("/save-preferences", name="save_preferences", methods={"POST"}, condition="request.getContentType() == 'json'")
+     */
+    public function savePreferences(Request $request): Response
+    {
+        /** @var User $user */
+        $user = $this->security->getUser();
+
+        $content = \json_decode($request->getContent(), true);
+
+        // TODO : make a formtype
+        $user->setPublicChoice($content['publicChoice'] ?? User::PUBLIC_CHOICE_PRIVATE);
+
+        $this->entityManager->flush();
+
+        return $this->json(null, 204);
     }
 
     /**

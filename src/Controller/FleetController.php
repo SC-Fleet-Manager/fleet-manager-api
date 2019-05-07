@@ -7,6 +7,7 @@ use App\Domain\SpectrumIdentification;
 use App\Entity\Citizen;
 use App\Entity\User;
 use App\Repository\CitizenRepository;
+use App\Repository\UserRepository;
 use App\Service\ShipInfosProviderInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,15 +19,18 @@ class FleetController extends AbstractController
 {
     private $security;
     private $citizenRepository;
+    private $userRepository;
     private $shipInfosProvider;
 
     public function __construct(
         Security $security,
         CitizenRepository $citizenRepository,
+        UserRepository $userRepository,
         ShipInfosProviderInterface $shipInfosProvider
     ) {
         $this->security = $security;
         $this->citizenRepository = $citizenRepository;
+        $this->userRepository = $userRepository;
         $this->shipInfosProvider = $shipInfosProvider;
     }
 
@@ -44,6 +48,51 @@ class FleetController extends AbstractController
                 'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/#/profile">profile page</a>.',
             ], 400);
         }
+        $fleet = $citizen->getLastVersionFleet();
+        $shipInfos = $this->shipInfosProvider->getAllShips();
+
+        return $this->json([
+            'fleet' => $fleet,
+            'shipInfos' => $shipInfos,
+        ], 200, [], ['groups' => ['my-fleet']]);
+    }
+
+    /**
+     * @Route("/user-fleet/{handle}", name="user_fleet", methods={"GET"}, options={"expose":true})
+     */
+    public function userFleet(string $handle): Response
+    {
+        /** @var Citizen|null $citizen */
+        $citizen = $this->citizenRepository->findOneBy(['actualHandle' => $handle]);
+        if ($citizen === null) {
+            throw $this->createNotFoundException(sprintf('Citizen %s does not exist.', $handle));
+        }
+
+        /** @var User|null $me */
+        $me = $this->getUser();
+
+        /** @var User|null $user */
+        $user = $this->userRepository->findOneBy(['citizen' => $citizen]);
+        if ($user === null) {
+            throw $this->createNotFoundException(sprintf('User of citizen %s does not exist.', $handle));
+        }
+
+        // TODO : make a voter
+        if ($user->getPublicChoice() === User::PUBLIC_CHOICE_PRIVATE
+            && (!$this->security->isGranted('IS_AUTHENTICATED_REMEMBERED') || !$me->getId()->equals($user->getId()))) {
+            return $this->json([
+                'error' => 'no_rights',
+                'errorMessage' => 'You have no rights to see this fleet.',
+            ], 400);
+        }
+        if ($user->getPublicChoice() === User::PUBLIC_CHOICE_ORGANIZATION
+            && empty(array_intersect($citizen->getOrganisations(), $me->getCitizen()->getOrganisations()))) {
+            return $this->json([
+                'error' => 'no_rights',
+                'errorMessage' => 'You have no rights to see this fleet.',
+            ], 400);
+        }
+
         $fleet = $citizen->getLastVersionFleet();
         $shipInfos = $this->shipInfosProvider->getAllShips();
 

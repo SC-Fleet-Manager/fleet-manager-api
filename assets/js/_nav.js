@@ -6,8 +6,8 @@ export default {
       icon: 'fa fa-plane',
     },
     {
-      name: 'My corpo fleets',
-      url: '/corpo-fleets',
+      name: 'Organizations\' fleets',
+      url: '/organizations-fleets',
       icon: 'fa fa-plane',
     },
     {
