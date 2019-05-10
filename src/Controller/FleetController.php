@@ -9,6 +9,7 @@ use App\Entity\User;
 use App\Repository\CitizenRepository;
 use App\Repository\UserRepository;
 use App\Service\ShipInfosProviderInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,6 +37,7 @@ class FleetController extends AbstractController
 
     /**
      * @Route("/my-fleet", name="my_fleet", methods={"GET"}, options={"expose":true})
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
      */
     public function myFleet(): Response
     {
@@ -104,6 +106,7 @@ class FleetController extends AbstractController
 
     /**
      * @Route("/fleets/{organisation}", name="fleets", methods={"GET"}, options={"expose":true})
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
      */
     public function fleets(Request $request, string $organisation): Response
     {

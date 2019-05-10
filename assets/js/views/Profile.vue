@@ -108,16 +108,17 @@
             },
             savePreferences() {
                 this.savingPreferences = true;
-                axios.post('/save-preferences', {
+                axios.post('/profile/save-preferences', {
                     publicChoice: this.publicChoice
                 }).then(response => {
-                    this.savingPreferences = false;
                     toastr.success('Changes saved');
                 }).catch(err => {
-                    this.savingPreferences = false;
+                    this.checkAuth(err.response);
                     // TODO : show errors
                     console.error(err);
                     toastr.error('An error has occurred. Please retry more later.');
+                }).then(_ => {
+                    this.savingPreferences = false;
                 });
             },
             onCopyToken() {
@@ -137,6 +138,7 @@
                     this.myFleetLink = this.getMyFleetLink();
                     this.publicChoice = response.data.publicChoice;
                 }).catch(err => {
+                    this.checkAuth(err.response);
                     this.showError = true;
                     if (err.response.data.errorMessage) {
                         this.errorMessage = err.response.data.errorMessage;
@@ -155,7 +157,7 @@
                 this.submitDisabled = true;
                 axios({
                     method: 'post',
-                    url: '/link-account',
+                    url: '/profile/link-account',
                     data: form,
                 }).then(response => {
                     this.refreshProfile();
@@ -164,6 +166,7 @@
                     this.showLinkAccount = false;
                     this.showUpdateHandle = true;
                 }).catch(err => {
+                    this.checkAuth(err.response);
                     this.submitDisabled = false;
                     this.showError = true;
                     if (err.response.data.errorMessage) {
@@ -176,6 +179,14 @@
             },
             getMyFleetLink() {
                 return `${window.location.protocol}//${window.location.host}/#/user/${this.citizen.actualHandle.handle}`;
+            },
+            checkAuth(response) {
+                const status = response.status;
+                const data = response.data;
+                if ((status === 401 && data.error === 'no_auth')
+                    || (status === 403 && data.error === 'forbidden')) {
+                    window.location = data.loginUrl;
+                }
             }
         }
     }

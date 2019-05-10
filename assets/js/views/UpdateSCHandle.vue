@@ -52,12 +52,13 @@
                 this.submitDisabled = true;
                 axios({
                     method: 'post',
-                    url: '/update-handle',
+                    url: '/profile/update-handle',
                     data: form,
                 }).then(response => {
                     this.submitDisabled = false;
                     this.showSuccess = true;
                 }).catch(err => {
+                    this.checkAuth(err.response);
                     this.submitDisabled = false;
                     this.showError = true;
                     if (err.response.data.errorMessage) {
@@ -67,6 +68,14 @@
                     }
                     console.error(err);
                 });
+            },
+            checkAuth(response) {
+                const status = response.status;
+                const data = response.data;
+                if ((status === 401 && data.error === 'no_auth')
+                    || (status === 403 && data.error === 'forbidden')) {
+                    window.location = data.loginUrl;
+                }
             }
         }
     }

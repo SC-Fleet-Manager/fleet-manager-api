@@ -1,6 +1,4 @@
 version: '3.4'
-networks:
-    app: ~
 volumes:
     db: ~
     redis: ~
@@ -19,8 +17,6 @@ services:
             - DB_HOST=mariadb
             - DB_PORT=3306
             - DB_NAME=fleet_manager
-        networks:
-            - app
     apache:
         build:
             context: .
@@ -29,8 +25,6 @@ services:
         hostname: apache
         environment:
             - PHP_HANDLER_HOST=php:9000
-        networks:
-            - app
         ports:
             - 127.0.0.1:8000:80
     mariadb:
@@ -41,8 +35,6 @@ services:
         environment:
             - MYSQL_ROOT_PASSWORD=root
             - MYSQL_DATABASE=fleet_manager
-        networks:
-            - app
         ports:
             - 127.0.0.1:3306:3306
     redis:
@@ -52,15 +44,10 @@ services:
             - redis:/data
         ports:
             - 127.0.0.1:6379:6379
-        networks:
-            - app
     redis-commander:
         image: rediscommander/redis-commander:latest
         hostname: redis-commander
-#        restart: unless-stopped
         environment:
             - REDIS_HOSTS=local:redis:6379
-        networks:
-            - app
         ports:
             - 127.0.0.1:8081:8081
