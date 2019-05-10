@@ -38,7 +38,7 @@
                     ideas</a>
                 -
                 <span class="mr-1">Created by</span>
-                <a target="_blank" href="https://github.com/ioni14">Thomas "Ioni" Talbot</a>
+                <a target="_blank" href="https://github.com/ioni14">Thomas "Ioni" Talbot</a>. Referral Code <strong>STAR-GQYR-SN3X</strong>
             </div>
         </TheFooter>
     </div>
