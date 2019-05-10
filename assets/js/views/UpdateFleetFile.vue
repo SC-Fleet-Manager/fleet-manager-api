@@ -47,13 +47,14 @@
                 this.submitDisabled = true;
                 axios({
                     method: 'POST',
-                    url: '/upload',
+                    url: '/api/upload',
                     data: form,
                 }).then(response => {
                     this.submitDisabled = false;
                     toastr.success('Your fleet has been successfully updated!');
                     this.$emit('success');
                 }).catch(err => {
+                    this.checkAuth(err.response);
                     this.submitDisabled = false;
                     this.showError = true;
                     if (err.response.data.errorMessage) {
@@ -63,6 +64,14 @@
                     }
                     console.error(err);
                 });
+            },
+            checkAuth(response) {
+                const status = response.status;
+                const data = response.data;
+                if ((status === 401 && data.error === 'no_auth')
+                    || (status === 403 && data.error === 'forbidden')) {
+                    window.location = data.loginUrl;
+                }
             }
         }
     }

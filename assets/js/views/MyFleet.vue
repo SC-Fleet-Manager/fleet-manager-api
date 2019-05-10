@@ -6,7 +6,7 @@
 <!--                    <h1 v-if="userHandle != null">Citizen {{ userHandle }}</h1>-->
                     <div class="mb-3" v-if="userHandle == null">
                         <b-button v-b-modal.modal-upload-fleet variant="primary" :disabled="citizen == null"><i class="icon-cloud-upload"></i> Update my fleet</b-button>
-                        <b-button download :disabled="citizen == null" :href="citizen != null ? '/create-citizen-fleet-file/'+citizen.number.number : ''" variant="success"><i class="icon-cloud-download"></i> Export my fleet (.json)</b-button>
+                        <b-button download :disabled="citizen == null" :href="citizen != null ? '/api/create-citizen-fleet-file/'+citizen.number.number : ''" variant="success"><i class="icon-cloud-download"></i> Export my fleet (.json)</b-button>
                     </div>
                     <b-alert :show="showError" variant="danger" v-html="errorMessage"></b-alert>
                     <b-row v-if="ships !== null">
@@ -66,6 +66,7 @@
                 }).then(response => {
                     this.citizen = response.data.citizen;
                 }).catch(err => {
+                    this.checkAuth(err.response);
                     toastr.error('Cannot retrieve your profile.');
                     console.error(err);
                 });
@@ -87,6 +88,7 @@
                     }
                     this.shipInfos = response.data.shipInfos;
                 }).catch(err => {
+                    this.checkAuth(err.response);
                     this.showError = true;
                     if (err.response.data.error === 'no_citizen_created') {
                         this.errorMessage = err.response.data.errorMessage;
@@ -113,6 +115,14 @@
                 return {
                     mediaThumbUrl: '',
                 };
+            },
+            checkAuth(response) {
+                const status = response.status;
+                const data = response.data;
+                if ((status === 401 && data.error === 'no_auth')
+                    || (status === 403 && data.error === 'forbidden')) {
+                    window.location = data.loginUrl;
+                }
             },
             getFixShipName(hangarShipName) {
                 switch (hangarShipName) {

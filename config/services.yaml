@@ -2,6 +2,7 @@ parameters:
     env(REDIS_HOST): 'localhost'
     env(REDIS_PORT): 6379
     locale: 'en'
+    hwi_oauth.authentication.entry_point.oauth.class: 'App\Security\OAuthEntryPoint'
 
 services:
     _defaults:

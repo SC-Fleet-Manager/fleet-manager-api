@@ -17,6 +17,7 @@ use App\Service\CitizenInfosProviderInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,6 +26,9 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * @Route("/profile", name="profile_")
+ */
 class ProfileController extends AbstractController
 {
     private $logger;
@@ -57,7 +61,8 @@ class ProfileController extends AbstractController
     }
 
     /**
-     * @Route("/profile", name="profile", methods={"GET"})
+     * @Route("/", name="index", methods={"GET"})
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
      *
      * Retrieves profile infos : user properties.
      */
@@ -71,6 +76,7 @@ class ProfileController extends AbstractController
 
     /**
      * @Route("/save-preferences", name="save_preferences", methods={"POST"}, condition="request.getContentType() == 'json'")
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
      */
     public function savePreferences(Request $request): Response
     {
@@ -89,6 +95,7 @@ class ProfileController extends AbstractController
 
     /**
      * @Route("/update-handle", name="update_handle", methods={"POST"})
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
      *
      * Update the SC Handle of logged User. Compare the current and target Citizen numbers.
      */
@@ -144,6 +151,7 @@ class ProfileController extends AbstractController
 
     /**
      * @Route("/link-account", name="link_account", methods={"POST"})
+     * @IsGranted("IS_AUTHENTICATED_FULLY"))
      *
      * Link RSI Account (with SC Handle and Bio token) with the actual logged User.
      */

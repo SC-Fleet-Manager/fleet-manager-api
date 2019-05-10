@@ -15,6 +15,7 @@
         "php-http/httplug-bundle": "^1.12",
         "ramsey/uuid": "^3.8",
         "ramsey/uuid-doctrine": "^1.5",
+        "sensio/framework-extra-bundle": "^5.3",
         "symfony/console": "*",
         "symfony/dotenv": "*",
         "symfony/expression-language": "4.2.*",

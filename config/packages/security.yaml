@@ -7,7 +7,7 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         token:
-            pattern: ^/(export)
+            pattern: ^/api/(export)
             stateless: true
             guard:
                 authenticators: ['App\Security\TokenAuthenticator']
@@ -31,8 +31,7 @@ security:
                 remember_me:  true
             logout:
                 path: logout
+            access_denied_handler: App\Security\ApiAccessDeniedHandler
 
     access_control:
-        - { path: ^/login,      roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/connect,    roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/,           roles: IS_AUTHENTICATED_REMEMBERED }
+        - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY }

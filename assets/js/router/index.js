@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import axios from 'axios';
 
 // Containers
 const DefaultContainer = () => import('../containers/DefaultContainer');
@@ -17,7 +18,7 @@ const Login = () => import('../views/pages/Login');
 
 Vue.use(Router);
 
-export default new Router({
+const router = new Router({
     mode: 'hash', // https://router.vuejs.org/api/#mode
     linkActiveClass: 'open active',
     scrollBehavior: () => ({y: 0}),
@@ -27,27 +28,42 @@ export default new Router({
             redirect: '/my-fleet',
             name: 'Home',
             component: DefaultContainer,
+            meta: {
+                requireAuth: true,
+            },
             children: [
                 {
                     path: 'organizations-fleets',
                     name: 'Organizations\' fleets',
-                    component: CorpoFleets
+                    component: CorpoFleets,
+                    meta: {
+                        requireAuth: true,
+                    }
                 },
                 {
                     path: 'my-fleet',
                     name: 'My Fleet',
-                    component: MyFleet
+                    component: MyFleet,
+                    meta: {
+                        requireAuth: true,
+                    }
                 },
                 {
                     path: 'user/:userHandle',
                     name: 'User fleet',
                     component: MyFleet,
-                    props: true
+                    props: true,
+                    meta: {
+                        requireAuth: false,
+                    }
                 },
                 {
                     path: 'profile',
                     name: 'Profile',
-                    component: Profile
+                    component: Profile,
+                    meta: {
+                        requireAuth: true,
+                    }
                 }
             ]
         },
@@ -79,4 +95,25 @@ export default new Router({
             ]
         }
     ]
-})
+});
+router.beforeEach((to, from, next) => {
+    if (!to.meta.requireAuth) {
+        // no need auth
+        next();
+        return;
+    }
+
+    // need auth
+    axios.get('/api/me').then(response => {
+        next();
+    }).catch(err => {
+        const status = err.response.status;
+        const data = err.response.data;
+        if ((status === 401 && data.error === 'no_auth')
+            || (status === 403 && data.error === 'forbidden')) {
+            window.location = data.loginUrl;
+        }
+    });
+});
+
+export default router;

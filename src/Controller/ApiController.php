@@ -15,6 +15,7 @@ use App\Service\CitizenFleetGenerator;
 use App\Service\FleetUploadHandler;
 use App\Service\OrganisationFleetGenerator;
 use Psr\Log\LoggerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -26,6 +27,9 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * @Route("/api", name="api_")
+ */
 class ApiController extends AbstractController
 {
     private $logger;
@@ -53,12 +57,11 @@ class ApiController extends AbstractController
 
     /**
      * @Route("/me", name="me", methods={"GET"})
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      */
     public function me(): Response
     {
-        $user = $this->getUser();
-
-        return $this->json($user, 200, [], ['groups' => 'me:read']);
+        return $this->json($this->security->getUser(), 200, [], ['groups' => 'me:read']);
     }
 
     /**
@@ -73,6 +76,7 @@ class ApiController extends AbstractController
 
     /**
      * @Route("/export", name="export", methods={"POST"}, condition="request.getContentType() == 'json'")
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      */
     public function export(Request $request): Response
     {
@@ -95,6 +99,7 @@ class ApiController extends AbstractController
      * Upload star citizen fleet for one user.
      *
      * @Route("/upload", name="upload", methods={"POST"})
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      */
     public function upload(Request $request, FormFactoryInterface $formFactory): Response
     {
@@ -190,6 +195,7 @@ class ApiController extends AbstractController
      * Returns a downloadable json file.
      *
      * @Route("/create-citizen-fleet-file/{citizenNumber}", name="create_citizen_fleet_file", methods={"GET"})
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      */
     public function createCitizenFleetFile(string $citizenNumber): Response
     {
@@ -217,6 +223,7 @@ class ApiController extends AbstractController
      * Returns a downloadable json file.
      *
      * @Route("/create-organisation-fleet-file/{organisation}", name="create_organisation_fleet_file", methods={"GET"})
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      */
     public function createOrganisationFleetFile(string $organisation): Response
     {
