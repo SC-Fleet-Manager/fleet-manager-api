@@ -36,6 +36,7 @@ monolog:
             excluded_404s:
                  - ^/
             handler: deduplicated
+            excluded_http_codes: [403, 404]
         deduplicated:
             type: deduplication
             time: 30 # no duplicated messages within 30 seconds
@@ -43,7 +44,7 @@ monolog:
         mailer:
             type: swift_mailer
             from_email: 'info@fleet.fallkrom.space'
-            to_email: ['thomas.talbot@fauya.fr', 'vyrtualsynthese@ashuvidz.com']
+            to_email: ['thomas.talbot@fauya.fr']
             subject: '[Fleet Manager] Error : %%message%%'
             formatter:  monolog.formatter.html
             content_type: text/html
