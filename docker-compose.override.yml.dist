@@ -9,37 +9,15 @@ services:
             - ./:/app
         environment:
             # Docker for mac : try remote_host=host.docker.internal instead of remote_connect_back
-            XDEBUG_CONFIG: >-
-                remote_enable=1
-                remote_connect_back=1
-                remote_port=9001
-                idekey=PHPSTORM
+#            XDEBUG_CONFIG: >-
+#                remote_enable=1
+#                remote_connect_back=1
+#                remote_port=9001
+#                idekey=PHPSTORM
     apache:
         volumes:
             - ./public:/app/public
-    php_test:
-        build:
-            context: .
-            target: build_php_dev
-            dockerfile: ./docker/Dockerfile
-        hostname: php_test
-        volumes:
-            - ./:/app
-        environment:
-            - DB_USER=root
-            - DB_PASSWORD=root
-            - DB_HOST=mariadb_test
-            - DB_PORT=3306
-            - DB_NAME=fleet_manager_test
-        networks:
-            - app
-    mariadb_test:
-        image: mariadb:10.3
-        hostname: mariadb_test
-        environment:
-            - MYSQL_ROOT_PASSWORD=root
-            - MYSQL_DATABASE=fleet_manager_test
-        networks:
-            - app
+    smtp:
+        image: schickling/mailcatcher
         ports:
-            - 127.0.0.1:3307:3306
+            - 127.0.0.1:1080:1080 # web-ui

@@ -7,7 +7,6 @@ const DefaultContainer = () => import('../containers/DefaultContainer');
 
 // Views
 const CorpoFleets = () => import('../views/CorpoFleets');
-const UpdateFleetFile = () => import('../views/UpdateFleetFile');
 const Profile = () => import('../views/Profile');
 const MyFleet = () => import('../views/MyFleet');
 

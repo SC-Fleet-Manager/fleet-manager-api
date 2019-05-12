@@ -70,7 +70,13 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
             $shipInfo->manufacturerName = $shipData['manufacturer']['name'];
             $shipInfo->manufacturerCode = $shipData['manufacturer']['code'];
             $shipInfo->mediaUrl = \count($shipData['media']) > 0 ? self::BASE_URL.$shipData['media'][0]['source_url'] ?? null : null;
-            $shipInfo->mediaThumbUrl = \count($shipData['media']) > 0 ? self::BASE_URL.$shipData['media'][0]['images']['store_small'] ?? null : null;
+            if (\count($shipData['media']) > 0) {
+                $mediaUrl = $shipData['media'][0]['images']['store_small'] ?? null;
+                if (strpos($mediaUrl, 'http') !== 0) { // fix some URL... Thanks Turbulent!
+                    $mediaUrl = self::BASE_URL . $mediaUrl;
+                }
+                $shipInfo->mediaThumbUrl = $mediaUrl;
+            }
 
             $shipInfos[$shipInfo->id] = $shipInfo;
         }

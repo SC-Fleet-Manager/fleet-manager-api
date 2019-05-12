@@ -3,17 +3,51 @@ monolog:
         main:
             type: fingers_crossed
             action_level: error
-            handler: nested
+            handler: grouped
             excluded_404s:
-                # regex: exclude all 404 errors from the logs
                 - ^/
-        nested:
+        grouped:
+            type:    group
+            members: [streamed_error, deduplicated]
+        streamed_error:
+            type: stream
+            path: "%kernel.logs_dir%/%kernel.environment%-error.log"
+        #######
+        filter:
+            type: filter
+            handler: streamed
+            min_level: 'info'
+            max_level: 'warning'
+        streamed:
             type: stream
             path: "%kernel.logs_dir%/%kernel.environment%.log"
-            level: debug
-#        mail:
-#            type: mail
-#            level: error
+        #######
+#        elasticsearch:
+#            elasticsearch:
+#                host: elasticsearch
+#                port: 9200
+#            index: monolog
+#            document_type: logs
+#            level: info
+        ########
+        fingers_mail:
+            type: fingers_crossed
+            action_level: error
+            excluded_404s:
+                 - ^/
+            handler: deduplicated
+        deduplicated:
+            type: deduplication
+            time: 30 # no duplicated messages within 30 seconds
+            handler: mailer
+        mailer:
+            type: swift_mailer
+            from_email: 'info@fleet.fallkrom.space'
+            to_email: ['thomas.talbot@fauya.fr', 'vyrtualsynthese@ashuvidz.com']
+            subject: '[Fleet Manager] Error : %%message%%'
+            formatter:  monolog.formatter.html
+            content_type: text/html
+        ########
         console:
             type: console
             process_psr_3_messages: false

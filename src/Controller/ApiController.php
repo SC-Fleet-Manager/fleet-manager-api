@@ -130,6 +130,7 @@ class ApiController extends AbstractController
         }
 
         $fleetFileContents = file_get_contents($fleetUpload->fleetFile->getRealPath());
+        $fleetFileContents = str_replace("\xEF\xBB\xBF",'',$fleetFileContents); // remove the utf-8 BOM
         $fleetData = \json_decode($fleetFileContents, true);
         if (JSON_ERROR_NONE !== $jsonError = json_last_error()) {
             $this->logger->error('Failed to decode json from fleet file', ['json_error' => $jsonError, 'fleet_file_contents' => $fleetFileContents]);

@@ -7,6 +7,7 @@
 <script>
     import 'select2';
     import 'select2/dist/css/select2.min.css';
+
     export default {
         name: 'select2',
         props: ['options', 'value', 'multiple'],

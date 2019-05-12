@@ -1,18 +1,24 @@
 <template>
     <b-form @submit="onSubmit">
-        <b-alert variant="info" show>To <strong>generate your fleet file</strong>, you need to install the browser plugin <strong>Hangar EXPLORer</strong> :
-            <a target="_blank" href="https://chrome.google.com/webstore/detail/star-citizen-hangar-xplor/bhkgemjdepodofcnmekdobmmbifemhkc">Chrome</a> - <a target="_blank" href="https://addons.mozilla.org/en-US/firefox/addon/star-citizen-hangar-xplorer/">Firefox</a> - <a target="_blank" href="https://addons.opera.com/fr/extensions/details/star-citizen-hangar-xplorer/">Opera</a>.<br/>
-            Then go to <a target="_blank" href="https://robertsspaceindustries.com/account/pledges">your Hangar in your RSI account</a> and click on <strong>Download JSON</strong> button.</b-alert>
-        <b-alert variant="danger" :show="showError" v-html="errorMessage"></b-alert>
-        <b-form-group>
-            <b-form-file id="form_fleetfile"
-                         v-model="form.fleetFile"
-                         :state="Boolean(form.fleetFile)"
-                         required
-                         placeholder="Choose/Drop your fleet file (.json)"
-                         accept=".json"></b-form-file>
-        </b-form-group>
-        <b-button type="submit" :disabled="submitDisabled" variant="success">Update my fleet</b-button>
+        <b-alert variant="info" show>In order to <strong>upload your fleet</strong>, you need to use <em>Fleet Manager</em> browser extension:
+            <a target="_blank" href="https://fleet-extension.fallkrom.space/fleet_manager_extension-latest.xpi">Firefox</a> - <a target="_blank" href="https://chrome.google.com/webstore/detail/fleet-manager-extension/hbbadomkekhkhemjjmhkhgiokjhpobhk">Chrome</a>.<br/>
+            Then go to <a target="_blank" href="https://robertsspaceindustries.com/account/pledges">your Hangar in your RSI account</a> and click on <strong>Export to Fleet Manager</strong> button.</b-alert>
+        <b-button v-b-toggle.collapse-upload-manual variant="primary">Nope! I want to upload it myself.</b-button>
+        <b-collapse id="collapse-upload-manual" class="mt-2">
+            <b-alert variant="info" show>In order to <strong>generate your fleet file</strong>, you need to use <em>Hangar EXPLORer</em> browser extension:
+                <a target="_blank" href="https://addons.mozilla.org/en-US/firefox/addon/star-citizen-hangar-xplorer/">Firefox</a> - <a target="_blank" href="https://chrome.google.com/webstore/detail/star-citizen-hangar-xplor/bhkgemjdepodofcnmekdobmmbifemhkc">Chrome</a>.<br/>
+                Then go to <a target="_blank" href="https://robertsspaceindustries.com/account/pledges">your Hangar in your RSI account</a> and click on <strong>Download JSON</strong> button.</b-alert>
+            <b-alert variant="danger" :show="showError" v-html="errorMessage"></b-alert>
+            <b-form-group>
+                <b-form-file id="form_fleetfile"
+                             v-model="form.fleetFile"
+                             :state="Boolean(form.fleetFile)"
+                             required
+                             placeholder="Choose/Drop your fleet file (.json)"
+                             accept=".json"></b-form-file>
+            </b-form-group>
+            <b-button type="submit" :disabled="submitDisabled" variant="success">Update my fleet</b-button>
+        </b-collapse>
     </b-form>
 </template>
 

@@ -125,6 +125,7 @@
                 }
             },
             getFixShipName(hangarShipName) {
+                // case '<Display name>: return '<ShipMatrix name>';'
                 switch (hangarShipName) {
                     case '315p Explorer': return '315p';
                     case '325a Fighter': return '325a';

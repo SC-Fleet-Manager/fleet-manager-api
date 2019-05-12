@@ -41,7 +41,6 @@
         "build": "encore production"
     },
     "browserslist": [
-        "last 2 versions",
-        "ios >= 8"
+        "last 2 versions"
     ]
 }
