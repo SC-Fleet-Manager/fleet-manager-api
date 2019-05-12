@@ -28,3 +28,7 @@ services:
 
     App\Service\CitizenInfosProviderInterface: '@App\Service\ApiCitizenInfosProvider'
     App\Service\ShipInfosProviderInterface: '@App\Service\ApiShipInfosProvider'
+
+    App\Security\Listener\SuccessAuthenticationListener:
+        tags:
+            - { name: 'kernel.event_listener', event: 'security.authentication.success', method: 'onAuthenticationSuccess' }

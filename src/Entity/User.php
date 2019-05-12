@@ -80,6 +80,13 @@ class User implements UserInterface
      */
     private $createdAt;
 
+    /**
+     * @var \DateTimeImmutable
+     *
+     * @ORM\Column(type="datetimetz_immutable", nullable=true)
+     */
+    private $lastConnectedAt;
+
     public function __construct(?UuidInterface $id = null)
     {
         $this->id = $id;
@@ -205,6 +212,18 @@ class User implements UserInterface
     public function setCreatedAt(\DateTimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getLastConnectedAt(): ?\DateTimeImmutable
+    {
+        return $this->lastConnectedAt;
+    }
+
+    public function setLastConnectedAt(?\DateTimeImmutable $lastConnectedAt): self
+    {
+        $this->lastConnectedAt = $lastConnectedAt;
 
         return $this;
     }
