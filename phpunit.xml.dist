@@ -20,6 +20,17 @@
         <env name="DISCORD_ID" value=""/>
         <env name="DISCORD_SECRET" value=""/>
         <!-- ###- hwi/oauth-bundle ### -->
+
+        <!-- ###+ symfony/swiftmailer-bundle ### -->
+        <!-- For Gmail as a transport, use: "gmail://username:password@localhost" -->
+        <!-- For a generic SMTP server, use: "smtp://localhost:25?encryption=&auth_mode=" -->
+        <!-- Delivery is disabled by default via "null://localhost" -->
+        <env name="MAILER_URL" value="null://localhost"/>
+        <!-- ###- symfony/swiftmailer-bundle ### -->
+
+        <!-- ###+ sentry/sentry-symfony ### -->
+        <env name="SENTRY_DSN" value=""/>
+        <!-- ###- sentry/sentry-symfony ### -->
     </php>
 
     <testsuites>

@@ -80,6 +80,9 @@
             "ref": "70062abc2cd58794d2a90274502f81b55cd9951b"
         }
     },
+    "egulias/email-validator": {
+        "version": "2.1.7"
+    },
     "fabpot/goutte": {
         "version": "v3.2.3"
     },
@@ -122,6 +125,9 @@
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
     },
+    "jean85/pretty-package-versions": {
+        "version": "1.2"
+    },
     "monolog/monolog": {
         "version": "1.23.0"
     },
@@ -148,6 +154,9 @@
     },
     "php-http/client-common": {
         "version": "1.8.1"
+    },
+    "php-http/curl-client": {
+        "version": "v1.7.1"
     },
     "php-http/discovery": {
         "version": "1.4.0"
@@ -196,6 +205,9 @@
     },
     "psr/container": {
         "version": "1.0.0"
+    },
+    "psr/http-factory": {
+        "version": "1.0.1"
     },
     "psr/http-message": {
         "version": "1.0.1"
@@ -247,6 +259,27 @@
         "files": [
             "config/packages/sensio_framework_extra.yaml"
         ]
+    },
+    "sentry/sdk": {
+        "version": "2.0.2"
+    },
+    "sentry/sentry": {
+        "version": "2.0.1"
+    },
+    "sentry/sentry-symfony": {
+        "version": "3.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "3.0",
+            "ref": "9746f0823302d7980e5273ef7a69ef3f5ac80914"
+        },
+        "files": [
+            "config/packages/sentry.yaml"
+        ]
+    },
+    "swiftmailer/swiftmailer": {
+        "version": "v6.2.1"
     },
     "symfony/asset": {
         "version": "v4.1.7"
@@ -380,6 +413,9 @@
     "symfony/polyfill-intl-icu": {
         "version": "v1.10.0"
     },
+    "symfony/polyfill-intl-idn": {
+        "version": "v1.11.0"
+    },
     "symfony/polyfill-mbstring": {
         "version": "v1.9.0"
     },
@@ -436,6 +472,20 @@
     },
     "symfony/stopwatch": {
         "version": "v4.1.6"
+    },
+    "symfony/swiftmailer-bundle": {
+        "version": "2.5",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "2.5",
+            "ref": "3db029c03e452b4a23f7fc45cec7c922c2247eb8"
+        },
+        "files": [
+            "config/packages/dev/swiftmailer.yaml",
+            "config/packages/swiftmailer.yaml",
+            "config/packages/test/swiftmailer.yaml"
+        ]
     },
     "symfony/templating": {
         "version": "v4.1.7"
@@ -517,6 +567,9 @@
     },
     "zendframework/zend-code": {
         "version": "3.3.1"
+    },
+    "zendframework/zend-diactoros": {
+        "version": "2.1.2"
     },
     "zendframework/zend-eventmanager": {
         "version": "3.2.1"
