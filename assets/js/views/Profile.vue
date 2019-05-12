@@ -4,8 +4,10 @@
             <b-col col md="6" v-if="showLinkAccount">
                 <b-card header="Link your RSI Account">
                     <b-alert variant="info" show>
-                        To link your Star Citizen account, copy-paste the following token into your "Brief Bio" from your <a target="_blank" href="https://robertsspaceindustries.com/account/profile">RSI profile</a>. Then enter your Handle and validate.
+                        To link your Star Citizen account, copy-paste the following token into your "Short Bio" in your <a target="_blank" href="https://robertsspaceindustries.com/account/profile">RSI profile</a>. Then enter your Handle and validate.
                     </b-alert>
+
+                    <p><img src="../../img/sc-handle.png" alt="How to retrieve your Handle" /></p>
 
                     <b-form @submit="onSubmit">
                         <b-alert variant="danger" :show="showError" v-html="errorMessage"></b-alert>
@@ -128,9 +130,7 @@
                 this.fleetLinkCopied = true;
             },
             refreshProfile() {
-                axios.get('/profile', {
-                    params: {}
-                }).then(response => {
+                axios.get('/profile/').then(response => {
                     this.citizen = response.data.citizen;
                     this.showLinkAccount = !this.citizen;
                     this.showUpdateHandle = !!this.citizen;
@@ -155,11 +155,7 @@
                 this.showError = false;
                 this.errorMessage = 'An error has been occurred. Please try again in a moment.';
                 this.submitDisabled = true;
-                axios({
-                    method: 'post',
-                    url: '/profile/link-account',
-                    data: form,
-                }).then(response => {
+                axios.post('/profile/link-account', form).then(response => {
                     this.refreshProfile();
                     toastr.success('Your RSI account has been successfully linked! You can remove the token from your bio.');
                     this.submitDisabled = false;
@@ -178,6 +174,10 @@
                 });
             },
             getMyFleetLink() {
+                if (this.citizen === null) {
+                    return '';
+                }
+
                 return `${window.location.protocol}//${window.location.host}/#/user/${this.citizen.actualHandle.handle}`;
             },
             checkAuth(response) {
