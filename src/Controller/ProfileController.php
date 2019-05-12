@@ -139,7 +139,7 @@ class ProfileController extends AbstractController
             }
 
             $citizen->setActualHandle(new HandleSC($updateHandle->handleSC));
-            $this->citizenRepository->update($citizen);
+            $this->entityManager->flush();
         } catch (NotFoundHandleSCException $e) {
             return $this->json([
                 'error' => 'not_found_handle',
@@ -199,7 +199,7 @@ class ProfileController extends AbstractController
                 'errorMessage' => sprintf('The SC handle %s does not exist.', $linkAccount->handleSC),
             ], 400);
         } catch (AlreadyLinkedCitizenException $e) {
-            $this->logger->error($e->getMessage(), ['exception' => $e]);
+            $this->logger->error($e->getMessage(), ['exception' => $e, 'user' => $user]);
 
             return $this->json([
                 'error' => 'already_linked_citizen',
