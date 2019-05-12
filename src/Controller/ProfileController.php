@@ -139,7 +139,7 @@ class ProfileController extends AbstractController
             }
 
             $citizen->setActualHandle(new HandleSC($updateHandle->handleSC));
-            $this->citizenRepository->update($citizen);
+            $this->entityManager->flush();
         } catch (NotFoundHandleSCException $e) {
             return $this->json([
                 'error' => 'not_found_handle',
