@@ -39,7 +39,7 @@ monolog:
             excluded_http_codes: [403, 404]
         deduplicated:
             type: deduplication
-            time: 30 # no duplicated messages within 30 seconds
+            time: 60 # no duplicated messages within 60 seconds
             handler: mailer
         mailer:
             type: swift_mailer
