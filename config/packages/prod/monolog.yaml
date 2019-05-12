@@ -33,8 +33,6 @@ monolog:
         fingers_mail:
             type: fingers_crossed
             action_level: error
-            excluded_404s:
-                 - ^/
             handler: deduplicated
             excluded_http_codes: [403, 404]
         deduplicated:
