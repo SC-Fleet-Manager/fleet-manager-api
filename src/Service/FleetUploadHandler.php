@@ -69,7 +69,7 @@ class FleetUploadHandler
 
         $fleet = new Fleet(Uuid::uuid4());
         $fleet->setOwner($citizen);
-        $fleet->setVersion($lastVersionFleet->getVersion() + 1);
+        $fleet->setVersion($lastVersionFleet === null ? 1 : ($lastVersionFleet->getVersion() + 1));
         foreach ($fleetData as $shipData) {
             $ship = new Ship(Uuid::uuid4());
             $ship
