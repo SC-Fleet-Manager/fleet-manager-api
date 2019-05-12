@@ -6,6 +6,7 @@ use App\Domain\CitizenInfos;
 use App\Domain\HandleSC;
 use App\Entity\Citizen;
 use App\Entity\User;
+use App\Exception\AlreadyLinkedCitizenException;
 use App\Exception\NotFoundHandleSCException;
 use App\Form\Dto\LinkAccount;
 use App\Form\Dto\UpdateHandle;
@@ -197,6 +198,13 @@ class ProfileController extends AbstractController
                 'error' => 'not_found_handle',
                 'errorMessage' => sprintf('The SC handle %s does not exist.', $linkAccount->handleSC),
             ], 400);
+        } catch (AlreadyLinkedCitizenException $e) {
+            $this->logger->error($e->getMessage(), ['exception' => $e]);
+
+            return $this->json([
+                'error' => 'already_linked_citizen',
+                'errorMessage' => sprintf('The citizen %s is already linked to another Discord user. Are you connected to another Discord account?', $e->citizen->getActualHandle()),
+            ], 400);
         }
 
         return $this->json(null, 204);
@@ -204,10 +212,18 @@ class ProfileController extends AbstractController
 
     private function attachCitizenToUser(User $user, CitizenInfos $citizenInfos): void
     {
+        /** @var Citizen|null $citizen */
         $citizen = $this->citizenRepository->findOneBy(['actualHandle' => $citizenInfos->handle]);
+
         $isNew = $citizen === null;
         if ($isNew) {
             $citizen = new Citizen(Uuid::uuid4());
+        } else {
+            /** @var User|null $userWithThatCitizen */
+            $userWithThatCitizen = $this->userRepository->findOneBy(['citizen' => $citizen]);
+            if ($userWithThatCitizen !== null) {
+                throw new AlreadyLinkedCitizenException($userWithThatCitizen, $citizen, sprintf('The citizen "%s" is already linked with user "%s".', $citizen->getId(), $userWithThatCitizen->getId()));
+            }
         }
 
         $citizen
