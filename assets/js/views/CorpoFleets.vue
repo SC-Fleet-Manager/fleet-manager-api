@@ -15,11 +15,13 @@
                     <b-button download :disabled="selectedSid == null" class="mb-3" :href="'/create-organisation-fleet-file/'+selectedSid" variant="success"><i class="icon-cloud-download"></i> Export entire fleet of <strong>{{ selectedSid != null ? selectedSid : 'N/A' }}</strong> (.json)</b-button>
                     <div class="mb-1">
                         <label style="width: 50%">Citizens :
-                        <select2 :options="citizens" v-model="citizenSelected" multiple style="width: 50%" @input="refreshTable"></select2></label>
+                            <select2 :options="citizens" v-model="citizenSelected" multiple style="width: 50%" @input="refreshTable"></select2>
+                        </label>
                     </div>
                     <div class="mb-3">
                         <label style="width: 50%">Ships :
-                        <select2 :options="ships" v-model="shipSelected" multiple style="width: 50%" @input="refreshTable"></select2></label>
+                            <select2 :options="ships" v-model="shipSelected" multiple style="width: 50%" @input="refreshTable"></select2>
+                        </label>
                     </div>
                     <b-table small foot-clone hover striped bordered responsive="lg" :items="fleets" :fields="tableHeaders"></b-table>
                 </b-card>
@@ -34,7 +36,7 @@
     import select2 from '../components/Select2';
 
     export default {
-        name: 'dashboard',
+        name: 'organizations-fleets',
         components: {select2},
         data: function () {
             return {
@@ -63,7 +65,6 @@
             refreshProfile() {
                 axios.get('/profile').then(response => {
                     this.citizen = response.data.citizen;
-                    console.log();
                     if (this.citizen !== null && this.citizen.organisations.length > 0) {
                         this.selectedSid = this.citizen.organisations[0];
                     }
