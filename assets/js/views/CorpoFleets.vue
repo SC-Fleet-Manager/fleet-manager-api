@@ -12,7 +12,7 @@
                             </b-form-group>
                         </b-col>
                     </b-row>
-                    <b-button download :disabled="selectedSid == null" class="mb-3" :href="'/create-organisation-fleet-file/'+selectedSid" variant="success"><i class="icon-cloud-download"></i> Export entire fleet of <strong>{{ selectedSid != null ? selectedSid : 'N/A' }}</strong> (.json)</b-button>
+                    <b-button download :disabled="selectedSid == null" class="mb-3" :href="'/api/create-organisation-fleet-file/'+selectedSid" variant="success"><i class="icon-cloud-download"></i> Export entire fleet of <strong>{{ selectedSid != null ? selectedSid : 'N/A' }}</strong> (.json)</b-button>
                     <div class="mb-1">
                         <label style="width: 50%">Citizens :
                             <select2 :options="citizens" v-model="citizenSelected" multiple style="width: 50%" @input="refreshTable"></select2>
