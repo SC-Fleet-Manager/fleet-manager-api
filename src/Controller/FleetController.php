@@ -101,7 +101,7 @@ class FleetController extends AbstractController
         return $this->json([
             'fleet' => $fleet,
             'shipInfos' => $shipInfos,
-        ], 200, [], ['groups' => ['my-fleet']]);
+        ], 200, [], ['groups' => ['public-fleet']]);
     }
 
     /**

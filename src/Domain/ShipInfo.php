@@ -12,69 +12,69 @@ class ShipInfo
     /**
      * @var string
      *
-     * @Groups({"my-fleet"})
+     * @Groups({"my-fleet", "public-fleet"})
      */
     public $id;
 
     /**
      * @var string self::FLIGHT_READY|self::NOT_READY
      *
-     * @Groups({"my-fleet"})
+     * @Groups({"my-fleet", "public-fleet"})
      */
     public $productionStatus;
 
     /**
      * @var int
-     * @Groups({"my-fleet"})
+     * @Groups({"my-fleet", "public-fleet"})
      */
     public $minCrew;
 
     /**
      * @var int
      *
-     * @Groups({"my-fleet"})
+     * @Groups({"my-fleet", "public-fleet"})
      */
     public $maxCrew;
 
     /**
      * @var string
      *
-     * @Groups({"my-fleet"})
+     * @Groups({"my-fleet", "public-fleet"})
      */
     public $name;
 
     /**
      * @var string
      *
-     * @Groups({"my-fleet"})
+     * @Groups({"my-fleet", "public-fleet"})
      */
     public $pledgeUrl;
 
     /**
      * @var string
      *
-     * @Groups({"my-fleet"})
+     * @Groups({"my-fleet", "public-fleet"})
      */
     public $manufacturerName;
 
     /**
      * @var string
      *
-     * @Groups({"my-fleet"})
+     * @Groups({"my-fleet", "public-fleet"})
      */
     public $manufacturerCode;
 
     /**
      * @var string
      *
-     * @Groups({"my-fleet"})
+     * @Groups({"my-fleet", "public-fleet"})
      */
     public $mediaUrl;
 
     /**
      * @var string
      *
-     * @Groups({"my-fleet"})
+     * @Groups({"my-fleet", "public-fleet"})
      */
     public $mediaThumbUrl;
 }

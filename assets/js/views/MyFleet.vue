@@ -21,7 +21,7 @@
                                 <p class="card-text">
                                     <strong>Manufacturer</strong>: {{ ship.manufacturer }}<br/>
                                     <strong>LTI</strong>: <b-badge variant="success" v-if="ship.insured">Yes</b-badge><b-badge variant="danger" v-else>No</b-badge><br/>
-                                    <strong>Cost</strong>: &dollar;{{ ship.cost }}<br/>
+                                    <span v-if="ship.cost !== undefined"><strong>Cost</strong>: &dollar;{{ ship.cost }}<br/></span>
                                     <strong>Pledge date</strong>: {{ ship.pledgeDate|date('LL') }}<br/>
                                 </p>
                             </b-card>
