@@ -25,6 +25,6 @@ class HandleSC
 
     public function getHandle(): string
     {
-        return (string) $this->handle;
+        return $this->handle;
     }
 }

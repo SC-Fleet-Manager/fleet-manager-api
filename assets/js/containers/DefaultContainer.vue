@@ -34,6 +34,7 @@
                 <span class="ml-1">&copy; 2018 - {{ actualYear }}</span>
             </div>
             <div class="ml-auto">
+                <a href="https://discord.gg/yCWj2b" target="_blank">Fleet Manager Discord</a> -
                 <a target="_blank" href="https://github.com/Ioni14/starcitizen-fleet-manager/issues">Bugs, feedbacks,
                     ideas</a>
                 -

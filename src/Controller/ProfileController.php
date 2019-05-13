@@ -198,13 +198,6 @@ class ProfileController extends AbstractController
                 'error' => 'not_found_handle',
                 'errorMessage' => sprintf('The SC handle %s does not exist.', $linkAccount->handleSC),
             ], 400);
-        } catch (AlreadyLinkedCitizenException $e) {
-            $this->logger->error($e->getMessage(), ['exception' => $e, 'user' => $user]);
-
-            return $this->json([
-                'error' => 'already_linked_citizen',
-                'errorMessage' => sprintf('The citizen %s is already linked to another Discord user. Are you connected to another Discord account?', $e->citizen->getActualHandle()),
-            ], 400);
         }
 
         return $this->json(null, 204);
@@ -221,8 +214,18 @@ class ProfileController extends AbstractController
         } else {
             /** @var User|null $userWithThatCitizen */
             $userWithThatCitizen = $this->userRepository->findOneBy(['citizen' => $citizen]);
+
             if ($userWithThatCitizen !== null) {
-                throw new AlreadyLinkedCitizenException($userWithThatCitizen, $citizen, sprintf('The citizen "%s" is already linked with user "%s".', $citizen->getId(), $userWithThatCitizen->getId()));
+                $this->logger->warning(sprintf('The citizen "%s" is already linked with user "%s". It has been linked to the new user "%s".', $citizen->getActualHandle(), $userWithThatCitizen->getNickname(), $user->getNickname()), [
+                    'citizenId' => $citizen->getId(),
+                    'citizenHandle' => $citizen->getActualHandle(),
+                    'newUserId' => $user->getId(),
+                    'newUserNickname' => $user->getNickname(),
+                    'oldUserId' => $userWithThatCitizen->getId(),
+                    'oldUserNickname' => $userWithThatCitizen->getNickname(),
+                ]);
+                $userWithThatCitizen->setCitizen(null); // detach for old user
+                $this->entityManager->flush();
             }
         }
 
