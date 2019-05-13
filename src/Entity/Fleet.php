@@ -49,11 +49,11 @@ class Fleet
      *
      * @ORM\OneToMany(targetEntity="App\Entity\Ship", mappedBy="fleet", fetch="EAGER", cascade={"all"})
      * @ORM\JoinColumn(onDelete="CASCADE")
-     * @Groups({"my-fleet"})
+     * @Groups({"my-fleet", "public-fleet"})
      */
     private $ships;
 
-    public function __construct(?UuidInterface $id)
+    public function __construct(?UuidInterface $id = null)
     {
         $this->id = $id;
         $this->version = 0;

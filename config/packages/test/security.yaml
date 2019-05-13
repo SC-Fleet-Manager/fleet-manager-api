@@ -7,7 +7,8 @@ security:
                 users:
                     user:  { password: '123456', roles: [ 'ROLE_USER' ] }
     firewalls:
+        token:
+            provider: in_memory
         main:
             anonymous: true
-            http_basic: ~
             provider: in_memory

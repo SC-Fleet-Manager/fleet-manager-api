@@ -4,8 +4,6 @@ parameters:
 
 hwi_oauth:
     firewall_names: [main]
-
-    # https://github.com/hwi/HWIOAuthBundle/blob/master/Resources/doc/2-configuring_resource_owners.md
     resource_owners:
         discord:
             type:                oauth2

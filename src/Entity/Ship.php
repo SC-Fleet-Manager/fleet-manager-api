@@ -16,7 +16,7 @@ class Ship
      *
      * @ORM\Id()
      * @ORM\Column(type="uuid", unique=true)
-     * @Groups({"my-fleet"})
+     * @Groups({"my-fleet", "public-fleet"})
      */
     private $id;
 
@@ -31,7 +31,7 @@ class Ship
      * @var string
      *
      * @ORM\Column(type="string", length=255)
-     * @Groups({"my-fleet"})
+     * @Groups({"my-fleet", "public-fleet"})
      */
     private $name;
 
@@ -39,7 +39,7 @@ class Ship
      * @var string
      *
      * @ORM\Column(type="string", length=255)
-     * @Groups({"my-fleet"})
+     * @Groups({"my-fleet", "public-fleet"})
      */
     private $manufacturer;
 
@@ -47,7 +47,7 @@ class Ship
      * @var \DateTimeImmutable
      *
      * @ORM\Column(type="datetime_immutable", nullable=true)
-     * @Groups({"my-fleet"})
+     * @Groups({"my-fleet", "public-fleet"})
      */
     private $pledgeDate;
 
@@ -63,7 +63,7 @@ class Ship
      * @var bool
      *
      * @ORM\Column(type="boolean", options={"default":false})
-     * @Groups({"my-fleet"})
+     * @Groups({"my-fleet", "public-fleet"})
      */
     private $insured;
 
@@ -74,7 +74,7 @@ class Ship
      */
     private $fleet;
 
-    public function __construct(?UuidInterface $id)
+    public function __construct(?UuidInterface $id = null)
     {
         $this->id = $id;
         $this->insured = false;

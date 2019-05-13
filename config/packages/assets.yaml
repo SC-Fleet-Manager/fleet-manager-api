@@ -1,8 +1,3 @@
-parameters:
-    env(ASSETS_BASE_URL): '//' # hack for default base_url
-
 framework:
     assets:
         json_manifest_path: '%kernel.project_dir%/public/build/manifest.json'
-        base_urls:
-            - '%env(ASSETS_BASE_URL)%'

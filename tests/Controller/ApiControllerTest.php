@@ -22,7 +22,7 @@ class ApiControllerTest extends WebTestCase
 
     public function testValidUpload(): void
     {
-        file_put_contents('/tmp/test-fleet.json', <<<EOT
+        file_put_contents(sys_get_temp_dir().'/test-fleet.json', <<<EOT
 [
   {
     "manufacturer": "Drake",
@@ -54,7 +54,7 @@ EOT
         $client->request('POST', '/upload', [
 //            'handleSC' => 'not-yet-persisted',
         ], [
-            'fleetFile' => new UploadedFile('/tmp/test-fleet.json', 'test-fleet.json', 'application/json', null),
+            'fleetFile' => new UploadedFile(sys_get_temp_dir().'/test-fleet.json', 'test-fleet.json', 'application/json', null),
         ]);
         // TODO : persist User fixtures
 

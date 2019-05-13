@@ -63,7 +63,7 @@ class Citizen
      */
     private $bio;
 
-    public function __construct(?UuidInterface $id)
+    public function __construct(?UuidInterface $id = null)
     {
         $this->id = $id;
         $this->organisations = [];
