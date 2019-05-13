@@ -3,7 +3,7 @@ parameters:
     env(DB_PASSWORD): ''
     env(DB_HOST): 'localhost'
     env(DB_PORT): 3306
-    env(DB_NAME): 'sc-fleet-manager'
+    env(DB_NAME): 'fleet_manager'
 
 doctrine:
     dbal:

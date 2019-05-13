@@ -7,7 +7,7 @@ use Doctrine\Migrations\AbstractMigration;
 
 final class Version20190505124924 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql('ALTER TABLE ship DROP FOREIGN KEY FK_FA30EB247E3C61F9');
         $this->addSql('DROP INDEX IDX_FA30EB247E3C61F9 ON ship');
@@ -17,7 +17,7 @@ final class Version20190505124924 extends AbstractMigration
         $this->addSql('ALTER TABLE citizen CHANGE organisations organisations JSON NOT NULL');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->addSql('ALTER TABLE citizen CHANGE organisations organisations LONGTEXT NOT NULL COLLATE utf8mb4_bin');
         $this->addSql('ALTER TABLE fleet CHANGE owner_id owner_id CHAR(36) DEFAULT \'NULL\' COLLATE utf8mb4_unicode_ci COMMENT \'(DC2Type:uuid)\', CHANGE upload_date upload_date DATETIME NOT NULL');

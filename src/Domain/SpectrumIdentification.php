@@ -28,6 +28,6 @@ class SpectrumIdentification
 
     public function getSid(): string
     {
-        return (string) $this->sid;
+        return $this->sid;
     }
 }

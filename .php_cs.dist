@@ -1,0 +1,36 @@
+<?php
+
+return PhpCsFixer\Config::create()
+    ->setRiskyAllowed(true)
+    ->setRules(array(
+        '@Symfony' => true,
+        '@PHP71Migration' => true,
+        'combine_consecutive_unsets' => true,
+        'array_syntax' => array('syntax' => 'short'),
+        'no_extra_consecutive_blank_lines' => array('break', 'continue', 'extra', 'return', 'throw', 'use', 'parenthesis_brace_block', 'square_brace_block', 'curly_brace_block'),
+        'no_useless_else' => true,
+        'no_useless_return' => true,
+        'ordered_imports' => true,
+        'phpdoc_add_missing_param_annotation' => true,
+        'phpdoc_to_comment' => false,
+        'phpdoc_var_without_name' => false,
+        'pow_to_exponentiation' => false,
+        'random_api_migration' => false,
+        'yoda_style' => false,
+        'psr4' => true,
+        'function_to_constant' => true,
+        'is_null' => true,
+        'modernize_types_casting' => true,
+        'no_alias_functions' => true,
+        'no_homoglyph_names' => true,
+        'non_printable_character' => [
+            'use_escape_sequences_in_strings' => true,
+        ],
+        'self_accessor' => true,
+    ))
+    ->setFinder(
+        PhpCsFixer\Finder::create()
+            ->exclude('vendor/')
+            ->in(__DIR__)
+    )
+;

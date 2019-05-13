@@ -13,11 +13,10 @@ npm-debug.log
 yarn-error.log
 ###< symfony/webpack-encore-pack ###
 
+/.php_cs.cache
 /docker-compose.override.yml
 
 ###> symfony/phpunit-bridge ###
 .phpunit
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
-
-.idea

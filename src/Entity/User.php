@@ -99,17 +99,17 @@ class User implements UserInterface
         return $this->id;
     }
 
-    public function getRoles()
+    public function getRoles(): array
     {
         return ['ROLE_USER'];
     }
 
-    public function getPassword()
+    public function getPassword(): ?string
     {
         return null;
     }
 
-    public function getSalt()
+    public function getSalt(): ?string
     {
         return null;
     }
@@ -127,7 +127,7 @@ class User implements UserInterface
         return $this->discordId;
     }
 
-    public function eraseCredentials()
+    public function eraseCredentials(): void
     {
     }
 
@@ -196,7 +196,7 @@ class User implements UserInterface
         if (in_array($publicChoice, [
             self::PUBLIC_CHOICE_PRIVATE,
             self::PUBLIC_CHOICE_ORGANIZATION,
-            self::PUBLIC_CHOICE_PUBLIC
+            self::PUBLIC_CHOICE_PUBLIC,
         ], true)) {
             $this->publicChoice = $publicChoice;
         }

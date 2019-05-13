@@ -74,7 +74,7 @@ class Ship
      */
     private $fleet;
 
-    public function __construct(?UuidInterface $id)
+    public function __construct(?UuidInterface $id = null)
     {
         $this->id = $id;
         $this->insured = false;

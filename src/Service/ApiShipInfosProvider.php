@@ -73,7 +73,7 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
             if (\count($shipData['media']) > 0) {
                 $mediaUrl = $shipData['media'][0]['images']['store_small'] ?? null;
                 if (strpos($mediaUrl, 'http') !== 0) { // fix some URL... Thanks Turbulent!
-                    $mediaUrl = self::BASE_URL . $mediaUrl;
+                    $mediaUrl = self::BASE_URL.$mediaUrl;
                 }
                 $shipInfo->mediaThumbUrl = $mediaUrl;
             }

@@ -33,13 +33,13 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
 
     public function retrieveInfos(HandleSC $handleSC): CitizenInfos
     {
-        $crawler = $this->client->request('GET', self::BASE_URL . '/citizens/' . $handleSC);
+        $crawler = $this->client->request('GET', self::BASE_URL.'/citizens/'.$handleSC);
         $profileCrawler = $crawler->filter('#public-profile');
 
         $avatarUrl = null;
         $avatarCrawler = $profileCrawler->filter('.profile .thumb img');
         if ($avatarCrawler->count() > 0) {
-            $avatarUrl = self::BASE_URL . $avatarCrawler->attr('src');
+            $avatarUrl = self::BASE_URL.$avatarCrawler->attr('src');
         }
 
         $citizenNumber = null;
@@ -61,7 +61,7 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
         }
 
         $sids = [];
-        $crawler = $this->client->request('GET', self::BASE_URL . '/citizens/' . $handleSC . '/organizations');
+        $crawler = $this->client->request('GET', self::BASE_URL.'/citizens/'.$handleSC.'/organizations');
         $sidCrawler = $crawler->filterXPath('//p[contains(.//*/text(), "Spectrum Identification (SID)")]/*[contains(@class, "value")]');
         if ($sidCrawler->count() > 0) {
             $sids = $sidCrawler->each(function (Crawler $node) {
@@ -86,7 +86,7 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
         $ci->registered = $enlisted;
 
         $this->logger->info('Citizen infos retrieved.', [
-            'handle' => (string)$handleSC,
+            'handle' => (string) $handleSC,
             'citizen_number' => $citizenNumber,
         ]);
 

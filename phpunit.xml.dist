@@ -2,7 +2,7 @@
 
 <!-- https://phpunit.de/manual/current/en/appendixes.configuration.html -->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/6.5/phpunit.xsd"
+         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/7.5/phpunit.xsd"
          backupGlobals="false"
          colors="true"
          bootstrap="vendor/autoload.php"
@@ -14,7 +14,7 @@
         <env name="APP_SECRET" value="s$cretf0rt3st" />
         <env name="SHELL_VERBOSITY" value="-1" />
         <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak_vendors" />
-        <env name="SYMFONY_PHPUNIT_VERSION" value="6.5" />
+        <env name="SYMFONY_PHPUNIT_VERSION" value="7.5" />
 
         <!-- ###+ hwi/oauth-bundle ### -->
         <env name="DISCORD_ID" value=""/>
@@ -22,9 +22,6 @@
         <!-- ###- hwi/oauth-bundle ### -->
 
         <!-- ###+ symfony/swiftmailer-bundle ### -->
-        <!-- For Gmail as a transport, use: "gmail://username:password@localhost" -->
-        <!-- For a generic SMTP server, use: "smtp://localhost:25?encryption=&auth_mode=" -->
-        <!-- Delivery is disabled by default via "null://localhost" -->
         <env name="MAILER_URL" value="null://localhost"/>
         <!-- ###- symfony/swiftmailer-bundle ### -->
 

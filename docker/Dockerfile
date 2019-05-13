@@ -1,5 +1,5 @@
 ########################################
-FROM php:7.2-fpm-alpine as composer_deps
+FROM php:7.3-fpm-alpine as composer_deps
 
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
@@ -21,27 +21,15 @@ COPY package.json yarn.lock ./
 RUN yarn install
 
 COPY assets assets
-COPY webpack.config.js postcss.config.js ./
+COPY .babelrc webpack.config.js postcss.config.js ./
 RUN mkdir public && yarn encore production
 
 ####################################
-FROM php:7.2-fpm-alpine as build_php
+FROM php:7.3-fpm-alpine as build_php
 
-RUN apk add --no-cache --virtual .persistent-deps \
-		icu-libs \
-        zlib \
-        libintl \
-        libzip
-RUN apk add --no-cache --virtual .build-deps \
-        $PHPIZE_DEPS \
-        icu-dev \
-        libxml2-dev \
-        libzip-dev \
-    && docker-php-ext-install \
-        intl \
-        zip \
-        pdo \
-        pdo_mysql \
+RUN apk add --no-cache --virtual .deps icu-libs zlib libintl libzip
+RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS libxml2-dev icu-dev libzip-dev \
+    && docker-php-ext-install intl zip pdo pdo_mysql \
     && pecl install redis \
     && apk del .build-deps \
     && docker-php-ext-enable --ini-name 05-opcache.ini opcache \
@@ -89,12 +77,11 @@ COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 ENV COMPOSER_MEMORY_LIMIT -1
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
-ARG XDEBUG_VERSION=2.6.0
-#ARG XDEBUG_VERSION=2.7.0beta1
+# Xdebug install
+ARG XDEBUG_VERSION=2.7.2
 RUN set -eux; \
 	apk add --no-cache --virtual .build-deps $PHPIZE_DEPS; \
 	pecl install xdebug-$XDEBUG_VERSION; \
-	docker-php-ext-enable xdebug; \
 	apk del .build-deps
 
 RUN apk add --no-cache \

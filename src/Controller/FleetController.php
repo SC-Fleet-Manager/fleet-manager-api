@@ -152,8 +152,8 @@ class FleetController extends AbstractController
             ],
         ];
         foreach ($citizensFiltered as $citizen) {
-            $tableHeaders[(string)$citizen->getActualHandle()] = [
-                'label' => (string)$citizen->getActualHandle(),
+            $tableHeaders[(string) $citizen->getActualHandle()] = [
+                'label' => (string) $citizen->getActualHandle(),
                 'sortable' => true,
             ];
         }
@@ -170,8 +170,8 @@ class FleetController extends AbstractController
             ];
             foreach ($citizensFiltered as $citizen) {
                 $count = $shipCounter[$shipInfo->name][$citizen->getId()->toString()] ?? null;
-                $viewFleet[(string)$citizen->getActualHandle()] = $count;
-                $viewFleet['_cellVariants'][(string)$citizen->getActualHandle()] = $count ? 'success' : '';
+                $viewFleet[(string) $citizen->getActualHandle()] = $count;
+                $viewFleet['_cellVariants'][(string) $citizen->getActualHandle()] = $count ? 'success' : '';
             }
             $viewFleets[] = $viewFleet;
         }
@@ -183,7 +183,7 @@ class FleetController extends AbstractController
 
         $viewCitizens = [];
         foreach ($citizens as $citizen) {
-            $viewCitizens[$citizen->getId()->toString()] = (string)$citizen->getActualHandle();
+            $viewCitizens[$citizen->getId()->toString()] = (string) $citizen->getActualHandle();
         }
 
         return $this->json([
@@ -196,7 +196,7 @@ class FleetController extends AbstractController
     }
 
     /**
-     * @param array|Citizen[] $citizensFiltered
+     * @param array|Citizen[]   $citizensFiltered
      * @param iterable|string[] $citizenIdsFilter
      *
      * @return array|Citizen[]
@@ -220,7 +220,7 @@ class FleetController extends AbstractController
     }
 
     /**
-     * @param array|ShipInfo[] $ships
+     * @param array|ShipInfo[]  $ships
      * @param iterable|string[] $shipNamesFilter
      *
      * @return array|ShipInfo[]
@@ -245,7 +245,7 @@ class FleetController extends AbstractController
 
     /**
      * @param array|ShipInfo[] $shipInfos
-     * @param array|Citizen[] $citizens
+     * @param array|Citizen[]  $citizens
      *
      * @return array e.g., [<shipName> => [<citizenId_1> => 2, <citizenId_2> => 1]]
      */
