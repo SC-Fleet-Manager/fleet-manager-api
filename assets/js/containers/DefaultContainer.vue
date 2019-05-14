@@ -3,8 +3,8 @@
         <AppHeader fixed>
             <SidebarToggler class="d-lg-none" display="md" mobile/>
             <b-link class="navbar-brand" to="/">
-                <img class="navbar-brand-full" src="../../img/fleet_manager_155x55.png" alt="SC Fleet Manager" style="padding: 10px;">
-                <img class="navbar-brand-minimized" src="../../img/fleet_manager_128.png" alt="FM" style="padding: 5px;">
+                <img class="navbar-brand-full" src="../../img/fleet_manager_155x55.png" alt="SC Fleet Manager" height="45">
+                <img class="navbar-brand-minimized" src="../../img/fleet_manager_128.png" alt="FM" height="40">
             </b-link>
             <SidebarToggler class="d-md-down-none" display="lg"/>
             <b-navbar-nav class="d-md-down-none mr-auto">
