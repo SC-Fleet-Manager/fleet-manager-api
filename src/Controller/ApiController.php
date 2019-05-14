@@ -195,13 +195,20 @@ class ApiController extends AbstractController
      * Combines the last version fleet of the given citizen.
      * Returns a downloadable json file.
      *
-     * @Route("/create-citizen-fleet-file/{citizenNumber}", name="create_citizen_fleet_file", methods={"GET"})
+     * @Route("/create-citizen-fleet-file", name="create_citizen_fleet_file", methods={"GET"})
      * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      */
-    public function createCitizenFleetFile(string $citizenNumber): Response
+    public function createCitizenFleetFile(): Response
     {
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $citizen = $user->getCitizen();
+        if ($citizen === null) {
+            throw $this->createNotFoundException(sprintf('The user "%s" has no citizens.', $user->getId()));
+        }
+
         try {
-            $file = $this->citizenFleetGenerator->generateFleetFile(new CitizenNumber($citizenNumber));
+            $file = $this->citizenFleetGenerator->generateFleetFile($citizen->getNumber());
         } catch (\Exception $e) {
             throw $this->createNotFoundException('The fleet file could not be generated.');
         }
@@ -228,6 +235,16 @@ class ApiController extends AbstractController
      */
     public function createOrganisationFleetFile(string $organisation): Response
     {
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $citizen = $user->getCitizen();
+        if ($citizen === null) {
+            throw $this->createNotFoundException(sprintf('The user "%s" has no citizens.', $user->getId()));
+        }
+        if (!$citizen->hasOrganisation($organisation)) {
+            throw $this->createNotFoundException(sprintf('The citizen "%s" does not have the organization "%s".', $citizen->getId(), $organisation));
+        }
+
         $file = $this->organisationFleetGenerator->generateFleetFile(new SpectrumIdentification($organisation));
         $filename = 'organisation_fleet.json';
 

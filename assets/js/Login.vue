@@ -13,9 +13,9 @@
                 </b-form>
               </b-card-body>
             </b-card>
-            <b-card no-body class="text-white bg-primary py-2 d-md-down-none" style="width:44%">
+            <b-card no-body class="text-white bg-gray-700 py-2 d-md-down-none" style="width:44%">
               <b-card-body class="text-center">
-                <img src="../img/fallkrom_500.png" style="max-width:100%;max-height:100%;" />
+                <img src="../img/fleet_manager_512.png" style="max-width:100%;max-height:100%;" />
               </b-card-body>
             </b-card>
           </b-card-group>

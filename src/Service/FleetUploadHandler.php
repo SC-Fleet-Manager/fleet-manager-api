@@ -9,7 +9,6 @@ use App\Entity\Ship;
 use App\Exception\BadCitizenException;
 use App\Exception\FleetUploadedTooCloseException;
 use App\Exception\InvalidFleetDataException;
-use App\Repository\CitizenRepository;
 use App\Repository\FleetRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
@@ -17,18 +16,15 @@ use Ramsey\Uuid\Uuid;
 class FleetUploadHandler
 {
     private $fleetRepository;
-    private $citizenRepository;
     private $entityManager;
     private $citizenInfosProvider;
 
     public function __construct(
         FleetRepository $fleetRepository,
-        CitizenRepository $citizenRepository,
         EntityManagerInterface $entityManager,
         CitizenInfosProviderInterface $citizenInfosProvider
     ) {
         $this->fleetRepository = $fleetRepository;
-        $this->citizenRepository = $citizenRepository;
         $this->entityManager = $entityManager;
         $this->citizenInfosProvider = $citizenInfosProvider;
     }
@@ -46,7 +42,7 @@ class FleetUploadHandler
 
         $citizen->setBio($infos->bio);
         foreach ($infos->organisations as $organisation) {
-            $citizen->addOrganisation(clone $organisation);
+            $citizen->addOrganisation(is_object($organisation) ? clone $organisation : $organisation);
         }
         $this->entityManager->flush();
 
@@ -70,16 +66,16 @@ class FleetUploadHandler
         $fleet = new Fleet(Uuid::uuid4());
         $fleet->setOwner($citizen);
         $fleet->setVersion($lastVersionFleet === null ? 1 : ($lastVersionFleet->getVersion() + 1));
+
         foreach ($fleetData as $shipData) {
             $ship = new Ship(Uuid::uuid4());
             $ship
                 ->setName($shipData['name'])
                 ->setManufacturer($shipData['manufacturer'])
                 ->setInsured($shipData['lti'])
-                ->setCost((new Money((int) preg_replace('/^\$(\d+\.\d+)/i', '$1', $shipData['cost'])))->getCost())
+                ->setCost((new Money((int) preg_replace('/^\$(\d+\.\d+)/', '$1', $shipData['cost'])))->getCost())
                 ->setPledgeDate(\DateTimeImmutable::createFromFormat('F d, Y', $shipData['pledge_date']))
-                ->setRawData($shipData)
-            ;
+                ->setRawData($shipData);
             $fleet->addShip($ship);
         }
 

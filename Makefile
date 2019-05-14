@@ -72,11 +72,11 @@ assets: public/build						## shortcut for building assets public/build
 db-migrate: vendor								## execute all database migrations
 	$(EXEC_CONSOLE) doctrine:migrations:migrate -n
 db-reset: vendor								## recreate the database without data
-	-$(EXEC_CONSOLE) doctrine:database:drop --force
+	-$(EXEC_CONSOLE) doctrine:database:drop --if-exists --force
 	$(EXEC_CONSOLE) doctrine:database:create
 	$(MAKE) db-migrate
 db-reset-tests: vendor							## recreate the database without data for testing
-	-$(EXEC_CONSOLE) --env=test doctrine:database:drop --force
+	-$(EXEC_CONSOLE) --env=test doctrine:database:drop --if-exists --force
 	$(EXEC_CONSOLE) --env=test doctrine:database:create
 	$(EXEC_CONSOLE) --env=test doctrine:migrations:migrate -n
 fixtures: vendor								## executes all fixtures
@@ -90,7 +90,6 @@ qa: phpcsfix lint-twig lint-yaml tests			## launch tests + syntax checks
 
 tests: phpunit-tests							## launch all tests
 phpunit-tests: vendor							## launch unit + functional tests (PHPUnit /w Panther)
-	$(MAKE) db-reset-tests
 	$(EXEC_PHP) $(PHPUNIT)
 
 phpcsfix: vendor								## fix syntax of all PHP sources

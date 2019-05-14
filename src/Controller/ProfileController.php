@@ -6,7 +6,6 @@ use App\Domain\CitizenInfos;
 use App\Domain\HandleSC;
 use App\Entity\Citizen;
 use App\Entity\User;
-use App\Exception\AlreadyLinkedCitizenException;
 use App\Exception\NotFoundHandleSCException;
 use App\Form\Dto\LinkAccount;
 use App\Form\Dto\UpdateHandle;
@@ -25,7 +24,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Route("/profile", name="profile_")
@@ -33,7 +31,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class ProfileController extends AbstractController
 {
     private $logger;
-    private $translator;
     private $citizenInfosProvider;
     private $citizenRepository;
     private $userRepository;
@@ -43,7 +40,6 @@ class ProfileController extends AbstractController
 
     public function __construct(
         LoggerInterface $logger,
-        TranslatorInterface $translator,
         CitizenInfosProviderInterface $citizenInfosProvider,
         CitizenRepository $citizenRepository,
         EntityManagerInterface $entityManager,
@@ -52,7 +48,6 @@ class ProfileController extends AbstractController
         FormFactoryInterface $formFactory
     ) {
         $this->logger = $logger;
-        $this->translator = $translator;
         $this->citizenInfosProvider = $citizenInfosProvider;
         $this->citizenRepository = $citizenRepository;
         $this->userRepository = $userRepository;

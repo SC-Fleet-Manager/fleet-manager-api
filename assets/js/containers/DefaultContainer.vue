@@ -3,8 +3,12 @@
         <AppHeader fixed>
             <SidebarToggler class="d-lg-none" display="md" mobile/>
             <b-link class="navbar-brand" to="/">
+                <img class="navbar-brand-full" src="../../img/fleet_manager_155x55.png" alt="SC Fleet Manager">
+                <img class="navbar-brand-minimized" src="../../img/fleet_manager_128.png" alt="FM">
+
+<!--
                 <span class="navbar-brand-full">SC Fleet Manager</span>
-                <span class="navbar-brand-minimized">FM</span>
+                <span class="navbar-brand-minimized">FM</span>-->
             </b-link>
             <SidebarToggler class="d-md-down-none" display="lg"/>
             <b-navbar-nav class="d-md-down-none mr-auto">
