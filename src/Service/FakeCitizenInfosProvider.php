@@ -3,21 +3,30 @@
 namespace App\Service;
 
 use App\Domain\CitizenInfos;
-use App\Domain\CitizenNumber;
 use App\Domain\HandleSC;
 use App\Domain\SpectrumIdentification;
+use App\Entity\Citizen;
 
 class FakeCitizenInfosProvider implements CitizenInfosProviderInterface
 {
+    /** @var Citizen */
+    private $citizen;
+
+    public function setCitizen(Citizen $citizen): void
+    {
+        $this->citizen = $citizen;
+    }
+
     public function retrieveInfos(HandleSC $handleSC): CitizenInfos
     {
         $ci = new CitizenInfos(
-            new CitizenNumber('000000'),
-            clone $handleSC
+            clone $this->citizen->getNumber(),
+            clone $this->citizen->getActualHandle()
         );
-        $ci->organisations = [
-            new SpectrumIdentification('fak'),
-        ];
+        $ci->organisations = [];
+        foreach ($this->citizen->getOrganisations() as $sid) {
+            $ci->organisations[] = new SpectrumIdentification($sid);
+        }
         $ci->avatarUrl = 'http://example.com/fake-avatar.png';
         $ci->registered = new \DateTimeImmutable('2018-01-01 12:00:00');
 

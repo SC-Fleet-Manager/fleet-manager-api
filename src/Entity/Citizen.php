@@ -134,6 +134,9 @@ class Citizen
         return \in_array($sid, $this->organisations, true);
     }
 
+    /**
+     * @param string|SpectrumIdentification $sid
+     */
     public function addOrganisation($sid): self
     {
         if ($sid instanceof SpectrumIdentification) {
@@ -141,6 +144,15 @@ class Citizen
         }
         if (!$this->hasOrganisation($sid)) {
             $this->organisations[] = $sid;
+        }
+
+        return $this;
+    }
+
+    public function setOrganisations(array $sids): self
+    {
+        foreach ($sids as $sid) {
+            $this->addOrganisation($sid);
         }
 
         return $this;
@@ -156,7 +168,9 @@ class Citizen
 
     public function addFleet(Fleet $fleet): self
     {
-        $this->fleets->add($fleet);
+        if (!$this->fleets->contains($fleet)) {
+            $this->fleets->add($fleet);
+        }
 
         return $this;
     }

@@ -112,7 +112,9 @@ class Fleet
 
     public function addShip(Ship $ship): self
     {
-        $this->ships->add($ship);
+        if (!$this->ships->contains($ship)) {
+            $this->ships->add($ship);
+        }
         if ($ship->getFleet() !== $this) {
             $ship->setFleet($this);
         }

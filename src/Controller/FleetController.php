@@ -88,7 +88,9 @@ class FleetController extends AbstractController
             ], 400);
         }
         if ($user->getPublicChoice() === User::PUBLIC_CHOICE_ORGANIZATION
-            && ($me->getCitizen() === null || empty(array_intersect($citizen->getOrganisations(), $me->getCitizen()->getOrganisations())))) {
+            && (!$this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')
+                || $me->getCitizen() === null
+                || empty(array_intersect($citizen->getOrganisations(), $me->getCitizen()->getOrganisations())))) {
             return $this->json([
                 'error' => 'no_rights',
                 'errorMessage' => 'You have no rights to see this fleet.',
@@ -118,7 +120,8 @@ class FleetController extends AbstractController
                 'error' => 'no_citizen_created',
                 'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/#/profile">profile page</a>.',
             ], 400);
-        } elseif (!$citizen->hasOrganisation($organisation)) {
+        }
+        if (!$citizen->hasOrganisation($organisation)) {
             return $this->json([
                 'error' => 'bad_organisation',
                 'errorMessage' => sprintf('The organisation %s does not exist.', $organisation),
@@ -164,7 +167,7 @@ class FleetController extends AbstractController
                 '_cellVariants' => ['shipName' => $shipInfo->productionStatus === ShipInfo::FLIGHT_READY ? 'success' : 'danger'],
                 'shipName' => $shipInfo->name,
                 'shipManufacturer' => $shipInfo->manufacturerCode,
-                'totalAvailable' => \array_reduce($shipCounter[$shipInfo->name], function (int $carry, int $countPerUser): int {
+                'totalAvailable' => \array_reduce($shipCounter[$shipInfo->name], static function (int $carry, int $countPerUser): int {
                     return $carry + $countPerUser;
                 }, 0),
             ];
@@ -260,7 +263,7 @@ class FleetController extends AbstractController
                     continue;
                 }
                 foreach ($fleet->getShips() as $ship) {
-                    if ($ship->getName() === $shipInfo->name) {
+                    if ($this->shipNamesAreEquals($ship->getName(), $shipInfo->name)) {
                         $shipCounter[$shipInfo->name][$citizen->getId()->toString()] = ($shipCounter[$shipInfo->name][$citizen->getId()->toString()] ?? 0) + 1;
                     }
                 }
@@ -268,6 +271,16 @@ class FleetController extends AbstractController
         }
 
         return $shipCounter;
+    }
+
+    private function shipNamesAreEquals(string $hangarName, string $providerName): bool
+    {
+        switch ($hangarName) {
+            case '600i Exploration Module': return $providerName === '600i Explorer';
+            case '600i Touring Module': return $providerName === '600i Touring';
+        }
+
+        return $hangarName === $providerName;
     }
 
     /**
