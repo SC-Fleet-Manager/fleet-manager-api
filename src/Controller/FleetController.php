@@ -88,7 +88,9 @@ class FleetController extends AbstractController
             ], 400);
         }
         if ($user->getPublicChoice() === User::PUBLIC_CHOICE_ORGANIZATION
-            && ($me->getCitizen() === null || empty(array_intersect($citizen->getOrganisations(), $me->getCitizen()->getOrganisations())))) {
+            && (!$this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')
+                || $me->getCitizen() === null
+                || empty(array_intersect($citizen->getOrganisations(), $me->getCitizen()->getOrganisations())))) {
             return $this->json([
                 'error' => 'no_rights',
                 'errorMessage' => 'You have no rights to see this fleet.',
