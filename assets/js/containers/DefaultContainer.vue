@@ -10,8 +10,8 @@
             <b-navbar-nav class="d-md-down-none mr-auto">
             </b-navbar-nav>
             <b-navbar-nav class="ml-auto">
-                <b-nav-item v-if="user != null" class="px-3" href="/logout"><i class="icon-logout"></i> Logout</b-nav-item>
-                <b-nav-item v-else class="px-3" href="/login"><i class="icon-login"></i> Login</b-nav-item>
+                <b-nav-item v-if="user != null" class="px-3" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</b-nav-item>
+                <b-nav-item v-else class="px-3" href="/login"><i class="fas fa-sign-in-alt"></i> Login</b-nav-item>
             </b-navbar-nav>
         </AppHeader>
         <div class="app-body">
@@ -28,18 +28,20 @@
                 </div>
             </main>
         </div>
-        <TheFooter>
+        <TheFooter class="font-lg">
             <div>
                 <a href="/">Star Citizen Fleet Manager</a>
                 <span class="ml-1">&copy; 2018 - {{ actualYear }}</span>
             </div>
             <div class="ml-auto">
-                <a href="https://discord.gg/yCWj2b" target="_blank">Fleet Manager Discord</a> -
-                <a target="_blank" href="https://github.com/Ioni14/starcitizen-fleet-manager/issues">Bugs, feedbacks,
+                <a href="https://discord.gg/f6mrA3Y" target="_blank"><i class="fab fa-discord"></i> Discord</a> -
+                <a target="_blank" href="https://github.com/Ioni14/starcitizen-fleet-manager/issues"> <i
+                        class="fab fa-github"></i> Bugs, feedbacks,
                     ideas</a>
                 -
-                <span class="mr-1">Created by</span>
-                <a target="_blank" href="https://github.com/ioni14">Thomas "Ioni" Talbot</a>. Referral Code <strong>STAR-GQYR-SN3X</strong>
+                <a target="_blank" href="https://www.patreon.com/ioni"><i class="fab fa-patreon"></i> Patreon</a>
+                -
+                <span class="mr-1">Created by</span> <a target="_blank" href="https://github.com/ioni14">Thomas "Ioni" Talbot</a>
             </div>
         </TheFooter>
     </div>

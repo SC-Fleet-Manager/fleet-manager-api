@@ -20,8 +20,6 @@ services:
         hostname: apache
         environment:
             - PHP_HANDLER_HOST=php:9000
-        ports:
-            - 127.0.0.1:8000:80
     mariadb:
         image: mariadb:10.3
         hostname: mariadb
@@ -30,21 +28,15 @@ services:
         environment:
             - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
             - MYSQL_DATABASE=${DB_NAME}
-        ports:
-            - 127.0.0.1:3306:3306
     redis:
         image: redis:5.0-alpine
         hostname: redis
         volumes:
             - redis:/data
-        ports:
-            - 127.0.0.1:6379:6379
     redis-commander:
         image: rediscommander/redis-commander:latest
         hostname: redis-commander
         environment:
             - REDIS_HOSTS=local:redis:6379
-        ports:
-            - 127.0.0.1:8081:8081
     smtp:
         image: namshi/smtp

@@ -13,7 +13,6 @@ const MyFleet = () => import('../views/MyFleet');
 // Views - Pages
 const Page404 = () => import('../views/pages/Page404');
 const Page500 = () => import('../views/pages/Page500');
-const Login = () => import('../views/pages/Login');
 
 Vue.use(Router);
 
@@ -85,11 +84,6 @@ const router = new Router({
                     path: '500',
                     name: 'Page500',
                     component: Page500
-                },
-                {
-                    path: 'login',
-                    name: 'Login',
-                    component: Login
                 }
             ]
         }

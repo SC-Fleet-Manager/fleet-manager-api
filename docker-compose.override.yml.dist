@@ -17,7 +17,15 @@ services:
     apache:
         volumes:
             - ./public:/app/public
+        ports:
+            - 127.0.0.1:8000:80
+    mariadb:
+        ports:
+            - 127.0.0.1:3306:3306
     smtp:
         image: schickling/mailcatcher
         ports:
             - 127.0.0.1:1080:1080 # web-ui
+    redis-commander:
+        ports:
+            - 127.0.0.1:8081:8081

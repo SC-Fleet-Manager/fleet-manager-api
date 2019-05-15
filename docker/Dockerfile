@@ -3,15 +3,29 @@ FROM php:7.3-fpm-alpine as composer_deps
 
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
+# prod|dev
+ARG ENV=prod
+
+RUN if [ $ENV != 'prod' ]; then apk add --no-cache --virtual .deps zlib libzip; fi
+RUN if [ $ENV != 'prod' ]; then \
+        apk add --no-cache --virtual .build-deps $PHPIZE_DEPS libzip-dev \
+        && docker-php-ext-install zip \
+        && apk del .build-deps; \
+    fi
+
 WORKDIR /app
 COPY src src
-COPY .env composer.json composer.lock symfony.lock ./
+COPY .env* composer.json composer.lock symfony.lock ./
 
 ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV COMPOSER_MEMORY_LIMIT -1
-ENV APP_ENV prod
+ENV APP_ENV $ENV
 RUN composer global require "hirak/prestissimo:^0.3" --prefer-dist --no-progress --no-suggest --optimize-autoloader --classmap-authoritative --no-interaction
-RUN composer install --no-scripts --no-suggest --optimize-autoloader --classmap-authoritative --no-dev --prefer-dist --no-progress --no-interaction
+RUN if [ $ENV = 'prod' ]; then \
+        composer install --no-scripts --no-suggest --optimize-autoloader --classmap-authoritative --no-dev --prefer-dist --no-progress --no-interaction; \
+    else \
+        composer install --no-scripts --no-suggest --optimize-autoloader --classmap-authoritative --prefer-dist --no-progress --no-interaction; \
+    fi
 
 ################################
 FROM node:10-alpine as node_deps
@@ -26,6 +40,9 @@ RUN mkdir public && yarn encore production
 
 ####################################
 FROM php:7.3-fpm-alpine as build_php
+
+# prod|dev
+ARG ENV=prod
 
 RUN apk add --no-cache --virtual .deps icu-libs zlib libintl libzip
 RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS libxml2-dev icu-dev libzip-dev \
@@ -46,11 +63,13 @@ COPY public public
 COPY src src
 COPY templates templates
 COPY translations translations
-COPY .env Makefile composer.json composer.lock ./
+COPY .env* Makefile composer.json composer.lock ./
 COPY --from=node_deps /app/public/build/manifest.json public/build/manifest.json
 COPY --from=composer_deps /app/vendor vendor
 
-RUN sed -i 's/^APP_ENV=.*$/APP_ENV=prod/' .env
+RUN chown www-data .env*; \
+    sed -i 's/^APP_ENV=.*$/APP_ENV=$ENV/' .env; \
+    if [ -e .env.local ]; then sed -i 's/^APP_ENV=.*$/APP_ENV=$ENV/' .env.local; fi
 RUN mkdir -p public/bundles && bin/console assets:install \
     && rm -fr var/cache/* \
     && bin/console cache:warmup \
