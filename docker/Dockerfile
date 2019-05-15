@@ -68,8 +68,8 @@ COPY --from=node_deps /app/public/build/manifest.json public/build/manifest.json
 COPY --from=composer_deps /app/vendor vendor
 
 RUN chown www-data .env*; \
-    sed -i 's/^APP_ENV=.*$/APP_ENV=$ENV/' .env; \
-    if [ -e .env.local ]; then sed -i 's/^APP_ENV=.*$/APP_ENV=$ENV/' .env.local; fi
+    sed -i "s/^APP_ENV=.*$/APP_ENV=${ENV}/" .env; \
+    if [ -e .env.local ]; then sed -i "s/^APP_ENV=.*$/APP_ENV=${ENV}/" .env.local; fi
 RUN mkdir -p public/bundles && bin/console assets:install \
     && rm -fr var/cache/* \
     && bin/console cache:warmup \
