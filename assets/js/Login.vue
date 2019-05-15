@@ -8,8 +8,8 @@
               <b-card-body>
                 <b-form>
                   <h1>Welcome to<br/>SC Fleet Manager</h1>
-                  <p class="text-muted">This application helps you to manage and share your Star Citizen organisations' fleet</p>
-                  <b-button size="lg" block style="background-color: #7289da; color: #fff;" class="px-4" :href="discordLoginUrl">Connect with Discord</b-button>
+                  <p class="text-muted">This application helps you to manage and share your Star Citizen organizations' fleet.</p>
+                    <b-button size="lg" block style="background-color: #7289da; color: #fff;" class="px-4" :href="discordLoginUrl">Connect with <i class="fab fa-discord"></i> Discord</b-button>
                 </b-form>
               </b-card-body>
             </b-card>
@@ -33,16 +33,11 @@ export default {
 </script>
 
 <style lang="scss">
-  // CoreUI Icons Set
-  @import '~@coreui/icons/css/coreui-icons.min.css';
   /* Import Font Awesome Icons Set */
-  $fa-font-path: '~font-awesome/fonts/';
-  @import '~font-awesome/scss/font-awesome.scss';
-  /* Import Simple Line Icons Set */
-  $simple-line-font-path: '~simple-line-icons/fonts/';
-  @import '~simple-line-icons/scss/simple-line-icons.scss';
-  /* Import Flag Icons Set */
-  @import '~flag-icon-css/css/flag-icon.min.css';
+  $fa-font-path: '~@fortawesome/fontawesome-free/webfonts/';
+  @import '~@fortawesome/fontawesome-free/scss/fontawesome';
+  @import '~@fortawesome/fontawesome-free/scss/solid';
+  @import '~@fortawesome/fontawesome-free/scss/brands';
   /* Import Bootstrap Vue Styles */
   @import '~bootstrap-vue/dist/bootstrap-vue.css';
   // Import Main styles for this application

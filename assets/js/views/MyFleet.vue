@@ -5,8 +5,8 @@
                 <b-card :title="userHandle ? 'Citizen ' + userHandle : ''">
 <!--                    <h1 v-if="userHandle != null">Citizen {{ userHandle }}</h1>-->
                     <div class="mb-3" v-if="userHandle == null">
-                        <b-button v-b-modal.modal-upload-fleet variant="primary" :disabled="citizen == null"><i class="icon-cloud-upload"></i> Update my fleet</b-button>
-                        <b-button download :disabled="citizen == null" :href="citizen != null ? '/api/create-citizen-fleet-file/'+citizen.number.number : ''" variant="success"><i class="icon-cloud-download"></i> Export my fleet (.json)</b-button>
+                        <b-button v-b-modal.modal-upload-fleet variant="primary" :disabled="citizen == null"><i class="fas fa-cloud-upload-alt"></i> Update my fleet</b-button>
+                        <b-button download :disabled="citizen == null" :href="citizen != null ? '/api/create-citizen-fleet-file' : ''" variant="success"><i class="fas fa-cloud-download-alt"></i> Export my fleet (.json)</b-button>
                     </div>
                     <b-alert :show="showError" variant="danger" v-html="errorMessage"></b-alert>
                     <b-row v-if="ships !== null">

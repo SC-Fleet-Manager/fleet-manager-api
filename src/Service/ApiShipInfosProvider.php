@@ -81,7 +81,7 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
             $shipInfos[$shipInfo->id] = $shipInfo;
         }
 
-        $this->cache->set('ship_matrix', $shipInfos, new \DateInterval('P7D'));
+        $this->cache->set('ship_matrix', $shipInfos, new \DateInterval('P3D'));
 
         return $shipInfos;
     }

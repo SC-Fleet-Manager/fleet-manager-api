@@ -14,7 +14,8 @@
                               required
                               placeholder="Your new Handle Star Citizen"></b-form-input>
             </b-form-group>
-            <b-button type="submit" :disabled="submitDisabled" variant="success">Update my SC handle</b-button>
+            <b-button type="submit" :disabled="submitDisabled" variant="success"><i class="fas fa-cloud-upload-alt"></i>
+                Update my SC handle</b-button>
         </b-form>
     </b-card>
 </template>
