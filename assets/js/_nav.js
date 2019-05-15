@@ -3,17 +3,17 @@ export default {
     {
       name: 'My Fleet',
       url: '/my-fleet',
-      icon: 'fa fa-plane',
+      icon: 'fas fa-fighter-jet',
     },
     {
       name: 'Organizations\' fleets',
       url: '/organizations-fleets',
-      icon: 'fa fa-plane',
+      icon: 'fas fa-fighter-jet',
     },
     {
       name: "Profile",
       url: '/profile',
-      icon: 'fa fa-user',
+      icon: 'fas fa-user',
     },
   ]
 }

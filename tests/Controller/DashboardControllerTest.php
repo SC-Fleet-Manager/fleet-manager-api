@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Tests\Controller;
 
 use Hautelook\AliceBundle\PhpUnit\ReloadDatabaseTrait;
@@ -21,9 +19,6 @@ class DashboardControllerTest extends PantherTestCase
     public function testIndexSuccessResponse(): void
     {
         $crawler = $this->client->request('GET', '/login');
-        /*
-            'PHP_AUTH_USER' => 'user',
-            'PHP_AUTH_PW'   => '123456',*/
 
 //        $this->assertSame('Ensemble de la flotte', $crawler->filter('.card-header')->text());
     }

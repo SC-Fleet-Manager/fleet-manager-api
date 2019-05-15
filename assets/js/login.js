@@ -6,9 +6,6 @@ import Vue from 'vue'
 import BootstrapVue from 'bootstrap-vue'
 import Login from './Login'
 
-// todo
-// cssVars()
-
 Vue.use(BootstrapVue);
 
 /* eslint-disable no-new */
