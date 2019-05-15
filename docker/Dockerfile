@@ -5,7 +5,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
 WORKDIR /app
 COPY src src
-COPY .env composer.json composer.lock symfony.lock ./
+COPY .env* composer.json composer.lock symfony.lock ./
 
 ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV COMPOSER_MEMORY_LIMIT -1
@@ -46,7 +46,7 @@ COPY public public
 COPY src src
 COPY templates templates
 COPY translations translations
-COPY .env Makefile composer.json composer.lock ./
+COPY .env* Makefile composer.json composer.lock ./
 COPY --from=node_deps /app/public/build/manifest.json public/build/manifest.json
 COPY --from=composer_deps /app/vendor vendor
 
