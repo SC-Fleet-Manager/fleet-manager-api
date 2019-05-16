@@ -2,8 +2,9 @@
 
 namespace App\Controller;
 
-use App\Domain\CitizenNumber;
 use App\Domain\SpectrumIdentification;
+use App\Entity\Citizen;
+use App\Entity\Fleet;
 use App\Entity\User;
 use App\Exception\BadCitizenException;
 use App\Exception\FleetUploadedTooCloseException;
@@ -14,6 +15,7 @@ use App\Form\FleetUploadForm;
 use App\Service\CitizenFleetGenerator;
 use App\Service\FleetUploadHandler;
 use App\Service\OrganisationFleetGenerator;
+use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,7 +27,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Route("/api", name="api_")
@@ -33,7 +34,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class ApiController extends AbstractController
 {
     private $logger;
-    private $translator;
     private $security;
     private $fleetUploadHandler;
     private $citizenFleetGenerator;
@@ -41,14 +41,12 @@ class ApiController extends AbstractController
 
     public function __construct(
         LoggerInterface $logger,
-        TranslatorInterface $translator,
         Security $security,
         FleetUploadHandler $fleetUploadHandler,
         CitizenFleetGenerator $citizenFleetGenerator,
         OrganisationFleetGenerator $organisationFleetGenerator
     ) {
         $this->logger = $logger;
-        $this->translator = $translator;
         $this->security = $security;
         $this->fleetUploadHandler = $fleetUploadHandler;
         $this->citizenFleetGenerator = $citizenFleetGenerator;
@@ -258,5 +256,33 @@ class ApiController extends AbstractController
         );
 
         return $response;
+    }
+
+    /**
+     * @Route("/numbers", name="numbers", methods={"GET"})
+     */
+    public function numbers(EntityManagerInterface $entityManager): Response
+    {
+        $citizens = $entityManager->getRepository(Citizen::class)->findAll();
+
+        $orgas = [];
+        foreach ($citizens as $citizen) {
+            $orgas = array_merge($orgas, $citizen->getOrganisations());
+        }
+        $orgas = array_unique($orgas);
+
+        $users = $entityManager->getRepository(User::class)->findAll();
+
+        $fleets = $entityManager->getRepository(Fleet::class)->getLastVersionFleets();
+        $countShips = 0;
+        foreach ($fleets as $fleet) {
+            $countShips += count($fleet[0]->getShips());
+        }
+
+        return $this->json([
+            'organizations' => count($orgas),
+            'users' => count($users),
+            'ships' => $countShips,
+        ]);
     }
 }
