@@ -19,6 +19,16 @@ services:
             - ./public:/app/public
         ports:
             - 127.0.0.1:8000:80
+    apache-test:
+        build:
+            context: .
+            target: build_apache_test
+            dockerfile: ./docker/Dockerfile
+        hostname: apache_test
+        volumes:
+            - ./public:/app/public
+        environment:
+            - PHP_HANDLER_HOST=php:9000
     mariadb:
         ports:
             - 127.0.0.1:3306:3306
@@ -29,3 +39,15 @@ services:
     redis-commander:
         ports:
             - 127.0.0.1:8081:8081
+    selenium-hub:
+        image: selenium/hub
+        ports:
+            - 127.0.0.1:4444:4444
+    selenium-chrome:
+        image: selenium/node-chrome-debug
+        environment:
+            HUB_HOST: selenium-hub
+        volumes:
+            - /dev/shm:/dev/shm
+        ports:
+            - 127.0.0.1:5900:5900 # VNC

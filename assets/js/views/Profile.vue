@@ -41,7 +41,7 @@
         </b-row>
         <b-row>
             <b-col col md="6" v-if="showUpdateHandle">
-                <b-card header="Preferences">
+                <b-card header="Preferences" class="js-preferences">
                     <b-form>
                         <b-form-group label="Personal fleet policy">
                             <b-form-radio v-model="publicChoice" @change="savePublicChoice" :disabled="savingPreferences" name="public-choice" value="private">Private</b-form-radio>

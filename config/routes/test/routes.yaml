@@ -1,0 +1,3 @@
+test_login:
+    path: /_test_login/{userId}
+    controller: App\Controller\TestController::login
