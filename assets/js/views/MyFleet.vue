@@ -14,7 +14,7 @@
                             <b-alert show variant="warning">Your fleet is empty, you should upload it.</b-alert>
                         </b-col>
                         <b-col col xl="3" lg="4" md="6" v-for="ship in ships" :key="ship.id">
-                            <b-card class="mb-3"
+                            <b-card class="mb-3 js-card-ship"
                                     :img-src="getShipInfo(getFixShipName(ship.name)).mediaThumbUrl"
                                     img-top
                                     :title="ship.name">
