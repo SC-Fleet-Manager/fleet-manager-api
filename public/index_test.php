@@ -9,6 +9,7 @@ require dirname(__DIR__).'/vendor/autoload.php';
 
 $_SERVER['APP_ENV'] = 'test';
 $_SERVER['APP_DEBUG'] = true;
+$_SERVER['TESTING_WITH_SESSION'] = true;
 
 if (is_array($env = @include dirname(__DIR__).'/.env.local.php')) {
     $_SERVER += $env;

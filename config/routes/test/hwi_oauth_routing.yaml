@@ -1,0 +1,6 @@
+connect_login:
+    path: /connect/{service}
+    controller: App\Tests\Controller\ConnectController::login
+
+hwi_oauth_routing:
+    resource: ../prod/hwi_oauth_routing.yaml

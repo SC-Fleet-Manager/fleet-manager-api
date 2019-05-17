@@ -19,24 +19,27 @@ class DashboardControllerTest extends PantherTestCase
         $this->client = Client::createSeleniumClient('http://selenium-hub:4444/wd/hub', null, 'http://apache-test');
     }
 
+    private function pause(int $s = 30): void
+    {
+        $this->client->wait($s, 100)->until(static function () {
+            return false;
+        });
+    }
+
     public function testIndexSuccessResponse(): void
     {
-        // connect to a RSI linked user
-        $this->client->request('GET', '/_test_login/d92e229e-e743-4583-905a-e02c57eacfe0');
-
-        // My Fleet
-        $this->client->wait()->until(static function (WebDriver $driver) {
-            return count($driver->findElements(WebDriverBy::className('js-card-ship'))) > 0;
+        $this->client->request('GET', '/');
+        $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+            return stripos($driver->findElement(WebDriverBy::cssSelector('h1'))->getText(), "Welcome to\nSC Fleet Manager") !== false;
         });
-        $this->assertSame('Cutlass Black', $this->client->findElement(WebDriverBy::cssSelector('.card-title'))->getText());
-        $this->assertContains('Manufacturer: Drake', $this->client->findElement(WebDriverBy::cssSelector('.card-body'))->getText());
-        $this->assertContains('LTI: Yes', $this->client->findElement(WebDriverBy::cssSelector('.card-body'))->getText());
-        $this->assertContains('Cost: $110', $this->client->findElement(WebDriverBy::cssSelector('.card-body'))->getText());
-        $this->assertContains('Pledge date: April 10, 2019', $this->client->findElement(WebDriverBy::cssSelector('.card-body'))->getText());
+        $this->client->refreshCrawler();
+
+        // connect with default user
+        $this->client->clickLink('Connect with Discord');
+        $this->assertSame('#/profile', $this->client->executeScript('return window.location.hash;'));
 
         // Profile
-        $this->client->request('GET', '/#/profile');
-        $this->client->wait()->until(static function (WebDriver $driver) {
+        $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
             return count($driver->findElements(WebDriverBy::className('js-update-sc-handle'))) > 0;
         });
         $cardBody = $this->client->findElement(WebDriverBy::cssSelector('.js-update-sc-handle .card-body'))->getText();
@@ -48,5 +51,35 @@ class DashboardControllerTest extends PantherTestCase
         $this->assertContains('Personal fleet policy', $cardBody);
 
         $this->assertTrue($this->client->executeScript('return document.querySelector(\'input[name="public-choice"][value="public"]\').checked;'), 'Personal fleet policy is not public.');
+
+        // My Fleet
+        $this->client->clickLink('My Fleet');
+        $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+            return count($driver->findElements(WebDriverBy::className('js-card-ship'))) > 0;
+        });
+        $this->assertSame('Cutlass Black', $this->client->findElement(WebDriverBy::cssSelector('.card-title'))->getText());
+        $this->assertContains('Manufacturer: Drake', $this->client->findElement(WebDriverBy::cssSelector('.card-body'))->getText());
+        $this->assertContains('LTI: Yes', $this->client->findElement(WebDriverBy::cssSelector('.card-body'))->getText());
+        $this->assertContains('Cost: $110', $this->client->findElement(WebDriverBy::cssSelector('.card-body'))->getText());
+        $this->assertContains('Pledge date: April 10, 2019', $this->client->findElement(WebDriverBy::cssSelector('.card-body'))->getText());
+        $this->assertStringEndsWith('/api/create-citizen-fleet-file', $this->client->findElement(WebDriverBy::linkText('Export my fleet (.json)'))->getAttribute('href'));
+
+        $this->client->findElement(WebDriverBy::xpath('//button[contains(text(), "Update my fleet")]'))->click();
+        $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+            return $driver->findElement(WebDriverBy::id('modal-upload-fleet___BV_modal_body_'))->isDisplayed();
+        });
+        $this->client->findElement(WebDriverBy::cssSelector('#modal-upload-fleet .close'))->click();
+        $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+            return count($driver->findElements(WebDriverBy::id('modal-upload-fleet'))) === 0;
+        });
+
+        // Organizations' fleets
+        $this->client->clickLink("Organizations' fleets");
+        $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+            return count($driver->findElements(WebDriverBy::className('js-select-orga'))) > 0;
+        });
+        $this->assertSame('Select an organization', $this->client->findElement(WebDriverBy::cssSelector('label[for="select-orga"]'))->getText());
+        $this->assertSame('flk', $this->client->executeScript('return document.querySelector(\'#select-orga\').value;'));
+        $this->assertContains('Cutlass Black', $this->client->findElement(WebDriverBy::cssSelector('.table-success'))->getText());
     }
 }
