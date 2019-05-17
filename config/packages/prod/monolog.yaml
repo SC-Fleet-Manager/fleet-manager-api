@@ -41,7 +41,7 @@ monolog:
             handler: mailer
         mailer:
             type: swift_mailer
-            from_email: 'info@fleet.fallkrom.space'
+            from_email: 'noreply@fleet-manager.space'
             to_email: ['thomas.talbot@fauya.fr']
             subject: '[Fleet Manager] Error : %%message%%'
             formatter:  monolog.formatter.html

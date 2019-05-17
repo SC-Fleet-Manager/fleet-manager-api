@@ -90,7 +90,7 @@ qa: phpcsfix lint-twig lint-yaml tests			## launch tests + syntax checks
 
 tests: phpunit-tests							## launch all tests
 phpunit-tests: vendor							## launch unit + functional tests (PHPUnit /w Panther)
-	$(EXEC_PHP) $(PHPUNIT)
+	$(EXEC_PHP) $(PHPUNIT) $(c)
 
 phpcsfix: vendor								## fix syntax of all PHP sources
 	$(EXEC_PHP) $(PHP_CS_FIXER) fix

@@ -27,6 +27,7 @@ class FakeCitizenInfosProvider implements CitizenInfosProviderInterface
         foreach ($this->citizen->getOrganisations() as $sid) {
             $ci->organisations[] = new SpectrumIdentification($sid);
         }
+        $ci->bio = $this->citizen->getBio();
         $ci->avatarUrl = 'http://example.com/fake-avatar.png';
         $ci->registered = new \DateTimeImmutable('2018-01-01 12:00:00');
 
