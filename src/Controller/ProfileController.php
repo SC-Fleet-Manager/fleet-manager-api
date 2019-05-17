@@ -97,6 +97,16 @@ class ProfileController extends AbstractController
      */
     public function updateHandle(Request $request): Response
     {
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $citizen = $user->getCitizen();
+        if ($citizen === null) {
+            return $this->json([
+                'error' => 'no_citizen',
+                'errorMessage' => 'Account not linked yet.',
+            ], 400);
+        }
+
         $updateHandle = new UpdateHandle();
         $form = $this->formFactory->createNamedBuilder('', UpdateHandleForm::class, $updateHandle)->getForm();
         $form->handleRequest($request);
@@ -119,10 +129,6 @@ class ProfileController extends AbstractController
                 'formErrors' => $errors,
             ], 400);
         }
-
-        /** @var User $user */
-        $user = $this->security->getUser();
-        $citizen = $user->getCitizen();
 
         try {
             $citizenInfos = $this->citizenInfosProvider->retrieveInfos(new HandleSC($updateHandle->handleSC));

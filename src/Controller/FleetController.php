@@ -85,7 +85,7 @@ class FleetController extends AbstractController
             return $this->json([
                 'error' => 'no_rights',
                 'errorMessage' => 'You have no rights to see this fleet.',
-            ], 400);
+            ], 403);
         }
         if ($user->getPublicChoice() === User::PUBLIC_CHOICE_ORGANIZATION
             && (!$this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')
@@ -94,7 +94,7 @@ class FleetController extends AbstractController
             return $this->json([
                 'error' => 'no_rights',
                 'errorMessage' => 'You have no rights to see this fleet.',
-            ], 400);
+            ], 403);
         }
 
         $fleet = $citizen->getLastVersionFleet();
