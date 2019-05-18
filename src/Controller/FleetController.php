@@ -276,8 +276,44 @@ class FleetController extends AbstractController
     private function shipNamesAreEquals(string $hangarName, string $providerName): bool
     {
         switch ($hangarName) {
+            case '315p Explorer': return $providerName === '315p';
+            case '325a Fighter': return $providerName === '325a';
+            case '350r Racer': return $providerName === '350r';
             case '600i Exploration Module': return $providerName === '600i Explorer';
             case '600i Touring Module': return $providerName === '600i Touring';
+            case '890 JUMP': return $providerName === '890 Jump';
+            case 'Aopoa San\'tok.yāi': return $providerName === 'San\'tok.yāi';
+            case 'Argo SRV': return $providerName === 'SRV';
+            case 'Crusader Mercury Star Runner': return $providerName === 'Mercury Star Runner';
+            case 'Cyclone RC': return $providerName === 'Cyclone-RC';
+            case 'Cyclone RN': return $providerName === 'Cyclone-RN';
+            case 'Cyclone TR': return $providerName === 'Cyclone-TR';
+            case 'Cyclone AA': return $providerName === 'Cyclone-AA';
+            case 'Dragonfly Star Kitten Edition': return $providerName === 'Dragonfly Yellowjacket';
+            case 'Hercules Starlifter C2': return $providerName === 'C2 Hercules';
+            case 'Hercules Starlifter M2': return $providerName === 'M2 Hercules';
+            case 'Hercules Starlifter A2': return $providerName === 'A2 Hercules';
+            case 'Hornet F7C': return $providerName === 'F7C Hornet';
+            case 'F7A Hornet': return $providerName === 'F7A Hornet';
+            case 'Hornet F7C-M Heartseeker': return $providerName === 'F7C-M Super Hornet Heartseeker';
+            case 'Hornet F7C-S Ghost': return $providerName === 'F7C-S Super Hornet Ghost';
+            case 'Hornet F7C-R Tracker': return $providerName === 'F7C-R Super Hornet Tracker';
+            case 'Hornet F7C-M Hornet': return $providerName === 'F7C-M Super Hornet Hornet';
+            case 'Idris-P Frigate': return $providerName === 'Idris-P';
+            case 'Khartu-al': return $providerName === 'Khartu-Al';
+            case 'Mustang Omega : AMD Edition': return $providerName === 'Mustang Omega';
+            case 'Nova Tank': return $providerName === 'Nova';
+            case 'P-52 Merlin': return $providerName === 'P52 Merlin';
+            case 'P-72 Archimedes': return $providerName === 'P72 Archimedes';
+            case 'Reliant Kore - Mini Hauler': return $providerName === 'Reliant Kore';
+            case 'Reliant Mako - News Van': return $providerName === 'Reliant Mako';
+            case 'Reliant Sen - Researcher': return $providerName === 'Reliant Sen';
+            case 'Reliant Tana - Skirmisher': return $providerName === 'Reliant Tana';
+            case 'Valkyrie ': return $providerName === 'Valkyrie';
+            case 'Valkyrie Liberator Edition ': return $providerName === 'Valkyrie Liberator Edition';
+            case 'X1': return $providerName === 'X1 Base';
+            case 'X1 - FORCE': return $providerName === 'X1 Force';
+            case 'X1 - VELOCITY': return $providerName === 'X1 Velocity';
         }
 
         return $hangarName === $providerName;
