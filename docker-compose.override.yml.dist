@@ -31,7 +31,7 @@ services:
             - ./public:/app/public
         environment:
             - PHP_HANDLER_HOST=php:9000
-    mariadb:
+    mysql:
 #        tmpfs: /var/lib/mysql
         volumes:
             - db:/var/lib/mysql
