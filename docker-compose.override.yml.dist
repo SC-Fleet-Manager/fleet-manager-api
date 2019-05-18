@@ -1,4 +1,6 @@
 version: '3.4'
+volumes:
+    db: ~
 services:
     php:
         build:
@@ -29,7 +31,10 @@ services:
             - ./public:/app/public
         environment:
             - PHP_HANDLER_HOST=php:9000
-    mariadb:
+    mysql:
+#        tmpfs: /var/lib/mysql
+        volumes:
+            - db:/var/lib/mysql
         ports:
             - 127.0.0.1:3306:3306
     smtp:

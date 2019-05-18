@@ -5,3 +5,8 @@ App\Entity\Citizen:
         actualHandle: '<(new \App\Domain\HandleSC("ionni"))>'
         organisations: ["flk"]
         bio: 'This is my bio'
+    citizen_ashuvidz:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("3de45df8-3e84-4a69-8e9d-7bff1faa5281"))>']
+        number: '<(new \App\Domain\CitizenNumber("234567"))>'
+        actualHandle: '<(new \App\Domain\HandleSC("ashuvidz"))>'
+        organisations: ["flk"]

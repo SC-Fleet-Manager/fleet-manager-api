@@ -2,10 +2,10 @@
     <div class="animated fadeIn">
         <b-row>
             <b-col>
-                <b-card header="Your organizations' fleets">
+                <b-card header="Your organizations' fleets" class="js-organizations-fleets">
                     <b-row>
                         <b-col col xl="3" lg="4" md="6" v-if="this.citizen != null">
-                            <b-form-group label="Select an organization" label-for="select-orga">
+                            <b-form-group label="Select an organization" label-for="select-orga" class="js-select-orga">
                                 <b-form-select id="select-orga" v-model="selectedSid" class="mb-3">
                                     <option v-for="orga in this.citizen.organisations" :key="orga" :value="orga">{{ orga }}</option>
                                 </b-form-select>
