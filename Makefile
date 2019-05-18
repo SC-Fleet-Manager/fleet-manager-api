@@ -7,6 +7,7 @@ PHPUNIT=bin/phpunit
 PHP_CS_FIXER=vendor/bin/php-cs-fixer
 EXEC_PHP=$(DOCKER_COMPOSE) exec -u ${UID}:${GID} php
 EXEC_PHP_ROOT=$(DOCKER_COMPOSE) exec php
+EXEC_MYSQL=$(DOCKER_COMPOSE) exec -T mysql
 EXEC_COMPOSER=$(EXEC_PHP) composer
 EXEC_CONSOLE=$(EXEC_PHP) $(CONSOLE)
 EXEC_YARN=docker container run --rm -it -u ${UID}:${GID} -v ${PROJECT_DIR}:/app -w /app node:10-alpine yarn
@@ -68,14 +69,16 @@ assets: public/build						## shortcut for building assets public/build
 ##
 ##Databases
 ##---------------------------------------------------------------------------
-.PHONY: db-migrate db-reset db-reset-tests fixtures
+.PHONY: db-migrate db-dump db-reset-tests fixtures
 db-migrate: vendor								## execute all database migrations
 	$(EXEC_CONSOLE) doctrine:migrations:migrate -n
+db-dump:									## create a database dump to ./dumps/
+	$(EXEC_MYSQL) sh -c 'exec mysqldump --all-databases -uroot -p"$${MYSQL_ROOT_PASSWORD}"' > ./dumps/dump-$(shell date +"%F").sql
 db-reset: vendor								## recreate the database without data
 	-$(EXEC_CONSOLE) doctrine:database:drop --if-exists --force
 	$(EXEC_CONSOLE) doctrine:database:create
 	$(MAKE) db-migrate
-db-reset-tests: vendor							## recreate the database without data for testing
+db-reset-tests: vendor								## recreate the database without data for testing
 	-$(EXEC_CONSOLE) --env=test doctrine:database:drop --if-exists --force
 	$(EXEC_CONSOLE) --env=test doctrine:database:create
 	$(EXEC_CONSOLE) --env=test doctrine:migrations:migrate -n
@@ -86,17 +89,17 @@ fixtures: vendor								## executes all fixtures
 ##QA
 ##---------------------------------------------------------------------------
 .PHONY: qa tests phpunit-tests phpcsfix lint-twig lint-yaml
-qa: phpcsfix lint-twig lint-yaml tests			## launch tests + syntax checks
+qa: phpcsfix lint-twig lint-yaml tests					## launch tests + syntax checks
 
 tests: phpunit-tests							## launch all tests
 phpunit-tests: vendor							## launch unit + functional tests (PHPUnit /w Panther)
 	$(EXEC_PHP) $(PHPUNIT) $(c)
 
-phpcsfix: vendor								## fix syntax of all PHP sources
+phpcsfix: vendor							## fix syntax of all PHP sources
 	$(EXEC_PHP) $(PHP_CS_FIXER) fix
-lint-twig: vendor								## check syntax of templates
+lint-twig: vendor							## check syntax of templates
 	$(EXEC_CONSOLE) lint:twig templates
-lint-yaml: vendor								## check syntax of yaml files
+lint-yaml: vendor							## check syntax of yaml files
 	$(EXEC_CONSOLE) lint:yaml --parse-tags *.yml fixtures/*.yaml k8s/*.yaml
 
 # Files generation
