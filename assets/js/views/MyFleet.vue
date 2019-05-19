@@ -3,7 +3,6 @@
         <b-row>
             <b-col>
                 <b-card :title="userHandle ? 'Citizen ' + userHandle : ''">
-<!--                    <h1 v-if="userHandle != null">Citizen {{ userHandle }}</h1>-->
                     <div class="mb-3" v-if="userHandle == null">
                         <b-button v-b-modal.modal-upload-fleet variant="primary" :disabled="citizen == null"><i class="fas fa-cloud-upload-alt"></i> Update my fleet</b-button>
                         <b-button download :disabled="citizen == null" :href="citizen != null ? '/api/create-citizen-fleet-file' : ''" variant="success"><i class="fas fa-cloud-download-alt"></i> Export my fleet (.json)</b-button>
@@ -61,7 +60,7 @@
             this.refreshMyFleet();
 
             if (!this.userHandle) { // it is my fleet page
-                axios.get('/profile', {
+                axios.get('/profile/', {
                     params: {}
                 }).then(response => {
                     this.citizen = response.data.citizen;

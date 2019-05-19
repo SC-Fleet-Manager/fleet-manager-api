@@ -20,7 +20,7 @@ class Citizen
      *
      * @ORM\Id()
      * @ORM\Column(type="uuid", unique=true)
-     * @Groups({"profile"})
+     * @Groups({"profile", "orga_fleet"})
      */
     private $id;
 
@@ -36,7 +36,7 @@ class Citizen
      * @var HandleSC
      *
      * @ORM\Column(type="string", length=255)
-     * @Groups({"profile"})
+     * @Groups({"profile", "orga_fleet"})
      */
     private $actualHandle;
 
@@ -44,7 +44,7 @@ class Citizen
      * @var iterable|string[]
      *
      * @ORM\Column(type="json")
-     * @Groups({"profile"})
+     * @Groups({"profile", "orga_fleet"})
      */
     private $organisations;
 

@@ -27,6 +27,9 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
         $this->cache = $cache;
     }
 
+    /**
+     * @return iterable|ShipInfo[]
+     */
     public function getAllShips(): iterable
     {
         if ($this->cache->has('ship_matrix')) {
@@ -69,6 +72,8 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
             $shipInfo->pledgeUrl = self::BASE_URL.$shipData['url'];
             $shipInfo->manufacturerName = $shipData['manufacturer']['name'];
             $shipInfo->manufacturerCode = $shipData['manufacturer']['code'];
+            $shipInfo->chassisId = $shipData['chassis_id'];
+            $shipInfo->chassisName = static::transformChassisIdToFamilyName($shipInfo->chassisId);
             $shipInfo->mediaUrl = \count($shipData['media']) > 0 ? self::BASE_URL.$shipData['media'][0]['source_url'] ?? null : null;
             if (\count($shipData['media']) > 0) {
                 $mediaUrl = $shipData['media'][0]['images']['store_small'] ?? null;
@@ -84,6 +89,13 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
         $this->cache->set('ship_matrix', $shipInfos, new \DateInterval('P3D'));
 
         return $shipInfos;
+    }
+
+    public function getShipsByChassisId(string $chassisId): iterable
+    {
+        return array_filter($this->getAllShips(), static function (ShipInfo $shipInfo) use ($chassisId): bool  {
+            return $shipInfo->chassisId === $chassisId;
+        });
     }
 
     public function getShipById(string $id): ?ShipInfo
@@ -107,5 +119,154 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
         }
 
         return null;
+    }
+
+    public static function transformChassisIdToFamilyName(string $chassisId): string
+    {
+        switch ($chassisId) {
+            case '1': return 'Aurora';
+            case '2': return '300';
+            case '3': return 'Hornet';
+            case '4': return 'Constellation';
+            case '5': return 'Freelancer';
+            case '6': return 'Cutlass';
+            case '7': return 'Avenger';
+            case '8': return 'Gladiator';
+            case '9': return 'M50';
+            case '10': return 'Starfarer';
+            case '11': return 'Caterpillar';
+            case '12': return 'Retaliator';
+            case '13': return 'Scythe';
+            case '14': return 'Idris';
+            case '15': return 'Merlin';
+            case '16': return 'Mustang';
+            case '17': return 'Redeemer';
+            case '18': return 'Gladius';
+            case '19': return 'Khartu';
+            case '20': return 'Merchantman';
+            case '21': return '890 Jump';
+            case '22': return 'Carrack';
+            case '23': return 'Herald';
+            case '24': return 'Hull';
+            case '25': return 'Orion';
+            case '26': return 'Reclaimer';
+            case '28': return 'Javelin';
+            case '30': return 'Vanguard';
+            case '31': return 'Reliant';
+            case '32': return 'Starliner';
+            case '33': return 'Glaive';
+            case '34': return 'Endeavor';
+            case '35': return 'Sabre';
+            case '37': return 'Crucible';
+            case '38': return 'P72 Archimedes';
+            case '39': return 'Blade';
+            case '40': return 'Prospector';
+            case '41': return 'Buccaneer';
+            case '42': return 'Dragonfly';
+            case '43': return 'MPUV';
+            case '44': return 'Terrapin';
+            case '45': return 'Polaris';
+            case '46': return 'Prowler';
+            case '47': return '85X';
+            case '48': return 'Razor';
+            case '49': return 'Hurricane';
+            case '50': return 'Defender';
+            case '51': return 'Eclipse';
+            case '52': return 'Nox';
+            case '53': return 'Cyclone';
+            case '54': return 'Ursa';
+            case '55': return '600i';
+            case '56': return 'X1';
+            case '57': return 'Pioneer';
+            case '58': return 'Hawk';
+            case '59': return 'Hammerhead';
+            case '60': return 'Planetary Beacon'; // NOT A SHIP ! Oo
+            case '61': return 'Nova';
+            case '62': return 'Vulcan';
+            case '63': return '100';
+            case '64': return 'Starlifter';
+            case '65': return 'Vulture';
+            case '66': return 'Apollo';
+            case '67': return 'Mercury Star Runner';
+            case '68': return 'Valkyrie';
+            case '69': return 'Kraken';
+            case '70': return 'Arrow';
+            case '71': return "San'tok.yāi";
+            case '72': return 'SRV';
+            case '73': return 'Corsair';
+            case '74': return 'Ranger';
+        }
+
+        return 'Unknown chassis';
+    }
+
+    public static function shipNamesAreEquals(string $hangarName, string $providerName): bool
+    {
+        return static::transformHangarToProvider($hangarName) === $providerName;
+    }
+
+    public function transformProviderToHangar(string $providerName): string
+    {
+        $map = array_flip(static::mapHangarToProvider());
+        if (\array_key_exists($providerName, $map)) {
+            return $map[$providerName];
+        }
+
+        return $providerName;
+    }
+
+    public function transformHangarToProvider(string $hangarName): string
+    {
+        $map = static::mapHangarToProvider();
+        if (\array_key_exists($hangarName, $map)) {
+            return $map[$hangarName];
+        }
+
+        return $hangarName;
+    }
+
+    private static function mapHangarToProvider(): array
+    {
+        // hangar name => provider name
+        return [
+            '315p Explorer' => '315p',
+            '325a Fighter' => '325a',
+            '350r Racer' => '350r',
+            '600i Exploration Module' => '600i Explorer',
+            '600i Touring Module' => '600i Touring',
+            '890 JUMP' => '890 Jump',
+            'Aopoa San\'tok.yāi' => 'San\'tok.yāi',
+            'Argo SRV' => 'SRV',
+            'Crusader Mercury Star Runner' => 'Mercury Star Runner',
+            'Cyclone RC' => 'Cyclone-RC',
+            'Cyclone RN' => 'Cyclone-RN',
+            'Cyclone-TR' => 'Cyclone-TR', // yes, same
+            'Cyclone AA' => 'Cyclone-AA',
+            'Dragonfly Star Kitten Edition' => 'Dragonfly Yellowjacket',
+            'Hercules Starlifter C2' => 'C2 Hercules',
+            'Hercules Starlifter M2' => 'M2 Hercules',
+            'Hercules Starlifter A2' => 'A2 Hercules',
+            'Hornet F7C' => 'F7C Hornet',
+            'F7A Hornet' => 'F7A Hornet',
+            'Hornet F7C-M Heartseeker' => 'F7C-M Super Hornet Heartseeker',
+            'Hornet F7C-S Ghost' => 'F7C-S Super Hornet Ghost',
+            'Hornet F7C-R Tracker' => 'F7C-R Super Hornet Tracker',
+            'Hornet F7C-M Hornet' => 'F7C-M Super Hornet Hornet',
+            'Idris-P Frigate' => 'Idris-P',
+            'Khartu-al' => 'Khartu-Al',
+            'Mustang Omega  => AMD Edition' => 'Mustang Omega',
+            'Nova Tank' => 'Nova',
+            'P-52 Merlin' => 'P52 Merlin',
+            'P-72 Archimedes' => 'P72 Archimedes',
+            'Reliant Kore - Mini Hauler' => 'Reliant Kore',
+            'Reliant Mako - News Van' => 'Reliant Mako',
+            'Reliant Sen - Researcher' => 'Reliant Sen',
+            'Reliant Tana - Skirmisher' => 'Reliant Tana',
+            'Valkyrie ' => 'Valkyrie',
+            'Valkyrie Liberator Edition ' => 'Valkyrie Liberator Edition',
+            'X1' => 'X1 Base',
+            'X1 - FORCE' => 'X1 Force',
+            'X1 - VELOCITY' => 'X1 Velocity',
+        ];
     }
 }

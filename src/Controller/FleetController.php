@@ -2,12 +2,12 @@
 
 namespace App\Controller;
 
-use App\Domain\ShipInfo;
 use App\Domain\SpectrumIdentification;
 use App\Entity\Citizen;
 use App\Entity\User;
 use App\Repository\CitizenRepository;
 use App\Repository\UserRepository;
+use App\Service\OrganizationFleetHandler;
 use App\Service\ShipInfosProviderInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -107,10 +107,10 @@ class FleetController extends AbstractController
     }
 
     /**
-     * @Route("/fleets/{organisation}", name="fleets", methods={"GET"}, options={"expose":true})
+     * @Route("/orga-fleets/{organization}", name="orga_fleets", methods={"GET"}, options={"expose":true})
      * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
      */
-    public function fleets(Request $request, string $organisation): Response
+    public function orgaFleets(Request $request, string $organization, OrganizationFleetHandler $organizationFleetHandler): Response
     {
         /** @var User $user */
         $user = $this->security->getUser();
@@ -121,213 +121,90 @@ class FleetController extends AbstractController
                 'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/#/profile">profile page</a>.',
             ], 400);
         }
-        if (!$citizen->hasOrganisation($organisation)) {
+        if (!$citizen->hasOrganisation($organization)) {
             return $this->json([
                 'error' => 'bad_organisation',
-                'errorMessage' => sprintf('The organisation %s does not exist.', $organisation),
+                'errorMessage' => sprintf('The organisation %s does not exist.', $organization),
+            ], 404);
+        }
+
+        $shipFamilies = $organizationFleetHandler->computeShipFamilies(new SpectrumIdentification($organization));
+        usort($shipFamilies, static function (array $shipFamily1, array $shipFamily2): int {
+            return $shipFamily2['count'] - $shipFamily1['count'];
+        });
+
+        return $this->json($shipFamilies);
+    }
+
+    /**
+     * @Route("/orga-fleets/{organization}/{chassisId}", name="orga_fleet_family", methods={"GET"}, options={"expose":true})
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
+     */
+    public function orgaFleetFamily(Request $request, string $organization, string $chassisId): Response
+    {
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $citizen = $user->getCitizen();
+        if ($citizen === null) {
+            return $this->json([
+                'error' => 'no_citizen_created',
+                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/#/profile">profile page</a>.',
             ], 400);
         }
+        if (!$citizen->hasOrganisation($organization)) {
+            return $this->json([
+                'error' => 'bad_organisation',
+                'errorMessage' => sprintf('The organisation %s does not exist.', $organization),
+            ], 404);
+        }
 
-        $citizenIdsFilter = $request->query->get('citizens', []);
-        $shipNamesFilter = $request->query->get('ships', []);
+        $shipsInfos = $this->shipInfosProvider->getShipsByChassisId($chassisId);
 
-        $citizens = $this->citizenRepository->getByOrganisation(new SpectrumIdentification($organisation));
-        $citizensFiltered = $this->filterCitizenByIds($citizens, $citizenIdsFilter);
-
-        $shipInfos = $this->shipInfosProvider->getAllShips();
-        $shipInfosFiltered = $this->filterShipsByNames($shipInfos, $shipNamesFilter);
-
-        $shipCounter = $this->countHowManyCitizenHaveSameShip($shipInfosFiltered, $citizensFiltered);
-        $shipInfosFiltered = $this->filterShipsGotByAtLeastOneCitizen($shipInfosFiltered, $shipCounter);
-
-        $tableHeaders = [
-            'shipName' => [
-                'label' => 'Ships',
-                'sortable' => true,
-            ],
-            'shipManufacturer' => [
-                'label' => 'Manufacturers',
-                'sortable' => true,
-            ],
-            'totalAvailable' => [
-                'label' => 'Total available',
-                'sortable' => true,
-            ],
-        ];
-        foreach ($citizensFiltered as $citizen) {
-            $tableHeaders[(string) $citizen->getActualHandle()] = [
-                'label' => (string) $citizen->getActualHandle(),
-                'sortable' => true,
+        $res = [];
+        foreach ($shipsInfos as $shipInfo) {
+            $shipName = $this->shipInfosProvider->transformProviderToHangar($shipInfo->name);
+            $countOwners = $this->citizenRepository->countOwnersOfShip($organization, $shipName);
+            $countOwned = $this->citizenRepository->countOwnedShips($organization, $shipName);
+            $res[] = [
+                'shipInfo' => $shipInfo,
+                'countTotalOwners' => $countOwners,
+                'countTotalShips' => $countOwned,
             ];
         }
-
-        $viewFleets = [];
-        foreach ($shipInfosFiltered as $shipInfo) {
-            $viewFleet = [
-                '_cellVariants' => ['shipName' => $shipInfo->productionStatus === ShipInfo::FLIGHT_READY ? 'success' : 'danger'],
-                'shipName' => $shipInfo->name,
-                'shipManufacturer' => $shipInfo->manufacturerCode,
-                'totalAvailable' => \array_reduce($shipCounter[$shipInfo->name], static function (int $carry, int $countPerUser): int {
-                    return $carry + $countPerUser;
-                }, 0),
-            ];
-            foreach ($citizensFiltered as $citizen) {
-                $count = $shipCounter[$shipInfo->name][$citizen->getId()->toString()] ?? null;
-                $viewFleet[(string) $citizen->getActualHandle()] = $count;
-                $viewFleet['_cellVariants'][(string) $citizen->getActualHandle()] = $count ? 'success' : '';
-            }
-            $viewFleets[] = $viewFleet;
-        }
-
-        $viewShips = [];
-        foreach ($shipInfos as $shipInfo) {
-            $viewShips[$shipInfo->name] = $shipInfo->name;
-        }
-
-        $viewCitizens = [];
-        foreach ($citizens as $citizen) {
-            $viewCitizens[$citizen->getId()->toString()] = (string) $citizen->getActualHandle();
-        }
-
-        return $this->json([
-            'tableHeaders' => $tableHeaders,
-            'fleets' => $viewFleets,
-            'ships' => $viewShips,
-            'citizens' => $viewCitizens,
-            'shipInfos' => $shipInfosFiltered,
-        ]);
-    }
-
-    /**
-     * @param array|Citizen[]   $citizensFiltered
-     * @param iterable|string[] $citizenIdsFilter
-     *
-     * @return array|Citizen[]
-     */
-    private function filterCitizenByIds(array $citizens, iterable $citizenIdsFilter): array
-    {
-        if (empty($citizenIdsFilter)) {
-            return $citizens;
-        }
-        $citizensFiltered = \array_filter($citizens, function (Citizen $citizen) use ($citizenIdsFilter): bool {
-            foreach ($citizenIdsFilter as $citizenIdFilter) {
-                if ($citizen->getId()->toString() === $citizenIdFilter) {
-                    return true;
-                }
-            }
-
-            return false;
+        usort($res, static function (array $result1, array $result2): int {
+            return $result2['countTotalShips'] - $result1['countTotalShips'];
         });
 
-        return $citizensFiltered;
+        return $this->json($res);
     }
 
     /**
-     * @param array|ShipInfo[]  $ships
-     * @param iterable|string[] $shipNamesFilter
-     *
-     * @return array|ShipInfo[]
+     * @Route("/orga-fleets/{organization}/users/{shipName}", name="orga_fleet_users", methods={"GET"}, options={"expose":true})
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
      */
-    private function filterShipsByNames(array $ships, iterable $shipNamesFilter): array
+    public function orgaFleetUsers(Request $request, string $organization, string $shipName): Response
     {
-        if (empty($shipNamesFilter)) {
-            return $ships;
+        $page = $request->query->get('page', 1);
+        $itemsPerPage = 10;
+
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $citizen = $user->getCitizen();
+        if ($citizen === null) {
+            return $this->json([
+                'error' => 'no_citizen_created',
+                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/#/profile">profile page</a>.',
+            ], 400);
         }
-        $shipInfosFiltered = \array_filter($ships, function (ShipInfo $shipInfo) use ($shipNamesFilter): bool {
-            foreach ($shipNamesFilter as $shipNameFilter) {
-                if ($shipInfo->name === $shipNameFilter) {
-                    return true;
-                }
-            }
-
-            return false;
-        });
-
-        return $shipInfosFiltered;
-    }
-
-    /**
-     * @param array|ShipInfo[] $shipInfos
-     * @param array|Citizen[]  $citizens
-     *
-     * @return array e.g., [<shipName> => [<citizenId_1> => 2, <citizenId_2> => 1]]
-     */
-    private function countHowManyCitizenHaveSameShip(array $shipInfos, array $citizens): array
-    {
-        $shipCounter = [];
-        foreach ($shipInfos as $shipInfo) {
-            $shipCounter[$shipInfo->name] = [];
-            foreach ($citizens as $citizen) {
-                $fleet = $citizen->getLastVersionFleet();
-                if ($fleet === null) {
-                    continue;
-                }
-                foreach ($fleet->getShips() as $ship) {
-                    if ($this->shipNamesAreEquals($ship->getName(), $shipInfo->name)) {
-                        $shipCounter[$shipInfo->name][$citizen->getId()->toString()] = ($shipCounter[$shipInfo->name][$citizen->getId()->toString()] ?? 0) + 1;
-                    }
-                }
-            }
+        if (!$citizen->hasOrganisation($organization)) {
+            return $this->json([
+                'error' => 'bad_organisation',
+                'errorMessage' => sprintf('The organisation %s does not exist.', $organization),
+            ], 404);
         }
 
-        return $shipCounter;
-    }
+        $citizens = $this->citizenRepository->getOwnersOfShip($organization, $this->shipInfosProvider->transformProviderToHangar($shipName), $page, $itemsPerPage);
 
-    private function shipNamesAreEquals(string $hangarName, string $providerName): bool
-    {
-        switch ($hangarName) {
-            case '315p Explorer': return $providerName === '315p';
-            case '325a Fighter': return $providerName === '325a';
-            case '350r Racer': return $providerName === '350r';
-            case '600i Exploration Module': return $providerName === '600i Explorer';
-            case '600i Touring Module': return $providerName === '600i Touring';
-            case '890 JUMP': return $providerName === '890 Jump';
-            case 'Aopoa San\'tok.yāi': return $providerName === 'San\'tok.yāi';
-            case 'Argo SRV': return $providerName === 'SRV';
-            case 'Crusader Mercury Star Runner': return $providerName === 'Mercury Star Runner';
-            case 'Cyclone RC': return $providerName === 'Cyclone-RC';
-            case 'Cyclone RN': return $providerName === 'Cyclone-RN';
-            case 'Cyclone TR': return $providerName === 'Cyclone-TR';
-            case 'Cyclone AA': return $providerName === 'Cyclone-AA';
-            case 'Dragonfly Star Kitten Edition': return $providerName === 'Dragonfly Yellowjacket';
-            case 'Hercules Starlifter C2': return $providerName === 'C2 Hercules';
-            case 'Hercules Starlifter M2': return $providerName === 'M2 Hercules';
-            case 'Hercules Starlifter A2': return $providerName === 'A2 Hercules';
-            case 'Hornet F7C': return $providerName === 'F7C Hornet';
-            case 'F7A Hornet': return $providerName === 'F7A Hornet';
-            case 'Hornet F7C-M Heartseeker': return $providerName === 'F7C-M Super Hornet Heartseeker';
-            case 'Hornet F7C-S Ghost': return $providerName === 'F7C-S Super Hornet Ghost';
-            case 'Hornet F7C-R Tracker': return $providerName === 'F7C-R Super Hornet Tracker';
-            case 'Hornet F7C-M Hornet': return $providerName === 'F7C-M Super Hornet Hornet';
-            case 'Idris-P Frigate': return $providerName === 'Idris-P';
-            case 'Khartu-al': return $providerName === 'Khartu-Al';
-            case 'Mustang Omega : AMD Edition': return $providerName === 'Mustang Omega';
-            case 'Nova Tank': return $providerName === 'Nova';
-            case 'P-52 Merlin': return $providerName === 'P52 Merlin';
-            case 'P-72 Archimedes': return $providerName === 'P72 Archimedes';
-            case 'Reliant Kore - Mini Hauler': return $providerName === 'Reliant Kore';
-            case 'Reliant Mako - News Van': return $providerName === 'Reliant Mako';
-            case 'Reliant Sen - Researcher': return $providerName === 'Reliant Sen';
-            case 'Reliant Tana - Skirmisher': return $providerName === 'Reliant Tana';
-            case 'Valkyrie ': return $providerName === 'Valkyrie';
-            case 'Valkyrie Liberator Edition ': return $providerName === 'Valkyrie Liberator Edition';
-            case 'X1': return $providerName === 'X1 Base';
-            case 'X1 - FORCE': return $providerName === 'X1 Force';
-            case 'X1 - VELOCITY': return $providerName === 'X1 Velocity';
-        }
-
-        return $hangarName === $providerName;
-    }
-
-    /**
-     * @param array|ShipInfo[] $shipInfos
-     *
-     * @return array|ShipInfo[]
-     */
-    private function filterShipsGotByAtLeastOneCitizen(array $shipInfos, array &$shipCounter): array
-    {
-        return \array_filter($shipInfos, function (ShipInfo $shipInfo) use (&$shipCounter): bool {
-            return \count($shipCounter[$shipInfo->name]) > 0;
-        });
+        return $this->json($citizens, 200, [], ['groups' => 'orga_fleet']);
     }
 }
