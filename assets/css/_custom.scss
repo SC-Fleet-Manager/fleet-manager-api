@@ -11,7 +11,7 @@
     cursor: pointer;
     transition: box-shadow 0.2s ease;
     box-shadow: 0 0 0 0 #000;
-    &:hover {
+    &:hover, &.card-ship-active {
         box-shadow: 0 0 8px 0 rgba(0,0,0,0.75);
     }
 }
@@ -29,7 +29,15 @@
 
 .ship-family-detail-variants-wrapper {
     overflow-x: hidden;
+    box-shadow: 0 0 8px 0 rgba(0,0,0,0.75);
 }
+
+.ship-family-detail {
+    &.collapse:not(.show) {
+        display: none;
+    }
+}
+
 .ship-family-detail-variants {
     margin-left: -15px;
     margin-right: -15px;
@@ -72,10 +80,4 @@
 .ship-family-detail-variant-ownerlist {
     overflow-y: auto;
     height: 150px;
-}
-
-.ship-family-detail {
-    &.collapse:not(.show) {
-        display: none;
-    }
 }

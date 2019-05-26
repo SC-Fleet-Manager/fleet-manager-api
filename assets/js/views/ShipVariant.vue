@@ -1,7 +1,7 @@
 <template>
     <div class="ship-family-detail-variant mb-3">
-        <div class="mb-2 text-center"><img :src="shipVariant.shipInfo.mediaThumbUrl" class="img-thumbnail" /></div>
-        <h4>{{ shipVariant.shipInfo.name }} <a href="#" title="Go to pledge"><i class="fa fa-link"></i></a></h4>
+        <div class="mb-2 text-center"><img :src="shipVariant.shipInfo.mediaThumbUrl" class="img-fluid" /></div>
+        <h4>{{ shipVariant.shipInfo.name }} <!--<a href="#" title="Go to pledge"><i class="fa fa-link"></i></a>--></h4>
         <div class="mb-3"><strong>{{ shipVariant.countTotalShips }}</strong> owned by <strong>{{ shipVariant.countTotalOwners }}</strong> citizens</div>
 <!--        <div class="mb-3"><b-form-input type="text" v-model="search[ship.shipInfo.id]" placeholder="Search citizen"></b-form-input></div>&ndash;&gt;-->
         <div class="ship-family-detail-variant-ownerlist" @scroll="onUsersScroll">

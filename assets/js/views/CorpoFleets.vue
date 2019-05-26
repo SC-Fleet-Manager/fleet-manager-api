@@ -30,7 +30,7 @@
                                     || (actualBreakpoint === 'sm' && (index % 2 === 1 || index === shipFamilies.length - 1))
                                     || (actualBreakpoint === 'xs')
                                 "
-                                class="ship-family-detail col-12"
+                                class="col-12"
                             ></ShipFamilyDetail>
                         </template>
                     </b-row>
