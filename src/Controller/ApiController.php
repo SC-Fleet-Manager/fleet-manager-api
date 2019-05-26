@@ -15,6 +15,7 @@ use App\Form\FleetUploadForm;
 use App\Service\CitizenFleetGenerator;
 use App\Service\FleetUploadHandler;
 use App\Service\OrganisationFleetGenerator;
+use App\Service\OrganizationInfosProviderInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -38,19 +39,22 @@ class ApiController extends AbstractController
     private $fleetUploadHandler;
     private $citizenFleetGenerator;
     private $organisationFleetGenerator;
+    private $organizationInfosProvider;
 
     public function __construct(
         LoggerInterface $logger,
         Security $security,
         FleetUploadHandler $fleetUploadHandler,
         CitizenFleetGenerator $citizenFleetGenerator,
-        OrganisationFleetGenerator $organisationFleetGenerator
+        OrganisationFleetGenerator $organisationFleetGenerator,
+        OrganizationInfosProviderInterface $organizationInfosProvider
     ) {
         $this->logger = $logger;
         $this->security = $security;
         $this->fleetUploadHandler = $fleetUploadHandler;
         $this->citizenFleetGenerator = $citizenFleetGenerator;
         $this->organisationFleetGenerator = $organisationFleetGenerator;
+        $this->organizationInfosProvider = $organizationInfosProvider;
     }
 
     /**
@@ -60,6 +64,27 @@ class ApiController extends AbstractController
     public function me(): Response
     {
         return $this->json($this->security->getUser(), 200, [], ['groups' => 'me:read']);
+    }
+
+    /**
+     * @Route("/my-orgas", name="my_orgas", methods={"GET"})
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
+     */
+    public function myOrganizations(): Response
+    {
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $citizen = $user->getCitizen();
+        if ($citizen === null) {
+            return $this->json([]);
+        }
+
+        $res = [];
+        foreach ($citizen->getOrganisations() as $sid) {
+            $res[] = $this->organizationInfosProvider->retrieveInfos(new SpectrumIdentification($sid));
+        }
+
+        return $this->json($res);
     }
 
     /**

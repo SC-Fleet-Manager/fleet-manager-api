@@ -5,24 +5,21 @@ namespace App\Service;
 use App\Domain\ShipInfo;
 use GuzzleHttp\Client;
 use Psr\Log\LoggerInterface;
-use Psr\SimpleCache\CacheInterface;
+use Symfony\Component\Cache\CacheItem;
+use Symfony\Contracts\Cache\CacheInterface;
 
 class ApiShipInfosProvider implements ShipInfosProviderInterface
 {
     private const BASE_URL = 'https://robertsspaceindustries.com';
 
-    /**
-     * @var Client
-     */
+    /** @var Client */
     private $client;
     private $logger;
     private $cache;
 
     public function __construct(LoggerInterface $logger, CacheInterface $cache)
     {
-        $this->client = new Client([
-            'base_uri' => self::BASE_URL,
-        ]);
+        $this->client = new Client(['base_uri' => self::BASE_URL]);
         $this->logger = $logger;
         $this->cache = $cache;
     }
@@ -32,10 +29,15 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
      */
     public function getAllShips(): iterable
     {
-        if ($this->cache->has('ship_matrix')) {
-            return $this->cache->get('ship_matrix');
-        }
+        return $this->cache->get('ship_matrix', function (CacheItem $cacheItem) {
+            $cacheItem->expiresAfter(new \DateInterval('P3D'));
 
+            return $this->scrap();
+        });
+    }
+
+    private function scrap(): array
+    {
         $response = $this->client->get('/ship-matrix/index');
         $contents = $response->getBody()->getContents();
         if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300) {
@@ -86,14 +88,12 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
             $shipInfos[$shipInfo->id] = $shipInfo;
         }
 
-        $this->cache->set('ship_matrix', $shipInfos, new \DateInterval('P3D'));
-
         return $shipInfos;
     }
 
     public function getShipsByChassisId(string $chassisId): iterable
     {
-        return array_filter($this->getAllShips(), static function (ShipInfo $shipInfo) use ($chassisId): bool  {
+        return array_filter($this->getAllShips(), static function (ShipInfo $shipInfo) use ($chassisId): bool {
             return $shipInfo->chassisId === $chassisId;
         });
     }
@@ -200,9 +200,9 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
         return 'Unknown chassis';
     }
 
-    public static function shipNamesAreEquals(string $hangarName, string $providerName): bool
+    public function shipNamesAreEquals(string $hangarName, string $providerName): bool
     {
-        return static::transformHangarToProvider($hangarName) === $providerName;
+        return $this->transformHangarToProvider($hangarName) === $providerName;
     }
 
     public function transformProviderToHangar(string $providerName): string

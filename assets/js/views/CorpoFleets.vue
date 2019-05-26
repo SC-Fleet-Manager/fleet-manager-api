@@ -7,9 +7,9 @@
                         <b-col col xl="3" lg="4" md="6" v-if="this.citizen != null">
                             <b-form-group label="Select an organization" label-for="select-orga" class="js-select-orga">
                                 <b-form-select id="select-orga" v-model="selectedSid" class="mb-3">
-                                    <option v-for="orga in this.citizen.organisations" :key="orga" :value="orga">{{ orga }}</option>
+                                    <option v-for="orga in this.citizen.organisations" :key="orga" :value="orga">{{ organizations[orga] ? organizations[orga].fullname : orga }}</option>
                                 </b-form-select>
-                                <b-button download :disabled="selectedSid == null" class="mb-3" :href="'/api/create-organisation-fleet-file/'+selectedSid" variant="success"><i class="fas fa-cloud-download-alt"></i> Export entire fleet of <strong>{{ selectedSid != null ? selectedSid : 'N/A' }}</strong> (.json)</b-button>
+                                <b-button download :disabled="selectedSid == null" class="mb-3" :href="'/api/create-organisation-fleet-file/'+selectedSid" variant="success"><i class="fas fa-cloud-download-alt"></i> Export entire fleet of <strong>{{ selectedSid != null ? (organizations[selectedSid] ? organizations[selectedSid].fullname : selectedSid) : 'N/A' }}</strong> (.json)</b-button>
                             </b-form-group>
                         </b-col>
                     </b-row>
@@ -80,6 +80,7 @@
                 citizen: null,
                 shipFamilies: [], // families of ships (e.g. "Aurora" for MR, LX, etc.) that have the selected orga (no displayed if no orga members have this family).
                 actualBreakpoint: 'xs',
+                organizations: {}, // orga infos of the citizens
             }
         },
         mounted() {
@@ -117,6 +118,18 @@
                     if (this.citizen !== null && this.citizen.organisations.length > 0) {
                         this.$store.state.orga_fleet.selectedSid = this.citizen.organisations[0];
                         this.refreshOrganizationFleet();
+                    }
+                }).catch(err => {
+                    this.checkAuth(err.response);
+                    if (err.response.data.errorMessage) {
+                        toastr.error(err.response.data.errorMessage);
+                    }
+                    console.error(err);
+                });
+
+                axios.get('/api/my-orgas').then(response => {
+                    for (let orga of response.data) {
+                        this.$set(this.organizations, orga.spectrumId.sid, orga);
                     }
                 }).catch(err => {
                     this.checkAuth(err.response);
