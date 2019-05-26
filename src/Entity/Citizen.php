@@ -63,6 +63,13 @@ class Citizen
      */
     private $bio;
 
+    /**
+     * @var \DateTimeInterface
+     *
+     * @ORM\Column(type="datetimetz_immutable", nullable=true)
+     */
+    private $lastRefresh;
+
     public function __construct(?UuidInterface $id = null)
     {
         $this->id = $id;
@@ -185,5 +192,31 @@ class Citizen
         $this->bio = $bio;
 
         return $this;
+    }
+
+    public function getLastRefresh(): ?\DateTimeInterface
+    {
+        return $this->lastRefresh;
+    }
+
+    public function setLastRefresh(?\DateTimeInterface $lastRefresh): self
+    {
+        $this->lastRefresh = $lastRefresh;
+
+        return $this;
+    }
+
+    public function canBeRefreshed(): bool
+    {
+        return $this->lastRefresh === null || $this->lastRefresh <= new \DateTimeImmutable('-30 minutes');
+    }
+
+    public function getTimeLeftBeforeRefreshing(): ?\DateInterval
+    {
+        if ($this->lastRefresh === null) {
+            return null;
+        }
+
+        return $this->lastRefresh->diff(new \DateTimeImmutable('-30 minutes'));
     }
 }

@@ -34,10 +34,7 @@
                             ></ShipFamilyDetail>
                         </template>
                     </b-row>
-
-
 <!--
-
                     <div class="mb-1">
                         <label style="width: 50%">Citizens :
                             <select2 :options="citizens" v-model="citizenSelected" multiple style="width: 50%" @input="refreshTable"></select2>

@@ -20,6 +20,8 @@ interface ShipInfosProviderInterface
      */
     public function getShipsByChassisId(string $chassisId): iterable;
 
+    public function shipNamesAreEquals(string $hangarName, string $providerName): bool;
+
     public function transformProviderToHangar(string $providerName): string;
 
     public function transformHangarToProvider(string $hangarName): string;

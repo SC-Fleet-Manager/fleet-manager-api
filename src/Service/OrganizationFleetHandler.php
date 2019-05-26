@@ -36,7 +36,7 @@ class OrganizationFleetHandler
             // search chassisId of the orgaShip
             $found = false;
             foreach ($shipInfos as $shipInfo) {
-                if (!ApiShipInfosProvider::shipNamesAreEquals($orgaShip->getName(), $shipInfo->name)) {
+                if (!$this->shipInfosProvider->shipNamesAreEquals($orgaShip->getName(), $shipInfo->name)) {
                     continue;
                 }
                 $found = true;
