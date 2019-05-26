@@ -1,14 +1,16 @@
 <template>
-    <b-collapse v-model="showCollapse" :id="'ship-family-detail-' + index">
-        <div class="card mb-3 ship-family-detail-variants-wrapper">
-            <div class="ship-family-detail-variants" :class="{'hide-contents': (!this.supportIndex() || selectedShipFamily === null)}"  ref="block-variants">
-                <div v-if="selectedShipVariants.length === 0">
-                    <b-alert show variant="warning">Sorry, no ships was found for this chassis.</b-alert>
+    <div class="ship-family-detail">
+        <b-collapse v-model="showCollapse" :id="'ship-family-detail-' + index" class="ship-family-detail-variants-wrapper mb-3 card">
+            <div class="">
+                <div class="ship-family-detail-variants" :class="{'hide-contents': (!this.supportIndex() || selectedShipFamily === null)}"  ref="block-variants">
+                    <div v-if="selectedShipVariants.length === 0">
+                        <b-alert show variant="warning">Sorry, no ships was found for this chassis.</b-alert>
+                    </div>
+                    <ShipVariant v-for="ship in selectedShipVariants" :key="ship.shipInfo.id" :shipVariant="ship"></ShipVariant>
                 </div>
-                <ShipVariant v-for="ship in selectedShipVariants" :key="ship.shipInfo.id" :shipVariant="ship"></ShipVariant>
             </div>
-        </div>
-    </b-collapse>
+        </b-collapse>
+    </div>
 </template>
 
 <script>
@@ -47,6 +49,8 @@
                 if (!willCollapse && this.$refs['block-variants'] && this.$refs['block-variants'].clientHeight > 10) {
                     // when we collapse we want to keep the previous height for animation
                     this.$refs['block-variants'].style.height = this.$refs['block-variants'].clientHeight + 'px';
+                } else if (this.$refs['block-variants']) {
+                    this.$refs['block-variants'].style.height = 'initial';
                 }
                 this.$nextTick(() => {
                     this.showCollapse = willCollapse;
