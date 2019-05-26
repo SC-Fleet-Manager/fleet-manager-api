@@ -3,7 +3,6 @@
         <b-row>
             <b-col>
                 <b-card :title="userHandle ? 'Citizen ' + userHandle : ''">
-<!--                    <h1 v-if="userHandle != null">Citizen {{ userHandle }}</h1>-->
                     <div class="mb-3" v-if="userHandle == null">
                         <b-button v-b-modal.modal-upload-fleet variant="primary" :disabled="citizen == null"><i class="fas fa-cloud-upload-alt"></i> Update my fleet</b-button>
                         <b-button download :disabled="citizen == null" :href="citizen != null ? '/api/create-citizen-fleet-file' : ''" variant="success"><i class="fas fa-cloud-download-alt"></i> Export my fleet (.json)</b-button>
@@ -14,7 +13,7 @@
                             <b-alert show variant="warning">Your fleet is empty, you should upload it.</b-alert>
                         </b-col>
                         <b-col col xl="3" lg="4" md="6" v-for="ship in ships" :key="ship.id">
-                            <b-card class="mb-3"
+                            <b-card class="mb-3 js-card-ship"
                                     :img-src="getShipInfo(getFixShipName(ship.name)).mediaThumbUrl"
                                     img-top
                                     :title="ship.name">
@@ -61,7 +60,7 @@
             this.refreshMyFleet();
 
             if (!this.userHandle) { // it is my fleet page
-                axios.get('/profile', {
+                axios.get('/profile/', {
                     params: {}
                 }).then(response => {
                     this.citizen = response.data.citizen;
@@ -138,18 +137,17 @@
                     case 'Crusader Mercury Star Runner': return 'Mercury Star Runner';
                     case 'Cyclone RC': return 'Cyclone-RC';
                     case 'Cyclone RN': return 'Cyclone-RN';
-                    case 'Cyclone TR': return 'Cyclone-TR';
+                    case 'Cyclone-TR': return 'Cyclone-TR'; // yes, same
                     case 'Cyclone AA': return 'Cyclone-AA';
                     case 'Dragonfly Star Kitten Edition': return 'Dragonfly Yellowjacket';
                     case 'Hercules Starlifter C2': return 'C2 Hercules';
                     case 'Hercules Starlifter M2': return 'M2 Hercules';
                     case 'Hercules Starlifter A2': return 'A2 Hercules';
                     case 'Hornet F7C': return 'F7C Hornet';
-                    case 'F7A Hornet': return 'F7A Hornet';
                     case 'Hornet F7C-M Heartseeker': return 'F7C-M Super Hornet Heartseeker';
-                    case 'Hornet F7C-S Ghost': return 'F7C-S Super Hornet Ghost';
-                    case 'Hornet F7C-R Tracker': return 'F7C-R Super Hornet Tracker';
-                    case 'Hornet F7C-M Hornet': return 'F7C-M Super Hornet Hornet';
+                    case 'Hornet F7C-S Ghost': return 'F7C-S Hornet Ghost';
+                    case 'Hornet F7C-R Tracker': return 'F7C-R Hornet Tracker';
+                    case 'Hornet F7C-M Hornet': return 'F7C-M Hornet Hornet';
                     case 'Idris-P Frigate': return 'Idris-P';
                     case 'Khartu-al': return 'Khartu-Al';
                     case 'Mustang Omega : AMD Edition': return 'Mustang Omega';

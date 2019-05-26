@@ -5,51 +5,19 @@ namespace App\Tests\Controller;
 use App\Entity\Fleet;
 use App\Entity\User;
 use App\Service\CitizenInfosProviderInterface;
-use Hautelook\AliceBundle\PhpUnit\RefreshDatabaseTrait;
-use HWI\Bundle\OAuthBundle\Security\Core\Authentication\Token\OAuthToken;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\BrowserKit\Cookie;
+use App\Tests\WebTestCase;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class ApiControllerTest extends WebTestCase
 {
-    use RefreshDatabaseTrait;
-
-    private $client;
-    private $doctrine;
     /** @var User */
     private $user;
 
-    protected static function createClient(array $options = array(), array $server = array())
-    {
-        static::bootKernel($options);
-
-        $client = static::$kernel->getContainer()->get('test.client');
-        $client->setServerParameters($server);
-
-        return $client;
-    }
-
     public function setUp(): void
     {
-        $this->client = static::createClient();
-        $this->doctrine = static::$container->get('doctrine');
+        parent::setUp();
         $this->user =  $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ioni']);
-    }
-
-    private function logIn(User $user): void
-    {
-        $session = $this->client->getContainer()->get('session');
-
-        $token = new OAuthToken('123456789123456789abcdefg', ['ROLE_USER']);
-        $token->setResourceOwnerName('discord');
-        $token->setUser($user);
-        $token->setAuthenticated(true);
-        $session->set('_security_main', serialize($token));
-        $session->save();
-
-        $this->client->getCookieJar()->set(new Cookie($session->getName(), $session->getId()));
     }
 
     public function testMe(): void

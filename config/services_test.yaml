@@ -1,2 +1,11 @@
 services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
     App\Service\CitizenInfosProviderInterface: '@App\Service\FakeCitizenInfosProvider'
+    App\Service\ShipInfosProviderInterface: '@App\Service\FakeShipInfosProvider'
+
+    App\Tests\Controller\ConnectController:
+        tags: ['controller.service_arguments']

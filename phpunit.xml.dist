@@ -11,23 +11,12 @@
         <ini name="error_reporting" value="-1" />
         <env name="KERNEL_CLASS" value="App\Kernel" />
         <env name="APP_ENV" value="test" />
-        <env name="APP_SECRET" value="s$cretf0rt3st" />
         <env name="SHELL_VERBOSITY" value="-1" />
         <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak_vendors" />
         <env name="SYMFONY_PHPUNIT_VERSION" value="7.5" />
-
-        <!-- ###+ hwi/oauth-bundle ### -->
-        <env name="DISCORD_ID" value=""/>
-        <env name="DISCORD_SECRET" value=""/>
-        <!-- ###- hwi/oauth-bundle ### -->
-
         <!-- ###+ symfony/swiftmailer-bundle ### -->
         <env name="MAILER_URL" value="null://localhost"/>
         <!-- ###- symfony/swiftmailer-bundle ### -->
-
-        <!-- ###+ sentry/sentry-symfony ### -->
-        <env name="SENTRY_DSN" value=""/>
-        <!-- ###- sentry/sentry-symfony ### -->
     </php>
 
     <testsuites>

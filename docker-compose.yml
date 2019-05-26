@@ -1,6 +1,5 @@
 version: '3.4'
 volumes:
-    db: ~
     redis: ~
 services:
     php:
@@ -20,11 +19,9 @@ services:
         hostname: apache
         environment:
             - PHP_HANDLER_HOST=php:9000
-    mariadb:
-        image: mariadb:10.3
-        hostname: mariadb
-        volumes:
-            - db:/var/lib/mysql
+    mysql:
+        image: mysql:5.7
+        hostname: mysql
         environment:
             - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
             - MYSQL_DATABASE=${DB_NAME}

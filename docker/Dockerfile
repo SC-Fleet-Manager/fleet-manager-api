@@ -68,8 +68,8 @@ COPY --from=node_deps /app/public/build/manifest.json public/build/manifest.json
 COPY --from=composer_deps /app/vendor vendor
 
 RUN chown www-data .env*; \
-    sed -i 's/^APP_ENV=.*$/APP_ENV=$ENV/' .env; \
-    if [ -e .env.local ]; then sed -i 's/^APP_ENV=.*$/APP_ENV=$ENV/' .env.local; fi
+    sed -i "s/^APP_ENV=.*$/APP_ENV=${ENV}/" .env; \
+    if [ -e .env.local ]; then sed -i "s/^APP_ENV=.*$/APP_ENV=${ENV}/" .env.local; fi
 RUN mkdir -p public/bundles && bin/console assets:install \
     && rm -fr var/cache/* \
     && bin/console cache:warmup \
@@ -83,11 +83,18 @@ CMD ["php-fpm"]
 FROM httpd:2.4-alpine as build_apache
 
 WORKDIR /app
-COPY public public
+COPY public/icons/ public/favicon.ico public/robots.txt public/
 COPY --from=node_deps /app/public/build public/build
 COPY --from=build_php /app/public/bundles public/bundles
+RUN touch public/index.php
 
 COPY docker/apache/httpd.conf /usr/local/apache2/conf/httpd.conf
+
+##############################
+FROM build_apache as build_apache_test
+
+COPY docker/apache/httpd_test.conf /usr/local/apache2/conf/httpd.conf
+RUN touch public/index_test.php
 
 ###############################
 FROM build_php as build_php_dev

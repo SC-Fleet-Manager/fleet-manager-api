@@ -2,8 +2,9 @@
 
 namespace App\Controller;
 
-use App\Domain\CitizenNumber;
 use App\Domain\SpectrumIdentification;
+use App\Entity\Citizen;
+use App\Entity\Fleet;
 use App\Entity\User;
 use App\Exception\BadCitizenException;
 use App\Exception\FleetUploadedTooCloseException;
@@ -14,6 +15,8 @@ use App\Form\FleetUploadForm;
 use App\Service\CitizenFleetGenerator;
 use App\Service\FleetUploadHandler;
 use App\Service\OrganisationFleetGenerator;
+use App\Service\OrganizationInfosProviderInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,7 +28,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Route("/api", name="api_")
@@ -33,26 +35,26 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class ApiController extends AbstractController
 {
     private $logger;
-    private $translator;
     private $security;
     private $fleetUploadHandler;
     private $citizenFleetGenerator;
     private $organisationFleetGenerator;
+    private $organizationInfosProvider;
 
     public function __construct(
         LoggerInterface $logger,
-        TranslatorInterface $translator,
         Security $security,
         FleetUploadHandler $fleetUploadHandler,
         CitizenFleetGenerator $citizenFleetGenerator,
-        OrganisationFleetGenerator $organisationFleetGenerator
+        OrganisationFleetGenerator $organisationFleetGenerator,
+        OrganizationInfosProviderInterface $organizationInfosProvider
     ) {
         $this->logger = $logger;
-        $this->translator = $translator;
         $this->security = $security;
         $this->fleetUploadHandler = $fleetUploadHandler;
         $this->citizenFleetGenerator = $citizenFleetGenerator;
         $this->organisationFleetGenerator = $organisationFleetGenerator;
+        $this->organizationInfosProvider = $organizationInfosProvider;
     }
 
     /**
@@ -62,6 +64,27 @@ class ApiController extends AbstractController
     public function me(): Response
     {
         return $this->json($this->security->getUser(), 200, [], ['groups' => 'me:read']);
+    }
+
+    /**
+     * @Route("/my-orgas", name="my_orgas", methods={"GET"})
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
+     */
+    public function myOrganizations(): Response
+    {
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $citizen = $user->getCitizen();
+        if ($citizen === null) {
+            return $this->json([]);
+        }
+
+        $res = [];
+        foreach ($citizen->getOrganisations() as $sid) {
+            $res[] = $this->organizationInfosProvider->retrieveInfos(new SpectrumIdentification($sid));
+        }
+
+        return $this->json($res);
     }
 
     /**
@@ -172,7 +195,7 @@ class ApiController extends AbstractController
         } catch (BadCitizenException $e) {
             return $this->json([
                 'error' => 'bad_citizen',
-                'errorMessage' => sprintf('Your SC handle has probably changed. Please update it in <a href="/#/profile">your Profile</a>.'),
+                'errorMessage' => sprintf('Your SC handle has probably changed. Please update it in <a href="/#/profile/">your Profile</a>.'),
             ], 400);
         } catch (InvalidFleetDataException $e) {
             return $this->json([
@@ -258,5 +281,33 @@ class ApiController extends AbstractController
         );
 
         return $response;
+    }
+
+    /**
+     * @Route("/numbers", name="numbers", methods={"GET"})
+     */
+    public function numbers(EntityManagerInterface $entityManager): Response
+    {
+        $citizens = $entityManager->getRepository(Citizen::class)->findAll();
+
+        $orgas = [];
+        foreach ($citizens as $citizen) {
+            $orgas = array_merge($orgas, $citizen->getOrganisations());
+        }
+        $orgas = array_unique($orgas);
+
+        $users = $entityManager->getRepository(User::class)->findAll();
+
+        $fleets = $entityManager->getRepository(Fleet::class)->getLastVersionFleets();
+        $countShips = 0;
+        foreach ($fleets as $fleet) {
+            $countShips += count($fleet[0]->getShips());
+        }
+
+        return $this->json([
+            'organizations' => count($orgas),
+            'users' => count($users),
+            'ships' => $countShips,
+        ]);
     }
 }

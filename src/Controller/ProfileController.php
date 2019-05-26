@@ -6,6 +6,7 @@ use App\Domain\CitizenInfos;
 use App\Domain\HandleSC;
 use App\Entity\Citizen;
 use App\Entity\User;
+use App\Exception\BadCitizenException;
 use App\Exception\NotFoundHandleSCException;
 use App\Form\Dto\LinkAccount;
 use App\Form\Dto\UpdateHandle;
@@ -71,6 +72,49 @@ class ProfileController extends AbstractController
     }
 
     /**
+     * @Route("/refresh-rsi-profile", name="refresh_rsi_profile", methods={"POST"})
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
+     */
+    public function refreshRsiProfile(): Response
+    {
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $citizen = $user->getCitizen();
+        if ($citizen === null) {
+            return $this->json([
+                'error' => 'no_citizen',
+                'errorMessage' => 'No citizens are linked to your account.',
+            ], 400);
+        }
+        if (!$citizen->canBeRefreshed()) {
+            return $this->json([
+                'error' => 'too_many_refresh',
+                'errorMessage' => sprintf('Please wait %d minutes before refreshing.', $citizen->getTimeLeftBeforeRefreshing()->format('%i')),
+            ], 400);
+        }
+
+        // TODO : refactor this into a separate service (DRY with FleetUploadHandler)
+        $citizenInfos = $this->citizenInfosProvider->retrieveInfos(clone $citizen->getActualHandle());
+        if (!$citizenInfos->numberSC->equals($citizen->getNumber())) {
+            return $this->json([
+                'error' => 'bad_citizen',
+                'errorMessage' => sprintf('Your SC handle has probably changed. Please update it in <a href="/#/profile/">your Profile</a>.'),
+            ], 400);
+        }
+
+        $citizen->setOrganisations([]);
+        foreach ($citizenInfos->organisations as $organisation) {
+            $citizen->addOrganisation(is_object($organisation) ? clone $organisation : $organisation);
+        }
+        $citizen->setBio($citizenInfos->bio);
+        $citizen->setLastRefresh(new \DateTimeImmutable());
+
+        $this->entityManager->flush();
+
+        return $this->json(null, 204);
+    }
+
+    /**
      * @Route("/save-preferences", name="save_preferences", methods={"POST"}, condition="request.getContentType() == 'json'")
      * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
      */
@@ -97,6 +141,16 @@ class ProfileController extends AbstractController
      */
     public function updateHandle(Request $request): Response
     {
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $citizen = $user->getCitizen();
+        if ($citizen === null) {
+            return $this->json([
+                'error' => 'no_citizen',
+                'errorMessage' => 'Account not linked yet.',
+            ], 400);
+        }
+
         $updateHandle = new UpdateHandle();
         $form = $this->formFactory->createNamedBuilder('', UpdateHandleForm::class, $updateHandle)->getForm();
         $form->handleRequest($request);
@@ -119,10 +173,6 @@ class ProfileController extends AbstractController
                 'formErrors' => $errors,
             ], 400);
         }
-
-        /** @var User $user */
-        $user = $this->security->getUser();
-        $citizen = $user->getCitizen();
 
         try {
             $citizenInfos = $this->citizenInfosProvider->retrieveInfos(new HandleSC($updateHandle->handleSC));

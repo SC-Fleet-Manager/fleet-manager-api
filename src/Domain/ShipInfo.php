@@ -69,6 +69,20 @@ class ShipInfo
      *
      * @Groups({"my-fleet", "public-fleet"})
      */
+    public $chassisId;
+
+    /**
+     * @var string
+     *
+     * @Groups({"my-fleet", "public-fleet"})
+     */
+    public $chassisName;
+
+    /**
+     * @var string
+     *
+     * @Groups({"my-fleet", "public-fleet"})
+     */
     public $mediaUrl;
 
     /**

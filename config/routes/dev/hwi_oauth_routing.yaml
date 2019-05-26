@@ -1,0 +1,2 @@
+hwi_oauth_routing:
+    resource: ../prod/hwi_oauth_routing.yaml

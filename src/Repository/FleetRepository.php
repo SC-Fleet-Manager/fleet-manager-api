@@ -31,4 +31,18 @@ class FleetRepository extends ServiceEntityRepository
 
         return $q->getOneOrNullResult();
     }
+
+    public function getLastVersionFleets(): ?array
+    {
+        $qb = $this->createQueryBuilder('f');
+        $q = $qb
+            ->select('f')
+            ->addSelect('max(f.version)')
+            ->join('f.owner', 'o')
+            ->addSelect('o')
+            ->groupBy('f.owner')
+            ->getQuery();
+
+        return $q->getResult();
+    }
 }

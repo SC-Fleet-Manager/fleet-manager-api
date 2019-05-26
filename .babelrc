@@ -1,18 +1,18 @@
 {
-  "presets": [
-    [
-      "@babel/preset-env",
-      {
-        "useBuiltIns": "usage",
-        "corejs": "2.6",
-        "targets": {
-          "esmodules": true,
-          "ie": "11"
-        }
-      }
+    "presets": [
+        [
+            "@babel/preset-env",
+            {
+                "useBuiltIns": "usage",
+                "corejs": "2.6",
+                "targets": {
+                    "browsers": "last 2 versions or ie >= 11"
+                }
+            }
+        ]
+    ],
+    "plugins": [
+        "@babel/syntax-dynamic-import",
+        "@babel/plugin-proposal-object-rest-spread"
     ]
-  ],
-  "plugins": [
-    "@babel/syntax-dynamic-import"
-  ]
 }
