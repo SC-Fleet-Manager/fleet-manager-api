@@ -26,8 +26,17 @@ services:
         calls:
             - [setRedis, ['@redis']]
 
-    App\Service\CitizenInfosProviderInterface: '@App\Service\ApiCitizenInfosProvider'
     App\Service\ShipInfosProviderInterface: '@App\Service\ApiShipInfosProvider'
+    App\Service\ApiShipInfosProvider:
+        arguments: { '$cache': '@rsi.ships.cache' }
+
+    App\Service\OrganizationInfosProviderInterface: '@App\Service\ApiOrganizationInfosProvider'
+    App\Service\ApiOrganizationInfosProvider:
+        arguments: { '$cache': '@rsi.organizations.cache' }
+
+    App\Service\CitizenInfosProviderInterface: '@App\Service\ApiCitizenInfosProvider'
+    App\Service\ApiCitizenInfosProvider:
+        arguments: { '$cache': '@rsi.citizens.cache' }
 
     App\Listener\TrackConnectionListener:
         tags:

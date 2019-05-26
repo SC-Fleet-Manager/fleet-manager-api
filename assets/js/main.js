@@ -6,6 +6,7 @@ import BootstrapVue from 'bootstrap-vue';
 import VueClipboard from 'vue-clipboard2';
 import App from './App';
 import router from './router';
+import store from './store/store';
 import toastr from 'toastr';
 import 'toastr/toastr.scss';
 
@@ -33,6 +34,7 @@ Vue.use(VueClipboard);
 new Vue({
     el: '#app',
     router,
+    store,
     template: '<App/>',
     components: {App},
 });

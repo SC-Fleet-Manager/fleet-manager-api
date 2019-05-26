@@ -20,7 +20,7 @@ class Citizen
      *
      * @ORM\Id()
      * @ORM\Column(type="uuid", unique=true)
-     * @Groups({"profile"})
+     * @Groups({"profile", "orga_fleet"})
      */
     private $id;
 
@@ -36,7 +36,7 @@ class Citizen
      * @var HandleSC
      *
      * @ORM\Column(type="string", length=255)
-     * @Groups({"profile"})
+     * @Groups({"profile", "orga_fleet"})
      */
     private $actualHandle;
 
@@ -44,7 +44,7 @@ class Citizen
      * @var iterable|string[]
      *
      * @ORM\Column(type="json")
-     * @Groups({"profile"})
+     * @Groups({"profile", "orga_fleet"})
      */
     private $organisations;
 
@@ -62,6 +62,13 @@ class Citizen
      * @Groups({"profile"})
      */
     private $bio;
+
+    /**
+     * @var \DateTimeInterface
+     *
+     * @ORM\Column(type="datetimetz_immutable", nullable=true)
+     */
+    private $lastRefresh;
 
     public function __construct(?UuidInterface $id = null)
     {
@@ -185,5 +192,31 @@ class Citizen
         $this->bio = $bio;
 
         return $this;
+    }
+
+    public function getLastRefresh(): ?\DateTimeInterface
+    {
+        return $this->lastRefresh;
+    }
+
+    public function setLastRefresh(?\DateTimeInterface $lastRefresh): self
+    {
+        $this->lastRefresh = $lastRefresh;
+
+        return $this;
+    }
+
+    public function canBeRefreshed(): bool
+    {
+        return $this->lastRefresh === null || $this->lastRefresh <= new \DateTimeImmutable('-30 minutes');
+    }
+
+    public function getTimeLeftBeforeRefreshing(): ?\DateInterval
+    {
+        if ($this->lastRefresh === null) {
+            return null;
+        }
+
+        return $this->lastRefresh->diff(new \DateTimeImmutable('-30 minutes'));
     }
 }

@@ -43,6 +43,8 @@
             <b-col col md="6" v-if="showUpdateHandle">
                 <b-card header="Preferences" class="js-preferences">
                     <b-form>
+                        <b-button type="button" variant="secondary" :disabled="refreshingProfile" @click="refreshMyRsiProfile" class="mb-3" title="Force to retrieve your public profile from RSI"><i class="fas fa-sync-alt" :class="{'fa-spin': refreshingProfile}"></i>
+                            Refresh my RSI Profile</b-button>
                         <b-form-group label="Personal fleet policy">
                             <b-form-radio v-model="publicChoice" @change="savePublicChoice" :disabled="savingPreferences" name="public-choice" value="private">Private</b-form-radio>
                             <b-form-radio v-model="publicChoice" @change="savePublicChoice" :disabled="savingPreferences" name="public-choice" value="orga">Organizations only</b-form-radio>
@@ -98,6 +100,7 @@
                 errorMessage: null,
                 showLinkAccount: false,
                 showUpdateHandle: false,
+                refreshingProfile: false,
             }
         },
         created() {
@@ -179,6 +182,20 @@
                 }
 
                 return `${window.location.protocol}//${window.location.host}/#/user/${this.citizen.actualHandle.handle}`;
+            },
+            refreshMyRsiProfile(ev) {
+                this.refreshingProfile = true;
+                axios.post('/profile/refresh-rsi-profile').then(response => {
+                    toastr.success('Your RSI public profile has been successfully refreshed.');
+                }).catch(err => {
+                    this.checkAuth(err.response);
+                    if (err.response.data.errorMessage) {
+                        toastr.error(err.response.data.errorMessage);
+                    }
+                    console.error(err);
+                }).then(_ => {
+                    this.refreshingProfile = false;
+                });
             },
             checkAuth(response) {
                 const status = response.status;

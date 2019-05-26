@@ -41,9 +41,11 @@ class FleetUploadHandler
         }
 
         $citizen->setBio($infos->bio);
+        $citizen->setOrganisations([]);
         foreach ($infos->organisations as $organisation) {
             $citizen->addOrganisation(is_object($organisation) ? clone $organisation : $organisation);
         }
+        $citizen->setLastRefresh(new \DateTimeImmutable());
         $this->entityManager->flush();
 
         $lastVersion = $this->fleetRepository->getLastVersionFleet($citizen);

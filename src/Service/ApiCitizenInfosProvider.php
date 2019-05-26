@@ -9,29 +9,37 @@ use App\Domain\SpectrumIdentification;
 use App\Exception\NotFoundHandleSCException;
 use Goutte\Client as GoutteClient;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Cache\CacheItem;
 use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Contracts\Cache\CacheInterface;
 
 class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
 {
     private const BASE_URL = 'https://robertsspaceindustries.com';
 
-    /**
-     * @var GoutteClient
-     */
+    /** @var GoutteClient */
     private $client;
-
-    /**
-     * @var LoggerInterface
-     */
     private $logger;
+    private $cache;
 
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger, CacheInterface $cache)
     {
         $this->client = new GoutteClient();
         $this->logger = $logger;
+        $this->cache = $cache;
     }
 
     public function retrieveInfos(HandleSC $handleSC): CitizenInfos
+    {
+        return $this->cache->get('citizen_info_'.$handleSC, function (CacheItem $cacheItem) use ($handleSC) {
+            $cacheItem->tag(['citizen_infos']);
+            $cacheItem->expiresAfter(1200); // 20min
+
+            return $this->scrap($handleSC);
+        });
+    }
+
+    private function scrap(HandleSC $handleSC): CitizenInfos
     {
         $crawler = $this->client->request('GET', self::BASE_URL.'/citizens/'.$handleSC);
         $profileCrawler = $crawler->filter('#public-profile');
@@ -64,7 +72,7 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
         $crawler = $this->client->request('GET', self::BASE_URL.'/citizens/'.$handleSC.'/organizations');
         $sidCrawler = $crawler->filterXPath('//p[contains(.//*/text(), "Spectrum Identification (SID)")]/*[contains(@class, "value")]');
         if ($sidCrawler->count() > 0) {
-            $sids = $sidCrawler->each(function (Crawler $node) {
+            $sids = $sidCrawler->each(static function (Crawler $node) {
                 return $node->text();
             });
         }
@@ -78,7 +86,7 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
             new CitizenNumber($citizenNumber),
             clone $handleSC
         );
-        $ci->organisations = array_map(function (string $sid): SpectrumIdentification {
+        $ci->organisations = array_map(static function (string $sid): SpectrumIdentification {
             return new SpectrumIdentification($sid);
         }, $sids);
         $ci->bio = $bio;

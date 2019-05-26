@@ -73,7 +73,7 @@ assets: public/build						## shortcut for building assets public/build
 db-migrate: vendor								## execute all database migrations
 	$(EXEC_CONSOLE) doctrine:migrations:migrate -n
 db-dump:									## create a database dump to ./dumps/
-	$(EXEC_MYSQL) sh -c 'exec mysqldump --all-databases -uroot -p"$${MYSQL_ROOT_PASSWORD}"' > ./dumps/dump-$(shell date +"%F").sql
+	$(EXEC_MYSQL) sh -c 'exec mysqldump -uroot -p"$${MYSQL_ROOT_PASSWORD}" "$${MYSQL_DATABASE}"' > ./dumps/dump-$(shell date -Iminutes).sql
 db-reset: vendor								## recreate the database without data
 	-$(EXEC_CONSOLE) doctrine:database:drop --if-exists --force
 	$(EXEC_CONSOLE) doctrine:database:create
