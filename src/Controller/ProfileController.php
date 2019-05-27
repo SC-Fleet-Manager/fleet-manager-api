@@ -6,7 +6,6 @@ use App\Domain\CitizenInfos;
 use App\Domain\HandleSC;
 use App\Entity\Citizen;
 use App\Entity\User;
-use App\Exception\BadCitizenException;
 use App\Exception\NotFoundHandleSCException;
 use App\Form\Dto\LinkAccount;
 use App\Form\Dto\UpdateHandle;
@@ -27,7 +26,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
 
 /**
- * @Route("/profile", name="profile_")
+ * @Route("/api/profile", name="profile_")
  */
 class ProfileController extends AbstractController
 {
@@ -98,7 +97,7 @@ class ProfileController extends AbstractController
         if (!$citizenInfos->numberSC->equals($citizen->getNumber())) {
             return $this->json([
                 'error' => 'bad_citizen',
-                'errorMessage' => sprintf('Your SC handle has probably changed. Please update it in <a href="/#/profile/">your Profile</a>.'),
+                'errorMessage' => sprintf('Your SC handle has probably changed. Please update it in <a href="/profile/">your Profile</a>.'),
             ], 400);
         }
 

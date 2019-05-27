@@ -8,7 +8,7 @@ use Hautelook\AliceBundle\PhpUnit\ReloadDatabaseTrait;
 use Symfony\Component\Panther\Client;
 use Symfony\Component\Panther\PantherTestCase;
 
-class DashboardControllerTest extends PantherTestCase
+class SpaControllerTest extends PantherTestCase
 {
     use ReloadDatabaseTrait;
 
@@ -36,7 +36,7 @@ class DashboardControllerTest extends PantherTestCase
 
         // connect with default user
         $this->client->clickLink('Connect with Discord');
-        $this->assertSame('#/profile', $this->client->executeScript('return window.location.hash;'));
+//        $this->assertSame('/profile', $this->client->executeScript('return window.location.hash;'));
 
         // Profile
         $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
@@ -76,10 +76,13 @@ class DashboardControllerTest extends PantherTestCase
         // Organizations' fleets
         $this->client->clickLink("Organizations' fleets");
         $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
-            return count($driver->findElements(WebDriverBy::className('js-select-orga'))) > 0;
+            return (int) $driver->executeScript('return document.querySelectorAll(".card-ship").length;') > 0;
         });
+        $this->client->refreshCrawler();
         $this->assertSame('Select an organization', $this->client->findElement(WebDriverBy::cssSelector('label[for="select-orga"]'))->getText());
         $this->assertSame('flk', $this->client->executeScript('return document.querySelector(\'#select-orga\').value;'));
-        $this->assertContains('Cutlass Black', $this->client->findElement(WebDriverBy::cssSelector('.table-success'))->getText());
+        $this->assertContains('DRAK - Cutlass', $this->client->findElement(WebDriverBy::cssSelector('.card-ship .card-title'))->getText());
+
+        // TODO : click on chassis
     }
 }

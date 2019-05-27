@@ -3,3 +3,11 @@ logout:
 
 discord_login:
     path: /login/check-discord
+
+spa:
+    path: /{spaPath}
+    controller: App\Controller\SpaController::index
+    defaults:
+        spaPath: '/'
+    requirements:
+        spaPath: '.+'

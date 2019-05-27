@@ -11,19 +11,18 @@ const Profile = () => import('../views/Profile');
 const MyFleet = () => import('../views/MyFleet');
 
 // Views - Pages
-const Page404 = () => import('../views/pages/Page404');
-const Page500 = () => import('../views/pages/Page500');
+const Page404 = () => import('../views/Page404');
 
 Vue.use(Router);
 
 const router = new Router({
-    mode: 'hash', // https://router.vuejs.org/api/#mode
+    mode: 'history',
     linkActiveClass: 'open active',
     scrollBehavior: () => ({y: 0}),
     routes: [
         {
             path: '/',
-            redirect: '/my-fleet',
+            redirect: '/profile',
             name: 'Home',
             component: DefaultContainer,
             meta: {
@@ -39,15 +38,7 @@ const router = new Router({
                     }
                 },
                 {
-                    path: 'my-fleet',
-                    name: 'My Fleet',
-                    component: MyFleet,
-                    meta: {
-                        requireAuth: true,
-                    }
-                },
-                {
-                    path: 'user/:userHandle',
+                    path: 'citizen/:userHandle',
                     name: 'User fleet',
                     component: MyFleet,
                     props: true,
@@ -66,26 +57,8 @@ const router = new Router({
             ]
         },
         {
-            path: '/pages',
-            redirect: '/pages/404',
-            name: 'Pages',
-            component: {
-                render(c) {
-                    return c('router-view')
-                }
-            },
-            children: [
-                {
-                    path: '404',
-                    name: 'Page404',
-                    component: Page404
-                },
-                {
-                    path: '500',
-                    name: 'Page500',
-                    component: Page500
-                }
-            ]
+            path: '*',
+            component: Page404
         }
     ]
 });
