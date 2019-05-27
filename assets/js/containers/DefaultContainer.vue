@@ -85,24 +85,34 @@
                 return this.$route.name
             },
             nav() {
-                return [
-                    {
+                const nav = [];
+                if (this.citizen !== null) {
+                    nav.push({
                         name: 'My Fleet',
                         url: `/citizen/${this.citizen ? this.citizen.actualHandle.handle : ''}`,
                         icon: 'fas fa-fighter-jet',
                         attributes: {
                             disabled: this.citizen === null,
                         },
-                    },
-                    {
+                    });
+                    nav.push({
                         name: 'Organizations\' fleets',
                         url: '/organizations-fleets',
                         icon: 'fas fa-fighter-jet',
-                    },
+                        attributes: {
+                            disabled: this.citizen === null,
+                        },
+                    });
+                }
+                return [
+                    ...nav,
                     {
                         name: "Profile",
                         url: '/profile',
                         icon: 'fas fa-user',
+                        attributes: {
+                            disabled: this.user === null,
+                        },
                     },
                 ];
             }
