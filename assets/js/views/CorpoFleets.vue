@@ -110,7 +110,7 @@
         methods: {
             ...mapActions(['loadShipVariantUsers']),
             refreshProfile() {
-                axios.get('/profile/').then(response => {
+                axios.get('/api/profile/').then(response => {
                     this.citizen = response.data.citizen;
                     if (this.citizen !== null && this.citizen.organisations.length > 0) {
                         this.$store.state.orga_fleet.selectedSid = this.citizen.organisations[0];
@@ -137,7 +137,7 @@
                 });
             },
             refreshOrganizationFleet() {
-                axios.get('/orga-fleets/'+this.selectedSid, {}).then(response => {
+                axios.get('/api/fleet/orga-fleets/'+this.selectedSid, {}).then(response => {
                     this.shipFamilies = response.data;
                 }).catch(err => {
                     this.checkAuth(err.response);

@@ -53,7 +53,7 @@
                 this.submitDisabled = true;
                 axios({
                     method: 'post',
-                    url: '/profile/update-handle',
+                    url: '/api/profile/update-handle',
                     data: form,
                 }).then(response => {
                     this.submitDisabled = false;

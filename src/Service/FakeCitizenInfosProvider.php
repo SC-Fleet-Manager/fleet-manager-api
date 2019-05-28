@@ -17,7 +17,7 @@ class FakeCitizenInfosProvider implements CitizenInfosProviderInterface
         $this->citizen = $citizen;
     }
 
-    public function retrieveInfos(HandleSC $handleSC): CitizenInfos
+    public function retrieveInfos(HandleSC $handleSC, bool $caching = true): CitizenInfos
     {
         $ci = new CitizenInfos(
             clone $this->citizen->getNumber(),

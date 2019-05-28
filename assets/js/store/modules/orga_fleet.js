@@ -45,7 +45,7 @@ const mutations = {
 const actions = {
     async loadShipVariantUsers({commit, state}, { ship, page }) {
         page = page > 0 ? page : 1;
-        axios.get(`/orga-fleets/${state.selectedSid}/users/${ship.shipInfo.name}`, {
+        axios.get(`/api/fleet/orga-fleets/${state.selectedSid}/users/${ship.shipInfo.name}`, {
             params: { page },
         }).then(response => {
             commit('updateShipVariantsUsers', {
@@ -67,7 +67,7 @@ const actions = {
             return;
         }
         try {
-            const response = await axios.get(`/orga-fleets/${state.selectedSid}/${payload.shipFamily.chassisId}`);
+            const response = await axios.get(`/api/fleet/orga-fleets/${state.selectedSid}/${payload.shipFamily.chassisId}`);
             commit('updateSelectedShipFamily', {
                 selectedIndex: payload.index,
                 shipFamily: payload.shipFamily,

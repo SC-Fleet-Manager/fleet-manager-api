@@ -34,6 +34,6 @@ class ConnectController extends AbstractController
         $token->setAuthenticated(true);
         $this->tokenStorage->setToken($token);
 
-        return $this->redirect('/#/profile');
+        return $this->redirect('/profile');
     }
 }

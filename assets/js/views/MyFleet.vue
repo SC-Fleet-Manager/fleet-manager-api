@@ -2,8 +2,8 @@
     <div class="animated fadeIn">
         <b-row>
             <b-col>
-                <b-card :title="userHandle ? 'Citizen ' + userHandle : ''">
-                    <div class="mb-3" v-if="userHandle == null">
+                <b-card :title="!isMyProfile ? 'Citizen ' + userHandle : ''">
+                    <div class="mb-3" v-if="isMyProfile">
                         <b-button v-b-modal.modal-upload-fleet variant="primary" :disabled="citizen == null"><i class="fas fa-cloud-upload-alt"></i> Update my fleet</b-button>
                         <b-button download :disabled="citizen == null" :href="citizen != null ? '/api/create-citizen-fleet-file' : ''" variant="success"><i class="fas fa-cloud-download-alt"></i> Export my fleet (.json)</b-button>
                     </div>
@@ -43,42 +43,51 @@
 
     export default {
         name: 'my-fleet',
+        props: ['userHandle'],
         components: {UpdateFleetFile},
         data: function () {
             return {
+                citizen: null,
+                isMyProfile: false,
                 ships: null,
                 shipInfos: [],
-                citizen: null,
                 showError: false,
                 errorMessage: '',
             }
         },
-        props: {
-            userHandle: null,
-        },
         created() {
-            this.refreshMyFleet();
-
-            if (!this.userHandle) { // it is my fleet page
-                axios.get('/profile/', {
-                    params: {}
-                }).then(response => {
-                    this.citizen = response.data.citizen;
-                }).catch(err => {
-                    this.checkAuth(err.response);
-                    toastr.error('Cannot retrieve your profile.');
-                    console.error(err);
-                });
-            }
+            axios.get('/api/profile/', {
+                params: {}
+            }).then(response => {
+                this.citizen = response.data.citizen;
+                this.isMyProfile = this.citizen.actualHandle.handle === this.userHandle;
+            }).catch(err => {
+                if (err.response.status === 401) {
+                    // not connected
+                    return;
+                }
+                toastr.error('Cannot retrieve your profile.');
+            }).then(_ => {
+                this.refreshMyFleet();
+            });
         },
         filters: {
             date: (value, format) => {
                 return moment(value).format(format);
             },
         },
+        watch: {
+            userHandle() {
+                this.ships = null;
+                this.shipInfos = [];
+                this.showError = false;
+                this.errorMessage = '';
+                this.refreshMyFleet();
+            }
+        },
         methods: {
             refreshMyFleet() {
-                axios.get(this.userHandle ? `/user-fleet/${this.userHandle}` : '/my-fleet', {
+                axios.get(this.isMyProfile ? '/api/fleet/my-fleet' : `/api/fleet/user-fleet/${this.userHandle}`, {
                     params: {}
                 }).then(response => {
                     this.ships = [];
@@ -93,6 +102,8 @@
                         this.errorMessage = err.response.data.errorMessage;
                     } else if (err.response.data.error === 'no_rights') {
                         this.errorMessage = err.response.data.errorMessage;
+                    } else if (err.response.status === 404) {
+                        this.errorMessage = 'This citizen does not exist.';
                     } else {
                         toastr.error('Cannot retrieve your fleet.');
                     }

@@ -175,7 +175,7 @@ class ApiController extends AbstractController
         if ($citizen === null) {
             return $this->json([
                 'error' => 'no_citizen_created',
-                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/#/profile">profile page</a>.',
+                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
             ], 400);
         }
 
@@ -195,7 +195,7 @@ class ApiController extends AbstractController
         } catch (BadCitizenException $e) {
             return $this->json([
                 'error' => 'bad_citizen',
-                'errorMessage' => sprintf('Your SC handle has probably changed. Please update it in <a href="/#/profile/">your Profile</a>.'),
+                'errorMessage' => sprintf('Your SC handle has probably changed. Please update it in <a href="/profile/">your Profile</a>.'),
             ], 400);
         } catch (InvalidFleetDataException $e) {
             return $this->json([

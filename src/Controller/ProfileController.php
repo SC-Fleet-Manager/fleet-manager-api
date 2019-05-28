@@ -6,7 +6,6 @@ use App\Domain\CitizenInfos;
 use App\Domain\HandleSC;
 use App\Entity\Citizen;
 use App\Entity\User;
-use App\Exception\BadCitizenException;
 use App\Exception\NotFoundHandleSCException;
 use App\Form\Dto\LinkAccount;
 use App\Form\Dto\UpdateHandle;
@@ -27,7 +26,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
 
 /**
- * @Route("/profile", name="profile_")
+ * @Route("/api/profile", name="profile_")
  */
 class ProfileController extends AbstractController
 {
@@ -98,7 +97,7 @@ class ProfileController extends AbstractController
         if (!$citizenInfos->numberSC->equals($citizen->getNumber())) {
             return $this->json([
                 'error' => 'bad_citizen',
-                'errorMessage' => sprintf('Your SC handle has probably changed. Please update it in <a href="/#/profile/">your Profile</a>.'),
+                'errorMessage' => sprintf('Your SC handle has probably changed. Please update it in <a href="/profile/">your Profile</a>.'),
             ], 400);
         }
 
@@ -175,7 +174,7 @@ class ProfileController extends AbstractController
         }
 
         try {
-            $citizenInfos = $this->citizenInfosProvider->retrieveInfos(new HandleSC($updateHandle->handleSC));
+            $citizenInfos = $this->citizenInfosProvider->retrieveInfos(new HandleSC($updateHandle->handleSC), false);
             if (!$citizenInfos->numberSC->equals($citizen->getNumber())) {
                 return $this->json([
                     'error' => 'invalid_form',
@@ -230,7 +229,7 @@ class ProfileController extends AbstractController
         $user = $this->security->getUser();
 
         try {
-            $citizenInfos = $this->citizenInfosProvider->retrieveInfos(new HandleSC($linkAccount->handleSC));
+            $citizenInfos = $this->citizenInfosProvider->retrieveInfos(new HandleSC($linkAccount->handleSC), false);
             if (!$this->isTokenValid($user, $citizenInfos)) {
                 return $this->json([
                     'error' => 'invalid_form',
@@ -277,7 +276,9 @@ class ProfileController extends AbstractController
         $citizen
             ->setNumber(clone $citizenInfos->numberSC)
             ->setActualHandle(clone $citizenInfos->handle)
-            ->setBio($citizenInfos->bio);
+            ->setBio($citizenInfos->bio)
+            ->setLastRefresh(new \DateTimeImmutable());
+        $citizen->setOrganisations([]);
         foreach ($citizenInfos->organisations as $organisation) {
             $citizen->addOrganisation(clone $organisation);
         }
