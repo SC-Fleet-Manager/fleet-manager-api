@@ -29,14 +29,14 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
         $this->cache = $cache;
     }
 
-    public function retrieveInfos(HandleSC $handleSC): CitizenInfos
+    public function retrieveInfos(HandleSC $handleSC, bool $caching = true): CitizenInfos
     {
         return $this->cache->get('citizen_info_'.$handleSC, function (CacheItem $cacheItem) use ($handleSC) {
             $cacheItem->tag(['citizen_infos']);
             $cacheItem->expiresAfter(1200); // 20min
 
             return $this->scrap($handleSC);
-        });
+        }, $caching ? null : INF);
     }
 
     private function scrap(HandleSC $handleSC): CitizenInfos
