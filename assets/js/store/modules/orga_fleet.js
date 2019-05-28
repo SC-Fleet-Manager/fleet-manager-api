@@ -7,6 +7,8 @@ const state = {
     selectedShipVariants: [], // [{countTotalOwners: 0, countTotalShips: 0, shipInfo: {id: "00", name: "xxx", mediaThumbUrl: "https://...", ...}}, {...}]
     shipVariantUsersTrackChanges: 0, // +1 at each update
     shipVariantUsers: {}, // {"<ship id>": {...}}
+    filterShipName: null,
+    filterCitizenName: null,
 };
 
 const getters = {
@@ -46,7 +48,11 @@ const actions = {
     async loadShipVariantUsers({commit, state}, { ship, page }) {
         page = page > 0 ? page : 1;
         axios.get(`/api/fleet/orga-fleets/${state.selectedSid}/users/${ship.shipInfo.name}`, {
-            params: { page },
+            params: {
+                page,
+                'filters[shipName]': state.filterShipName ? state.filterShipName : null,
+                'filters[citizenName]': state.filterCitizenName ? state.filterCitizenName : null,
+            },
         }).then(response => {
             commit('updateShipVariantsUsers', {
                 users: response.data,
@@ -67,7 +73,12 @@ const actions = {
             return;
         }
         try {
-            const response = await axios.get(`/api/fleet/orga-fleets/${state.selectedSid}/${payload.shipFamily.chassisId}`);
+            const response = await axios.get(`/api/fleet/orga-fleets/${state.selectedSid}/${payload.shipFamily.chassisId}`, {
+                params: {
+                    'filters[shipName]': state.filterShipName ? state.filterShipName : null,
+                    'filters[citizenName]': state.filterCitizenName ? state.filterCitizenName : null,
+                },
+            });
             commit('updateSelectedShipFamily', {
                 selectedIndex: payload.index,
                 shipFamily: payload.shipFamily,

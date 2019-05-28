@@ -2,7 +2,7 @@
     <div class="animated fadeIn">
         <b-row>
             <b-col>
-                <b-card header="Your organizations' fleets" class="js-organizations-fleets">
+                <b-card header="Your organizations' fleet" class="js-organizations-fleets">
                     <b-row>
                         <b-col col xl="3" lg="4" md="6" v-if="citizen != null">
                             <b-form-group label="Select an organization" label-for="select-orga" class="js-select-orga">
@@ -18,7 +18,7 @@
                             <b-form-group>
                                 <b-form-input id="filters_input_ship_name"
                                               type="text"
-                                              v-model="filters.shipName"
+                                              v-model="filterShipName"
                                               @keyup="refreshOrganizationFleet"
                                               placeholder="Filter by ship name"></b-form-input>
                             </b-form-group>
@@ -27,7 +27,7 @@
                             <b-form-group>
                                 <b-form-input id="filters_input_citizen_name"
                                               type="text"
-                                              v-model="filters.citizenName"
+                                              v-model="filterCitizenName"
                                               @keyup="refreshOrganizationFleet"
                                               placeholder="Filter by citizen name"></b-form-input>
                             </b-form-group>
@@ -98,10 +98,6 @@
                 shipFamilies: [], // families of ships (e.g. "Aurora" for MR, LX, etc.) that have the selected orga (no displayed if no orga members have this family).
                 actualBreakpoint: 'xs',
                 organizations: {}, // orga infos of the citizens
-                filters: {
-                    shipName: null,
-                    citizenName: null,
-                },
             }
         },
         mounted() {
@@ -117,6 +113,22 @@
                 },
                 set(value) {
                     this.$store.state.orga_fleet.selectedSid = value;
+                }
+            },
+            filterShipName: {
+                get() {
+                    return this.$store.state.orga_fleet.filterShipName;
+                },
+                set(value) {
+                    this.$store.state.orga_fleet.filterShipName = value;
+                }
+            },
+            filterCitizenName: {
+                get() {
+                    return this.$store.state.orga_fleet.filterCitizenName;
+                },
+                set(value) {
+                    this.$store.state.orga_fleet.filterCitizenName = value;
                 }
             },
             ...mapGetters({
@@ -163,8 +175,8 @@
             refreshOrganizationFleet() {
                 axios.get('/api/fleet/orga-fleets/'+this.selectedSid, {
                     params: {
-                        'filters[shipName]': this.filters.shipName ? this.filters.shipName : null,
-                        'filters[citizenName]': this.filters.citizenName ? this.filters.citizenName : null,
+                        'filters[shipName]': this.filterShipName ? this.filterShipName : null,
+                        'filters[citizenName]': this.filterCitizenName ? this.filterCitizenName : null,
                     },
                 }).then(response => {
                     this.selectShipFamily({index: null, shipFamily: null});
