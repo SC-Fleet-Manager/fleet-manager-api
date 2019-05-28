@@ -2,11 +2,11 @@
 
 namespace App\Repository;
 
-use App\Domain\ShipInfo;
 use App\Domain\SpectrumIdentification;
 use App\Entity\Citizen;
 use App\Entity\Fleet;
 use App\Entity\Ship;
+use App\Service\Dto\ShipFamilyFilter;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -31,7 +31,7 @@ class CitizenRepository extends ServiceEntityRepository
             ->leftJoin('f.ships', 's')
             ->addSelect('s')
             ->where('c.organisations LIKE :orga')
-            ->setParameter('orga', '%"'.$organizationId.'"%')
+            ->setParameter('orga', '%"' . $organizationId . '"%')
             ->getQuery();
         $q->useResultCache(true);
         $q->setResultCacheLifetime(30);
@@ -42,7 +42,7 @@ class CitizenRepository extends ServiceEntityRepository
     /**
      * @return Ship[]
      */
-    public function getOrganizationShips(SpectrumIdentification $organizationId): array
+    public function getOrganizationShips(SpectrumIdentification $organizationId, ShipFamilyFilter $filter): array
     {
         $citizenMetadata = $this->getClassMetadata();
         $fleetMetadata = $this->_em->getClassMetadata(Fleet::class);
@@ -56,6 +56,13 @@ class CitizenRepository extends ServiceEntityRepository
             INNER JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id
             WHERE c.organisations LIKE :orgaId 
         EOT;
+        // filtering
+        if ($filter->shipName !== null) {
+            $sql .= ' AND s.name LIKE :shipName ';
+        }
+        if ($filter->citizenName !== null) {
+            $sql .= ' AND c.actual_handle LIKE :citizenName ';
+        }
 
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata(Ship::class, 's', ['id' => 'shipId']);
@@ -63,7 +70,13 @@ class CitizenRepository extends ServiceEntityRepository
         $rsm->addJoinedEntityFromClassMetadata(Citizen::class, 'c', 'f', 'owner', ['id' => 'citizenId']);
 
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
-        $stmt->setParameter(':orgaId', '%"'.$organizationId.'"%');
+        $stmt->setParameter(':orgaId', '%"' . $organizationId . '"%');
+        if ($filter->shipName !== null) {
+            $stmt->setParameter('shipName', '%' . $filter->shipName . '%');
+        }
+        if ($filter->citizenName !== null) {
+            $stmt->setParameter('citizenName', '%' . $filter->citizenName . '%');
+        }
 
         return $stmt->getResult();
     }
@@ -100,7 +113,7 @@ class CitizenRepository extends ServiceEntityRepository
         $rsm->addScalarResult('countOwned', 'countOwned');
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
         $stmt->setParameters([
-            'orgaId' => '%"'.$organizationId.'"%',
+            'orgaId' => '%"' . $organizationId . '"%',
             'shipName' => mb_strtolower($shipName),
         ]);
 
@@ -126,7 +139,7 @@ class CitizenRepository extends ServiceEntityRepository
         $rsm->addScalarResult('countOwners', 'countOwners');
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
         $stmt->setParameters([
-            'orgaId' => '%"'.$organizationId.'"%',
+            'orgaId' => '%"' . $organizationId . '"%',
             'shipName' => mb_strtolower($shipName),
         ]);
 
@@ -159,7 +172,7 @@ class CitizenRepository extends ServiceEntityRepository
 
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
         $stmt->setParameters([
-            'orgaId' => '%"'.$organizationId.'"%',
+            'orgaId' => '%"' . $organizationId . '"%',
             'shipName' => mb_strtolower($shipName),
         ]);
         if ($page !== null) {

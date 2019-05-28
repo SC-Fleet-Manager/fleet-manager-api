@@ -58,7 +58,7 @@ const actions = {
         });
     },
     async selectShipFamily({commit, state}, payload) {
-        if (payload.index === state.selectedIndex) { // we want to reselect same shipFamily : we close it
+        if (payload.index === null || payload.index === state.selectedIndex) { // we want to reselect same shipFamily : we close it
             commit('updateSelectedShipFamily', {
                 selectedIndex: null,
                 shipFamily: null,

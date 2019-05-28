@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Domain\ShipInfo;
 use App\Domain\SpectrumIdentification;
 use App\Entity\Citizen;
+use App\Service\Dto\ShipFamilyFilter;
 use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Client;
 use Psr\Log\LoggerInterface;
@@ -26,10 +27,10 @@ class OrganizationFleetHandler
     /**
      * @return array e.g. [['chassisId' => '1', 'name' => 'Aurora', 'count' => 4, 'manufacturerCode' => 'RSI'], [...]]
      */
-    public function computeShipFamilies(SpectrumIdentification $organizationId): array
+    public function computeShipFamilies(SpectrumIdentification $organizationId, ShipFamilyFilter $filter): array
     {
         $shipInfos = $this->shipInfosProvider->getAllShips();
-        $orgaShips = $this->entityManager->getRepository(Citizen::class)->getOrganizationShips($organizationId);
+        $orgaShips = $this->entityManager->getRepository(Citizen::class)->getOrganizationShips($organizationId, $filter);
 
         $shipFamilies = [];
         foreach ($orgaShips as $orgaShip) {
