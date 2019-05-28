@@ -83,7 +83,8 @@ CMD ["php-fpm"]
 FROM httpd:2.4-alpine as build_apache
 
 WORKDIR /app
-COPY public/icons/ public/favicon.ico public/robots.txt public/
+COPY public/favicon.ico public/robots.txt public/
+COPY public/icons public/icons
 COPY --from=node_deps /app/public/build public/build
 COPY --from=build_php /app/public/bundles public/bundles
 RUN touch public/index.php
