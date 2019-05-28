@@ -43,6 +43,9 @@
                 this.checkCollapse(shipFamily);
             },
         },
+        mounted() {
+            this.checkCollapse(this.selectedShipFamily);
+        },
         methods: {
             checkCollapse(shipFamily) {
                 const willCollapse = shipFamily !== null && this.supportIndex();

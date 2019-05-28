@@ -16,6 +16,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
 
+/**
+ * @Route("/api/fleet", name="fleet_")
+ */
 class FleetController extends AbstractController
 {
     private $security;
@@ -47,7 +50,7 @@ class FleetController extends AbstractController
         if ($citizen === null) {
             return $this->json([
                 'error' => 'no_citizen_created',
-                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/#/profile">profile page</a>.',
+                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
             ], 400);
         }
         $fleet = $citizen->getLastVersionFleet();
@@ -118,7 +121,7 @@ class FleetController extends AbstractController
         if ($citizen === null) {
             return $this->json([
                 'error' => 'no_citizen_created',
-                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/#/profile">profile page</a>.',
+                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
             ], 400);
         }
         if (!$citizen->hasOrganisation($organization)) {
@@ -148,7 +151,7 @@ class FleetController extends AbstractController
         if ($citizen === null) {
             return $this->json([
                 'error' => 'no_citizen_created',
-                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/#/profile">profile page</a>.',
+                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
             ], 400);
         }
         if (!$citizen->hasOrganisation($organization)) {
@@ -193,7 +196,7 @@ class FleetController extends AbstractController
         if ($citizen === null) {
             return $this->json([
                 'error' => 'no_citizen_created',
-                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/#/profile">profile page</a>.',
+                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
             ], 400);
         }
         if (!$citizen->hasOrganisation($organization)) {

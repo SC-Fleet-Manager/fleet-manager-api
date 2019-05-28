@@ -113,7 +113,7 @@
             },
             savePreferences() {
                 this.savingPreferences = true;
-                axios.post('/profile/save-preferences', {
+                axios.post('/api/profile/save-preferences', {
                     publicChoice: this.publicChoice
                 }).then(response => {
                     toastr.success('Changes saved');
@@ -133,7 +133,7 @@
                 this.fleetLinkCopied = true;
             },
             refreshProfile() {
-                axios.get('/profile/').then(response => {
+                axios.get('/api/profile/').then(response => {
                     this.citizen = response.data.citizen;
                     this.showLinkAccount = !this.citizen;
                     this.showUpdateHandle = !!this.citizen;
@@ -158,7 +158,7 @@
                 this.showError = false;
                 this.errorMessage = 'An error has been occurred. Please try again in a moment.';
                 this.submitDisabled = true;
-                axios.post('/profile/link-account', form).then(response => {
+                axios.post('/api/profile/link-account', form).then(response => {
                     this.refreshProfile();
                     toastr.success('Your RSI account has been successfully linked! You can remove the token from your bio.');
                     this.submitDisabled = false;
@@ -181,11 +181,11 @@
                     return '';
                 }
 
-                return `${window.location.protocol}//${window.location.host}/#/user/${this.citizen.actualHandle.handle}`;
+                return `${window.location.protocol}//${window.location.host}/citizen/${this.citizen.actualHandle.handle}`;
             },
             refreshMyRsiProfile(ev) {
                 this.refreshingProfile = true;
-                axios.post('/profile/refresh-rsi-profile').then(response => {
+                axios.post('/api/profile/refresh-rsi-profile').then(response => {
                     toastr.success('Your RSI public profile has been successfully refreshed.');
                 }).catch(err => {
                     this.checkAuth(err.response);

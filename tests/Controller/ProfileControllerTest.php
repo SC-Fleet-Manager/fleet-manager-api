@@ -23,7 +23,7 @@ class ProfileControllerTest extends WebTestCase
     public function testIndex(): void
     {
         $this->logIn($this->user);
-        $this->client->xmlHttpRequest('GET', '/profile/', [], [], [
+        $this->client->xmlHttpRequest('GET', '/api/profile/', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
@@ -52,7 +52,7 @@ class ProfileControllerTest extends WebTestCase
 
     public function testIndexNotAuth(): void
     {
-        $this->client->xmlHttpRequest('GET', '/profile/', [], [], [
+        $this->client->xmlHttpRequest('GET', '/api/profile/', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
         $this->assertSame(401, $this->client->getResponse()->getStatusCode());
@@ -61,7 +61,7 @@ class ProfileControllerTest extends WebTestCase
     public function testSavePreferences(): void
     {
         $this->logIn($this->user);
-        $this->client->xmlHttpRequest('POST', '/profile/save-preferences', [
+        $this->client->xmlHttpRequest('POST', '/api/profile/save-preferences', [
             'publicChoice' => 'private',
         ], [], [
             'CONTENT_TYPE' => 'application/json',
@@ -71,7 +71,7 @@ class ProfileControllerTest extends WebTestCase
 
     public function testSavePreferencesNotAuth(): void
     {
-        $this->client->xmlHttpRequest('POST', '/profile/save-preferences', [], [], [
+        $this->client->xmlHttpRequest('POST', '/api/profile/save-preferences', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
         $this->assertSame(401, $this->client->getResponse()->getStatusCode());
@@ -87,7 +87,7 @@ class ProfileControllerTest extends WebTestCase
         $citizenInfosProvider->setCitizen($citizen);
 
         $this->logIn($this->user);
-        $this->client->xmlHttpRequest('POST', '/profile/update-handle', [
+        $this->client->xmlHttpRequest('POST', '/api/profile/update-handle', [
             'handleSC' => 'foobar',
         ], [], [
             'CONTENT_TYPE' => 'application/json',
@@ -105,7 +105,7 @@ class ProfileControllerTest extends WebTestCase
         $citizenInfosProvider->setCitizen($citizen);
 
         $this->logIn($this->user);
-        $this->client->xmlHttpRequest('POST', '/profile/update-handle', [
+        $this->client->xmlHttpRequest('POST', '/api/profile/update-handle', [
             'handleSC' => 'foobar',
         ], [], [
             'CONTENT_TYPE' => 'application/json',
@@ -118,7 +118,7 @@ class ProfileControllerTest extends WebTestCase
 
     public function testUpdateHandleNotAuth(): void
     {
-        $this->client->xmlHttpRequest('POST', '/profile/update-handle', [], [], [
+        $this->client->xmlHttpRequest('POST', '/api/profile/update-handle', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
         $this->assertSame(401, $this->client->getResponse()->getStatusCode());
@@ -135,7 +135,7 @@ class ProfileControllerTest extends WebTestCase
         $citizenInfosProvider->setCitizen($citizen);
 
         $this->logIn($this->user);
-        $this->client->xmlHttpRequest('POST', '/profile/link-account', [
+        $this->client->xmlHttpRequest('POST', '/api/profile/link-account', [
             'handleSC' => 'foobar',
         ], [], [
             'CONTENT_TYPE' => 'application/json',
@@ -158,7 +158,7 @@ class ProfileControllerTest extends WebTestCase
         $citizenInfosProvider->setCitizen($citizen);
 
         $this->logIn($this->user);
-        $this->client->xmlHttpRequest('POST', '/profile/link-account', [
+        $this->client->xmlHttpRequest('POST', '/api/profile/link-account', [
             'handleSC' => 'foobar',
         ], [], [
             'CONTENT_TYPE' => 'application/json',
@@ -183,7 +183,7 @@ class ProfileControllerTest extends WebTestCase
         $citizenInfosProvider->setCitizen($citizen);
 
         $this->logIn($this->user);
-        $this->client->xmlHttpRequest('POST', '/profile/link-account', [
+        $this->client->xmlHttpRequest('POST', '/api/profile/link-account', [
             'handleSC' => 'foobar',
         ], [], [
             'CONTENT_TYPE' => 'application/json',
@@ -196,7 +196,7 @@ class ProfileControllerTest extends WebTestCase
 
     public function testLinkAccountNotAuth(): void
     {
-        $this->client->xmlHttpRequest('POST', '/profile/link-account', [], [], [
+        $this->client->xmlHttpRequest('POST', '/api/profile/link-account', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
         $this->assertSame(401, $this->client->getResponse()->getStatusCode());

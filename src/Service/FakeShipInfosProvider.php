@@ -22,6 +22,8 @@ class FakeShipInfosProvider extends ApiShipInfosProvider
         $shipInfo->manufacturerCode = 'DRAK';
         $shipInfo->mediaUrl = 'https://robertsspaceindustries.com/media/7tcxllnna6a9hr/source/Drake_cutlass_storefront_visual.jpg';
         $shipInfo->mediaThumbUrl = 'https://robertsspaceindustries.com/media/7tcxllnna6a9hr/store_small/Drake_cutlass_storefront_visual.jpg';
+        $shipInfo->chassisId = '6';
+        $shipInfo->chassisName = 'Cutlass';
 
         $shipInfos[] = $shipInfo;
 

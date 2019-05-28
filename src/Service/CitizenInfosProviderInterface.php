@@ -7,5 +7,5 @@ use App\Domain\HandleSC;
 
 interface CitizenInfosProviderInterface
 {
-    public function retrieveInfos(HandleSC $handleSC): CitizenInfos;
+    public function retrieveInfos(HandleSC $handleSC, bool $caching = true): CitizenInfos;
 }

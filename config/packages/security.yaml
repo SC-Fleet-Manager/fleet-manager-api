@@ -25,7 +25,7 @@ security:
                 use_forward: false
                 failure_path: /login
                 always_use_default_target_path: true
-                default_target_path: '/#/profile'
+                default_target_path: '/profile'
                 oauth_user_provider:
                     service: App\Security\OAuthUserProvider
                 remember_me:  true
