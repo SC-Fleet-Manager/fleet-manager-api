@@ -4,13 +4,21 @@
             <b-col>
                 <b-card header="Your organizations' fleet" class="js-organizations-fleets">
                     <b-row>
-                        <b-col col xl="3" lg="4" md="6" v-if="citizen != null">
+                        <b-col col xl="2" lg="3" md="4" v-if="citizen != null">
                             <b-form-group label="Select an organization" label-for="select-orga" class="js-select-orga">
-                                <b-form-select id="select-orga" v-model="selectedSid" class="mb-3">
+                                <b-form-select id="select-orga" v-model="selectedSid">
                                     <option v-for="orga in citizen.organisations" :key="orga" :value="orga">{{ organizations[orga] ? organizations[orga].fullname : orga }}</option>
                                 </b-form-select>
-                                <b-button download :disabled="selectedSid == null" class="mb-3" :href="'/api/create-organisation-fleet-file/'+selectedSid" variant="success"><i class="fas fa-cloud-download-alt"></i> Export entire fleet of <strong>{{ selectedSid != null ? (organizations[selectedSid] ? organizations[selectedSid].fullname : selectedSid) : 'N/A' }}</strong> (.json)</b-button>
                             </b-form-group>
+                        </b-col>
+                    </b-row>
+                    <b-row>
+                        <b-col col xl="2" lg="3" md="4" class="mb-3">
+                            <b-dropdown variant="success">
+                                <template slot="button-content"><i class="fas fa-cloud-download-alt"></i> Export</template>
+                                <b-dropdown-item download :disabled="selectedSid == null" :href="'/api/create-organisation-fleet-file/'+selectedSid" ><i class="fas fa-file-code"></i> Export <strong>{{ selectedSid != null ? (organizations[selectedSid] ? organizations[selectedSid].fullname : selectedSid) : 'N/A' }}</strong> fleet (.json)</b-dropdown-item>
+                                <b-dropdown-item download :disabled="selectedSid == null" :href="'/api/export-orga-fleet/'+selectedSid"><i class="fas fa-file-csv"></i> Export <strong>{{ selectedSid != null ? (organizations[selectedSid] ? organizations[selectedSid].fullname : selectedSid) : 'N/A' }}</strong> fleet (.csv)</b-dropdown-item>
+                            </b-dropdown>
                         </b-col>
                     </b-row>
                     <b-row v-if="selectedSid != null">
