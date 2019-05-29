@@ -45,7 +45,7 @@ const mutations = {
 };
 
 const actions = {
-    async loadShipVariantUsers({commit, state}, { ship, page }) {
+    async loadShipVariantUsers({ commit, state }, { ship, page }) {
         page = page > 0 ? page : 1;
         axios.get(`/api/fleet/orga-fleets/${state.selectedSid}/users/${ship.shipInfo.name}`, {
             params: {

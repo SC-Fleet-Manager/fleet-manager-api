@@ -20,6 +20,11 @@ class CitizenInfos
     public $organisations;
 
     /**
+     * @var SpectrumIdentification
+     */
+    public $mainOrga;
+
+    /**
      * @var string
      */
     public $avatarUrl;

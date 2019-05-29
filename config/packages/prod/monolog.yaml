@@ -1,4 +1,5 @@
 monolog:
+    channels: ['profile_link_account']
     handlers:
         main:
             type: fingers_crossed
@@ -21,6 +22,11 @@ monolog:
         streamed:
             type: stream
             path: "%kernel.logs_dir%/%kernel.environment%.log"
+        #######
+        profile_link_account_stream:
+            type: stream
+            path: "%kernel.logs_dir%/%kernel.environment%_profile_link_account.log"
+            channels: ['profile_link_account']
         #######
 #        elasticsearch:
 #            elasticsearch:

@@ -56,6 +56,11 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
             $citizenNumber = preg_replace('/[^0-9]/', '', $citizenNumberCrawler->text());
         }
 
+        if ($citizenNumber === null) {
+            $this->logger->error(sprintf('Handle %s does not exist', (string) $handleSC), []);
+            throw new NotFoundHandleSCException(sprintf('Handle %s does not exist', (string) $handleSC));
+        }
+
         $enlisted = null;
         $enlistedCrawler = $profileCrawler->filterXPath('//p[contains(.//*/text(), "Enlisted")]/*[contains(@class, "value")]');
         if ($enlistedCrawler->count() > 0) {
@@ -76,10 +81,10 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
                 return $node->text();
             });
         }
-
-        if ($citizenNumber === null) {
-            $this->logger->error(sprintf('Handle %s does not exist', (string) $handleSC), []);
-            throw new NotFoundHandleSCException(sprintf('Handle %s does not exist', (string) $handleSC));
+        $mainOrga = null;
+        $mainOrgaCrawler = $crawler->filter('.org.main')->filterXPath('//p[contains(.//*/text(), "Spectrum Identification (SID)")]/*[contains(@class, "value")]');
+        if ($mainOrgaCrawler->count() > 0) {
+            $mainOrga = $mainOrgaCrawler->text();
         }
 
         $ci = new CitizenInfos(
@@ -89,6 +94,7 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
         $ci->organisations = array_map(static function (string $sid): SpectrumIdentification {
             return new SpectrumIdentification($sid);
         }, $sids);
+        $ci->mainOrga = $mainOrga !== null ? new SpectrumIdentification($mainOrga) : null;
         $ci->bio = $bio;
         $ci->avatarUrl = $avatarUrl;
         $ci->registered = $enlisted;

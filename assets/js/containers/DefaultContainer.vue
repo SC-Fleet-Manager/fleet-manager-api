@@ -3,8 +3,7 @@
         <AppHeader fixed>
             <SidebarToggler class="d-lg-none" display="md" mobile/>
             <b-link class="navbar-brand" to="/">
-                <img class="navbar-brand-full" src="../../img/fleet_manager_155x55.png" alt="SC Fleet Manager"
-                     height="45">
+                <img class="navbar-brand-full" src="../../img/fleet_manager_155x55.png" alt="SC Fleet Manager" height="45">
                 <img class="navbar-brand-minimized" src="../../img/fleet_manager_128.png" alt="FM" height="40">
             </b-link>
             <SidebarToggler class="d-md-down-none" display="lg"/>
@@ -56,6 +55,7 @@
         SidebarNav,
         Footer as TheFooter
     } from '@coreui/vue';
+    import { mapMutations } from 'vuex';
 
     export default {
         name: 'DefaultContainer',
@@ -78,7 +78,15 @@
             axios.get('/api/profile/').then(response => {
                 this.user = response.data;
                 this.citizen = this.user.citizen;
+                this.updateProfile(this.citizen);
             });
+
+            this.$store.watch(
+                (state, getters) => getters.citizen,
+                (newValue, oldValue) => {
+                    this.citizen = newValue;
+                }
+            );
         },
         computed: {
             name() {
@@ -116,6 +124,9 @@
                     },
                 ];
             }
+        },
+        methods: {
+            ...mapMutations(['updateProfile']),
         }
     };
 </script>
