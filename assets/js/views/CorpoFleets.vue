@@ -100,7 +100,7 @@
     export default {
         name: 'organizations-fleets',
         components: {select2, ShipFamily, ShipFamilyDetail},
-        data: function () {
+        data() {
             return {
                 citizen: null,
                 shipFamilies: [], // families of ships (e.g. "Aurora" for MR, LX, etc.) that have the selected orga (no displayed if no orga members have this family).

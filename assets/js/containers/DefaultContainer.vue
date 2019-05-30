@@ -2,7 +2,7 @@
     <div class="app">
         <AppHeader fixed>
             <SidebarToggler class="d-lg-none" display="md" mobile/>
-            <b-link class="navbar-brand" to="/">
+            <b-link class="navbar-brand" href="/">
                 <img class="navbar-brand-full" src="../../img/fleet_manager_155x55.png" alt="SC Fleet Manager" height="45">
                 <img class="navbar-brand-minimized" src="../../img/fleet_manager_128.png" alt="FM" height="40">
             </b-link>
@@ -27,20 +27,15 @@
         </div>
         <TheFooter class="font-lg">
             <div>
-                <a href="/">Star Citizen Fleet Manager</a>
+                <a href="/">Fleet Manager</a>
                 <span class="ml-1">&copy; 2018 - {{ actualYear }}</span>
             </div>
-            <div class="ml-auto">
-                <a href="https://discord.gg/f6mrA3Y" target="_blank"><i class="fab fa-discord"></i> Discord</a> -
-                <a target="_blank" href="https://github.com/Ioni14/starcitizen-fleet-manager/issues"> <i
-                        class="fab fa-github"></i> Bugs, feedbacks,
-                    ideas</a>
-                -
-                <a target="_blank" href="https://www.patreon.com/ioni"><i class="fab fa-patreon"></i> Patreon</a>
-                -
-                <span class="mr-1">Created by</span> <a target="_blank" href="https://github.com/ioni14">Thomas "Ioni"
-                Talbot</a>
-            </div>
+            <b-nav class="ml-auto">
+                <b-nav-item href="https://discord.gg/f6mrA3Y" target="_blank" link-classes="p-2"><i class="fab fa-discord" style="font-size: 1.4rem;"></i></b-nav-item>
+                <b-nav-item href="https://github.com/Ioni14/starcitizen-fleet-manager" target="_blank" link-classes="p-2"><i class="fab fa-github" style="font-size: 1.4rem;"></i></b-nav-item>
+                <b-nav-item href="https://www.patreon.com/ioni" target="_blank" link-classes="p-2"><i class="fab fa-patreon" style="font-size: 1.4rem;"></i></b-nav-item>
+                <b-nav-text><span class="mr-1">Created by </span><a target="_blank" href="https://github.com/ioni14">Ioni</a></b-nav-text>
+            </b-nav>
         </TheFooter>
     </div>
 </template>

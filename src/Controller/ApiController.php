@@ -383,12 +383,7 @@ class ApiController extends AbstractController
         $orgas = array_unique($orgas);
 
         $users = $entityManager->getRepository(User::class)->findAll();
-
-        $fleets = $entityManager->getRepository(Fleet::class)->getLastVersionFleets();
-        $countShips = 0;
-        foreach ($fleets as $fleet) {
-            $countShips += count($fleet[0]->getShips());
-        }
+        $countShips = $entityManager->getRepository(Fleet::class)->countTotalShips();
 
         return $this->json([
             'organizations' => count($orgas),

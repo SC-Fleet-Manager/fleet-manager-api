@@ -45,7 +45,7 @@
         name: 'my-fleet',
         props: ['userHandle'],
         components: {UpdateFleetFile},
-        data: function () {
+        data() {
             return {
                 citizen: null,
                 isMyProfile: false,
