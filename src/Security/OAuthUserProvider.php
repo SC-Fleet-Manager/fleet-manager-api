@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthUserProvider as BaseProvider;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 
 class OAuthUserProvider extends BaseProvider
 {
@@ -48,7 +49,12 @@ class OAuthUserProvider extends BaseProvider
 
     public function loadUserByUsername($discordId)
     {
-        return $this->userRepository->getByDiscordId($discordId);
+        $user = $this->userRepository->getByDiscordId($discordId);
+        if ($user === null) {
+            throw new UsernameNotFoundException('OAuth user not found.');
+        }
+
+        return $user;
     }
 
     private function registerNewUser(string $discordId, string $username): User
