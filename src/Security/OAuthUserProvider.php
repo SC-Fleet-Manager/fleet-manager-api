@@ -70,7 +70,7 @@ class OAuthUserProvider extends BaseProvider
         return $newUser;
     }
 
-    public function supportsClass($class)
+    public function supportsClass($class): bool
     {
         return User::class === $class;
     }
