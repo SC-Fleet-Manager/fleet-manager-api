@@ -2,20 +2,48 @@
     <div class="animated fadeIn">
         <b-row>
             <b-col>
-                <b-card header="Your organizations' fleets" class="js-organizations-fleets">
+                <b-card header="Your organizations' fleet" class="js-organizations-fleets">
                     <b-row>
-                        <b-col col xl="3" lg="4" md="6" v-if="this.citizen != null">
+                        <b-col col xl="2" lg="3" md="4" v-if="citizen != null">
                             <b-form-group label="Select an organization" label-for="select-orga" class="js-select-orga">
-                                <b-form-select id="select-orga" v-model="selectedSid" class="mb-3">
-                                    <option v-for="orga in this.citizen.organisations" :key="orga" :value="orga">{{ organizations[orga] ? organizations[orga].fullname : orga }}</option>
+                                <b-form-select id="select-orga" v-model="selectedSid">
+                                    <option v-for="orga in citizen.organisations" :key="orga" :value="orga">{{ organizations[orga] ? organizations[orga].fullname : orga }}</option>
                                 </b-form-select>
-                                <b-button download :disabled="selectedSid == null" class="mb-3" :href="'/api/create-organisation-fleet-file/'+selectedSid" variant="success"><i class="fas fa-cloud-download-alt"></i> Export entire fleet of <strong>{{ selectedSid != null ? (organizations[selectedSid] ? organizations[selectedSid].fullname : selectedSid) : 'N/A' }}</strong> (.json)</b-button>
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
+                    <b-row>
+                        <b-col col xl="2" lg="3" md="4" class="mb-3">
+                            <b-dropdown variant="success">
+                                <template slot="button-content"><i class="fas fa-cloud-download-alt"></i> Export</template>
+                                <b-dropdown-item download :disabled="selectedSid == null" :href="'/api/create-organisation-fleet-file/'+selectedSid" ><i class="fas fa-file-code"></i> Export <strong>{{ selectedSid != null ? (organizations[selectedSid] ? organizations[selectedSid].fullname : selectedSid) : 'N/A' }}</strong> fleet (.json)</b-dropdown-item>
+                                <b-dropdown-item download :disabled="selectedSid == null" :href="'/api/export-orga-fleet/'+selectedSid"><i class="fas fa-file-csv"></i> Export <strong>{{ selectedSid != null ? (organizations[selectedSid] ? organizations[selectedSid].fullname : selectedSid) : 'N/A' }}</strong> fleet (.csv)</b-dropdown-item>
+                            </b-dropdown>
+                        </b-col>
+                    </b-row>
+                    <b-row v-if="selectedSid != null">
+                        <b-col col xl="2" lg="3" md="4" xs="6">
+                            <b-form-group>
+                                <b-form-input id="filters_input_ship_name"
+                                              type="text"
+                                              v-model="filterShipName"
+                                              @keyup="refreshOrganizationFleet"
+                                              placeholder="Filter by ship name"></b-form-input>
+                            </b-form-group>
+                        </b-col>
+                        <b-col col xl="2" lg="3" md="4" xs="6">
+                            <b-form-group>
+                                <b-form-input id="filters_input_citizen_name"
+                                              type="text"
+                                              v-model="filterCitizenName"
+                                              @keyup="refreshOrganizationFleet"
+                                              placeholder="Filter by citizen name"></b-form-input>
                             </b-form-group>
                         </b-col>
                     </b-row>
                     <b-row>
                         <b-col v-if="shipFamilies.length === 0">
-                            <b-alert show variant="warning">Your fleet is empty, you should upload it.</b-alert>
+                            <b-alert show variant="warning">Sorry, no ships have been found.</b-alert>
                         </b-col>
                         <template v-for="(shipFamily, index) in shipFamilies">
                             <ShipFamily :key="shipFamily.chassisId" :shipFamily="shipFamily" :index="index"></ShipFamily>
@@ -72,7 +100,7 @@
     export default {
         name: 'organizations-fleets',
         components: {select2, ShipFamily, ShipFamilyDetail},
-        data: function () {
+        data() {
             return {
                 citizen: null,
                 shipFamilies: [], // families of ships (e.g. "Aurora" for MR, LX, etc.) that have the selected orga (no displayed if no orga members have this family).
@@ -95,6 +123,22 @@
                     this.$store.state.orga_fleet.selectedSid = value;
                 }
             },
+            filterShipName: {
+                get() {
+                    return this.$store.state.orga_fleet.filterShipName;
+                },
+                set(value) {
+                    this.$store.state.orga_fleet.filterShipName = value;
+                }
+            },
+            filterCitizenName: {
+                get() {
+                    return this.$store.state.orga_fleet.filterCitizenName;
+                },
+                set(value) {
+                    this.$store.state.orga_fleet.filterCitizenName = value;
+                }
+            },
             ...mapGetters({
                 selectedShipFamily: 'selectedShipFamily',
                 selectedShipVariants: 'selectedShipVariants',
@@ -108,7 +152,7 @@
             },
         },
         methods: {
-            ...mapActions(['loadShipVariantUsers']),
+            ...mapActions(['loadShipVariantUsers', 'selectShipFamily']),
             refreshProfile() {
                 axios.get('/api/profile/').then(response => {
                     this.citizen = response.data.citizen;
@@ -137,7 +181,13 @@
                 });
             },
             refreshOrganizationFleet() {
-                axios.get('/api/fleet/orga-fleets/'+this.selectedSid, {}).then(response => {
+                axios.get('/api/fleet/orga-fleets/'+this.selectedSid, {
+                    params: {
+                        'filters[shipName]': this.filterShipName ? this.filterShipName : null,
+                        'filters[citizenName]': this.filterCitizenName ? this.filterCitizenName : null,
+                    },
+                }).then(response => {
+                    this.selectShipFamily({index: null, shipFamily: null});
                     this.shipFamilies = response.data;
                 }).catch(err => {
                     this.checkAuth(err.response);

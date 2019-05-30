@@ -242,7 +242,6 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
             'Cyclone RN' => 'Cyclone-RN',
             'Cyclone-TR' => 'Cyclone-TR', // yes, same
             'Cyclone AA' => 'Cyclone-AA',
-            'Dragonfly Star Kitten Edition' => 'Dragonfly Yellowjacket',
             'Hercules Starlifter C2' => 'C2 Hercules',
             'Hercules Starlifter M2' => 'M2 Hercules',
             'Hercules Starlifter A2' => 'A2 Hercules',

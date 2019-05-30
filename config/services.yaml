@@ -9,6 +9,8 @@ services:
         autowire: true
         autoconfigure: true
         public: false
+        bind:
+            $profileLinkAccountLogger: '@monolog.logger.profile_link_account'
 
     App\:
         resource: '../src/*'

@@ -79,6 +79,7 @@
     import axios from 'axios';
     import toastr from 'toastr';
     import UpdateScHandle from "./UpdateSCHandle";
+    import { mapMutations } from 'vuex';
 
     export default {
         name: 'profile',
@@ -107,6 +108,7 @@
             this.refreshProfile();
         },
         methods: {
+            ...mapMutations(['updateProfile']),
             savePublicChoice(value) {
                 this.publicChoice = value;
                 this.savePreferences();
@@ -140,6 +142,7 @@
                     this.userToken = response.data.token;
                     this.myFleetLink = this.getMyFleetLink();
                     this.publicChoice = response.data.publicChoice;
+                    this.updateProfile(this.citizen);
                 }).catch(err => {
                     this.checkAuth(err.response);
                     this.showError = true;

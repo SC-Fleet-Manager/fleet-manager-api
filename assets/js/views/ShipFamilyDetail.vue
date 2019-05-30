@@ -23,7 +23,7 @@
         name: 'ship-family-detail',
         components: {ShipVariant},
         props: ['index', 'totalShipFamilies', 'breakpoint'],
-        data: function () {
+        data() {
             return {
                 showCollapse: false,
             }

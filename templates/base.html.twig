@@ -4,7 +4,8 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width,initial-scale=1.0">
-        <title>{% block title 'SC Fleet Manager' %}</title>
+        <title>{% block title 'Fleet Manager' %}</title>
+        <meta name="description" content="Fleet Manager is an online open source tool to help you manage your personal and orga. Star Citizen Fleets, share it with your friends and your organizations."/>
 
         <link rel="apple-touch-icon" sizes="57x57" href="{{ asset('icons/apple-icon-57x57.png') }}">
         <link rel="apple-touch-icon" sizes="60x60" href="{{ asset('icons/apple-icon-60x60.png') }}">
@@ -35,7 +36,6 @@
         {% endblock %}
 
         <script src="{{ preload(asset('build/runtime.js')) }}"></script>
-        {#<script src="{{ preload(asset('build/manifest.js')) }}"></script>#}
         {% block javascripts %}
             <script src="{{ preload(asset('build/main.js')) }}"></script>
         {% endblock %}

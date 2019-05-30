@@ -7,7 +7,7 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         token:
-            pattern: ^/api/(export)
+            pattern: ^/api/export$
             stateless: true
             guard:
                 authenticators: ['App\Security\TokenAuthenticator']

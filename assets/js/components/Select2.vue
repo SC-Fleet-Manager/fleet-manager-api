@@ -11,7 +11,7 @@
     export default {
         name: 'select2',
         props: ['options', 'value', 'multiple'],
-        mounted: function () {
+        mounted() {
             $(this.$el)
                 // init select2
                 .select2({ data: this.options })
@@ -26,19 +26,18 @@
                 })
         },
         watch: {
-            value: function (value) {
+            value(value) {
                 // update value
-                $(this.$el)
-                    .val(value)
-                    // .trigger('change')
+                $(this.$el).val(value)
+                // .trigger('change')
             },
-            options: function (options) {
+            options(options) {
                 // update options
                 $(this.$el).empty().select2({ data: options });
                 $(this.$el).val(this.value).trigger('change');
             }
         },
-        destroyed: function () {
+        destroyed() {
             $(this.$el).off().select2('destroy')
         }
     };

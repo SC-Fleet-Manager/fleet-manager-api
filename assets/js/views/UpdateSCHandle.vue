@@ -1,11 +1,10 @@
 <template>
     <b-card header="Update Star Citizen handle" class="js-update-sc-handle">
         <p>
-            <strong>Your SC Handle : </strong>{{ citizen != null ? citizen.actualHandle.handle : '' }}<br/>
-            <strong>Your SC Number : </strong>{{ citizen != null ? citizen.number.number : '' }}
+            <strong>SC Handle : </strong>{{ citizen != null ? citizen.actualHandle.handle : '' }}<br/>
+            <strong>SC Number : </strong>{{ citizen != null ? citizen.number.number : '' }}
         </p>
         <b-form @submit="onSubmit">
-            <b-alert variant="success" :show="showSuccess" dismissible>Your new SC Handle has been successfully updated!</b-alert>
             <b-alert variant="danger" :show="showError" v-html="errorMessage"></b-alert>
             <b-form-group>
                 <b-form-input id="form_update_sc_handle"
@@ -14,30 +13,27 @@
                               required
                               placeholder="Your new Handle Star Citizen"></b-form-input>
             </b-form-group>
-            <b-button type="submit" :disabled="submitDisabled" variant="success"><i class="fas fa-cloud-upload-alt"></i>
-                Update my SC handle</b-button>
+            <b-button type="submit" :disabled="submitDisabled" variant="primary"><i class="fas fa-cloud-upload-alt"></i> Update my SC handle</b-button>
         </b-form>
     </b-card>
 </template>
 
 <script>
     import axios from 'axios';
+    import toastr from 'toastr';
 
     export default {
         name: 'update-sc-handle',
         components: {},
-        data: function () {
+        data() {
             return {
                 form: {
                     handle: null,
                 },
                 submitDisabled: false,
                 showError: false,
-                showSuccess: false,
                 errorMessage: null,
             }
-        },
-        created() {
         },
         props: ['citizen'],
         methods: {
@@ -48,8 +44,7 @@
                 form.append('handleSC', this.form.handle);
 
                 this.showError = false;
-                this.showSuccess = false;
-                this.errorMessage = 'An error has been occurred. Please try again in a moment.';
+                this.errorMessage = 'An error has been occurred. Please try again later.';
                 this.submitDisabled = true;
                 axios({
                     method: 'post',
@@ -57,7 +52,8 @@
                     data: form,
                 }).then(response => {
                     this.submitDisabled = false;
-                    this.showSuccess = true;
+                    this.form.handle = null;
+                    toastr.success('Your new SC Handle has been successfully updated!');
                 }).catch(err => {
                     this.checkAuth(err.response);
                     this.submitDisabled = false;
