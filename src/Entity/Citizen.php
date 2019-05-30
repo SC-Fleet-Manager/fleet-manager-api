@@ -12,6 +12,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CitizenRepository")
+ * @ORM\Table(indexes={
+ *     @ORM\Index(name="actualhandle_idx", columns={"actual_handle"}),
+ *     @ORM\Index(name="mainorga_idx", columns={"main_orga"})
+ * })
  */
 class Citizen
 {
@@ -39,6 +43,14 @@ class Citizen
      * @Groups({"profile", "orga_fleet"})
      */
     private $actualHandle;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=31, nullable=true)
+     * @Groups({"profile", "orga_fleet"})
+     */
+    private $mainOrga;
 
     /**
      * @var iterable|string[]
@@ -124,6 +136,18 @@ class Citizen
     public function setActualHandle(?HandleSC $actualHandle): self
     {
         $this->actualHandle = $actualHandle;
+
+        return $this;
+    }
+
+    public function getMainOrga(): ?string
+    {
+        return $this->mainOrga;
+    }
+
+    public function setMainOrga(?string $mainOrga): self
+    {
+        $this->mainOrga = $mainOrga;
 
         return $this;
     }

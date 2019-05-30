@@ -15,45 +15,49 @@ use App\Repository\CitizenRepository;
 use App\Repository\UserRepository;
 use App\Service\CitizenInfosProviderInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Bridge\Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * @Route("/api/profile", name="profile_")
  */
 class ProfileController extends AbstractController
 {
-    private $logger;
+    private $profileLinkAccountLogger;
     private $citizenInfosProvider;
     private $citizenRepository;
     private $userRepository;
     private $security;
     private $formFactory;
     private $entityManager;
+    private $serializer;
 
     public function __construct(
-        LoggerInterface $logger,
+        Logger $profileLinkAccountLogger,
         CitizenInfosProviderInterface $citizenInfosProvider,
         CitizenRepository $citizenRepository,
         EntityManagerInterface $entityManager,
         UserRepository $userRepository,
         Security $security,
-        FormFactoryInterface $formFactory
+        FormFactoryInterface $formFactory,
+        SerializerInterface $serializer
     ) {
-        $this->logger = $logger;
+        $this->profileLinkAccountLogger = $profileLinkAccountLogger;
         $this->citizenInfosProvider = $citizenInfosProvider;
         $this->citizenRepository = $citizenRepository;
         $this->userRepository = $userRepository;
         $this->security = $security;
         $this->formFactory = $formFactory;
         $this->entityManager = $entityManager;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -196,7 +200,7 @@ class ProfileController extends AbstractController
 
     /**
      * @Route("/link-account", name="link_account", methods={"POST"})
-     * @IsGranted("IS_AUTHENTICATED_FULLY"))
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
      *
      * Link RSI Account (with SC Handle and Bio token) with the actual logged User.
      */
@@ -212,6 +216,13 @@ class ProfileController extends AbstractController
                 'errorMessage' => 'No data has been submitted.',
             ], 400);
         }
+
+        /** @var User $user */
+        $user = $this->security->getUser();
+
+        $this->profileLinkAccountLogger->info('Link account submitted.',
+            ['handleSC' => $linkAccount->handleSC, 'userId' => $user->getId(), 'username' => $user->getNickname()]);
+
         if (!$form->isValid()) {
             $formErrors = $form->getErrors(true);
             $errors = [];
@@ -219,18 +230,25 @@ class ProfileController extends AbstractController
                 $errors[] = $formError->getMessage();
             }
 
+            $this->profileLinkAccountLogger->error('Invalid form.',
+                ['errors' => $errors, 'userId' => $user->getId(), 'username' => $user->getNickname()]);
+
             return $this->json([
                 'error' => 'invalid_form',
                 'formErrors' => $errors,
             ], 400);
         }
 
-        /** @var User $user */
-        $user = $this->security->getUser();
-
         try {
             $citizenInfos = $this->citizenInfosProvider->retrieveInfos(new HandleSC($linkAccount->handleSC), false);
+
+            $this->profileLinkAccountLogger->info('Retrieve citizens infos.',
+                ['infos' => $this->serializer->serialize($citizenInfos, 'json'), 'handleSC' => $linkAccount->handleSC, 'userId' => $user->getId(), 'username' => $user->getNickname()]);
+
             if (!$this->isTokenValid($user, $citizenInfos)) {
+                $this->profileLinkAccountLogger->error('Token not valid.',
+                    ['infos' => $this->serializer->serialize($citizenInfos, 'json'), 'handleSC' => $linkAccount->handleSC, 'userId' => $user->getId(), 'username' => $user->getNickname(), 'userToken' => $user->getToken()]);
+
                 return $this->json([
                     'error' => 'invalid_form',
                     'formErrors' => ['Your RSI bio does not contain this token.'],
@@ -238,11 +256,17 @@ class ProfileController extends AbstractController
             }
             $this->attachCitizenToUser($user, $citizenInfos);
         } catch (NotFoundHandleSCException $e) {
+            $this->profileLinkAccountLogger->error('Citizen infos not found.',
+                ['exception' => $e, 'handleSC' => $linkAccount->handleSC, 'userId' => $user->getId(), 'username' => $user->getNickname()]);
+
             return $this->json([
                 'error' => 'not_found_handle',
                 'errorMessage' => sprintf('The SC handle %s does not exist.', $linkAccount->handleSC),
             ], 400);
         }
+
+        $this->profileLinkAccountLogger->info('Link success.',
+            ['handleSC' => $linkAccount->handleSC, 'userId' => $user->getId(), 'username' => $user->getNickname()]);
 
         return $this->json(null, 204);
     }
@@ -254,22 +278,31 @@ class ProfileController extends AbstractController
 
         $isNew = $citizen === null;
         if ($isNew) {
+            $this->profileLinkAccountLogger->info('New citizen.',
+                ['infos' => $citizenInfos, 'userId' => $user->getId(), 'username' => $user->getNickname()]);
             $citizen = new Citizen(Uuid::uuid4());
         } else {
+            $this->profileLinkAccountLogger->warning('Existing citizen.',
+                ['citizenId' => $citizen->getId(), 'citizenHandle' => $citizen->getActualHandle()->getHandle(), 'infos' => $citizenInfos, 'userId' => $user->getId(), 'username' => $user->getNickname()]);
+
             /** @var User|null $userWithThatCitizen */
             $userWithThatCitizen = $this->userRepository->findOneBy(['citizen' => $citizen]);
 
             if ($userWithThatCitizen !== null) {
-                $this->logger->warning(sprintf('The citizen "%s" is already linked with user "%s". It has been linked to the new user "%s".', $citizen->getActualHandle(), $userWithThatCitizen->getNickname(), $user->getNickname()), [
+                $this->profileLinkAccountLogger->warning('Actual user that has this citizen found.', [
                     'citizenId' => $citizen->getId(),
                     'citizenHandle' => $citizen->getActualHandle(),
-                    'newUserId' => $user->getId(),
-                    'newUserNickname' => $user->getNickname(),
+                    'infos' => $citizenInfos,
+                    'userId' => $user->getId(),
+                    'username' => $user->getNickname(),
                     'oldUserId' => $userWithThatCitizen->getId(),
                     'oldUserNickname' => $userWithThatCitizen->getNickname(),
                 ]);
                 $userWithThatCitizen->setCitizen(null); // detach for old user
                 $this->entityManager->flush();
+            } else {
+                $this->profileLinkAccountLogger->warning('No actual user that has this citizen found.',
+                    ['citizenId' => $citizen->getId(), 'citizenHandle' => $citizen->getActualHandle()->getHandle(), 'infos' => $citizenInfos, 'userId' => $user->getId(), 'username' => $user->getNickname()]);
             }
         }
 
@@ -287,6 +320,10 @@ class ProfileController extends AbstractController
             $this->entityManager->persist($citizen);
         }
         $user->setCitizen($citizen);
+
+        $this->profileLinkAccountLogger->info('Set citizen to user.',
+            ['citizenId' => $citizen->getId(), 'citizenHandle' => $citizen->getActualHandle()->getHandle(), 'infos' => $citizenInfos, 'userId' => $user->getId(), 'username' => $user->getNickname()]);
+
         $this->entityManager->flush();
     }
 

@@ -45,7 +45,7 @@
         name: 'my-fleet',
         props: ['userHandle'],
         components: {UpdateFleetFile},
-        data: function () {
+        data() {
             return {
                 citizen: null,
                 isMyProfile: false,
@@ -150,7 +150,6 @@
                     case 'Cyclone RN': return 'Cyclone-RN';
                     case 'Cyclone-TR': return 'Cyclone-TR'; // yes, same
                     case 'Cyclone AA': return 'Cyclone-AA';
-                    case 'Dragonfly Star Kitten Edition': return 'Dragonfly Yellowjacket';
                     case 'Hercules Starlifter C2': return 'C2 Hercules';
                     case 'Hercules Starlifter M2': return 'M2 Hercules';
                     case 'Hercules Starlifter A2': return 'A2 Hercules';

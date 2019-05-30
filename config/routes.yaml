@@ -4,6 +4,10 @@ logout:
 discord_login:
     path: /login/check-discord
 
+spa_home:
+    path: /
+    controller: App\Controller\SpaController::home
+
 spa:
     path: /{spaPath}
     controller: App\Controller\SpaController::index

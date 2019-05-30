@@ -5,7 +5,7 @@ Encore
     .setPublicPath('/build')
 
     .addEntry('main', './assets/js/main.js')
-    .addEntry('login', './assets/js/login.js')
+    .addEntry('home', './assets/js/home.js')
 
     .cleanupOutputBeforeBuild()
     .enableSingleRuntimeChunk()

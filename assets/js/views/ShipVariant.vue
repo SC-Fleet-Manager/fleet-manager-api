@@ -19,7 +19,7 @@
         name: 'ship-variant',
         components: {},
         props: ['shipVariant'],
-        data: function () {
+        data() {
             return {
                 shipVariantUsers: [],
                 page: 2,

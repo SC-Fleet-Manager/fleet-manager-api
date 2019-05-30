@@ -29,7 +29,7 @@
     export default {
         name: 'update-fleet-file',
         components: {},
-        data: function () {
+        data() {
             return {
                 form: {
                     fleetFile: null,

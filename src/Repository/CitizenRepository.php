@@ -2,11 +2,11 @@
 
 namespace App\Repository;
 
-use App\Domain\ShipInfo;
 use App\Domain\SpectrumIdentification;
 use App\Entity\Citizen;
 use App\Entity\Fleet;
 use App\Entity\Ship;
+use App\Service\Dto\ShipFamilyFilter;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -31,7 +31,7 @@ class CitizenRepository extends ServiceEntityRepository
             ->leftJoin('f.ships', 's')
             ->addSelect('s')
             ->where('c.organisations LIKE :orga')
-            ->setParameter('orga', '%"'.$organizationId.'"%')
+            ->setParameter('orga', '%"' . $organizationId . '"%')
             ->getQuery();
         $q->useResultCache(true);
         $q->setResultCacheLifetime(30);
@@ -42,7 +42,7 @@ class CitizenRepository extends ServiceEntityRepository
     /**
      * @return Ship[]
      */
-    public function getOrganizationShips(SpectrumIdentification $organizationId): array
+    public function getOrganizationShips(SpectrumIdentification $organizationId, ShipFamilyFilter $filter): array
     {
         $citizenMetadata = $this->getClassMetadata();
         $fleetMetadata = $this->_em->getClassMetadata(Fleet::class);
@@ -56,6 +56,13 @@ class CitizenRepository extends ServiceEntityRepository
             INNER JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id
             WHERE c.organisations LIKE :orgaId 
         EOT;
+        // filtering
+        if ($filter->shipName !== null) {
+            $sql .= ' AND s.name LIKE :shipName ';
+        }
+        if ($filter->citizenName !== null) {
+            $sql .= ' AND c.actual_handle LIKE :citizenName ';
+        }
 
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata(Ship::class, 's', ['id' => 'shipId']);
@@ -63,77 +70,58 @@ class CitizenRepository extends ServiceEntityRepository
         $rsm->addJoinedEntityFromClassMetadata(Citizen::class, 'c', 'f', 'owner', ['id' => 'citizenId']);
 
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
-        $stmt->setParameter(':orgaId', '%"'.$organizationId.'"%');
+        $stmt->setParameter(':orgaId', '%"' . $organizationId . '"%');
+        if ($filter->shipName !== null) {
+            $stmt->setParameter('shipName', '%' . $filter->shipName . '%');
+        }
+        if ($filter->citizenName !== null) {
+            $stmt->setParameter('citizenName', '%' . $filter->citizenName . '%');
+        }
 
         return $stmt->getResult();
     }
 
-    public function countOwnedShips(string $organizationId, string $shipName): int
-    {
-        $citizenMetadata = $this->getClassMetadata();
-        $fleetMetadata = $this->_em->getClassMetadata(Fleet::class);
-        $shipMetadata = $this->_em->getClassMetadata(Ship::class);
-
-        /*
-        TODO : more opti ?
-        select count(*) from ship s inner join fleet f on f.id = s.fleet_id and lower(s.name) = :shipName
-            inner join citizen c on c.id = f.owner_id and f.id = (
-            select f2.id
-            from fleet f2
-            where f2.owner_id = f.owner_id
-            order by f2.version desc
-            limit 1
-        )
-        where c.organisations LIKE :orgaId
-        */
-
-        $sql = <<<EOT
-            SELECT count(*) as countOwned FROM {$citizenMetadata->getTableName()} c 
-            INNER JOIN {$fleetMetadata->getTableName()} f ON c.id = f.owner_id AND f.id = (
-                SELECT f2.id FROM {$fleetMetadata->getTableName()} f2 WHERE f2.owner_id = f.owner_id ORDER BY f2.version DESC LIMIT 1
-            )
-            INNER JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id and LOWER(s.name) = :shipName 
-            WHERE c.organisations LIKE :orgaId 
-        EOT;
-
-        $rsm = new ResultSetMapping();
-        $rsm->addScalarResult('countOwned', 'countOwned');
-        $stmt = $this->_em->createNativeQuery($sql, $rsm);
-        $stmt->setParameters([
-            'orgaId' => '%"'.$organizationId.'"%',
-            'shipName' => mb_strtolower($shipName),
-        ]);
-
-        return $stmt->getSingleScalarResult();
-    }
-
-    public function countOwnersOfShip(string $organizationId, string $shipName): int
+    public function countOwnersAndOwnedOfShip(string $organizationId, string $shipName, ShipFamilyFilter $filter): array
     {
         $citizenMetadata = $this->getClassMetadata();
         $fleetMetadata = $this->_em->getClassMetadata(Fleet::class);
         $shipMetadata = $this->_em->getClassMetadata(Ship::class);
 
         $sql = <<<EOT
-            SELECT count(DISTINCT c.id) as countOwners FROM {$citizenMetadata->getTableName()} c 
+            SELECT count(DISTINCT c.id) as countOwners, count(*) as countOwned FROM {$citizenMetadata->getTableName()} c 
             INNER JOIN {$fleetMetadata->getTableName()} f ON c.id = f.owner_id AND f.id = (
                 SELECT f2.id FROM {$fleetMetadata->getTableName()} f2 WHERE f2.owner_id = f.owner_id ORDER BY f2.version DESC LIMIT 1
             )
             INNER JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id and LOWER(s.name) = :shipName 
             WHERE c.organisations LIKE :orgaId 
         EOT;
+        // filtering
+        if ($filter->shipName !== null) {
+            $sql .= ' AND s.name LIKE :filterShipName ';
+        }
+        if ($filter->citizenName !== null) {
+            $sql .= ' AND c.actual_handle LIKE :filterCitizenName ';
+        }
 
         $rsm = new ResultSetMapping();
         $rsm->addScalarResult('countOwners', 'countOwners');
+        $rsm->addScalarResult('countOwned', 'countOwned');
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
         $stmt->setParameters([
-            'orgaId' => '%"'.$organizationId.'"%',
+            'orgaId' => '%"' . $organizationId . '"%',
             'shipName' => mb_strtolower($shipName),
         ]);
+        if ($filter->shipName !== null) {
+            $stmt->setParameter('filterShipName', '%' . $filter->shipName . '%');
+        }
+        if ($filter->citizenName !== null) {
+            $stmt->setParameter('filterCitizenName', '%' . $filter->citizenName . '%');
+        }
 
-        return $stmt->getSingleScalarResult();
+        return $stmt->getScalarResult();
     }
 
-    public function getOwnersOfShip(string $organizationId, string $shipName, int $page = null, int $itemsPerPage = 10): iterable
+    public function getOwnersOfShip(string $organizationId, string $shipName, ShipFamilyFilter $filter, int $page = null, int $itemsPerPage = 10): iterable
     {
         $citizenMetadata = $this->getClassMetadata();
         $fleetMetadata = $this->_em->getClassMetadata(Fleet::class);
@@ -146,9 +134,19 @@ class CitizenRepository extends ServiceEntityRepository
             )
             INNER JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id and LOWER(s.name) = :shipName
             WHERE c.organisations LIKE :orgaId
+        EOT;
+        // filtering
+        if ($filter->shipName !== null) {
+            $sql .= ' AND s.name LIKE :filterShipName ';
+        }
+        if ($filter->citizenName !== null) {
+            $sql .= ' AND c.actual_handle LIKE :filterCitizenName ';
+        }
+        $sql .= <<<EOT
             GROUP BY c.id
             ORDER BY countShips DESC
         EOT;
+        // pagination
         if ($page !== null) {
             $sql .= "\nLIMIT :first, :countItems\n";
         }
@@ -159,13 +157,19 @@ class CitizenRepository extends ServiceEntityRepository
 
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
         $stmt->setParameters([
-            'orgaId' => '%"'.$organizationId.'"%',
+            'orgaId' => '%"' . $organizationId . '"%',
             'shipName' => mb_strtolower($shipName),
         ]);
         if ($page !== null) {
             $page = $page < 1 ? 1 : $page;
             $stmt->setParameter('first', ($page - 1) * $itemsPerPage);
             $stmt->setParameter('countItems', $itemsPerPage);
+        }
+        if ($filter->shipName !== null) {
+            $stmt->setParameter('filterShipName', '%' . $filter->shipName . '%');
+        }
+        if ($filter->citizenName !== null) {
+            $stmt->setParameter('filterCitizenName', '%' . $filter->citizenName . '%');
         }
 
         return $stmt->getResult();

@@ -7,6 +7,7 @@ use App\Entity\Citizen;
 use App\Entity\User;
 use App\Repository\CitizenRepository;
 use App\Repository\UserRepository;
+use App\Service\Dto\ShipFamilyFilter;
 use App\Service\OrganizationFleetHandler;
 use App\Service\ShipInfosProviderInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -131,9 +132,19 @@ class FleetController extends AbstractController
             ], 404);
         }
 
-        $shipFamilies = $organizationFleetHandler->computeShipFamilies(new SpectrumIdentification($organization));
+        $filters = $request->query->get('filters', []);
+
+        $shipFamilies = $organizationFleetHandler->computeShipFamilies(new SpectrumIdentification($organization), new ShipFamilyFilter(
+            $filters['shipName'] ?? null,
+            $filters['citizenName'] ?? null,
+        ));
         usort($shipFamilies, static function (array $shipFamily1, array $shipFamily2): int {
-            return $shipFamily2['count'] - $shipFamily1['count'];
+            $count = $shipFamily2['count'] - $shipFamily1['count'];
+            if ($count !== 0) {
+                return $count;
+            }
+
+            return $shipFamily2['name'] <=> $shipFamily1['name'];
         });
 
         return $this->json($shipFamilies);
@@ -161,17 +172,22 @@ class FleetController extends AbstractController
             ], 404);
         }
 
+        $filters = $request->query->get('filters', []);
+        $shipFamilyFilter = new ShipFamilyFilter($filters['shipName'] ?? null, $filters['citizenName'] ?? null);
+
         $shipsInfos = $this->shipInfosProvider->getShipsByChassisId($chassisId);
 
         $res = [];
         foreach ($shipsInfos as $shipInfo) {
             $shipName = $this->shipInfosProvider->transformProviderToHangar($shipInfo->name);
-            $countOwners = $this->citizenRepository->countOwnersOfShip($organization, $shipName);
-            $countOwned = $this->citizenRepository->countOwnedShips($organization, $shipName);
+            $countOwnersAndOwned = $this->citizenRepository->countOwnersAndOwnedOfShip($organization, $shipName, $shipFamilyFilter)[0];
+            if ((int)$countOwnersAndOwned['countOwned'] === 0) {
+                continue;
+            }
             $res[] = [
                 'shipInfo' => $shipInfo,
-                'countTotalOwners' => $countOwners,
-                'countTotalShips' => $countOwned,
+                'countTotalOwners' => $countOwnersAndOwned['countOwners'],
+                'countTotalShips' => $countOwnersAndOwned['countOwned'],
             ];
         }
         usort($res, static function (array $result1, array $result2): int {
@@ -206,7 +222,17 @@ class FleetController extends AbstractController
             ], 404);
         }
 
-        $citizens = $this->citizenRepository->getOwnersOfShip($organization, $this->shipInfosProvider->transformProviderToHangar($shipName), $page, $itemsPerPage);
+        $filters = $request->query->get('filters', []);
+        $shipFamilyFilter = new ShipFamilyFilter($filters['shipName'] ?? null, $filters['citizenName'] ?? null);
+
+        $shipName = $this->shipInfosProvider->transformProviderToHangar($shipName);
+        $citizens = $this->citizenRepository->getOwnersOfShip(
+            $organization,
+            $shipName,
+            $shipFamilyFilter,
+            $page,
+            $itemsPerPage,
+        );
 
         return $this->json($citizens, 200, [], ['groups' => 'orga_fleet']);
     }
