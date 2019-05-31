@@ -127,8 +127,8 @@ class FleetController extends AbstractController
         }
         if (!$citizen->hasOrganisation($organization)) {
             return $this->json([
-                'error' => 'bad_organisation',
-                'errorMessage' => sprintf('The organisation %s does not exist.', $organization),
+                'error' => 'bad_organization',
+                'errorMessage' => sprintf('The organization %s does not exist.', $organization),
             ], 404);
         }
 
@@ -167,8 +167,8 @@ class FleetController extends AbstractController
         }
         if (!$citizen->hasOrganisation($organization)) {
             return $this->json([
-                'error' => 'bad_organisation',
-                'errorMessage' => sprintf('The organisation %s does not exist.', $organization),
+                'error' => 'bad_organization',
+                'errorMessage' => sprintf('The organization %s does not exist.', $organization),
             ], 404);
         }
 
@@ -217,8 +217,8 @@ class FleetController extends AbstractController
         }
         if (!$citizen->hasOrganisation($organization)) {
             return $this->json([
-                'error' => 'bad_organisation',
-                'errorMessage' => sprintf('The organisation %s does not exist.', $organization),
+                'error' => 'bad_organization',
+                'errorMessage' => sprintf('The organization %s does not exist.', $organization),
             ], 404);
         }
 
