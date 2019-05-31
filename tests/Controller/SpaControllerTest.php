@@ -30,21 +30,24 @@ class SpaControllerTest extends PantherTestCase
     {
         $this->client->request('GET', '/');
         $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
-            return stripos($driver->findElement(WebDriverBy::cssSelector('h1'))->getText(), "Welcome to\nSC Fleet Manager") !== false;
+            return stripos($driver->findElement(WebDriverBy::cssSelector('h1'))->getText(), 'Fleet Manager') !== false;
         });
         $this->client->refreshCrawler();
 
         // connect with default user
-        $this->client->clickLink('Connect with Discord');
-//        $this->assertSame('/profile', $this->client->executeScript('return window.location.hash;'));
+        $this->client->findElement(WebDriverBy::xpath('//button[contains(text(), "Start using Fleet Manager now")]'))->click();
+        $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+            return $driver->findElement(WebDriverBy::id('modal-login___BV_modal_body_'))->isDisplayed();
+        });
+        $this->client->clickLink('Login with Discord');
 
         // Profile
         $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
             return count($driver->findElements(WebDriverBy::className('js-update-sc-handle'))) > 0;
         });
         $cardBody = $this->client->findElement(WebDriverBy::cssSelector('.js-update-sc-handle .card-body'))->getText();
-        $this->assertContains('Your SC Handle : ionni', $cardBody);
-        $this->assertContains('Your SC Number : 123456', $cardBody);
+        $this->assertContains('SC Handle : ionni', $cardBody);
+        $this->assertContains('SC Number : 123456', $cardBody);
         $this->assertContains('Update my SC handle', $cardBody);
 
         $cardBody = $this->client->findElement(WebDriverBy::cssSelector('.js-preferences .card-body'))->getText();

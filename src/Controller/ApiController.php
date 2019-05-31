@@ -258,10 +258,10 @@ class ApiController extends AbstractController
     }
 
     /**
-     * Combines all last version fleets of all citizen members of a specific organisation.
+     * Combines all last version fleets of all citizen members of a specific organization.
      * Returns a downloadable json file.
      *
-     * @Route("/create-organisation-fleet-file/{organization}", name="create_organisation_fleet_file", methods={"GET"})
+     * @Route("/create-organization-fleet-file/{organization}", name="create_organization_fleet_file", methods={"GET"})
      * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      */
     public function createOrganisationFleetFile(string $organization): Response
@@ -277,7 +277,7 @@ class ApiController extends AbstractController
         }
 
         $file = $this->organisationFleetGenerator->generateFleetFile(new SpectrumIdentification($organization));
-        $filename = 'organisation_fleet.json';
+        $filename = 'organization_fleet.json';
 
         $response = new BinaryFileResponse($file);
         $response->headers->set('Content-Type', 'application/json');

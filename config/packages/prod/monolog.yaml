@@ -1,5 +1,4 @@
 monolog:
-    channels: ['profile_link_account']
     handlers:
         main:
             type: fingers_crossed

@@ -151,12 +151,12 @@ EOT;
     public function testCreateOrgaFleetFile(): void
     {
         $this->logIn($this->user);
-        $this->client->xmlHttpRequest('GET', '/api/create-organisation-fleet-file/flk', [], [], [
+        $this->client->xmlHttpRequest('GET', '/api/create-organization-fleet-file/flk', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
         /** @var BinaryFileResponse $response */
         $response = $this->client->getResponse();
         $this->assertSame('application/json', $response->headers->get('Content-Type'));
-        $this->assertSame('attachment; filename=organisation_fleet.json', $response->headers->get('Content-Disposition'));
+        $this->assertSame('attachment; filename=organization_fleet.json', $response->headers->get('Content-Disposition'));
     }
 }

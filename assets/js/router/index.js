@@ -30,6 +30,15 @@ const router = new Router({
             },
             children: [
                 {
+                    path: 'organization-fleet/:sid',
+                    name: 'Organization fleet',
+                    component: CorpoFleets,
+                    props: true,
+                    meta: {
+                        requireAuth: false,
+                    }
+                },
+                {
                     path: 'organizations-fleets',
                     name: 'Organizations\' fleets',
                     component: CorpoFleets,

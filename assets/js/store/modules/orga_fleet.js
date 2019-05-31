@@ -12,6 +12,9 @@ const state = {
 };
 
 const getters = {
+    selectedSid(state) {
+        return state.selectedSid;
+    },
     selectedIndex(state) {
         return state.selectedIndex;
     },
@@ -41,6 +44,12 @@ const mutations = {
             state.shipVariantUsers[shipId].push(user);
         }
         ++state.shipVariantUsersTrackChanges;
+    },
+    updateSid(state, value) {
+        if (state.selectedSid === value) {
+            return;
+        }
+        state.selectedSid = value;
     }
 };
 

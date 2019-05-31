@@ -1,0 +1,2 @@
+monolog:
+    channels: ['profile_link_account']
