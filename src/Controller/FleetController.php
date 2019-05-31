@@ -181,7 +181,7 @@ class FleetController extends AbstractController
         foreach ($shipsInfos as $shipInfo) {
             $shipName = $this->shipInfosProvider->transformProviderToHangar($shipInfo->name);
             $countOwnersAndOwned = $this->citizenRepository->countOwnersAndOwnedOfShip($organization, $shipName, $shipFamilyFilter)[0];
-            if ((int)$countOwnersAndOwned['countOwned'] === 0) {
+            if ((int) $countOwnersAndOwned['countOwned'] === 0) {
                 continue;
             }
             $res[] = [

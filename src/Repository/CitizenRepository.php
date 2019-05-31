@@ -31,7 +31,7 @@ class CitizenRepository extends ServiceEntityRepository
             ->leftJoin('f.ships', 's')
             ->addSelect('s')
             ->where('c.organisations LIKE :orga')
-            ->setParameter('orga', '%"' . $organizationId . '"%')
+            ->setParameter('orga', '%"'.$organizationId.'"%')
             ->getQuery();
         $q->useResultCache(true);
         $q->setResultCacheLifetime(30);
@@ -70,12 +70,12 @@ class CitizenRepository extends ServiceEntityRepository
         $rsm->addJoinedEntityFromClassMetadata(Citizen::class, 'c', 'f', 'owner', ['id' => 'citizenId']);
 
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
-        $stmt->setParameter(':orgaId', '%"' . $organizationId . '"%');
+        $stmt->setParameter(':orgaId', '%"'.$organizationId.'"%');
         if ($filter->shipName !== null) {
-            $stmt->setParameter('shipName', '%' . $filter->shipName . '%');
+            $stmt->setParameter('shipName', '%'.$filter->shipName.'%');
         }
         if ($filter->citizenName !== null) {
-            $stmt->setParameter('citizenName', '%' . $filter->citizenName . '%');
+            $stmt->setParameter('citizenName', '%'.$filter->citizenName.'%');
         }
 
         return $stmt->getResult();
@@ -108,14 +108,14 @@ class CitizenRepository extends ServiceEntityRepository
         $rsm->addScalarResult('countOwned', 'countOwned');
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
         $stmt->setParameters([
-            'orgaId' => '%"' . $organizationId . '"%',
+            'orgaId' => '%"'.$organizationId.'"%',
             'shipName' => mb_strtolower($shipName),
         ]);
         if ($filter->shipName !== null) {
-            $stmt->setParameter('filterShipName', '%' . $filter->shipName . '%');
+            $stmt->setParameter('filterShipName', '%'.$filter->shipName.'%');
         }
         if ($filter->citizenName !== null) {
-            $stmt->setParameter('filterCitizenName', '%' . $filter->citizenName . '%');
+            $stmt->setParameter('filterCitizenName', '%'.$filter->citizenName.'%');
         }
 
         return $stmt->getScalarResult();
@@ -157,7 +157,7 @@ class CitizenRepository extends ServiceEntityRepository
 
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
         $stmt->setParameters([
-            'orgaId' => '%"' . $organizationId . '"%',
+            'orgaId' => '%"'.$organizationId.'"%',
             'shipName' => mb_strtolower($shipName),
         ]);
         if ($page !== null) {
@@ -166,10 +166,10 @@ class CitizenRepository extends ServiceEntityRepository
             $stmt->setParameter('countItems', $itemsPerPage);
         }
         if ($filter->shipName !== null) {
-            $stmt->setParameter('filterShipName', '%' . $filter->shipName . '%');
+            $stmt->setParameter('filterShipName', '%'.$filter->shipName.'%');
         }
         if ($filter->citizenName !== null) {
-            $stmt->setParameter('filterCitizenName', '%' . $filter->citizenName . '%');
+            $stmt->setParameter('filterCitizenName', '%'.$filter->citizenName.'%');
         }
 
         return $stmt->getResult();

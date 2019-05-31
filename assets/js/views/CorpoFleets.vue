@@ -3,13 +3,25 @@
         <b-row>
             <b-col>
                 <b-card header="Your organizations' fleet" class="js-organizations-fleets">
-                    <b-row>
-                        <b-col col xl="2" lg="3" md="4" v-if="citizen != null">
-                            <b-form-group label="Select an organization" label-for="select-orga" class="js-select-orga">
-                                <b-form-select id="select-orga" :value="selectedSid" @change="selectSid">
-                                    <option v-for="orga in citizen.organisations" :key="orga" :value="orga">{{ organizations[orga] ? organizations[orga].fullname : orga }}</option>
-                                </b-form-select>
-                            </b-form-group>
+                    <b-row v-if="citizen != null">
+                        <b-col col xl="2" lg="3" md="4" class="mb-3">
+                            <b-form>
+                                <b-form-group label="Select an organization" label-for="select-orga" class="js-select-orga">
+                                    <b-form-select id="select-orga" :value="selectedSid" @change="selectSid">
+                                        <option v-for="orga in citizen.organisations" :key="orga" :value="orga">{{ organizations[orga] ? organizations[orga].fullname : orga }}</option>
+                                    </b-form-select>
+                                </b-form-group>
+                            </b-form>
+                        </b-col>
+                        <b-col col md="6" v-if="selectedOrgaInfos !== null">
+                            <img :src="selectedOrgaInfos.global.avatarUrl" alt="organization's logo" class="img-avatar" style="max-height: 8rem;" />
+                            <div class="d-inline-block align-top">
+                                <h4>{{ selectedOrgaInfos.global.fullname }}</h4>
+                                <div class="position-relative">
+                                    <span class="rank-icon" :class="{'rank-icon-active': (i <= selectedOrgaInfos.citizen.rank) }" v-for="i in 5"></span>
+                                </div>
+                                <p><strong>{{ selectedOrgaInfos.citizen.rankName }}</strong></p>
+                            </div>
                         </b-col>
                     </b-row>
                     <b-row>
@@ -89,13 +101,7 @@
     import { createNamespacedHelpers } from 'vuex';
 
     const { mapGetters, mapMutations, mapActions } = createNamespacedHelpers('orga_fleet');
-    const BREAKPOINTS = {
-        xs: 0,
-        sm: 576,
-        md: 768,
-        lg: 992,
-        xl: 1200,
-    };
+    const BREAKPOINTS = {xs: 0, sm: 576, md: 768, lg: 992, xl: 1200};
 
     export default {
         name: 'organizations-fleets',
@@ -116,6 +122,20 @@
             this.refreshBreakpoint();
         },
         computed: {
+            selectedOrgaInfos() {
+                if (this.selectedSid === null || this.citizen === null || !this.organizations[this.selectedSid]) {
+                    return null;
+                }
+                for (let orgaInfo of this.citizen.organizations) {
+                    if (orgaInfo.organizationSid === this.selectedSid) {
+                        return {
+                            citizen: orgaInfo,
+                            global: this.organizations[this.selectedSid],
+                        };
+                    }
+                }
+                return null;
+            },
             filterShipName: {
                 get() {
                     return this.$store.state.orga_fleet.filterShipName;
@@ -250,5 +270,16 @@
     }
 </script>
 
-<style>
+<style lang="scss">
+
+    .rank-icon {
+        display: inline-block;
+        width: 30px;
+        height: 30px;
+        background: url('../../img/orgs-ranks.png') no-repeat 50% -78px;
+
+        &.rank-icon-active {
+            background-position: 50% -16px;
+        }
+    }
 </style>

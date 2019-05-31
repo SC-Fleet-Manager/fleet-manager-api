@@ -105,13 +105,7 @@ class ProfileController extends AbstractController
             ], 400);
         }
 
-        $citizen->setOrganisations([]);
-        foreach ($citizenInfos->organisations as $organisation) {
-            $citizen->addOrganisation(is_object($organisation) ? clone $organisation : $organisation);
-        }
-        $citizen->setBio($citizenInfos->bio);
-        $citizen->setLastRefresh(new \DateTimeImmutable());
-
+        $citizen->refresh($citizenInfos, $this->entityManager);
         $this->entityManager->flush();
 
         return $this->json(null, 204);
@@ -185,8 +179,8 @@ class ProfileController extends AbstractController
                     'formErrors' => ['This SC handle does not have the same SC number than yours.'],
                 ], 400);
             }
-
             $citizen->setActualHandle(new HandleSC($updateHandle->handleSC));
+            $citizen->refresh($citizenInfos, $this->entityManager);
             $this->entityManager->flush();
         } catch (NotFoundHandleSCException $e) {
             return $this->json([
@@ -308,14 +302,8 @@ class ProfileController extends AbstractController
 
         $citizen
             ->setNumber(clone $citizenInfos->numberSC)
-            ->setActualHandle(clone $citizenInfos->handle)
-            ->setBio($citizenInfos->bio)
-            ->setLastRefresh(new \DateTimeImmutable());
-        $citizen->setOrganisations([]);
-        foreach ($citizenInfos->organisations as $organisation) {
-            $citizen->addOrganisation(clone $organisation);
-        }
-
+            ->setActualHandle(clone $citizenInfos->handle);
+        $citizen->refresh($citizenInfos, $this->entityManager);
         if ($isNew) {
             $this->entityManager->persist($citizen);
         }

@@ -15,12 +15,12 @@ class CitizenInfos
     public $handle;
 
     /**
-     * @var iterable|SpectrumIdentification[]
+     * @var iterable|CitizenOrganizationInfo[]
      */
     public $organisations;
 
     /**
-     * @var SpectrumIdentification
+     * @var CitizenOrganizationInfo
      */
     public $mainOrga;
 

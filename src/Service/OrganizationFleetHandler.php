@@ -2,14 +2,11 @@
 
 namespace App\Service;
 
-use App\Domain\ShipInfo;
 use App\Domain\SpectrumIdentification;
 use App\Entity\Citizen;
 use App\Service\Dto\ShipFamilyFilter;
 use Doctrine\ORM\EntityManagerInterface;
-use GuzzleHttp\Client;
 use Psr\Log\LoggerInterface;
-use Psr\SimpleCache\CacheInterface;
 
 class OrganizationFleetHandler
 {

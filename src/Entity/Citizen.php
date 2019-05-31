@@ -2,19 +2,21 @@
 
 namespace App\Entity;
 
+use App\Domain\CitizenInfos;
 use App\Domain\CitizenNumber;
 use App\Domain\HandleSC;
 use App\Domain\SpectrumIdentification;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CitizenRepository")
  * @ORM\Table(indexes={
- *     @ORM\Index(name="actualhandle_idx", columns={"actual_handle"}),
- *     @ORM\Index(name="mainorga_idx", columns={"main_orga"})
+ *     @ORM\Index(name="actualhandle_idx", columns={"actual_handle"})
  * })
  */
 class Citizen
@@ -45,14 +47,8 @@ class Citizen
     private $actualHandle;
 
     /**
-     * @var string
+     * TODO : remove this when possible (in favor of $organizations).
      *
-     * @ORM\Column(type="string", length=31, nullable=true)
-     * @Groups({"profile", "orga_fleet"})
-     */
-    private $mainOrga;
-
-    /**
      * @var iterable|string[]
      *
      * @ORM\Column(type="json")
@@ -63,9 +59,16 @@ class Citizen
     /**
      * @var iterable|Fleet[]
      *
-     * @ORM\OneToMany(targetEntity="App\Entity\Fleet", mappedBy="owner")
+     * @ORM\OneToMany(targetEntity="Fleet", mappedBy="owner")
      */
     private $fleets;
+
+    /**
+     * @var Fleet
+     *
+     * @ORM\OneToOne(targetEntity="Fleet")
+     */
+    private $lastFleet;
 
     /**
      * @var string
@@ -82,11 +85,28 @@ class Citizen
      */
     private $lastRefresh;
 
+    /**
+     * @var iterable|CitizenOrganization[]
+     *
+     * @ORM\OneToMany(targetEntity="CitizenOrganization", mappedBy="citizen", cascade={"all"}, orphanRemoval=true)
+     * @Groups({"profile", "orga_fleet"})
+     */
+    private $organizations;
+
+    /**
+     * @var CitizenOrganization
+     *
+     * @ORM\OneToOne(targetEntity="CitizenOrganization", cascade={"all"})
+     * @Groups({"profile", "orga_fleet"})
+     */
+    private $mainOrga;
+
     public function __construct(?UuidInterface $id = null)
     {
         $this->id = $id;
         $this->organisations = [];
         $this->fleets = new ArrayCollection();
+        $this->organizations = new ArrayCollection();
     }
 
     public function getLastVersionFleet(): ?Fleet
@@ -140,12 +160,12 @@ class Citizen
         return $this;
     }
 
-    public function getMainOrga(): ?string
+    public function getMainOrga(): ?CitizenOrganization
     {
         return $this->mainOrga;
     }
 
-    public function setMainOrga(?string $mainOrga): self
+    public function setMainOrga(?CitizenOrganization $mainOrga): self
     {
         $this->mainOrga = $mainOrga;
 
@@ -206,6 +226,18 @@ class Citizen
         return $this;
     }
 
+    public function getLastFleet(): ?Fleet
+    {
+        return $this->lastFleet;
+    }
+
+    public function setLastFleet(?Fleet $lastFleet): self
+    {
+        $this->lastFleet = $lastFleet;
+
+        return $this;
+    }
+
     public function getBio(): ?string
     {
         return $this->bio;
@@ -214,6 +246,41 @@ class Citizen
     public function setBio(?string $bio): self
     {
         $this->bio = $bio;
+
+        return $this;
+    }
+
+    /**
+     * @return iterable|CitizenOrganization[]
+     */
+    public function getOrganizations(): iterable
+    {
+        return $this->organizations;
+    }
+
+    public function clearOrganizations(): self
+    {
+        $this->organizations->clear();
+
+        return $this;
+    }
+
+    public function addOrganization(CitizenOrganization $orga): self
+    {
+        if ($orga->getCitizen() !== $this) {
+            $orga->setCitizen($this);
+        }
+        $this->organizations->add($orga);
+
+        return $this;
+    }
+
+    public function removeOrganization(CitizenOrganization $orga): self
+    {
+        if ($orga->getCitizen() !== null) {
+            $orga->setCitizen(null);
+        }
+        $this->organizations->removeElement($orga);
 
         return $this;
     }
@@ -242,5 +309,42 @@ class Citizen
         }
 
         return $this->lastRefresh->diff(new \DateTimeImmutable('-30 minutes'));
+    }
+
+    public function getOrgaBySid(string $sid): ?CitizenOrganization
+    {
+        foreach ($this->organizations as $orga) {
+            if ($orga->getOrganizationSid() === $sid) {
+                return $orga;
+            }
+        }
+
+        return null;
+    }
+
+    public function refresh(CitizenInfos $infos, EntityManagerInterface $em): void
+    {
+        $this->setBio($infos->bio);
+        $this->setLastRefresh(new \DateTimeImmutable());
+
+        foreach ($this->getOrganizations() as $orga) {
+            $em->remove($orga);
+        }
+
+        $this->setMainOrga(null);
+        $this->clearOrganizations();
+        $this->setOrganisations([]); // TODO : backward compatibility
+        foreach ($infos->organisations as $orgaInfo) {
+            $orga = new CitizenOrganization(Uuid::uuid4());
+            $orga->setCitizen($this);
+            $orga->setOrganizationSid($orgaInfo->sid->getSid());
+            $orga->setRank($orgaInfo->rank);
+            $orga->setRankName($orgaInfo->rankName);
+            $this->addOrganisation($orga->getOrganizationSid()); // TODO : backward compatibility
+            $this->addOrganization($orga);
+            if ($infos->mainOrga === $orgaInfo) {
+                $this->setMainOrga($orga);
+            }
+        }
     }
 }

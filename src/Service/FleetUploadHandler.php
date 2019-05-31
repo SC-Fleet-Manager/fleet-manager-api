@@ -40,12 +40,7 @@ class FleetUploadHandler
             throw new BadCitizenException(sprintf('The SC number %s is not equal to %s.', $citizen->getNumber(), $infos->numberSC));
         }
 
-        $citizen->setBio($infos->bio);
-        $citizen->setOrganisations([]);
-        foreach ($infos->organisations as $organisation) {
-            $citizen->addOrganisation(is_object($organisation) ? clone $organisation : $organisation);
-        }
-        $citizen->setLastRefresh(new \DateTimeImmutable());
+        $citizen->refresh($infos, $this->entityManager);
         $this->entityManager->flush();
 
         $lastVersion = $this->fleetRepository->getLastVersionFleet($citizen);

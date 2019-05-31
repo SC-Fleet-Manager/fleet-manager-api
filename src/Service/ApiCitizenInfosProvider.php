@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Domain\CitizenInfos;
 use App\Domain\CitizenNumber;
+use App\Domain\CitizenOrganizationInfo;
 use App\Domain\HandleSC;
 use App\Domain\SpectrumIdentification;
 use App\Exception\NotFoundHandleSCException;
@@ -11,6 +12,7 @@ use Goutte\Client as GoutteClient;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Cache\CacheItem;
 use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 
 class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
@@ -21,12 +23,14 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
     private $client;
     private $logger;
     private $cache;
+    private $serializer;
 
-    public function __construct(LoggerInterface $logger, CacheInterface $cache)
+    public function __construct(LoggerInterface $logger, CacheInterface $cache, SerializerInterface $serializer)
     {
         $this->client = new GoutteClient();
         $this->logger = $logger;
         $this->cache = $cache;
+        $this->serializer = $serializer;
     }
 
     public function retrieveInfos(HandleSC $handleSC, bool $caching = true): CitizenInfos
@@ -41,6 +45,8 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
 
     private function scrap(HandleSC $handleSC): CitizenInfos
     {
+        // $handleSC = new HandleSC('Sarge701');
+
         $crawler = $this->client->request('GET', self::BASE_URL.'/citizens/'.$handleSC);
         $profileCrawler = $crawler->filter('#public-profile');
 
@@ -73,35 +79,44 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
             $bio = trim($bioCrawler->text());
         }
 
-        $sids = [];
         $crawler = $this->client->request('GET', self::BASE_URL.'/citizens/'.$handleSC.'/organizations');
-        $sidCrawler = $crawler->filterXPath('//p[contains(.//*/text(), "Spectrum Identification (SID)")]/*[contains(@class, "value")]');
-        if ($sidCrawler->count() > 0) {
-            $sids = $sidCrawler->each(static function (Crawler $node) {
-                return $node->text();
-            });
-        }
         $mainOrga = null;
-        $mainOrgaCrawler = $crawler->filter('.org.main')->filterXPath('//p[contains(.//*/text(), "Spectrum Identification (SID)")]/*[contains(@class, "value")]');
+        $mainOrgaCrawler = $crawler->filter('.org.main.visibility-V');
         if ($mainOrgaCrawler->count() > 0) {
-            $mainOrga = $mainOrgaCrawler->text();
+            $sid = $mainOrgaCrawler->filterXPath('//p[contains(.//*/text(), "Spectrum Identification (SID)")]/*[contains(@class, "value")]')->text();
+            $rankName = $mainOrgaCrawler->filterXPath('//p[contains(.//*/text(), "Organization rank")]/*[contains(@class, "value")]')->text();
+            $rank = $mainOrgaCrawler->filter('.ranking .active')->count();
+
+            $mainOrga = new CitizenOrganizationInfo(new SpectrumIdentification($sid), $rank, $rankName);
         }
+        $orgaAffiliates = [];
+        $crawler->filter('.org.affiliation.visibility-V')->each(static function (Crawler $node) {
+            $sid = $node->filterXPath('//p[contains(.//*/text(), "Spectrum Identification (SID)")]/*[contains(@class, "value")]')->text();
+            $rankName = $node->filterXPath('//p[contains(.//*/text(), "Organization rank")]/*[contains(@class, "value")]')->text();
+            $rank = $node->filter('.ranking .active')->count();
+
+            $orga = new CitizenOrganizationInfo(new SpectrumIdentification($sid), $rank, $rankName);
+            $orgaAffiliates[] = $orga;
+        });
 
         $ci = new CitizenInfos(
             new CitizenNumber($citizenNumber),
             clone $handleSC
         );
-        $ci->organisations = array_map(static function (string $sid): SpectrumIdentification {
-            return new SpectrumIdentification($sid);
-        }, $sids);
-        $ci->mainOrga = $mainOrga !== null ? new SpectrumIdentification($mainOrga) : null;
+
+        if ($mainOrga !== null) {
+            $ci->organisations[] = $mainOrga;
+        }
+        $ci->organisations = array_merge($ci->organisations, $orgaAffiliates);
+        $ci->mainOrga = $mainOrga;
         $ci->bio = $bio;
         $ci->avatarUrl = $avatarUrl;
         $ci->registered = $enlisted;
 
         $this->logger->info('Citizen infos retrieved.', [
-            'handle' => (string) $handleSC,
+            'handle' => $handleSC->getHandle(),
             'citizen_number' => $citizenNumber,
+            'infos' => $this->serializer->serialize($ci, 'json'),
         ]);
 
         return $ci;

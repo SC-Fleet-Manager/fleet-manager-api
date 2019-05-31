@@ -4,7 +4,7 @@
             <b-col col md="6" v-if="showLinkAccount">
                 <b-card header="Link your RSI Account">
                     <b-alert variant="info" show>
-                        To link your Star Citizen account, copy-paste the following token into your "Short Bio" in your <a target="_blank" href="https://robertsspaceindustries.com/account/profile">RSI profile</a>. Then enter your Handle and validate.
+                        To link your Star Citizen account, simply copy-paste the following token into your "Short Bio" in your <a target="_blank" href="https://robertsspaceindustries.com/account/profile">RSI profile</a>. Then enter your Handle and validate.
                     </b-alert>
 
                     <p><img src="../../img/sc-handle.png" alt="How to retrieve your Handle" /></p>
