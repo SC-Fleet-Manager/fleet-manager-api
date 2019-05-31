@@ -50,11 +50,10 @@
                             <b-form-radio v-model="publicChoice" @change="savePublicChoice" :disabled="savingPreferences" name="public-choice" value="orga">Organizations only</b-form-radio>
                             <b-form-radio v-model="publicChoice" @change="savePublicChoice" :disabled="savingPreferences" name="public-choice" value="public">Public</b-form-radio>
                         </b-form-group>
-                        <!--<b-form-group label="Orga fleet policy">
-                            <b-form-radio v-model="publicChoice" name="some-radios" value="A">Option A</b-form-radio>
-                            <b-form-radio v-model="publicChoice" name="some-radios" value="B">Option B</b-form-radio>
-                        </b-form-group>-->
-
+                        <b-form-group :label="'Organization ' + orga.organizationSid + ' fleet policy'" v-for="orga in manageableOrgas" :key="orga.organizationSid">
+                            <b-form-radio v-model="orgaPublicChoices[orga.organizationSid]" @change="saveOrgaPublicChoice($event, orga)" :disabled="savingPreferences" name="orga-public-choice" value="private">Private</b-form-radio>
+                            <b-form-radio v-model="orgaPublicChoices[orga.organizationSid]" @change="saveOrgaPublicChoice($event, orga)" :disabled="savingPreferences" name="orga-public-choice" value="public">Public</b-form-radio>
+                        </b-form-group>
                         <b-form-group label="My fleet link" label-for="my_fleet_link">
                             <b-input-group>
                                 <b-input-group-prepend>
@@ -91,6 +90,8 @@
                 },
                 myFleetLink: null,
                 publicChoice: null,
+                orgaPublicChoices: {},
+                manageableOrgas: [],
                 savingPreferences: false,
                 preferencesLoaded: false,
                 userToken: null,
@@ -106,6 +107,7 @@
         },
         created() {
             this.refreshProfile();
+            this.refreshManageableOrgas();
         },
         methods: {
             ...mapMutations(['updateProfile']),
@@ -113,10 +115,15 @@
                 this.publicChoice = value;
                 this.savePreferences();
             },
+            saveOrgaPublicChoice(value, orga) {
+                this.orgaPublicChoices[orga.organizationSid] = value;
+                this.savePreferences();
+            },
             savePreferences() {
                 this.savingPreferences = true;
                 axios.post('/api/profile/save-preferences', {
-                    publicChoice: this.publicChoice
+                    publicChoice: this.publicChoice,
+                    orgaPublicChoices: this.orgaPublicChoices,
                 }).then(response => {
                     toastr.success('Changes saved');
                 }).catch(err => {
@@ -149,6 +156,18 @@
                     if (err.response.data.errorMessage) {
                         this.errorMessage = err.response.data.errorMessage;
                     }
+                    console.error(err);
+                });
+            },
+            refreshManageableOrgas() {
+                axios.get('/api/manageable-organizations').then(response => {
+                    this.manageableOrgas = response.data;
+                    for (let orga of this.manageableOrgas) {
+                        this.orgaPublicChoices[orga.organizationSid] = orga.publicChoice;
+                    }
+                }).catch(err => {
+                    this.checkAuth(err.response);
+                    toastr.error('Sorry, can\'t retrieve manageable organizations.');
                     console.error(err);
                 });
             },

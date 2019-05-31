@@ -18,15 +18,18 @@ class FleetUploadHandler
     private $fleetRepository;
     private $entityManager;
     private $citizenInfosProvider;
+    private $organizationCreator;
 
     public function __construct(
         FleetRepository $fleetRepository,
         EntityManagerInterface $entityManager,
-        CitizenInfosProviderInterface $citizenInfosProvider
+        CitizenInfosProviderInterface $citizenInfosProvider,
+        OrganizationCreator $organizationCreator
     ) {
         $this->fleetRepository = $fleetRepository;
         $this->entityManager = $entityManager;
         $this->citizenInfosProvider = $citizenInfosProvider;
+        $this->organizationCreator = $organizationCreator;
     }
 
     public function handle(Citizen $citizen, array $fleetData): void
@@ -43,6 +46,8 @@ class FleetUploadHandler
         $citizen->refresh($infos, $this->entityManager);
         $this->entityManager->flush();
 
+        $this->organizationCreator->createOrganization(iterator_to_array($citizen->getOrganizations()));
+
         $lastVersion = $this->fleetRepository->getLastVersionFleet($citizen);
         if ($lastVersion !== null && $lastVersion->isUploadedDateTooClose()) {
             throw new FleetUploadedTooCloseException(
@@ -52,6 +57,7 @@ class FleetUploadHandler
         $fleet = $this->createNewFleet($citizen, $fleetData, $lastVersion);
         $this->entityManager->persist($fleet);
         $this->entityManager->flush();
+
     }
 
     private function createNewFleet(Citizen $citizen, array $fleetData, ?Fleet $lastVersionFleet = null): Fleet

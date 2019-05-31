@@ -7,7 +7,7 @@ use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="App\Repository\CitizenOrganizationRepository")
  */
 class CitizenOrganization
 {

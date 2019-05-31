@@ -12,7 +12,9 @@ use App\Exception\InvalidFleetDataException;
 use App\Exception\NotFoundHandleSCException;
 use App\Form\Dto\FleetUpload;
 use App\Form\FleetUploadForm;
+use App\Repository\CitizenOrganizationRepository;
 use App\Repository\CitizenRepository;
+use App\Repository\OrganizationRepository;
 use App\Service\CitizenFleetGenerator;
 use App\Service\FleetUploadHandler;
 use App\Service\OrganisationFleetGenerator;
@@ -43,6 +45,7 @@ class ApiController extends AbstractController
     private $organisationFleetGenerator;
     private $organizationInfosProvider;
     private $citizenRepository;
+    private $organizationRepository;
     private $serializer;
 
     public function __construct(
@@ -53,6 +56,7 @@ class ApiController extends AbstractController
         OrganisationFleetGenerator $organisationFleetGenerator,
         OrganizationInfosProviderInterface $organizationInfosProvider,
         CitizenRepository $citizenRepository,
+        OrganizationRepository $organizationRepository,
         SerializerInterface $serializer
     ) {
         $this->logger = $logger;
@@ -62,6 +66,7 @@ class ApiController extends AbstractController
         $this->organisationFleetGenerator = $organisationFleetGenerator;
         $this->organizationInfosProvider = $organizationInfosProvider;
         $this->citizenRepository = $citizenRepository;
+        $this->organizationRepository = $organizationRepository;
         $this->serializer = $serializer;
     }
 
@@ -93,6 +98,36 @@ class ApiController extends AbstractController
         }
 
         return $this->json($res);
+    }
+
+    /**
+     * @Route("/manageable-organizations", name="manageable_organizations", methods={"GET"})
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
+     */
+    public function manageableOrganizations(CitizenOrganizationRepository $citizenOrganizationRepository): Response
+    {
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $citizen = $user->getCitizen();
+        if ($citizen === null) {
+            return $this->json([
+                'error' => 'no_citizen_created',
+                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
+            ], 400);
+        }
+
+        $sids = [];
+        foreach ($citizen->getOrganizations() as $citizenOrga) {
+            $citizenOrgas = $citizenOrganizationRepository->findGreaterThanRank($citizenOrga->getOrganizationSid(), $citizenOrga->getRank());
+            if (count($citizenOrgas) === 0) {
+                // granted to manage $citizenOrga settings
+                $sids[] = $citizenOrga->getOrganizationSid();
+            }
+        }
+
+        $manageableOrgas = $this->organizationRepository->findBy(['organizationSid' => $sids]);
+
+        return $this->json($manageableOrgas);
     }
 
     /**
