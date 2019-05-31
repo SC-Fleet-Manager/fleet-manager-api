@@ -285,7 +285,6 @@ export default {
             this.user = response.data;
         }).catch(response => {
         }).then(_ => {
-            console.log('toto');
             this.userStated = true;
         });
 
