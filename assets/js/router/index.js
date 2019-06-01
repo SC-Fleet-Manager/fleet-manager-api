@@ -42,6 +42,18 @@ const router = new Router({
                     path: 'organizations-fleets',
                     name: 'Organizations\' fleets',
                     component: CorpoFleets,
+                    beforeEnter(to, from, next) {
+                        axios.get('/api/profile/').then(response => {
+                            const citizen = response.data.citizen;
+                            if (citizen === null ||  citizen.organisations.length === 0) {
+                                next();
+                            }
+                            const defaultOrga = citizen.organisations[0];
+                            next({ path: `/organization-fleet/${defaultOrga}` });
+                        }).catch(err => {
+                            next();
+                        });
+                    },
                     meta: {
                         requireAuth: true,
                     }

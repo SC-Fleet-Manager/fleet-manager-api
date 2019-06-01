@@ -2,9 +2,9 @@
     <div class="animated fadeIn">
         <b-row>
             <b-col>
-                <b-card header="Your organizations' fleet" class="js-organizations-fleets">
+                <b-card :header="citizen != null && organizations[sid] ? 'Your organizations\' fleet' : orgaFullname +' fleet'" class="js-organizations-fleets">
                     <b-row v-if="citizen != null">
-                        <b-col col xl="2" lg="3" md="4" class="mb-3">
+                        <b-col v-if="hasOrganization(sid)" col xl="2" lg="3" md="4" class="mb-3">
                             <b-form>
                                 <b-form-group label="Select an organization" label-for="select-orga" class="js-select-orga">
                                     <b-form-select id="select-orga" :value="selectedSid" @change="selectSid">
@@ -24,22 +24,22 @@
                             </div>
                         </b-col>
                     </b-row>
-                    <b-row>
+                    <b-row v-if="citizen != null && organizations[sid]">
                         <b-col col xl="2" lg="3" md="4" class="mb-3">
                             <b-dropdown variant="primary">
                                 <template slot="button-content"><i class="fas fa-cloud-download-alt"></i> Export fleet</template>
-                                <b-dropdown-item download :disabled="selectedSid == null || shipFamilies.length == 0" :href="'/api/create-organization-fleet-file/'+selectedSid" ><i class="fas fa-file-code"></i> Export <strong>{{ selectedSid != null ? (organizations[selectedSid] ? organizations[selectedSid].fullname : selectedSid) : 'N/A' }}</strong> fleet (.json)</b-dropdown-item>
-                                <b-dropdown-item download :disabled="selectedSid == null || shipFamilies.length == 0" :href="'/api/export-orga-fleet/'+selectedSid"><i class="fas fa-file-csv"></i> Export <strong>{{ selectedSid != null ? (organizations[selectedSid] ? organizations[selectedSid].fullname : selectedSid) : 'N/A' }}</strong> fleet (.csv)</b-dropdown-item>
+                                <b-dropdown-item download :disabled="selectedSid == null || shipFamilies.length == 0" :href="'/api/create-organization-fleet-file/'+selectedSid" ><i class="fas fa-file-code"></i> Export <strong>{{ selectedSid != null ? orgaFullname : 'N/A' }}</strong> fleet (.json)</b-dropdown-item>
+                                <b-dropdown-item download :disabled="selectedSid == null || shipFamilies.length == 0" :href="'/api/export-orga-fleet/'+selectedSid"><i class="fas fa-file-csv"></i> Export <strong>{{ selectedSid != null ? orgaFullname : 'N/A' }}</strong> fleet (.csv)</b-dropdown-item>
                             </b-dropdown>
                         </b-col>
                     </b-row>
-                    <b-row v-if="selectedSid != null">
+                    <b-row v-if="sid != null && ((citizen != null && organizations[sid]) || (this.organization !== null && this.organization.publicChoice === 'public'))">
                         <b-col col xl="2" lg="3" md="4" xs="6">
                             <b-form-group>
                                 <b-form-input id="filters_input_ship_name"
                                               type="text"
                                               v-model="filterShipName"
-                                              @keyup="refreshOrganizationFleet"
+                                              @keyup="refreshOrganizationFleet(true)"
                                               placeholder="Filter by ship name"></b-form-input>
                             </b-form-group>
                         </b-col>
@@ -48,15 +48,23 @@
                                 <b-form-input id="filters_input_citizen_name"
                                               type="text"
                                               v-model="filterCitizenName"
-                                              @keyup="refreshOrganizationFleet"
+                                              @keyup="refreshOrganizationFleet(true)"
                                               placeholder="Filter by citizen name"></b-form-input>
                             </b-form-group>
                         </b-col>
                     </b-row>
                     <b-row>
-                        <b-col v-if="shipFamilies.length === 0">
-                            <b-alert show variant="warning">Sorry, no ships have been found.</b-alert>
-                        </b-col>
+                        <template v-if="(citizen == null && organization !== null && organization.publicChoice !== 'public')
+                                        || (citizen != null && !organizations[sid] && organization !== null && organization.publicChoice !== 'public')">
+                            <b-col>
+                                <b-alert show variant="danger">Sorry, this organization's fleet does not exist or is private. Try to <a href="/">login</a> to see it.</b-alert>
+                            </b-col>
+                        </template>
+                        <template v-else>
+                            <b-col v-if="shipFamilies.length === 0">
+                                <b-alert show variant="warning">Sorry, no ships have been found.</b-alert>
+                            </b-col>
+                        </template>
                         <template v-for="(shipFamily, index) in shipFamilies">
                             <ShipFamily :key="shipFamily.chassisId" :shipFamily="shipFamily" :index="index"></ShipFamily>
                             <ShipFamilyDetail
@@ -103,21 +111,43 @@
     const { mapGetters, mapMutations, mapActions } = createNamespacedHelpers('orga_fleet');
     const BREAKPOINTS = {xs: 0, sm: 576, md: 768, lg: 992, xl: 1200};
 
+    /*
+     * TODO : ajouter info orga global sur les cas publics
+     *
+     * PUBLIC
+     *      - logged
+     *          - my orga : OK : voit ships + filters + button export + selector orga + info orga
+     *          - not my orga : OK : see ships + filters only + info orga global
+     *      - not logged : OK : see ships + filters only + info orga global
+     * PRIVATE
+     *      - logged
+     *          - my orga : OK : see ships + filters + button export + selector orga + info orga
+     *          - not my orga : PAS OK : error message orga private
+     *      - not logged : PAS OK : error message orga private
+     */
+
     export default {
         name: 'organizations-fleets',
         props: ['sid'],
         components: {select2, ShipFamily, ShipFamilyDetail},
         data() {
             return {
+                organization: null,
                 citizen: null,
                 shipFamilies: [], // families of ships (e.g. "Aurora" for MR, LX, etc.) that have the selected orga (no displayed if no orga members have this family).
                 actualBreakpoint: 'xs',
                 organizations: {}, // orga infos of the citizens
+                refreshedSid: null,
+            };
+        },
+        created() {
+            if (this.sid !== null) {
+                this.updateSid(this.sid);
+                this.refreshProfile();
+                this.refreshOrganization();
             }
         },
         mounted() {
-            this.refreshProfile();
-
             window.addEventListener('resize', this.refreshBreakpoint);
             this.refreshBreakpoint();
         },
@@ -157,19 +187,25 @@
                 selectedShipFamily: 'selectedShipFamily',
                 selectedShipVariants: 'selectedShipVariants',
             }),
+            orgaFullname() {
+                if (this.organization !== null && this.organization.organizationSid === this.selectedSid) {
+                    return this.organization.name;
+                } else if (this.organizations[this.selectedSid]) {
+                    return this.organizations[this.selectedSid].fullname;
+                }
+
+                return this.selectedSid;
+            }
         },
         watch: {
+            organization(orga) {
+                if (orga.publicChoice === 'public' || this.citizen !== null) {
+                    this.refreshOrganizationFleet();
+                }
+            },
             sid(value) {
                 if (value) {
                     this.updateSid(value);
-                    return;
-                }
-
-                if (this.citizen !== null) {
-                    const defaultOrga = this.citizen.organisations[0];
-                    this.$router.replace({ path: `/organization-fleet/${defaultOrga}` });
-                } else {
-                    this.refreshProfile();
                 }
             },
             selectedSid() {
@@ -180,6 +216,11 @@
                     this.loadShipVariantUsers({ ship, page: 1 });
                 }
             },
+            citizen(newCitizen) {
+                if (newCitizen !== null || (this.organization !== null && this.organization.publicChoice === 'public')) {
+                    this.refreshOrganizationFleet();
+                }
+            },
         },
         methods: {
             ...mapActions(['loadShipVariantUsers', 'selectShipFamily']),
@@ -188,23 +229,32 @@
                 this.$router.replace({ path: `/organization-fleet/${value}` });
                 this.updateSid(value);
             },
+            refreshOrganization() {
+                axios.get(`/api/organization/${this.sid}`).then(response => {
+                    this.organization = response.data;
+                }).catch(err => {
+                    if (err.response.status === 401) {
+                        // not connected
+                        return;
+                    }
+                    if (err.response.status === 404) {
+                        // not exist
+                        return;
+                    }
+                    if (err.response.data.errorMessage) {
+                        toastr.error(err.response.data.errorMessage);
+                    }
+                    console.error(err);
+                });
+            },
             refreshProfile() {
                 axios.get('/api/profile/').then(response => {
                     this.citizen = response.data.citizen;
-                    if (this.citizen !== null && this.citizen.organisations.length > 0) {
-                        const defaultOrga = this.citizen.organisations[0];
-                        if (!this.sid) {
-                            this.$router.replace({ path: `/organization-fleet/${defaultOrga}` });
-                            if (this.selectedSid === defaultOrga) {
-                                this.refreshOrganizationFleet();
-                            }
-                            this.updateSid(defaultOrga);
-                        } else {
-                            this.updateSid(this.sid);
-                        }
-                    }
                 }).catch(err => {
-                    this.checkAuth(err.response);
+                    if (err.response.status === 401) {
+                        // not connected
+                        return;
+                    }
                     if (err.response.data.errorMessage) {
                         toastr.error(err.response.data.errorMessage);
                     }
@@ -216,18 +266,27 @@
                         this.$set(this.organizations, orga.spectrumId.sid, orga);
                     }
                 }).catch(err => {
-                    this.checkAuth(err.response);
+                    if (err.response.status === 401) {
+                        // not connected
+                        return;
+                    }
                     if (err.response.data.errorMessage) {
                         toastr.error(err.response.data.errorMessage);
                     }
                     console.error(err);
                 });
             },
-            refreshOrganizationFleet() {
-                if (this.selectedSid === null) {
+            refreshOrganizationFleet(force) {
+                if (!force && this.refreshedSid === this.sid) {
+                    // not multiple refresh
                     return;
                 }
-                axios.get('/api/fleet/orga-fleets/'+this.selectedSid, {
+                if (this.refreshedSid !== this.sid) {
+                    this.refreshOrganization();
+                }
+                this.refreshedSid = this.sid;
+                this.shipFamilies = [];
+                axios.get(`/api/fleet/orga-fleets/${this.sid}`, {
                     params: {
                         'filters[shipName]': this.filterShipName ? this.filterShipName : null,
                         'filters[citizenName]': this.filterCitizenName ? this.filterCitizenName : null,
@@ -236,7 +295,14 @@
                     this.selectShipFamily({index: null, shipFamily: null});
                     this.shipFamilies = response.data;
                 }).catch(err => {
-                    this.checkAuth(err.response);
+                    if (err.response.status === 401) {
+                        // not connected
+                        return;
+                    }
+                    if (err.response.status === 404) {
+                        // not exist
+                        return;
+                    }
                     if (err.response.data.errorMessage) {
                         toastr.error(err.response.data.errorMessage);
                     }
@@ -258,13 +324,8 @@
                     this.actualBreakpoint = 'xl';
                 }
             },
-            checkAuth(response) {
-                const status = response.status;
-                const data = response.data;
-                if ((status === 401 && data.error === 'no_auth')
-                    || (status === 403 && data.error === 'forbidden')) {
-                    window.location = data.loginUrl;
-                }
+            hasOrganization(sid) {
+                return this.citizen.organisations.indexOf(sid) !== -1;
             }
         }
     }

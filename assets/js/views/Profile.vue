@@ -50,10 +50,11 @@
                             <b-form-radio v-model="publicChoice" @change="savePublicChoice" :disabled="savingPreferences" name="public-choice" value="orga">Organizations only</b-form-radio>
                             <b-form-radio v-model="publicChoice" @change="savePublicChoice" :disabled="savingPreferences" name="public-choice" value="public">Public</b-form-radio>
                         </b-form-group>
-                        <b-form-group :label="'Organization ' + orga.organizationSid + ' fleet policy'" v-for="orga in manageableOrgas" :key="orga.organizationSid">
-                            <b-form-radio v-model="orgaPublicChoices[orga.organizationSid]" @change="saveOrgaPublicChoice($event, orga)" :disabled="savingPreferences" name="orga-public-choice" value="private">Private</b-form-radio>
-                            <b-form-radio v-model="orgaPublicChoices[orga.organizationSid]" @change="saveOrgaPublicChoice($event, orga)" :disabled="savingPreferences" name="orga-public-choice" value="public">Public</b-form-radio>
-                        </b-form-group>
+                        <!-- TODO uncomment this shit -->
+                        <!--<b-form-group :label="'Organization ' + orga.organizationSid + ' fleet policy'" v-for="orga in manageableOrgas" :key="orga.organizationSid">
+                            <b-form-radio v-model="orgaPublicChoices[orga.organizationSid]" @change="saveOrgaPublicChoice($event, orga)" :disabled="savingPreferences" :name="'orga-public-choice-' + orga.organizationSid" value="private">Private</b-form-radio>
+                            <b-form-radio v-model="orgaPublicChoices[orga.organizationSid]" @change="saveOrgaPublicChoice($event, orga)" :disabled="savingPreferences" :name="'orga-public-choice-' + orga.organizationSid" value="public">Public</b-form-radio>
+                        </b-form-group>-->
                         <b-form-group label="My fleet link" label-for="my_fleet_link">
                             <b-input-group>
                                 <b-input-group-prepend>
@@ -116,7 +117,7 @@
                 this.savePreferences();
             },
             saveOrgaPublicChoice(value, orga) {
-                this.orgaPublicChoices[orga.organizationSid] = value;
+                this.$set(this.orgaPublicChoices, orga.organizationSid, value);
                 this.savePreferences();
             },
             savePreferences() {
@@ -163,7 +164,7 @@
                 axios.get('/api/manageable-organizations').then(response => {
                     this.manageableOrgas = response.data;
                     for (let orga of this.manageableOrgas) {
-                        this.orgaPublicChoices[orga.organizationSid] = orga.publicChoice;
+                        this.$set(this.orgaPublicChoices, orga.organizationSid, orga.publicChoice);
                     }
                 }).catch(err => {
                     this.checkAuth(err.response);

@@ -101,6 +101,22 @@ class ApiController extends AbstractController
     }
 
     /**
+     * @Route("/organization/{sid}", name="organization", methods={"GET"})
+     */
+    public function organization(string $sid): Response
+    {
+        $orga = $this->organizationRepository->findOneBy(['organizationSid' => $sid]);
+        if ($orga === null) {
+            return $this->json([
+                'error' => 'orga_not_exist',
+                'errorMessage' => sprintf('The organization %s does not exist.', $sid),
+            ], 404);
+        }
+
+        return $this->json($orga);
+    }
+
+    /**
      * @Route("/manageable-organizations", name="manageable_organizations", methods={"GET"})
      * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
      */
@@ -312,18 +328,12 @@ class ApiController extends AbstractController
         }
 
         $file = $this->organisationFleetGenerator->generateFleetFile(new SpectrumIdentification($organization));
-        $filename = 'organization_fleet.json';
 
-        $response = new BinaryFileResponse($file);
-        $response->headers->set('Content-Type', 'application/json');
-        $response->deleteFileAfterSend();
-        $response->setContentDisposition(
-            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            $filename,
-            $filename
-        );
+        $fileResponse = $this->file($file, 'organization_fleet.json');
+        $fileResponse->headers->set('Content-Type', 'application/json');
+        $fileResponse->deleteFileAfterSend();
 
-        return $response;
+        return $fileResponse;
     }
 
     /**
@@ -399,6 +409,7 @@ class ApiController extends AbstractController
         file_put_contents($filepath, $csv);
 
         $file = $this->file($filepath, 'export_'.$organization.'.csv');
+        $file->headers->set('Content-Type', 'application/csv');
         $file->deleteFileAfterSend();
 
         return $file;

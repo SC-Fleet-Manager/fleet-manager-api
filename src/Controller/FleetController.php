@@ -4,8 +4,10 @@ namespace App\Controller;
 
 use App\Domain\SpectrumIdentification;
 use App\Entity\Citizen;
+use App\Entity\Organization;
 use App\Entity\User;
 use App\Repository\CitizenRepository;
+use App\Repository\OrganizationRepository;
 use App\Repository\UserRepository;
 use App\Service\Dto\ShipFamilyFilter;
 use App\Service\OrganizationFleetHandler;
@@ -26,17 +28,20 @@ class FleetController extends AbstractController
     private $citizenRepository;
     private $userRepository;
     private $shipInfosProvider;
+    private $organizationRepository;
 
     public function __construct(
         Security $security,
         CitizenRepository $citizenRepository,
         UserRepository $userRepository,
-        ShipInfosProviderInterface $shipInfosProvider
+        ShipInfosProviderInterface $shipInfosProvider,
+        OrganizationRepository $organizationRepository
     ) {
         $this->security = $security;
         $this->citizenRepository = $citizenRepository;
         $this->userRepository = $userRepository;
         $this->shipInfosProvider = $shipInfosProvider;
+        $this->organizationRepository = $organizationRepository;
     }
 
     /**
@@ -112,24 +117,27 @@ class FleetController extends AbstractController
 
     /**
      * @Route("/orga-fleets/{organization}", name="orga_fleets", methods={"GET"}, options={"expose":true})
-     * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
      */
     public function orgaFleets(Request $request, string $organization, OrganizationFleetHandler $organizationFleetHandler): Response
     {
-        /** @var User $user */
-        $user = $this->security->getUser();
-        $citizen = $user->getCitizen();
-        if ($citizen === null) {
-            return $this->json([
-                'error' => 'no_citizen_created',
-                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
-            ], 400);
-        }
-        if (!$citizen->hasOrganisation($organization)) {
-            return $this->json([
-                'error' => 'bad_organization',
-                'errorMessage' => sprintf('The organization %s does not exist.', $organization),
-            ], 404);
+        if (!$this->isPublicOrga($organization)) {
+            $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
+
+            /** @var User $user */
+            $user = $this->security->getUser();
+            $citizen = $user->getCitizen();
+            if ($citizen === null) {
+                return $this->json([
+                    'error' => 'no_citizen_created',
+                    'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
+                ], 400);
+            }
+            if (!$citizen->hasOrganisation($organization)) {
+                return $this->json([
+                    'error' => 'bad_organization',
+                    'errorMessage' => sprintf('The organization %s does not exist.', $organization),
+                ], 404);
+            }
         }
 
         $filters = $request->query->get('filters', []);
@@ -152,24 +160,27 @@ class FleetController extends AbstractController
 
     /**
      * @Route("/orga-fleets/{organization}/{chassisId}", name="orga_fleet_family", methods={"GET"}, options={"expose":true})
-     * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
      */
     public function orgaFleetFamily(Request $request, string $organization, string $chassisId): Response
     {
-        /** @var User $user */
-        $user = $this->security->getUser();
-        $citizen = $user->getCitizen();
-        if ($citizen === null) {
-            return $this->json([
-                'error' => 'no_citizen_created',
-                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
-            ], 400);
-        }
-        if (!$citizen->hasOrganisation($organization)) {
-            return $this->json([
-                'error' => 'bad_organization',
-                'errorMessage' => sprintf('The organization %s does not exist.', $organization),
-            ], 404);
+        if (!$this->isPublicOrga($organization)) {
+            $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
+
+            /** @var User $user */
+            $user = $this->security->getUser();
+            $citizen = $user->getCitizen();
+            if ($citizen === null) {
+                return $this->json([
+                    'error' => 'no_citizen_created',
+                    'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
+                ], 400);
+            }
+            if (!$citizen->hasOrganisation($organization)) {
+                return $this->json([
+                    'error' => 'bad_organization',
+                    'errorMessage' => sprintf('The organization %s does not exist.', $organization),
+                ], 404);
+            }
         }
 
         $filters = $request->query->get('filters', []);
@@ -199,27 +210,30 @@ class FleetController extends AbstractController
 
     /**
      * @Route("/orga-fleets/{organization}/users/{shipName}", name="orga_fleet_users", methods={"GET"}, options={"expose":true})
-     * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
      */
     public function orgaFleetUsers(Request $request, string $organization, string $shipName): Response
     {
         $page = $request->query->get('page', 1);
         $itemsPerPage = 10;
 
-        /** @var User $user */
-        $user = $this->security->getUser();
-        $citizen = $user->getCitizen();
-        if ($citizen === null) {
-            return $this->json([
-                'error' => 'no_citizen_created',
-                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
-            ], 400);
-        }
-        if (!$citizen->hasOrganisation($organization)) {
-            return $this->json([
-                'error' => 'bad_organization',
-                'errorMessage' => sprintf('The organization %s does not exist.', $organization),
-            ], 404);
+        if (!$this->isPublicOrga($organization)) {
+            $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
+
+            /** @var User $user */
+            $user = $this->security->getUser();
+            $citizen = $user->getCitizen();
+            if ($citizen === null) {
+                return $this->json([
+                    'error' => 'no_citizen_created',
+                    'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
+                ], 400);
+            }
+            if (!$citizen->hasOrganisation($organization)) {
+                return $this->json([
+                    'error' => 'bad_organization',
+                    'errorMessage' => sprintf('The organization %s does not exist.', $organization),
+                ], 404);
+            }
         }
 
         $filters = $request->query->get('filters', []);
@@ -235,5 +249,16 @@ class FleetController extends AbstractController
         );
 
         return $this->json($citizens, 200, [], ['groups' => 'orga_fleet']);
+    }
+
+    private function isPublicOrga(string $organizationSid): bool
+    {
+        /** @var Organization $orga */
+        $orga = $this->organizationRepository->findOneBy(['organizationSid' => $organizationSid]);
+        if ($orga === null) {
+            return false;
+        }
+
+        return $orga->getPublicChoice() === Organization::PUBLIC_CHOICE_PUBLIC;
     }
 }
