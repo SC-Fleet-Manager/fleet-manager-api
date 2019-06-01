@@ -303,8 +303,8 @@ export default {
                 const bottomY = topY + this.$refs.statistics.clientHeight;
                 const statsTopScreenY = topY - window.scrollY; // the Y-pos of statistics block with topscreen at origin
                 const statsBottomScreenY = bottomY - window.scrollY;
-                const thresholdFromTop = window.screen.height * 0.6667;
-                const thresholdFromBottom = window.screen.height * 0.3333;
+                const thresholdFromTop = window.screen.height * 4/5;
+                const thresholdFromBottom = window.screen.height * 1/5;
 
                 if (statsBottomScreenY >= thresholdFromBottom && statsTopScreenY <= thresholdFromTop) {
                     this.canCountStatistics = true;
