@@ -46,7 +46,7 @@ const router = new Router({
                             if (citizen === null ||  citizen.organisations.length === 0) {
                                 next();
                             }
-                            const defaultOrga = citizen.organisations[0];
+                            const defaultOrga = citizen.mainOrga !== null ? citizen.mainOrga.organizationSid : citizen.organisations[0];
                             next({ path: `/organization-fleet/${defaultOrga}` });
                         }).catch(err => {
                             next();

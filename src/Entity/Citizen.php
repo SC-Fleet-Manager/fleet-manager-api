@@ -88,7 +88,7 @@ class Citizen
     /**
      * @var iterable|CitizenOrganization[]
      *
-     * @ORM\OneToMany(targetEntity="CitizenOrganization", mappedBy="citizen", cascade={"all"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="CitizenOrganization", mappedBy="citizen", fetch="EAGER", cascade={"all"}, orphanRemoval=true)
      * @Groups({"profile", "orga_fleet"})
      */
     private $organizations;
@@ -96,7 +96,7 @@ class Citizen
     /**
      * @var CitizenOrganization
      *
-     * @ORM\OneToOne(targetEntity="CitizenOrganization", cascade={"all"})
+     * @ORM\OneToOne(targetEntity="CitizenOrganization", fetch="EAGER", cascade={"all"})
      * @Groups({"profile", "orga_fleet"})
      */
     private $mainOrga;
