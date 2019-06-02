@@ -6,6 +6,7 @@ use App\Domain\SpectrumIdentification;
 use App\Entity\Citizen;
 use App\Entity\Fleet;
 use App\Entity\Ship;
+use App\Entity\User;
 use App\Service\Dto\ShipFamilyFilter;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
@@ -137,14 +138,19 @@ class CitizenRepository extends ServiceEntityRepository
         return $stmt->getScalarResult();
     }
 
-    public function getOwnersOfShip(string $organizationId, string $shipName, ShipFamilyFilter $filter, int $page = null, int $itemsPerPage = 10): iterable
+    /**
+     * @return User[]
+     */
+    public function getOwnersOfShip(string $organizationId, string $shipName, ShipFamilyFilter $filter, int $page = null, int $itemsPerPage = 10): array
     {
-        $citizenMetadata = $this->getClassMetadata();
+        $userMetadata = $this->_em->getClassMetadata(User::class);
+        $citizenMetadata = $this->_em->getClassMetadata(Citizen::class);
         $fleetMetadata = $this->_em->getClassMetadata(Fleet::class);
         $shipMetadata = $this->_em->getClassMetadata(Ship::class);
 
         $sql = <<<EOT
-            SELECT c.*, c.id as citizenId, COUNT(s.id) as countShips FROM {$citizenMetadata->getTableName()} c
+            SELECT u.*, u.id as userId, c.*, c.id as citizenId, COUNT(s.id) as countShips FROM {$userMetadata->getTableName()} u
+            INNER JOIN {$citizenMetadata->getTableName()} c ON u.citizen_id = c.id
             INNER JOIN {$fleetMetadata->getTableName()} f ON c.id = f.owner_id AND f.id = (
                 SELECT f2.id FROM {$fleetMetadata->getTableName()} f2 WHERE f2.owner_id = f.owner_id ORDER BY f2.version DESC LIMIT 1
             )
@@ -167,7 +173,7 @@ class CitizenRepository extends ServiceEntityRepository
             $sql .= ' 1=0) ';
         }
         $sql .= <<<EOT
-            GROUP BY c.id
+            GROUP BY u.id, c.id
             ORDER BY countShips DESC
         EOT;
         // pagination
@@ -176,7 +182,8 @@ class CitizenRepository extends ServiceEntityRepository
         }
 
         $rsm = new ResultSetMappingBuilder($this->_em);
-        $rsm->addRootEntityFromClassMetadata(Citizen::class, 'c', ['id' => 'citizenId']);
+        $rsm->addRootEntityFromClassMetadata(User::class, 'u', ['id' => 'userId']);
+        $rsm->addJoinedEntityFromClassMetadata(Citizen::class, 'c', 'u', 'citizen', ['id' => 'citizenId']);
         $rsm->addScalarResult('countShips', 'countShips');
 
         $stmt = $this->_em->createNativeQuery($sql, $rsm);

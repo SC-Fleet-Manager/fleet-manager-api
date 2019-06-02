@@ -12,6 +12,9 @@ const state = {
 };
 
 const getters = {
+    usersInfos(state) {
+        return state.usersInfos;
+    },
     selectedSid(state) {
         return state.selectedSid;
     },

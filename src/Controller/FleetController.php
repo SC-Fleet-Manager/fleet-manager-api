@@ -246,7 +246,7 @@ class FleetController extends AbstractController
         );
 
         $shipName = $this->shipInfosProvider->transformProviderToHangar($shipName);
-        $citizens = $this->citizenRepository->getOwnersOfShip(
+        $users = $this->citizenRepository->getOwnersOfShip(
             $organization,
             $shipName,
             $shipFamilyFilter,
@@ -254,7 +254,7 @@ class FleetController extends AbstractController
             $itemsPerPage,
         );
 
-        return $this->json($citizens, 200, [], ['groups' => 'orga_fleet']);
+        return $this->json($users, 200, [], ['groups' => 'orga_fleet']);
     }
 
     private function isPublicOrga(string $organizationSid): bool

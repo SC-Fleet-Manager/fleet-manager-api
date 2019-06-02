@@ -4,7 +4,7 @@
             <b-col>
                 <b-card :header="citizen != null && organizations[sid] ? 'Your organizations\' fleets' : orgaFullname +' fleet'" class="js-organizations-fleets">
                     <b-row v-if="citizen != null">
-                        <b-col v-if="hasOrganization(sid)" col xl="2" lg="3" md="4" class="mb-3">
+                        <b-col v-if="hasOrganization(sid)" xl="3" lg="3" md="4" sm="12" class="mb-3">
                             <b-form>
                                 <b-form-group label="Select an organization" label-for="select-orga" class="js-select-orga">
                                     <b-form-select id="select-orga" :value="selectedSid" @change="selectSid">
@@ -13,7 +13,7 @@
                                 </b-form-group>
                             </b-form>
                         </b-col>
-                        <b-col col md="6" v-if="selectedOrgaInfos !== null">
+                        <b-col xs="12" sm="12" md="6" class="mb-3" v-if="selectedOrgaInfos !== null">
                             <img :src="selectedOrgaInfos.global.avatarUrl" alt="organization's logo" class="img-avatar" style="max-height: 8rem;" />
                             <div class="d-inline-block align-top">
                                 <h4>{{ selectedOrgaInfos.global.fullname }}</h4>
@@ -35,11 +35,11 @@
                     </b-row>
                     <b-row class="mb-3" v-if="sid != null && ((citizen != null && organizations[sid]) || (this.organization !== null && this.organization.publicChoice === 'public'))">
                         <b-col col xl="2" lg="3" md="4" xs="6">
-                            <label for="filters_input_ship_name">Filter by ship</label>
+                            <label for="filters_input_ship_name" class="d-block">Filter by ship</label>
                             <select2 id="filters_input_ship_name" class="w-100" :options="filterOptionsShips" v-model="filterShipName" multiple @input="refreshOrganizationFleet(true)"></select2>
                         </b-col>
                         <b-col col xl="2" lg="3" md="4" xs="6">
-                            <label for="filters_input_citizen_name">Filter by citizens</label>
+                            <label for="filters_input_citizen_name" class="d-block">Filter by citizens</label>
                             <select2 id="filters_input_citizen_name" class="w-100" :options="filterOptionsCitizens" v-model="filterCitizenId" multiple @input="refreshOrganizationFleet(true)"></select2>
                         </b-col>
                     </b-row>
@@ -358,5 +358,9 @@
         &.rank-icon-active {
             background-position: 50% -16px;
         }
+    }
+    .select2-container {
+        min-width: 100%;
+        max-width: 100%;
     }
 </style>
