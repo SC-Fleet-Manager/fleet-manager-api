@@ -108,7 +108,6 @@
         },
         created() {
             this.refreshProfile();
-            this.refreshManageableOrgas();
         },
         methods: {
             ...mapMutations(['updateProfile']),
@@ -151,6 +150,7 @@
                     this.myFleetLink = this.getMyFleetLink();
                     this.publicChoice = response.data.publicChoice;
                     this.updateProfile(this.citizen);
+                    this.refreshManageableOrgas();
                 }).catch(err => {
                     this.checkAuth(err.response);
                     this.showError = true;
@@ -161,6 +161,9 @@
                 });
             },
             refreshManageableOrgas() {
+                if (this.citizen === null) {
+                    return;
+                }
                 axios.get('/api/manageable-organizations').then(response => {
                     this.manageableOrgas = response.data;
                     for (let orga of this.manageableOrgas) {

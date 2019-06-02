@@ -221,9 +221,8 @@
             <div class="container text-white">
                 <div class="row align-items-center">
                     <div class="col-6">
-                        <a class="navbar-brand" href="/">
-                            <img src="../img/logo.png" height="45" alt="Fleet Manager Logo">
-                        </a>
+                        <a class="navbar-brand" href="/"><img src="../img/logo.png" height="45" alt="Fleet Manager Logo"></a>
+                        <a href="/privacy-policy">Privacy policy</a>
                     </div>
                     <div class="col-6 text-right">
                         <a href="https://github.com/Ioni14/starcitizen-fleet-manager" target="_blank" class="mr-3"><i class="fab fa-github fa-2x"></i></a>

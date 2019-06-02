@@ -8,9 +8,10 @@
             </b-link>
             <SidebarToggler class="d-md-down-none" display="lg"/>
             <b-navbar-nav class="ml-auto">
-                <b-nav-text v-if="citizen != null" class="px-3">Welcome, {{ this.citizen.actualHandle.handle }}</b-nav-text>
-                <b-nav-item v-if="user != null" class="px-3" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout
-                </b-nav-item>
+                <!--<b-nav-text v-if="citizen != null" class="px-3 d-none d-sm-inline-block">Welcome, {{ citizen.actualHandle.handle }}</b-nav-text>
+                <b-nav-text v-if="citizen == null && user != null" class="px-3 d-none d-sm-inline-block">Welcome, {{ user.nickname }}</b-nav-text>-->
+                <b-nav-text v-if="user != null" class="px-3 d-none d-sm-inline-block">Welcome, {{ user.nickname }}</b-nav-text>
+                <b-nav-item v-if="user != null" class="px-3" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</b-nav-item>
                 <b-nav-item v-else class="px-3" href="/login"><i class="fas fa-sign-in-alt"></i> Login</b-nav-item>
             </b-navbar-nav>
         </AppHeader>
@@ -29,6 +30,7 @@
             <div>
                 <a href="/">Fleet Manager</a>
                 <span class="ml-1">&copy; 2018 - {{ actualYear }}</span>
+                - <a href="/privacy-policy">Privacy policy</a>
             </div>
             <b-nav class="ml-auto">
                 <b-nav-item href="https://discord.gg/f6mrA3Y" target="_blank" link-classes="p-2"><i class="fab fa-discord" style="font-size: 1.4rem;"></i></b-nav-item>
