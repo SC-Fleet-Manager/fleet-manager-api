@@ -3,8 +3,8 @@
         <b-row>
             <b-col>
                 <b-card :header="citizen != null && organizations[sid] ? 'Your organizations\' fleets' : orgaFullname +' fleet'" class="js-organizations-fleets">
-                    <b-row v-if="citizen != null">
-                        <b-col v-if="hasOrganization(sid)" xl="3" lg="3" md="4" sm="12" class="mb-3">
+                    <b-row>
+                        <b-col v-if="citizen != null && hasOrganization(sid)" xl="3" lg="3" md="4" sm="12" class="mb-3">
                             <b-form>
                                 <b-form-group label="Select an organization" label-for="select-orga" class="js-select-orga">
                                     <b-form-select id="select-orga" :value="selectedSid" @change="selectSid">
@@ -13,14 +13,14 @@
                                 </b-form-group>
                             </b-form>
                         </b-col>
-                        <b-col xs="12" sm="12" md="6" class="mb-3" v-if="selectedOrgaInfos !== null">
-                            <img :src="selectedOrgaInfos.global.avatarUrl" alt="organization's logo" class="img-avatar" style="max-height: 8rem;" />
+                        <b-col xs="12" sm="12" md="6" class="mb-3" v-if="organization !== null">
+                            <img v-if="organization.avatarUrl" :src="organization.avatarUrl" alt="organization's logo" class="img-avatar" style="max-height: 8rem;" />
                             <div class="d-inline-block align-top">
-                                <h4>{{ selectedOrgaInfos.global.fullname }}</h4>
-                                <div class="position-relative">
-                                    <span class="rank-icon" :class="{'rank-icon-active': (i <= selectedOrgaInfos.citizen.rank) }" v-for="i in 5"></span>
+                                <h4>{{ organization.name }}</h4>
+                                <div class="position-relative" v-if="citizen != null && citizenOrgaInfo != null">
+                                    <span class="rank-icon" :class="{'rank-icon-active': (i <= citizenOrgaInfo.rank) }" v-for="i in 5"></span>
                                 </div>
-                                <p><strong>{{ selectedOrgaInfos.citizen.rankName }}</strong></p>
+                                <p v-if="citizen != null && citizenOrgaInfo != null"><strong>{{ citizenOrgaInfo.rankName }}</strong></p>
                             </div>
                         </b-col>
                     </b-row>
@@ -33,7 +33,7 @@
                             </b-dropdown>
                         </b-col>
                     </b-row>
-                    <b-row class="mb-3" v-if="sid != null && ((citizen != null && organizations[sid]) || (this.organization !== null && this.organization.publicChoice === 'public'))">
+                    <b-row class="mb-3" v-if="sid != null && ((citizen != null && organizations[sid]) || (organization !== null && organization.publicChoice === 'public'))">
                         <b-col col xl="2" lg="3" md="4" xs="6">
                             <v-select id="filters_input_ship_name" :reduce="item => item.id" v-model="filterShipName" :options="filterOptionsShips" multiple @input="refreshOrganizationFleet(true)" placeholder="Filter by ship name"></v-select>
                         </b-col>
@@ -149,16 +149,10 @@
             this.refreshBreakpoint();
         },
         computed: {
-            selectedOrgaInfos() {
-                if (this.selectedSid === null || this.citizen === null || !this.organizations[this.selectedSid]) {
-                    return null;
-                }
+            citizenOrgaInfo() {
                 for (let orgaInfo of this.citizen.organizations) {
                     if (orgaInfo.organizationSid === this.selectedSid) {
-                        return {
-                            citizen: orgaInfo,
-                            global: this.organizations[this.selectedSid],
-                        };
+                        return orgaInfo;
                     }
                 }
                 return null;

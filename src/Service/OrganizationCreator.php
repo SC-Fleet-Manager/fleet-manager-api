@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Domain\SpectrumIdentification;
 use App\Entity\CitizenOrganization;
 use App\Entity\Organization;
 use Doctrine\ORM\EntityManagerInterface;
@@ -10,10 +11,12 @@ use Ramsey\Uuid\Uuid;
 class OrganizationCreator
 {
     private $entityManager;
+    private $orgaInfosProvider;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, OrganizationInfosProviderInterface $orgaInfosProvider)
     {
         $this->entityManager = $entityManager;
+        $this->orgaInfosProvider = $orgaInfosProvider;
     }
 
     /**
@@ -21,7 +24,7 @@ class OrganizationCreator
      *
      * @param CitizenOrganization[] $organizations
      */
-    public function createOrganization(array $organizations): void
+    public function createAndUpdateOrganizations(array $organizations): void
     {
         $sids = array_map(static function (CitizenOrganization $orga) {
             return $orga->getOrganizationSid();
@@ -30,18 +33,21 @@ class OrganizationCreator
         /** @var Organization[] $existingOrgas */
         $existingOrgas = $this->entityManager->getRepository(Organization::class)->findBy(['organizationSid' => $sids]);
         foreach ($organizations as $orga) {
-            $found = false;
+            $organization = null;
             foreach ($existingOrgas as $existingOrga) {
                 if ($existingOrga->getOrganizationSid() === $orga->getOrganizationSid()) {
-                    $found = true;
+                    $organization = $existingOrga;
                     break;
                 }
             }
-            if (!$found) {
-                $newOrga = new Organization(Uuid::uuid4());
-                $newOrga->setOrganizationSid($orga->getOrganizationSid());
-                $this->entityManager->persist($newOrga);
+            if ($organization === null) {
+                $organization = new Organization(Uuid::uuid4());
+                $organization->setOrganizationSid($orga->getOrganizationSid());
+                $this->entityManager->persist($organization);
             }
+            $providerOrgaInfos = $this->orgaInfosProvider->retrieveInfos(new SpectrumIdentification($orga->getOrganizationSid()));
+            $organization->setAvatarUrl($providerOrgaInfos->avatarUrl);
+            $organization->setName($providerOrgaInfos->fullname);
         }
 
         $this->entityManager->flush();

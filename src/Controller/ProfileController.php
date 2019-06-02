@@ -5,9 +5,9 @@ namespace App\Controller;
 use App\Domain\CitizenInfos;
 use App\Domain\HandleSC;
 use App\Entity\Citizen;
-use App\Entity\CitizenOrganization;
 use App\Entity\Organization;
 use App\Entity\User;
+use App\Event\CitizenRefreshEvent;
 use App\Exception\NotFoundHandleSCException;
 use App\Form\Dto\LinkAccount;
 use App\Form\Dto\UpdateHandle;
@@ -18,12 +18,12 @@ use App\Repository\CitizenRepository;
 use App\Repository\OrganizationRepository;
 use App\Repository\UserRepository;
 use App\Service\CitizenInfosProviderInterface;
-use App\Service\OrganizationCreator;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -44,7 +44,7 @@ class ProfileController extends AbstractController
     private $formFactory;
     private $entityManager;
     private $serializer;
-    private $organizationCreator;
+    private $eventDispatcher;
 
     public function __construct(
         Logger $profileLinkAccountLogger,
@@ -55,7 +55,7 @@ class ProfileController extends AbstractController
         Security $security,
         FormFactoryInterface $formFactory,
         SerializerInterface $serializer,
-        OrganizationCreator $organizationCreator
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->profileLinkAccountLogger = $profileLinkAccountLogger;
         $this->citizenInfosProvider = $citizenInfosProvider;
@@ -65,7 +65,7 @@ class ProfileController extends AbstractController
         $this->formFactory = $formFactory;
         $this->entityManager = $entityManager;
         $this->serializer = $serializer;
-        $this->organizationCreator = $organizationCreator;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -104,7 +104,6 @@ class ProfileController extends AbstractController
             ], 400);
         }
 
-        // TODO : refactor this into a separate service (DRY with FleetUploadHandler)
         $citizenInfos = $this->citizenInfosProvider->retrieveInfos(clone $citizen->getActualHandle());
         if (!$citizenInfos->numberSC->equals($citizen->getNumber())) {
             return $this->json([
@@ -116,7 +115,7 @@ class ProfileController extends AbstractController
         $citizen->refresh($citizenInfos, $this->entityManager);
         $this->entityManager->flush();
 
-        $this->organizationCreator->createOrganization(iterator_to_array($citizen->getOrganizations()));
+        $this->eventDispatcher->dispatch(CitizenRefreshEvent::NAME, new CitizenRefreshEvent($citizen));
 
         return $this->json(null, 204);
     }
@@ -211,7 +210,7 @@ class ProfileController extends AbstractController
             $citizen->refresh($citizenInfos, $this->entityManager);
             $this->entityManager->flush();
 
-            $this->organizationCreator->createOrganization(iterator_to_array($citizen->getOrganizations()));
+            $this->eventDispatcher->dispatch(CitizenRefreshEvent::NAME, new CitizenRefreshEvent($citizen));
         } catch (NotFoundHandleSCException $e) {
             return $this->json([
                 'error' => 'not_found_handle',
@@ -344,10 +343,8 @@ class ProfileController extends AbstractController
 
         $this->entityManager->flush();
 
-        // TODO : dispatch event when citizen->refresh()
+        $this->eventDispatcher->dispatch(CitizenRefreshEvent::NAME, new CitizenRefreshEvent($citizen));
         // TODO : link CitizenOrganization with Organization
-        // TODO : put global infos on Organization (use OrganizationInfosProviderInterface)
-        $this->organizationCreator->createOrganization(iterator_to_array($citizen->getOrganizations()));
     }
 
     private function isTokenValid(User $user, CitizenInfos $citizenInfos): bool
