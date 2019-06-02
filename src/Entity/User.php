@@ -10,6 +10,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
+ * @ORM\Table(indexes={
+ *     @ORM\Index(name="discord_idx", columns={"discord_id"})
+ * })
  */
 class User implements UserInterface
 {
