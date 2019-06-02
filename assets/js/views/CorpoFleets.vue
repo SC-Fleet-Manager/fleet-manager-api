@@ -2,7 +2,7 @@
     <div class="animated fadeIn">
         <b-row>
             <b-col>
-                <b-card :header="citizen != null && organizations[sid] ? 'Your organizations\' fleet' : orgaFullname +' fleet'" class="js-organizations-fleets">
+                <b-card :header="citizen != null && organizations[sid] ? 'Your organizations\' fleets' : orgaFullname +' fleet'" class="js-organizations-fleets">
                     <b-row v-if="citizen != null">
                         <b-col v-if="hasOrganization(sid)" col xl="2" lg="3" md="4" class="mb-3">
                             <b-form>
@@ -33,24 +33,14 @@
                             </b-dropdown>
                         </b-col>
                     </b-row>
-                    <b-row v-if="sid != null && ((citizen != null && organizations[sid]) || (this.organization !== null && this.organization.publicChoice === 'public'))">
+                    <b-row class="mb-3" v-if="sid != null && ((citizen != null && organizations[sid]) || (this.organization !== null && this.organization.publicChoice === 'public'))">
                         <b-col col xl="2" lg="3" md="4" xs="6">
-                            <b-form-group>
-                                <b-form-input id="filters_input_ship_name"
-                                              type="text"
-                                              v-model="filterShipName"
-                                              @keyup="refreshOrganizationFleet(true)"
-                                              placeholder="Filter by ship name"></b-form-input>
-                            </b-form-group>
+                            <label for="filters_input_ship_name">Filter by ship</label>
+                            <select2 id="filters_input_ship_name" class="w-100" :options="filterOptionsShips" v-model="filterShipName" multiple @input="refreshOrganizationFleet(true)"></select2>
                         </b-col>
                         <b-col col xl="2" lg="3" md="4" xs="6">
-                            <b-form-group>
-                                <b-form-input id="filters_input_citizen_name"
-                                              type="text"
-                                              v-model="filterCitizenName"
-                                              @keyup="refreshOrganizationFleet(true)"
-                                              placeholder="Filter by citizen name"></b-form-input>
-                            </b-form-group>
+                            <label for="filters_input_citizen_name">Filter by citizens</label>
+                            <select2 id="filters_input_citizen_name" class="w-100" :options="filterOptionsCitizens" v-model="filterCitizenId" multiple @input="refreshOrganizationFleet(true)"></select2>
                         </b-col>
                     </b-row>
                     <b-row>
@@ -82,18 +72,6 @@
                             ></ShipFamilyDetail>
                         </template>
                     </b-row>
-<!--
-                    <div class="mb-1">
-                        <label style="width: 50%">Citizens :
-                            <select2 :options="citizens" v-model="citizenSelected" multiple style="width: 50%" @input="refreshTable"></select2>
-                        </label>
-                    </div>
-                    <div class="mb-3">
-                        <label style="width: 50%">Ships :
-                            <select2 :options="ships" v-model="shipSelected" multiple style="width: 50%" @input="refreshTable"></select2>
-                        </label>
-                    </div>
--->
                 </b-card>
             </b-col>
         </b-row>
@@ -138,6 +116,8 @@
                 actualBreakpoint: 'xs',
                 organizations: {}, // orga infos of the citizens
                 refreshedSid: null,
+                filterOptionsCitizens: [],
+                filterOptionsShips: [],
             };
         },
         created() {
@@ -174,12 +154,12 @@
                     this.$store.state.orga_fleet.filterShipName = value;
                 }
             },
-            filterCitizenName: {
+            filterCitizenId: {
                 get() {
-                    return this.$store.state.orga_fleet.filterCitizenName;
+                    return this.$store.state.orga_fleet.filterCitizenId;
                 },
                 set(value) {
-                    this.$store.state.orga_fleet.filterCitizenName = value;
+                    this.$store.state.orga_fleet.filterCitizenId = value;
                 }
             },
             ...mapGetters({
@@ -188,7 +168,7 @@
                 selectedShipVariants: 'selectedShipVariants',
             }),
             orgaFullname() {
-                if (this.organization !== null && this.organization.organizationSid === this.selectedSid) {
+                if (this.organization !== null && this.organization.organizationSid === this.selectedSid && this.organization.name !== null) {
                     return this.organization.name;
                 } else if (this.organizations[this.selectedSid]) {
                     return this.organizations[this.selectedSid].fullname;
@@ -283,17 +263,53 @@
                 }
                 if (this.refreshedSid !== this.sid) {
                     this.refreshOrganization();
+                    this.refreshFiltersOptions();
                 }
                 this.refreshedSid = this.sid;
                 this.shipFamilies = [];
+
                 axios.get(`/api/fleet/orga-fleets/${this.sid}`, {
                     params: {
-                        'filters[shipName]': this.filterShipName ? this.filterShipName : null,
-                        'filters[citizenName]': this.filterCitizenName ? this.filterCitizenName : null,
+                        'filters[shipNames]': this.filterShipName,
+                        'filters[citizenIds]': this.filterCitizenId,
                     },
                 }).then(response => {
                     this.selectShipFamily({index: null, shipFamily: null});
                     this.shipFamilies = response.data;
+                }).catch(err => {
+                    if (err.response.status === 401) {
+                        // not connected
+                        return;
+                    }
+                    if (err.response.status === 404) {
+                        // not exist
+                        return;
+                    }
+                    if (err.response.data.errorMessage) {
+                        toastr.error(err.response.data.errorMessage);
+                    }
+                    console.error(err);
+                });
+            },
+            refreshFiltersOptions() {
+                axios.get(`/api/organization/${this.sid}/citizens`).then(response => {
+                    this.filterOptionsCitizens = response.data;
+                }).catch(err => {
+                    if (err.response.status === 401) {
+                        // not connected
+                        return;
+                    }
+                    if (err.response.status === 404) {
+                        // not exist
+                        return;
+                    }
+                    if (err.response.data.errorMessage) {
+                        toastr.error(err.response.data.errorMessage);
+                    }
+                    console.error(err);
+                });
+                axios.get(`/api/organization/${this.sid}/ships`).then(response => {
+                    this.filterOptionsShips = response.data;
                 }).catch(err => {
                     if (err.response.status === 401) {
                         // not connected

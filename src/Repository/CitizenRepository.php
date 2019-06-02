@@ -57,11 +57,19 @@ class CitizenRepository extends ServiceEntityRepository
             WHERE c.organisations LIKE :orgaId 
         EOT;
         // filtering
-        if ($filter->shipName !== null) {
-            $sql .= ' AND s.name LIKE :shipName ';
+        if (count($filter->shipNames) > 0) {
+            $sql .= ' AND (';
+            foreach ($filter->shipNames as $i => $filterShipName) {
+                $sql .= sprintf(' s.name = :shipName_%d OR ', $i);
+            }
+            $sql .= ' 1=0) ';
         }
-        if ($filter->citizenName !== null) {
-            $sql .= ' AND c.actual_handle LIKE :citizenName ';
+        if (count($filter->citizenIds) > 0) {
+            $sql .= ' AND (';
+            foreach ($filter->citizenIds as $i => $filterCitizenId) {
+                $sql .= sprintf(' c.id = :citizenId_%d OR ', $i);
+            }
+            $sql .= ' 1=0) ';
         }
 
         $rsm = new ResultSetMappingBuilder($this->_em);
@@ -71,11 +79,11 @@ class CitizenRepository extends ServiceEntityRepository
 
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
         $stmt->setParameter(':orgaId', '%"'.$organizationId.'"%');
-        if ($filter->shipName !== null) {
-            $stmt->setParameter('shipName', '%'.$filter->shipName.'%');
+        foreach ($filter->shipNames as $i => $filterShipName) {
+            $stmt->setParameter('shipName_'.$i, $filterShipName);
         }
-        if ($filter->citizenName !== null) {
-            $stmt->setParameter('citizenName', '%'.$filter->citizenName.'%');
+        foreach ($filter->citizenIds as $i => $filterCitizenId) {
+            $stmt->setParameter('citizenId_'.$i, $filterCitizenId);
         }
 
         return $stmt->getResult();
@@ -96,11 +104,19 @@ class CitizenRepository extends ServiceEntityRepository
             WHERE c.organisations LIKE :orgaId 
         EOT;
         // filtering
-        if ($filter->shipName !== null) {
-            $sql .= ' AND s.name LIKE :filterShipName ';
+        if (count($filter->shipNames) > 0) {
+            $sql .= ' AND (';
+            foreach ($filter->shipNames as $i => $filterShipName) {
+                $sql .= sprintf(' s.name = :shipName_%d OR ', $i);
+            }
+            $sql .= ' 1=0) ';
         }
-        if ($filter->citizenName !== null) {
-            $sql .= ' AND c.actual_handle LIKE :filterCitizenName ';
+        if (count($filter->citizenIds) > 0) {
+            $sql .= ' AND (';
+            foreach ($filter->citizenIds as $i => $filterCitizenId) {
+                $sql .= sprintf(' c.id = :citizenId_%d OR ', $i);
+            }
+            $sql .= ' 1=0) ';
         }
 
         $rsm = new ResultSetMapping();
@@ -111,11 +127,11 @@ class CitizenRepository extends ServiceEntityRepository
             'orgaId' => '%"'.$organizationId.'"%',
             'shipName' => mb_strtolower($shipName),
         ]);
-        if ($filter->shipName !== null) {
-            $stmt->setParameter('filterShipName', '%'.$filter->shipName.'%');
+        foreach ($filter->shipNames as $i => $filterShipName) {
+            $stmt->setParameter('shipName_'.$i, $filterShipName);
         }
-        if ($filter->citizenName !== null) {
-            $stmt->setParameter('filterCitizenName', '%'.$filter->citizenName.'%');
+        foreach ($filter->citizenIds as $i => $filterCitizenId) {
+            $stmt->setParameter('citizenId_'.$i, $filterCitizenId);
         }
 
         return $stmt->getScalarResult();
@@ -136,11 +152,19 @@ class CitizenRepository extends ServiceEntityRepository
             WHERE c.organisations LIKE :orgaId
         EOT;
         // filtering
-        if ($filter->shipName !== null) {
-            $sql .= ' AND s.name LIKE :filterShipName ';
+        if (count($filter->shipNames) > 0) {
+            $sql .= ' AND (';
+            foreach ($filter->shipNames as $i => $filterShipName) {
+                $sql .= sprintf(' s.name = :shipName_%d OR ', $i);
+            }
+            $sql .= ' 1=0) ';
         }
-        if ($filter->citizenName !== null) {
-            $sql .= ' AND c.actual_handle LIKE :filterCitizenName ';
+        if (count($filter->citizenIds) > 0) {
+            $sql .= ' AND (';
+            foreach ($filter->citizenIds as $i => $filterCitizenId) {
+                $sql .= sprintf(' c.id = :citizenId_%d OR ', $i);
+            }
+            $sql .= ' 1=0) ';
         }
         $sql .= <<<EOT
             GROUP BY c.id
@@ -165,11 +189,11 @@ class CitizenRepository extends ServiceEntityRepository
             $stmt->setParameter('first', ($page - 1) * $itemsPerPage);
             $stmt->setParameter('countItems', $itemsPerPage);
         }
-        if ($filter->shipName !== null) {
-            $stmt->setParameter('filterShipName', '%'.$filter->shipName.'%');
+        foreach ($filter->shipNames as $i => $filterShipName) {
+            $stmt->setParameter('shipName_'.$i, $filterShipName);
         }
-        if ($filter->citizenName !== null) {
-            $stmt->setParameter('filterCitizenName', '%'.$filter->citizenName.'%');
+        foreach ($filter->citizenIds as $i => $filterCitizenId) {
+            $stmt->setParameter('citizenId_'.$i, $filterCitizenId);
         }
 
         return $stmt->getResult();

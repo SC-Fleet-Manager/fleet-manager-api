@@ -10,20 +10,22 @@
 
     export default {
         name: 'select2',
-        props: ['options', 'value', 'multiple'],
+        props: ['options', 'value', 'multiple', 'placeholder'],
         mounted() {
             $(this.$el)
                 // init select2
-                .select2({ data: this.options })
+                .select2({
+                    data: this.options,
+                    placeholder: this.placeholder,
+                })
                 .val(this.value)
                 .trigger('change')
-                // emit event on change.
                 .on('change', (ev) => {
                     const data = $(this.$el).select2('data');
                     this.$emit('input', data.map((item) => {
                         return item.id;
                     }));
-                })
+                });
         },
         watch: {
             value(value) {

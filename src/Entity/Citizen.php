@@ -144,7 +144,7 @@ class Citizen
         return $this;
     }
 
-    public function getActualHandle(): ?HandleSC
+    public function getActualHandle(): HandleSC
     {
         if (!$this->actualHandle instanceof HandleSC) {
             $this->actualHandle = new HandleSC($this->actualHandle);

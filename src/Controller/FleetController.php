@@ -143,8 +143,8 @@ class FleetController extends AbstractController
         $filters = $request->query->get('filters', []);
 
         $shipFamilies = $organizationFleetHandler->computeShipFamilies(new SpectrumIdentification($organization), new ShipFamilyFilter(
-            $filters['shipName'] ?? null,
-            $filters['citizenName'] ?? null,
+            $filters['shipNames'] ?? [],
+            $filters['citizenIds'] ?? [],
         ));
         usort($shipFamilies, static function (array $shipFamily1, array $shipFamily2): int {
             $count = $shipFamily2['count'] - $shipFamily1['count'];
@@ -184,7 +184,10 @@ class FleetController extends AbstractController
         }
 
         $filters = $request->query->get('filters', []);
-        $shipFamilyFilter = new ShipFamilyFilter($filters['shipName'] ?? null, $filters['citizenName'] ?? null);
+        $shipFamilyFilter = new ShipFamilyFilter(
+            $filters['shipNames'] ?? [],
+            $filters['citizenIds'] ?? [],
+        );
 
         $shipsInfos = $this->shipInfosProvider->getShipsByChassisId($chassisId);
 
@@ -237,7 +240,10 @@ class FleetController extends AbstractController
         }
 
         $filters = $request->query->get('filters', []);
-        $shipFamilyFilter = new ShipFamilyFilter($filters['shipName'] ?? null, $filters['citizenName'] ?? null);
+        $shipFamilyFilter = new ShipFamilyFilter(
+            $filters['shipNames'] ?? [],
+            $filters['citizenIds'] ?? [],
+        );
 
         $shipName = $this->shipInfosProvider->transformProviderToHangar($shipName);
         $citizens = $this->citizenRepository->getOwnersOfShip(
