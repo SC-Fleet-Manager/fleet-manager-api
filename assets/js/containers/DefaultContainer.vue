@@ -6,7 +6,7 @@
                 <img class="navbar-brand-full" src="../../img/fleet_manager_155x55.png" alt="SC Fleet Manager" height="45">
                 <img class="navbar-brand-minimized" src="../../img/fleet_manager_128.png" alt="FM" height="40">
             </b-link>
-            <SidebarToggler class="d-md-down-none" display="lg"/>
+            <SidebarToggler class="d-md-down-none" display="lg" :defaultOpen="true" ref="sidebarDesktop"/>
             <b-navbar-nav class="ml-auto">
                 <!--<b-nav-text v-if="citizen != null" class="px-3 d-none d-sm-inline-block">Welcome, {{ citizen.actualHandle.handle }}</b-nav-text>
                 <b-nav-text v-if="citizen == null && user != null" class="px-3 d-none d-sm-inline-block">Welcome, {{ user.nickname }}</b-nav-text>-->
@@ -76,6 +76,7 @@
                 this.user = response.data;
                 this.citizen = this.user.citizen;
                 this.updateProfile(this.citizen);
+                // this.$refs.sidebarDesktop.toggle(true);
             });
 
             this.$store.watch(
