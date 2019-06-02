@@ -71,6 +71,7 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
             $shipInfo->minCrew = (int) $shipData['min_crew'];
             $shipInfo->maxCrew = (int) $shipData['max_crew'];
             $shipInfo->name = $shipData['name'];
+            $shipInfo->size = $shipData['size'];
             $shipInfo->pledgeUrl = self::BASE_URL.$shipData['url'];
             $shipInfo->manufacturerName = $shipData['manufacturer']['name'];
             $shipInfo->manufacturerCode = $shipData['manufacturer']['code'];
@@ -113,7 +114,7 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
         $ships = $this->getAllShips();
         /** @var ShipInfo $ship */
         foreach ($ships as $ship) {
-            if ($ship->name === $name) {
+            if (mb_strtolower($ship->name) === mb_strtolower($name)) {
                 return $ship;
             }
         }

@@ -9,6 +9,7 @@ const state = {
     shipVariantUsers: {}, // {"<ship id>": {...}}
     filterShipName: [],
     filterCitizenId: [],
+    filterShipSize: [],
 };
 
 const getters = {
@@ -64,6 +65,7 @@ const actions = {
                 page,
                 'filters[shipNames]': state.filterShipName,
                 'filters[citizenIds]': state.filterCitizenId,
+                'filters[shipSizes]': state.filterShipSize,
             },
         }).then(response => {
             commit('updateShipVariantsUsers', {
@@ -89,6 +91,7 @@ const actions = {
                 params: {
                     'filters[shipNames]': state.filterShipName,
                     'filters[citizenIds]': state.filterCitizenId,
+                    'filters[shipSizes]': state.filterShipSize,
                 },
             });
             commit('updateSelectedShipFamily', {

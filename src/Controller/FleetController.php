@@ -12,6 +12,7 @@ use App\Repository\UserRepository;
 use App\Service\Dto\ShipFamilyFilter;
 use App\Service\OrganizationFleetHandler;
 use App\Service\ShipInfosProviderInterface;
+use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,19 +30,22 @@ class FleetController extends AbstractController
     private $userRepository;
     private $shipInfosProvider;
     private $organizationRepository;
+    private $logger;
 
     public function __construct(
         Security $security,
         CitizenRepository $citizenRepository,
         UserRepository $userRepository,
         ShipInfosProviderInterface $shipInfosProvider,
-        OrganizationRepository $organizationRepository
+        OrganizationRepository $organizationRepository,
+        LoggerInterface $logger
     ) {
         $this->security = $security;
         $this->citizenRepository = $citizenRepository;
         $this->userRepository = $userRepository;
         $this->shipInfosProvider = $shipInfosProvider;
         $this->organizationRepository = $organizationRepository;
+        $this->logger = $logger;
     }
 
     /**
@@ -141,11 +145,13 @@ class FleetController extends AbstractController
         }
 
         $filters = $request->query->get('filters', []);
-
-        $shipFamilies = $organizationFleetHandler->computeShipFamilies(new SpectrumIdentification($organization), new ShipFamilyFilter(
+        $shipFamilyFilter = new ShipFamilyFilter(
             $filters['shipNames'] ?? [],
             $filters['citizenIds'] ?? [],
-        ));
+            $filters['shipSizes'] ?? [],
+        );
+
+        $shipFamilies = $organizationFleetHandler->computeShipFamilies(new SpectrumIdentification($organization), $shipFamilyFilter);
         usort($shipFamilies, static function (array $shipFamily1, array $shipFamily2): int {
             $count = $shipFamily2['count'] - $shipFamily1['count'];
             if ($count !== 0) {
@@ -187,12 +193,17 @@ class FleetController extends AbstractController
         $shipFamilyFilter = new ShipFamilyFilter(
             $filters['shipNames'] ?? [],
             $filters['citizenIds'] ?? [],
+            $filters['shipSizes'] ?? [],
         );
 
         $shipsInfos = $this->shipInfosProvider->getShipsByChassisId($chassisId);
 
         $res = [];
         foreach ($shipsInfos as $shipInfo) {
+            // filtering
+            if (count($shipFamilyFilter->shipSizes) > 0 && !in_array($shipInfo->size, $shipFamilyFilter->shipSizes, false)) {
+                continue;
+            }
             $shipName = $this->shipInfosProvider->transformProviderToHangar($shipInfo->name);
             $countOwnersAndOwned = $this->citizenRepository->countOwnersAndOwnedOfShip($organization, $shipName, $shipFamilyFilter)[0];
             if ((int) $countOwnersAndOwned['countOwned'] === 0) {
@@ -212,9 +223,9 @@ class FleetController extends AbstractController
     }
 
     /**
-     * @Route("/orga-fleets/{organization}/users/{shipName}", name="orga_fleet_users", methods={"GET"}, options={"expose":true})
+     * @Route("/orga-fleets/{organization}/users/{providerShipName}", name="orga_fleet_users", methods={"GET"}, options={"expose":true})
      */
-    public function orgaFleetUsers(Request $request, string $organization, string $shipName): Response
+    public function orgaFleetUsers(Request $request, string $organization, string $providerShipName): Response
     {
         $page = $request->query->get('page', 1);
         $itemsPerPage = 10;
@@ -243,9 +254,22 @@ class FleetController extends AbstractController
         $shipFamilyFilter = new ShipFamilyFilter(
             $filters['shipNames'] ?? [],
             $filters['citizenIds'] ?? [],
+            $filters['shipSizes'] ?? [],
         );
 
-        $shipName = $this->shipInfosProvider->transformProviderToHangar($shipName);
+        $shipName = $this->shipInfosProvider->transformProviderToHangar($providerShipName);
+        $shipInfo = $this->shipInfosProvider->getShipByName($providerShipName);
+        if ($shipInfo === null) {
+            $this->logger->warning('Ship not found in the ship infos provider.', ['hangarShipName' => $providerShipName, 'provider' => get_class($this->shipInfosProvider)]);
+
+            return $this->json([]);
+        }
+
+        // filtering
+        if (count($shipFamilyFilter->shipSizes) > 0 && !in_array($shipInfo->size, $shipFamilyFilter->shipSizes, false)) {
+            return $this->json([]);
+        }
+
         $users = $this->citizenRepository->getOwnersOfShip(
             $organization,
             $shipName,

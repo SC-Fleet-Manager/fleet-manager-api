@@ -36,11 +36,15 @@
                     <b-row class="mb-3" v-if="sid != null && ((citizen != null && organizations[sid]) || (this.organization !== null && this.organization.publicChoice === 'public'))">
                         <b-col col xl="2" lg="3" md="4" xs="6">
                             <label for="filters_input_ship_name" class="d-block">Filter by ship</label>
-                            <select2 id="filters_input_ship_name" class="w-100" :options="filterOptionsShips" v-model="filterShipName" multiple @input="refreshOrganizationFleet(true)"></select2>
+                            <select2 id="filters_input_ship_name" :options="filterOptionsShips" v-model="filterShipName" multiple @input="refreshOrganizationFleet(true)"></select2>
                         </b-col>
                         <b-col col xl="2" lg="3" md="4" xs="6">
-                            <label for="filters_input_citizen_name" class="d-block">Filter by citizens</label>
-                            <select2 id="filters_input_citizen_name" class="w-100" :options="filterOptionsCitizens" v-model="filterCitizenId" multiple @input="refreshOrganizationFleet(true)"></select2>
+                            <label for="filters_input_citizen_id" class="d-block">Filter by citizens</label>
+                            <select2 id="filters_input_citizen_id" :options="filterOptionsCitizens" v-model="filterCitizenId" multiple @input="refreshOrganizationFleet(true)"></select2>
+                        </b-col>
+                        <b-col col xl="2" lg="3" md="4" xs="6">
+                            <label for="filters_input_ship_size" class="d-block">Filter by ship size</label>
+                            <select2 id="filters_input_ship_size" :options="filterOptionsShipSize" v-model="filterShipSize" multiple @input="refreshOrganizationFleet(true)"></select2>
                         </b-col>
                     </b-row>
                     <b-row>
@@ -94,14 +98,14 @@
      *
      * PUBLIC
      *      - logged
-     *          - my orga : OK : voit ships + filters + button export + selector orga + info orga
+     *          - my orga : OK : see ships + filters + button export + orga selector + info orga
      *          - not my orga : OK : see ships + filters only + info orga global
      *      - not logged : OK : see ships + filters only + info orga global
      * PRIVATE
      *      - logged
-     *          - my orga : OK : see ships + filters + button export + selector orga + info orga
-     *          - not my orga : PAS OK : error message orga private
-     *      - not logged : PAS OK : error message orga private
+     *          - my orga : OK : see ships + filters + button export + orga selector + info orga
+     *          - not my orga : NOT OK : error message orga private
+     *      - not logged : NOT OK : error message orga private
      */
 
     export default {
@@ -118,6 +122,15 @@
                 refreshedSid: null,
                 filterOptionsCitizens: [],
                 filterOptionsShips: [],
+                filterOptionsShipSize: [
+                    {'id': '', 'text': 'N/A'},
+                    {'id': 'vehicle', 'text': 'Vehicle'},
+                    {'id': 'snub', 'text': 'Snub'},
+                    {'id': 'small', 'text': 'Small'},
+                    {'id': 'medium', 'text': 'Medium'},
+                    {'id': 'large', 'text': 'Large'},
+                    {'id': 'capital', 'text': 'Capital'},
+                ],
             };
         },
         created() {
@@ -160,6 +173,14 @@
                 },
                 set(value) {
                     this.$store.state.orga_fleet.filterCitizenId = value;
+                }
+            },
+            filterShipSize: {
+                get() {
+                    return this.$store.state.orga_fleet.filterShipSize;
+                },
+                set(value) {
+                    this.$store.state.orga_fleet.filterShipSize = value;
                 }
             },
             ...mapGetters({
@@ -272,6 +293,7 @@
                     params: {
                         'filters[shipNames]': this.filterShipName,
                         'filters[citizenIds]': this.filterCitizenId,
+                        'filters[shipSizes]': this.filterShipSize,
                     },
                 }).then(response => {
                     this.selectShipFamily({index: null, shipFamily: null});
