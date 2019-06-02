@@ -1,8 +1,11 @@
 <template>
     <div class="ship-family-detail-variant mb-3">
-        <div class="mb-2 text-center"><img :src="shipVariant.shipInfo.mediaThumbUrl" class="img-fluid" /></div>
+        <div class="mb-2 text-center position-relative">
+            <svg v-if="!imgLazyLoaded" class="img-fluid" viewBox="0 0 351 210"><rect width="351" height="210" style="fill:rgb(128,128,128)"></rect></svg> <!---->
+            <img v-show="imgLazyLoaded" :src="shipVariant.shipInfo.mediaThumbUrl" :alt="shipVariant.shipInfo.name + ' ship picture'" class="img-fluid" @load="imgLazyLoaded = true" />
+            <div class="ship-family-detail-variant-counter">{{ shipVariant.countTotalShips }}</div>
+        </div>
         <h4>{{ shipVariant.shipInfo.name }} <!--<a href="#" title="Go to pledge"><i class="fa fa-link"></i></a>--></h4>
-        <div class="mb-3"><strong>{{ shipVariant.countTotalShips }}</strong> owned by <strong>{{ shipVariant.countTotalOwners }}</strong> citizens</div>
 <!--        <div class="mb-3"><b-form-input type="text" v-model="search[ship.shipInfo.id]" placeholder="Search citizen"></b-form-input></div>&ndash;&gt;-->
         <div class="ship-family-detail-variant-ownerlist" @scroll="onUsersScroll">
             <div v-for="user in shipVariantUsers">{{ user[0].actualHandle.handle }} : {{ user.countShips }}</div>
@@ -24,6 +27,7 @@
                 shipVariantUsers: [],
                 page: 2,
                 atBottom: false,
+                imgLazyLoaded: false
             }
         },
         computed: {
@@ -58,5 +62,17 @@
     };
 </script>
 
-<style>
+<style lang="scss">
+    @import '../../css/vendors/variables';
+
+    .ship-family-detail-variant-counter {
+        font-family: "Josefin Sans", Helvetica Neue, Arial, sans-serif;
+        font-size: 4rem;
+        position: absolute;
+        bottom: 0;
+        right: 0.6rem;
+        line-height: 1;
+        color: $gray-200;
+        text-shadow: 0 0 4px rgba(30, 30, 30, 1);
+    }
 </style>
