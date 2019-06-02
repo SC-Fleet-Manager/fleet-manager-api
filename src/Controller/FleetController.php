@@ -39,7 +39,8 @@ class FleetController extends AbstractController
         ShipInfosProviderInterface $shipInfosProvider,
         OrganizationRepository $organizationRepository,
         LoggerInterface $logger
-    ) {
+    )
+    {
         $this->security = $security;
         $this->citizenRepository = $citizenRepository;
         $this->userRepository = $userRepository;
@@ -149,7 +150,8 @@ class FleetController extends AbstractController
             $filters['shipNames'] ?? [],
             $filters['citizenIds'] ?? [],
             $filters['shipSizes'] ?? [],
-        );
+            $filters['shipStatus'] ?? null,
+            );
 
         $shipFamilies = $organizationFleetHandler->computeShipFamilies(new SpectrumIdentification($organization), $shipFamilyFilter);
         usort($shipFamilies, static function (array $shipFamily1, array $shipFamily2): int {
@@ -194,6 +196,7 @@ class FleetController extends AbstractController
             $filters['shipNames'] ?? [],
             $filters['citizenIds'] ?? [],
             $filters['shipSizes'] ?? [],
+            $filters['shipStatus'] ?? null
         );
 
         $shipsInfos = $this->shipInfosProvider->getShipsByChassisId($chassisId);
@@ -204,9 +207,12 @@ class FleetController extends AbstractController
             if (count($shipFamilyFilter->shipSizes) > 0 && !in_array($shipInfo->size, $shipFamilyFilter->shipSizes, false)) {
                 continue;
             }
+            if ($shipFamilyFilter->shipStatus !== null && $shipFamilyFilter->shipStatus !== $shipInfo->productionStatus) {
+                continue;
+            }
             $shipName = $this->shipInfosProvider->transformProviderToHangar($shipInfo->name);
             $countOwnersAndOwned = $this->citizenRepository->countOwnersAndOwnedOfShip($organization, $shipName, $shipFamilyFilter)[0];
-            if ((int) $countOwnersAndOwned['countOwned'] === 0) {
+            if ((int)$countOwnersAndOwned['countOwned'] === 0) {
                 continue;
             }
             $res[] = [
@@ -255,6 +261,7 @@ class FleetController extends AbstractController
             $filters['shipNames'] ?? [],
             $filters['citizenIds'] ?? [],
             $filters['shipSizes'] ?? [],
+            $filters['shipStatus'] ?? null
         );
 
         $shipName = $this->shipInfosProvider->transformProviderToHangar($providerShipName);
@@ -269,13 +276,16 @@ class FleetController extends AbstractController
         if (count($shipFamilyFilter->shipSizes) > 0 && !in_array($shipInfo->size, $shipFamilyFilter->shipSizes, false)) {
             return $this->json([]);
         }
+        if ($shipFamilyFilter->shipStatus !== null && $shipFamilyFilter->shipStatus !== $shipInfo->productionStatus) {
+            return $this->json([]);
+        }
 
         $users = $this->citizenRepository->getOwnersOfShip(
             $organization,
             $shipName,
             $shipFamilyFilter,
             $page,
-            $itemsPerPage,
+            $itemsPerPage
         );
 
         return $this->json($users, 200, [], ['groups' => 'orga_fleet']);

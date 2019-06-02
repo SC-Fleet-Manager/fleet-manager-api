@@ -66,13 +66,13 @@ class OrganizationController extends AbstractController
         $res = array_map(static function (Citizen $citizen) {
             return [
                 'id' => $citizen->getId(),
-                'text' => $citizen->getActualHandle()->getHandle(),
+                'label' => $citizen->getActualHandle()->getHandle(),
             ];
         }, $citizens);
 
         $collator = \Collator::create(\Locale::getDefault());
         usort($res, static function (array $item1, array $item2) use ($collator): int {
-            return $collator->compare($item1['text'], $item2['text']);
+            return $collator->compare($item1['label'], $item2['label']);
         });
 
         return $this->json($res);
@@ -108,7 +108,7 @@ class OrganizationController extends AbstractController
         $res = array_map(static function (array $ship) {
             return [
                 'id' => $ship['shipName'],
-                'text' => $ship['shipName'],
+                'label' => $ship['shipName'],
             ];
         }, $ships);
 

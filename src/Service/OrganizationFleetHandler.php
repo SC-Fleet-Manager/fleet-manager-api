@@ -42,6 +42,9 @@ class OrganizationFleetHandler
                 if (count($filter->shipSizes) > 0 && !in_array($shipInfo->size, $filter->shipSizes, false)) {
                     continue;
                 }
+                if ($filter->shipStatus !== null && $filter->shipStatus !== $shipInfo->productionStatus) {
+                    continue;
+                }
                 if (!isset($shipFamilies[$shipInfo->chassisId])) {
                     $shipFamilies[$shipInfo->chassisId] = [
                         'chassisId' => $shipInfo->chassisId,

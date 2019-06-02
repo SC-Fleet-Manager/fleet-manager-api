@@ -13,10 +13,14 @@ class ShipFamilyFilter
     /** @var string[] */
     public $shipSizes;
 
-    public function __construct(array $shipNames = [], array $citizenIds = [], array $shipSizes = [])
+    /** @var string|null */
+    public $shipStatus;
+
+    public function __construct(array $shipNames = [], array $citizenIds = [], array $shipSizes = [], ?string $shipStatus = null)
     {
         $this->shipNames = $shipNames;
         $this->citizenIds = $citizenIds;
         $this->shipSizes = $shipSizes;
+        $this->shipStatus = $shipStatus;
     }
 }

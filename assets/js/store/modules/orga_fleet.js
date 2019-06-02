@@ -10,6 +10,7 @@ const state = {
     filterShipName: [],
     filterCitizenId: [],
     filterShipSize: [],
+    filterShipStatus: null,
 };
 
 const getters = {
@@ -66,6 +67,7 @@ const actions = {
                 'filters[shipNames]': state.filterShipName,
                 'filters[citizenIds]': state.filterCitizenId,
                 'filters[shipSizes]': state.filterShipSize,
+                'filters[shipStatus]': state.filterShipStatus,
             },
         }).then(response => {
             commit('updateShipVariantsUsers', {
@@ -92,6 +94,7 @@ const actions = {
                     'filters[shipNames]': state.filterShipName,
                     'filters[citizenIds]': state.filterCitizenId,
                     'filters[shipSizes]': state.filterShipSize,
+                    'filters[shipStatus]': state.filterShipStatus,
                 },
             });
             commit('updateSelectedShipFamily', {

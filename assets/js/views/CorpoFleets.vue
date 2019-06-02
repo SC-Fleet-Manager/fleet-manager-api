@@ -35,16 +35,16 @@
                     </b-row>
                     <b-row class="mb-3" v-if="sid != null && ((citizen != null && organizations[sid]) || (this.organization !== null && this.organization.publicChoice === 'public'))">
                         <b-col col xl="2" lg="3" md="4" xs="6">
-                            <label for="filters_input_ship_name" class="d-block">Filter by ship</label>
-                            <select2 id="filters_input_ship_name" :options="filterOptionsShips" v-model="filterShipName" multiple @input="refreshOrganizationFleet(true)"></select2>
+                            <v-select id="filters_input_ship_name" :reduce="item => item.id" v-model="filterShipName" :options="filterOptionsShips" multiple @input="refreshOrganizationFleet(true)" placeholder="Filter by ship name"></v-select>
                         </b-col>
                         <b-col col xl="2" lg="3" md="4" xs="6">
-                            <label for="filters_input_citizen_id" class="d-block">Filter by citizens</label>
-                            <select2 id="filters_input_citizen_id" :options="filterOptionsCitizens" v-model="filterCitizenId" multiple @input="refreshOrganizationFleet(true)"></select2>
+                            <v-select id="filters_input_citizen_id" :reduce="item => item.id" v-model="filterCitizenId" :options="filterOptionsCitizens" multiple @input="refreshOrganizationFleet(true)" placeholder="Filter by citizen"></v-select>
                         </b-col>
                         <b-col col xl="2" lg="3" md="4" xs="6">
-                            <label for="filters_input_ship_size" class="d-block">Filter by ship size</label>
-                            <select2 id="filters_input_ship_size" :options="filterOptionsShipSize" v-model="filterShipSize" multiple @input="refreshOrganizationFleet(true)"></select2>
+                            <v-select id="filters_input_ship_size" :reduce="item => item.id" v-model="filterShipSize" :options="filterOptionsShipSize" multiple @input="refreshOrganizationFleet(true)" placeholder="Filter by ship size"></v-select>
+                        </b-col>
+                        <b-col col xl="2" lg="3" md="4" xs="6">
+                            <v-select id="filters_input_ship_status" :reduce="item => item.id" v-model="filterShipStatus" :options="filterOptionsShipStatus" @input="refreshOrganizationFleet(true)" placeholder="Filter by ship status"></v-select>
                         </b-col>
                     </b-row>
                     <b-row>
@@ -85,7 +85,7 @@
 <script>
     import axios from 'axios';
     import toastr from 'toastr';
-    import select2 from '../components/Select2';
+    import vSelect from 'vue-select';
     import ShipFamilyDetail from './ShipFamilyDetail';
     import ShipFamily from './ShipFamily';
     import { createNamespacedHelpers } from 'vuex';
@@ -111,7 +111,7 @@
     export default {
         name: 'organizations-fleets',
         props: ['sid'],
-        components: {select2, ShipFamily, ShipFamilyDetail},
+        components: {vSelect, ShipFamily, ShipFamilyDetail},
         data() {
             return {
                 organization: null,
@@ -123,13 +123,17 @@
                 filterOptionsCitizens: [],
                 filterOptionsShips: [],
                 filterOptionsShipSize: [
-                    {'id': '', 'text': 'N/A'},
-                    {'id': 'vehicle', 'text': 'Vehicle'},
-                    {'id': 'snub', 'text': 'Snub'},
-                    {'id': 'small', 'text': 'Small'},
-                    {'id': 'medium', 'text': 'Medium'},
-                    {'id': 'large', 'text': 'Large'},
-                    {'id': 'capital', 'text': 'Capital'},
+                    {'id': '', 'label': 'N/A'},
+                    {'id': 'vehicle', 'label': 'Vehicle'},
+                    {'id': 'snub', 'label': 'Snub'},
+                    {'id': 'small', 'label': 'Small'},
+                    {'id': 'medium', 'label': 'Medium'},
+                    {'id': 'large', 'label': 'Large'},
+                    {'id': 'capital', 'label': 'Capital'},
+                ],
+                filterOptionsShipStatus: [
+                    {'id': 'ready', 'label': 'Flight ready'},
+                    {'id': 'not_ready', 'label': 'In concept'},
                 ],
             };
         },
@@ -181,6 +185,14 @@
                 },
                 set(value) {
                     this.$store.state.orga_fleet.filterShipSize = value;
+                }
+            },
+            filterShipStatus: {
+                get() {
+                    return this.$store.state.orga_fleet.filterShipStatus;
+                },
+                set(value) {
+                    this.$store.state.orga_fleet.filterShipStatus = value;
                 }
             },
             ...mapGetters({
@@ -294,6 +306,7 @@
                         'filters[shipNames]': this.filterShipName,
                         'filters[citizenIds]': this.filterCitizenId,
                         'filters[shipSizes]': this.filterShipSize,
+                        'filters[shipStatus]': this.filterShipStatus,
                     },
                 }).then(response => {
                     this.selectShipFamily({index: null, shipFamily: null});
@@ -370,6 +383,7 @@
 </script>
 
 <style lang="scss">
+    @import '~vue-select/src/scss/vue-select';
 
     .rank-icon {
         display: inline-block;
@@ -380,9 +394,5 @@
         &.rank-icon-active {
             background-position: 50% -16px;
         }
-    }
-    .select2-container {
-        min-width: 100%;
-        max-width: 100%;
     }
 </style>

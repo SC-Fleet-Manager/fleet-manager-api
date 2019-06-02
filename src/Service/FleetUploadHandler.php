@@ -57,7 +57,6 @@ class FleetUploadHandler
         $fleet = $this->createNewFleet($citizen, $fleetData, $lastVersion);
         $this->entityManager->persist($fleet);
         $this->entityManager->flush();
-
     }
 
     private function createNewFleet(Citizen $citizen, array $fleetData, ?Fleet $lastVersionFleet = null): Fleet
