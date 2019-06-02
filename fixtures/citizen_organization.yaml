@@ -1,0 +1,11 @@
+App\Entity\CitizenOrganization:
+    ionni_orga_flk:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("41ade55e-6d32-419c-9e48-169fd6c61f34"))>']
+        organizationSid: 'flk'
+        rank: 1
+        rankName: 'Citoyen'
+    ashuvidz_orga_flk:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("aacc1290-1d6d-41f0-b579-cf67d733118d"))>']
+        organizationSid: 'flk'
+        rank: 5
+        rankName: 'Chef de département'

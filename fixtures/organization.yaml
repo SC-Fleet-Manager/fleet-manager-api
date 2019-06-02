@@ -1,0 +1,6 @@
+App\Entity\Organization:
+    orga_flk:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("80db0703-dd43-49a0-93d3-89947b9ab321"))>']
+        organizationSid: 'flk'
+        name: 'FallKrom'
+        publicChoice: 'private'

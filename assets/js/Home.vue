@@ -155,7 +155,7 @@
                 <div class="row text-center align-content-center" style="min-height: 25vh">
                     <div class="col-4 mb-3">
                         <div class="social-networks-label pb-3">Roadmap</div>
-                        <a href="https://trello.com/b/IZ7BsxJc/fleet-manager" target="_blank"><i class="fab fa-trello fa-8x"></i></a>
+                        <a href="https://trello.com/b/V2daCSis/fleet-manager-road-map" target="_blank"><i class="fab fa-trello fa-8x"></i></a>
                     </div>
                     <div class="col-4 mb-3">
                         <div class="social-networks-label pb-3">Sources</div>
@@ -221,9 +221,8 @@
             <div class="container text-white">
                 <div class="row align-items-center">
                     <div class="col-6">
-                        <a class="navbar-brand" href="/">
-                            <img src="../img/logo.png" height="45" alt="Fleet Manager Logo">
-                        </a>
+                        <a class="navbar-brand" href="/"><img src="../img/logo.png" height="45" alt="Fleet Manager Logo"></a>
+                        <a href="/privacy-policy">Privacy policy</a>
                     </div>
                     <div class="col-6 text-right">
                         <a href="https://github.com/Ioni14/starcitizen-fleet-manager" target="_blank" class="mr-3"><i class="fab fa-github fa-2x"></i></a>
@@ -303,8 +302,8 @@ export default {
                 const bottomY = topY + this.$refs.statistics.clientHeight;
                 const statsTopScreenY = topY - window.scrollY; // the Y-pos of statistics block with topscreen at origin
                 const statsBottomScreenY = bottomY - window.scrollY;
-                const thresholdFromTop = window.screen.height * 0.6667;
-                const thresholdFromBottom = window.screen.height * 0.3333;
+                const thresholdFromTop = window.screen.height * 4/5;
+                const thresholdFromBottom = window.screen.height * 1/5;
 
                 if (statsBottomScreenY >= thresholdFromBottom && statsTopScreenY <= thresholdFromTop) {
                     this.canCountStatistics = true;

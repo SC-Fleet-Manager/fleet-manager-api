@@ -12,7 +12,9 @@ use App\Exception\InvalidFleetDataException;
 use App\Exception\NotFoundHandleSCException;
 use App\Form\Dto\FleetUpload;
 use App\Form\FleetUploadForm;
+use App\Repository\CitizenOrganizationRepository;
 use App\Repository\CitizenRepository;
+use App\Repository\OrganizationRepository;
 use App\Service\CitizenFleetGenerator;
 use App\Service\FleetUploadHandler;
 use App\Service\OrganisationFleetGenerator;
@@ -43,6 +45,7 @@ class ApiController extends AbstractController
     private $organisationFleetGenerator;
     private $organizationInfosProvider;
     private $citizenRepository;
+    private $organizationRepository;
     private $serializer;
 
     public function __construct(
@@ -53,6 +56,7 @@ class ApiController extends AbstractController
         OrganisationFleetGenerator $organisationFleetGenerator,
         OrganizationInfosProviderInterface $organizationInfosProvider,
         CitizenRepository $citizenRepository,
+        OrganizationRepository $organizationRepository,
         SerializerInterface $serializer
     ) {
         $this->logger = $logger;
@@ -62,6 +66,7 @@ class ApiController extends AbstractController
         $this->organisationFleetGenerator = $organisationFleetGenerator;
         $this->organizationInfosProvider = $organizationInfosProvider;
         $this->citizenRepository = $citizenRepository;
+        $this->organizationRepository = $organizationRepository;
         $this->serializer = $serializer;
     }
 
@@ -93,6 +98,52 @@ class ApiController extends AbstractController
         }
 
         return $this->json($res);
+    }
+
+    /**
+     * @Route("/organization/{sid}", name="organization", methods={"GET"})
+     */
+    public function organization(string $sid): Response
+    {
+        $orga = $this->organizationRepository->findOneBy(['organizationSid' => $sid]);
+        if ($orga === null) {
+            return $this->json([
+                'error' => 'orga_not_exist',
+                'errorMessage' => sprintf('The organization %s does not exist.', $sid),
+            ], 404);
+        }
+
+        return $this->json($orga);
+    }
+
+    /**
+     * @Route("/manageable-organizations", name="manageable_organizations", methods={"GET"})
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
+     */
+    public function manageableOrganizations(CitizenOrganizationRepository $citizenOrganizationRepository): Response
+    {
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $citizen = $user->getCitizen();
+        if ($citizen === null) {
+            return $this->json([
+                'error' => 'no_citizen_created',
+                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
+            ], 400);
+        }
+
+        $sids = [];
+        foreach ($citizen->getOrganizations() as $citizenOrga) {
+            $citizenOrgas = $citizenOrganizationRepository->findGreaterThanRank($citizenOrga->getOrganizationSid(), $citizenOrga->getRank());
+            if (count($citizenOrgas) === 0) {
+                // granted to manage $citizenOrga settings
+                $sids[] = $citizenOrga->getOrganizationSid();
+            }
+        }
+
+        $manageableOrgas = $this->organizationRepository->findBy(['organizationSid' => $sids]);
+
+        return $this->json($manageableOrgas);
     }
 
     /**
@@ -277,18 +328,12 @@ class ApiController extends AbstractController
         }
 
         $file = $this->organisationFleetGenerator->generateFleetFile(new SpectrumIdentification($organization));
-        $filename = 'organization_fleet.json';
 
-        $response = new BinaryFileResponse($file);
-        $response->headers->set('Content-Type', 'application/json');
-        $response->deleteFileAfterSend();
-        $response->setContentDisposition(
-            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            $filename,
-            $filename
-        );
+        $fileResponse = $this->file($file, 'organization_fleet.json');
+        $fileResponse->headers->set('Content-Type', 'application/json');
+        $fileResponse->deleteFileAfterSend();
 
-        return $response;
+        return $fileResponse;
     }
 
     /**
@@ -364,6 +409,7 @@ class ApiController extends AbstractController
         file_put_contents($filepath, $csv);
 
         $file = $this->file($filepath, 'export_'.$organization.'.csv');
+        $file->headers->set('Content-Type', 'application/csv');
         $file->deleteFileAfterSend();
 
         return $file;

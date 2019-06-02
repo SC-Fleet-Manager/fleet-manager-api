@@ -46,9 +46,9 @@ class FleetControllerTest extends WebTestCase
                         'pledgeDate' => '2019-04-10T00:00:00+00:00',
                         'cost' => 110,
                         'insured' => true,
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ], $json);
         $this->assertArrayHasKey('shipInfos', $json);
     }

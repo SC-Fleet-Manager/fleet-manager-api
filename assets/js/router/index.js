@@ -11,6 +11,7 @@ const Profile = () => import('../views/Profile');
 const MyFleet = () => import('../views/MyFleet');
 
 // Views - Pages
+const PrivacyPolicy = () => import('../views/PrivacyPolicy');
 const Page404 = () => import('../views/Page404');
 
 Vue.use(Router);
@@ -33,15 +34,24 @@ const router = new Router({
                     path: 'organization-fleet/:sid',
                     name: 'Organization fleet',
                     component: CorpoFleets,
-                    props: true,
-                    meta: {
-                        requireAuth: false,
-                    }
+                    props: true
                 },
                 {
                     path: 'organizations-fleets',
                     name: 'Organizations\' fleets',
                     component: CorpoFleets,
+                    beforeEnter(to, from, next) {
+                        axios.get('/api/profile/').then(response => {
+                            const citizen = response.data.citizen;
+                            if (citizen === null ||  citizen.organisations.length === 0) {
+                                next();
+                            }
+                            const defaultOrga = citizen.mainOrga !== null ? citizen.mainOrga.organizationSid : citizen.organisations[0];
+                            next({ path: `/organization-fleet/${defaultOrga}` });
+                        }).catch(err => {
+                            next();
+                        });
+                    },
                     meta: {
                         requireAuth: true,
                     }
@@ -50,10 +60,7 @@ const router = new Router({
                     path: 'citizen/:userHandle',
                     name: 'User fleet',
                     component: MyFleet,
-                    props: true,
-                    meta: {
-                        requireAuth: false,
-                    }
+                    props: true
                 },
                 {
                     path: 'profile',
@@ -64,6 +71,11 @@ const router = new Router({
                     }
                 }
             ]
+        },
+        {
+            path: '/privacy-policy',
+            name: 'Privacy policy',
+            component: PrivacyPolicy
         },
         {
             path: '*',

@@ -20,7 +20,7 @@ Encore
         // https://vue-loader.vuejs.org/options.html
     })
 
-    .autoProvidejQuery()
+    // .autoProvidejQuery()
 ;
 
 module.exports = Encore.getWebpackConfig();

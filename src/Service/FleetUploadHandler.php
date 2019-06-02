@@ -18,15 +18,18 @@ class FleetUploadHandler
     private $fleetRepository;
     private $entityManager;
     private $citizenInfosProvider;
+    private $organizationCreator;
 
     public function __construct(
         FleetRepository $fleetRepository,
         EntityManagerInterface $entityManager,
-        CitizenInfosProviderInterface $citizenInfosProvider
+        CitizenInfosProviderInterface $citizenInfosProvider,
+        OrganizationCreator $organizationCreator
     ) {
         $this->fleetRepository = $fleetRepository;
         $this->entityManager = $entityManager;
         $this->citizenInfosProvider = $citizenInfosProvider;
+        $this->organizationCreator = $organizationCreator;
     }
 
     public function handle(Citizen $citizen, array $fleetData): void
@@ -40,13 +43,10 @@ class FleetUploadHandler
             throw new BadCitizenException(sprintf('The SC number %s is not equal to %s.', $citizen->getNumber(), $infos->numberSC));
         }
 
-        $citizen->setBio($infos->bio);
-        $citizen->setOrganisations([]);
-        foreach ($infos->organisations as $organisation) {
-            $citizen->addOrganisation(is_object($organisation) ? clone $organisation : $organisation);
-        }
-        $citizen->setLastRefresh(new \DateTimeImmutable());
+        $citizen->refresh($infos, $this->entityManager);
         $this->entityManager->flush();
+
+        $this->organizationCreator->createOrganization(iterator_to_array($citizen->getOrganizations()));
 
         $lastVersion = $this->fleetRepository->getLastVersionFleet($citizen);
         if ($lastVersion !== null && $lastVersion->isUploadedDateTooClose()) {

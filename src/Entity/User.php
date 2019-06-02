@@ -10,6 +10,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
+ * @ORM\Table(indexes={
+ *     @ORM\Index(name="discord_idx", columns={"discord_id"})
+ * })
  */
 class User implements UserInterface
 {
@@ -22,7 +25,7 @@ class User implements UserInterface
      *
      * @ORM\Id()
      * @ORM\Column(type="uuid", unique=true)
-     * @Groups({"profile", "me:read"})
+     * @Groups({"profile", "me:read", "orga_fleet"})
      */
     private $id;
 
@@ -61,7 +64,7 @@ class User implements UserInterface
      * @var Citizen
      *
      * @ORM\OneToOne(targetEntity="App\Entity\Citizen", cascade={"persist"})
-     * @Groups({"profile"})
+     * @Groups({"profile", "orga_fleet"})
      */
     private $citizen;
 
@@ -69,7 +72,7 @@ class User implements UserInterface
      * @var string
      *
      * @ORM\Column(type="string", length=15, options={"default":"private"})
-     * @Groups({"profile"})
+     * @Groups({"profile", "orga_fleet"})
      */
     private $publicChoice;
 

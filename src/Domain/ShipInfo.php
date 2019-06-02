@@ -9,6 +9,13 @@ class ShipInfo
     public const FLIGHT_READY = 'ready';
     public const NOT_READY = 'not_ready';
 
+    public const SIZE_VEHICLE = 'vehicle';
+    public const SIZE_SNUB = 'snub';
+    public const SIZE_SMALL = 'small';
+    public const SIZE_MEDIUM = 'medium';
+    public const SIZE_LARGE = 'large';
+    public const SIZE_CAPITAL = 'capital';
+
     /**
      * @var string
      *
@@ -42,6 +49,13 @@ class ShipInfo
      * @Groups({"my-fleet", "public-fleet"})
      */
     public $name;
+
+    /**
+     * @var string
+     *
+     * @Groups({"my-fleet", "public-fleet"})
+     */
+    public $size;
 
     /**
      * @var string

@@ -4,7 +4,7 @@
             <b-col col md="6" v-if="showLinkAccount">
                 <b-card header="Link your RSI Account">
                     <b-alert variant="info" show>
-                        To link your Star Citizen account, copy-paste the following token into your "Short Bio" in your <a target="_blank" href="https://robertsspaceindustries.com/account/profile">RSI profile</a>. Then enter your Handle and validate.
+                        To link your Star Citizen account, simply copy-paste the following token into your "Short Bio" in your <a target="_blank" href="https://robertsspaceindustries.com/account/profile">RSI profile</a>. Then enter your Handle and validate.
                     </b-alert>
 
                     <p><img src="../../img/sc-handle.png" alt="How to retrieve your Handle" /></p>
@@ -50,11 +50,11 @@
                             <b-form-radio v-model="publicChoice" @change="savePublicChoice" :disabled="savingPreferences" name="public-choice" value="orga">Organizations only</b-form-radio>
                             <b-form-radio v-model="publicChoice" @change="savePublicChoice" :disabled="savingPreferences" name="public-choice" value="public">Public</b-form-radio>
                         </b-form-group>
-                        <!--<b-form-group label="Orga fleet policy">
-                            <b-form-radio v-model="publicChoice" name="some-radios" value="A">Option A</b-form-radio>
-                            <b-form-radio v-model="publicChoice" name="some-radios" value="B">Option B</b-form-radio>
+                        <!-- TODO uncomment this shit -->
+                        <!--<b-form-group :label="'Organization ' + orga.organizationSid + ' fleet policy'" v-for="orga in manageableOrgas" :key="orga.organizationSid">
+                            <b-form-radio v-model="orgaPublicChoices[orga.organizationSid]" @change="saveOrgaPublicChoice($event, orga)" :disabled="savingPreferences" :name="'orga-public-choice-' + orga.organizationSid" value="private">Private</b-form-radio>
+                            <b-form-radio v-model="orgaPublicChoices[orga.organizationSid]" @change="saveOrgaPublicChoice($event, orga)" :disabled="savingPreferences" :name="'orga-public-choice-' + orga.organizationSid" value="public">Public</b-form-radio>
                         </b-form-group>-->
-
                         <b-form-group label="My fleet link" label-for="my_fleet_link">
                             <b-input-group>
                                 <b-input-group-prepend>
@@ -91,6 +91,8 @@
                 },
                 myFleetLink: null,
                 publicChoice: null,
+                orgaPublicChoices: {},
+                manageableOrgas: [],
                 savingPreferences: false,
                 preferencesLoaded: false,
                 userToken: null,
@@ -113,10 +115,15 @@
                 this.publicChoice = value;
                 this.savePreferences();
             },
+            saveOrgaPublicChoice(value, orga) {
+                this.$set(this.orgaPublicChoices, orga.organizationSid, value);
+                this.savePreferences();
+            },
             savePreferences() {
                 this.savingPreferences = true;
                 axios.post('/api/profile/save-preferences', {
-                    publicChoice: this.publicChoice
+                    publicChoice: this.publicChoice,
+                    orgaPublicChoices: this.orgaPublicChoices,
                 }).then(response => {
                     toastr.success('Changes saved');
                 }).catch(err => {
@@ -143,12 +150,28 @@
                     this.myFleetLink = this.getMyFleetLink();
                     this.publicChoice = response.data.publicChoice;
                     this.updateProfile(this.citizen);
+                    this.refreshManageableOrgas();
                 }).catch(err => {
                     this.checkAuth(err.response);
                     this.showError = true;
                     if (err.response.data.errorMessage) {
                         this.errorMessage = err.response.data.errorMessage;
                     }
+                    console.error(err);
+                });
+            },
+            refreshManageableOrgas() {
+                if (this.citizen === null) {
+                    return;
+                }
+                axios.get('/api/manageable-organizations').then(response => {
+                    this.manageableOrgas = response.data;
+                    for (let orga of this.manageableOrgas) {
+                        this.$set(this.orgaPublicChoices, orga.organizationSid, orga.publicChoice);
+                    }
+                }).catch(err => {
+                    this.checkAuth(err.response);
+                    toastr.error('Sorry, can\'t retrieve manageable organizations.');
                     console.error(err);
                 });
             },

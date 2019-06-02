@@ -1,11 +1,18 @@
 <template>
     <div class="ship-family-detail-variant mb-3">
-        <div class="mb-2 text-center"><img :src="shipVariant.shipInfo.mediaThumbUrl" class="img-fluid" /></div>
+        <div class="mb-2 text-center position-relative">
+            <svg v-if="!imgLazyLoaded" class="img-fluid" viewBox="0 0 351 210"><rect width="351" height="210" style="fill:rgb(128,128,128)"></rect></svg> <!---->
+            <img v-show="imgLazyLoaded" :src="shipVariant.shipInfo.mediaThumbUrl" :alt="shipVariant.shipInfo.name + ' ship picture'" class="img-fluid" @load="imgLazyLoaded = true" />
+            <div class="ship-family-detail-variant-counter">{{ shipVariant.countTotalShips }}</div>
+        </div>
         <h4>{{ shipVariant.shipInfo.name }} <!--<a href="#" title="Go to pledge"><i class="fa fa-link"></i></a>--></h4>
-        <div class="mb-3"><strong>{{ shipVariant.countTotalShips }}</strong> owned by <strong>{{ shipVariant.countTotalOwners }}</strong> citizens</div>
 <!--        <div class="mb-3"><b-form-input type="text" v-model="search[ship.shipInfo.id]" placeholder="Search citizen"></b-form-input></div>&ndash;&gt;-->
         <div class="ship-family-detail-variant-ownerlist" @scroll="onUsersScroll">
-            <div v-for="user in shipVariantUsers">{{ user[0].actualHandle.handle }} : {{ user.countShips }}</div>
+            <div v-for="user in shipVariantUsers">
+                <a v-if="canAccessToHisFleet(user)" :href="'/citizen/'+user[0].citizen.actualHandle.handle" target="_blank">{{ user[0].citizen.actualHandle.handle }}</a>
+                <template v-else>{{ user[0].citizen.actualHandle.handle }}</template>
+                : {{ user.countShips }}
+            </div>
         </div>
     </div>
 </template>
@@ -13,7 +20,7 @@
 <script>
     import { createNamespacedHelpers } from 'vuex';
 
-    const { mapState, mapActions } = createNamespacedHelpers('orga_fleet');
+    const { mapState, mapGetters, mapActions } = createNamespacedHelpers('orga_fleet');
 
     export default {
         name: 'ship-variant',
@@ -24,11 +31,16 @@
                 shipVariantUsers: [],
                 page: 2,
                 atBottom: false,
+                imgLazyLoaded: false
             }
         },
         computed: {
+            ...mapGetters({
+                selectedSid: 'selectedSid',
+                usersInfos: 'usersInfos',
+            }),
             ...mapState({
-                shipVariantUsersTrackChanges: 'shipVariantUsersTrackChanges'
+                shipVariantUsersTrackChanges: 'shipVariantUsersTrackChanges',
             }),
         },
         watch: {
@@ -54,9 +66,34 @@
                     this.atBottom = false;
                 }
             },
+            canAccessToHisFleet(user) {
+                switch (user[0].publicChoice) {
+                    case 'public':
+                        return true;
+                    case 'private':
+                        return false;
+                    case 'orga':
+                        // only if logged + hasOrga(selectedSid)
+                        const citizen = this.$store.getters.citizen;
+                        return citizen !== null && citizen.organisations.indexOf(this.selectedSid) !== -1;
+                }
+                return false;
+            }
         }
     };
 </script>
 
-<style>
+<style lang="scss">
+    @import '../../css/vendors/variables';
+
+    .ship-family-detail-variant-counter {
+        font-family: "Josefin Sans", Helvetica Neue, Arial, sans-serif;
+        font-size: 4rem;
+        position: absolute;
+        bottom: 0;
+        right: 0.6rem;
+        line-height: 1;
+        color: $gray-200;
+        text-shadow: 0 0 4px rgba(30, 30, 30, 1);
+    }
 </style>

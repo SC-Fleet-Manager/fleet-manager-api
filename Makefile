@@ -91,7 +91,9 @@ fixtures: vendor								## executes all fixtures
 .PHONY: qa tests phpunit-tests phpcsfix lint-twig lint-yaml
 qa: phpcsfix lint-twig lint-yaml tests					## launch tests + syntax checks
 
-tests: phpunit-tests							## launch all tests
+tests:									## launch all tests
+	$(MAKE) db-reset-tests
+	$(MAKE) phpunit-tests
 phpunit-tests: vendor							## launch unit + functional tests (PHPUnit /w Panther)
 	$(EXEC_PHP) $(PHPUNIT) $(c)
 
@@ -100,7 +102,7 @@ phpcsfix: vendor							## fix syntax of all PHP sources
 lint-twig: vendor							## check syntax of templates
 	$(EXEC_CONSOLE) lint:twig templates
 lint-yaml: vendor							## check syntax of yaml files
-	$(EXEC_CONSOLE) lint:yaml --parse-tags *.yml fixtures/*.yaml k8s/*.yaml
+	$(EXEC_CONSOLE) lint:yaml --parse-tags *.yml fixtures/*.yaml
 
 # Files generation
 vendor: composer.lock

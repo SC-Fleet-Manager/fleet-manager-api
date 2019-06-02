@@ -4,12 +4,15 @@ namespace App\Controller;
 
 use App\Domain\SpectrumIdentification;
 use App\Entity\Citizen;
+use App\Entity\Organization;
 use App\Entity\User;
 use App\Repository\CitizenRepository;
+use App\Repository\OrganizationRepository;
 use App\Repository\UserRepository;
 use App\Service\Dto\ShipFamilyFilter;
 use App\Service\OrganizationFleetHandler;
 use App\Service\ShipInfosProviderInterface;
+use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,17 +29,24 @@ class FleetController extends AbstractController
     private $citizenRepository;
     private $userRepository;
     private $shipInfosProvider;
+    private $organizationRepository;
+    private $logger;
 
     public function __construct(
         Security $security,
         CitizenRepository $citizenRepository,
         UserRepository $userRepository,
-        ShipInfosProviderInterface $shipInfosProvider
-    ) {
+        ShipInfosProviderInterface $shipInfosProvider,
+        OrganizationRepository $organizationRepository,
+        LoggerInterface $logger
+    )
+    {
         $this->security = $security;
         $this->citizenRepository = $citizenRepository;
         $this->userRepository = $userRepository;
         $this->shipInfosProvider = $shipInfosProvider;
+        $this->organizationRepository = $organizationRepository;
+        $this->logger = $logger;
     }
 
     /**
@@ -112,32 +122,38 @@ class FleetController extends AbstractController
 
     /**
      * @Route("/orga-fleets/{organization}", name="orga_fleets", methods={"GET"}, options={"expose":true})
-     * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
      */
     public function orgaFleets(Request $request, string $organization, OrganizationFleetHandler $organizationFleetHandler): Response
     {
-        /** @var User $user */
-        $user = $this->security->getUser();
-        $citizen = $user->getCitizen();
-        if ($citizen === null) {
-            return $this->json([
-                'error' => 'no_citizen_created',
-                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
-            ], 400);
-        }
-        if (!$citizen->hasOrganisation($organization)) {
-            return $this->json([
-                'error' => 'bad_organization',
-                'errorMessage' => sprintf('The organization %s does not exist.', $organization),
-            ], 404);
+        if (!$this->isPublicOrga($organization)) {
+            $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
+
+            /** @var User $user */
+            $user = $this->security->getUser();
+            $citizen = $user->getCitizen();
+            if ($citizen === null) {
+                return $this->json([
+                    'error' => 'no_citizen_created',
+                    'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
+                ], 400);
+            }
+            if (!$citizen->hasOrganisation($organization)) {
+                return $this->json([
+                    'error' => 'bad_organization',
+                    'errorMessage' => sprintf('The organization %s does not exist.', $organization),
+                ], 404);
+            }
         }
 
         $filters = $request->query->get('filters', []);
+        $shipFamilyFilter = new ShipFamilyFilter(
+            $filters['shipNames'] ?? [],
+            $filters['citizenIds'] ?? [],
+            $filters['shipSizes'] ?? [],
+            $filters['shipStatus'] ?? null,
+            );
 
-        $shipFamilies = $organizationFleetHandler->computeShipFamilies(new SpectrumIdentification($organization), new ShipFamilyFilter(
-            $filters['shipName'] ?? null,
-            $filters['citizenName'] ?? null,
-        ));
+        $shipFamilies = $organizationFleetHandler->computeShipFamilies(new SpectrumIdentification($organization), $shipFamilyFilter);
         usort($shipFamilies, static function (array $shipFamily1, array $shipFamily2): int {
             $count = $shipFamily2['count'] - $shipFamily1['count'];
             if ($count !== 0) {
@@ -152,33 +168,48 @@ class FleetController extends AbstractController
 
     /**
      * @Route("/orga-fleets/{organization}/{chassisId}", name="orga_fleet_family", methods={"GET"}, options={"expose":true})
-     * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
      */
     public function orgaFleetFamily(Request $request, string $organization, string $chassisId): Response
     {
-        /** @var User $user */
-        $user = $this->security->getUser();
-        $citizen = $user->getCitizen();
-        if ($citizen === null) {
-            return $this->json([
-                'error' => 'no_citizen_created',
-                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
-            ], 400);
-        }
-        if (!$citizen->hasOrganisation($organization)) {
-            return $this->json([
-                'error' => 'bad_organization',
-                'errorMessage' => sprintf('The organization %s does not exist.', $organization),
-            ], 404);
+        if (!$this->isPublicOrga($organization)) {
+            $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
+
+            /** @var User $user */
+            $user = $this->security->getUser();
+            $citizen = $user->getCitizen();
+            if ($citizen === null) {
+                return $this->json([
+                    'error' => 'no_citizen_created',
+                    'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
+                ], 400);
+            }
+            if (!$citizen->hasOrganisation($organization)) {
+                return $this->json([
+                    'error' => 'bad_organization',
+                    'errorMessage' => sprintf('The organization %s does not exist.', $organization),
+                ], 404);
+            }
         }
 
         $filters = $request->query->get('filters', []);
-        $shipFamilyFilter = new ShipFamilyFilter($filters['shipName'] ?? null, $filters['citizenName'] ?? null);
+        $shipFamilyFilter = new ShipFamilyFilter(
+            $filters['shipNames'] ?? [],
+            $filters['citizenIds'] ?? [],
+            $filters['shipSizes'] ?? [],
+            $filters['shipStatus'] ?? null
+        );
 
         $shipsInfos = $this->shipInfosProvider->getShipsByChassisId($chassisId);
 
         $res = [];
         foreach ($shipsInfos as $shipInfo) {
+            // filtering
+            if (count($shipFamilyFilter->shipSizes) > 0 && !in_array($shipInfo->size, $shipFamilyFilter->shipSizes, false)) {
+                continue;
+            }
+            if ($shipFamilyFilter->shipStatus !== null && $shipFamilyFilter->shipStatus !== $shipInfo->productionStatus) {
+                continue;
+            }
             $shipName = $this->shipInfosProvider->transformProviderToHangar($shipInfo->name);
             $countOwnersAndOwned = $this->citizenRepository->countOwnersAndOwnedOfShip($organization, $shipName, $shipFamilyFilter)[0];
             if ((int)$countOwnersAndOwned['countOwned'] === 0) {
@@ -198,42 +229,76 @@ class FleetController extends AbstractController
     }
 
     /**
-     * @Route("/orga-fleets/{organization}/users/{shipName}", name="orga_fleet_users", methods={"GET"}, options={"expose":true})
-     * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
+     * @Route("/orga-fleets/{organization}/users/{providerShipName}", name="orga_fleet_users", methods={"GET"}, options={"expose":true})
      */
-    public function orgaFleetUsers(Request $request, string $organization, string $shipName): Response
+    public function orgaFleetUsers(Request $request, string $organization, string $providerShipName): Response
     {
         $page = $request->query->get('page', 1);
         $itemsPerPage = 10;
 
-        /** @var User $user */
-        $user = $this->security->getUser();
-        $citizen = $user->getCitizen();
-        if ($citizen === null) {
-            return $this->json([
-                'error' => 'no_citizen_created',
-                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
-            ], 400);
-        }
-        if (!$citizen->hasOrganisation($organization)) {
-            return $this->json([
-                'error' => 'bad_organization',
-                'errorMessage' => sprintf('The organization %s does not exist.', $organization),
-            ], 404);
+        if (!$this->isPublicOrga($organization)) {
+            $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
+
+            /** @var User $user */
+            $user = $this->security->getUser();
+            $citizen = $user->getCitizen();
+            if ($citizen === null) {
+                return $this->json([
+                    'error' => 'no_citizen_created',
+                    'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
+                ], 400);
+            }
+            if (!$citizen->hasOrganisation($organization)) {
+                return $this->json([
+                    'error' => 'bad_organization',
+                    'errorMessage' => sprintf('The organization %s does not exist.', $organization),
+                ], 404);
+            }
         }
 
         $filters = $request->query->get('filters', []);
-        $shipFamilyFilter = new ShipFamilyFilter($filters['shipName'] ?? null, $filters['citizenName'] ?? null);
+        $shipFamilyFilter = new ShipFamilyFilter(
+            $filters['shipNames'] ?? [],
+            $filters['citizenIds'] ?? [],
+            $filters['shipSizes'] ?? [],
+            $filters['shipStatus'] ?? null
+        );
 
-        $shipName = $this->shipInfosProvider->transformProviderToHangar($shipName);
-        $citizens = $this->citizenRepository->getOwnersOfShip(
+        $shipName = $this->shipInfosProvider->transformProviderToHangar($providerShipName);
+        $shipInfo = $this->shipInfosProvider->getShipByName($providerShipName);
+        if ($shipInfo === null) {
+            $this->logger->warning('Ship not found in the ship infos provider.', ['hangarShipName' => $providerShipName, 'provider' => get_class($this->shipInfosProvider)]);
+
+            return $this->json([]);
+        }
+
+        // filtering
+        if (count($shipFamilyFilter->shipSizes) > 0 && !in_array($shipInfo->size, $shipFamilyFilter->shipSizes, false)) {
+            return $this->json([]);
+        }
+        if ($shipFamilyFilter->shipStatus !== null && $shipFamilyFilter->shipStatus !== $shipInfo->productionStatus) {
+            return $this->json([]);
+        }
+
+        $users = $this->citizenRepository->getOwnersOfShip(
             $organization,
             $shipName,
             $shipFamilyFilter,
             $page,
-            $itemsPerPage,
+            $itemsPerPage
         );
 
-        return $this->json($citizens, 200, [], ['groups' => 'orga_fleet']);
+        return $this->json($users, 200, [], ['groups' => 'orga_fleet']);
+    }
+
+    private function isPublicOrga(string $organizationSid): bool
+    {
+        /** @var Organization $orga */
+        $orga = $this->organizationRepository->findOneBy(['organizationSid' => $organizationSid]);
+        if ($orga === null) {
+            return false;
+        }
+
+        return $orga->getPublicChoice() === Organization::PUBLIC_CHOICE_PUBLIC;
     }
 }

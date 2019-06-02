@@ -4,15 +4,23 @@ namespace App\Service\Dto;
 
 class ShipFamilyFilter
 {
-    /** @var string */
-    public $shipName;
+    /** @var string[] */
+    public $shipNames;
 
-    /** @var string */
-    public $citizenName;
+    /** @var string[] */
+    public $citizenIds;
 
-    public function __construct(?string $shipName, ?string $citizenName)
+    /** @var string[] */
+    public $shipSizes;
+
+    /** @var string|null */
+    public $shipStatus;
+
+    public function __construct(array $shipNames = [], array $citizenIds = [], array $shipSizes = [], ?string $shipStatus = null)
     {
-        $this->shipName = $shipName;
-        $this->citizenName = $citizenName;
+        $this->shipNames = $shipNames;
+        $this->citizenIds = $citizenIds;
+        $this->shipSizes = $shipSizes;
+        $this->shipStatus = $shipStatus;
     }
 }
