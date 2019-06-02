@@ -155,7 +155,7 @@
                 <div class="row text-center align-content-center" style="min-height: 25vh">
                     <div class="col-4 mb-3">
                         <div class="social-networks-label pb-3">Roadmap</div>
-                        <a href="https://trello.com/b/IZ7BsxJc/fleet-manager" target="_blank"><i class="fab fa-trello fa-8x"></i></a>
+                        <a href="https://trello.com/b/V2daCSis/fleet-manager-road-map" target="_blank"><i class="fab fa-trello fa-8x"></i></a>
                     </div>
                     <div class="col-4 mb-3">
                         <div class="social-networks-label pb-3">Sources</div>
