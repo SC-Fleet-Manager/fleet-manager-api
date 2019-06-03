@@ -48,8 +48,8 @@
                         </b-col>
                     </b-row>
                     <b-row>
-                        <template v-if="(citizen == null && organization !== null && organization.publicChoice !== 'public')
-                                        || (citizen != null && !organizations[sid] && organization !== null && organization.publicChoice !== 'public')">
+                        <template v-if="!loadingOrgaFleet && ((citizen == null && (organization === null || organization.publicChoice !== 'public'))
+                                        || (citizen != null && !organizations[sid] && organization !== null && organization.publicChoice !== 'public'))">
                             <b-col>
                                 <b-alert show variant="danger">Sorry, this organization's fleet does not exist or is private. Try to <a href="/">login</a> to see it.</b-alert>
                             </b-col>

@@ -3,35 +3,79 @@
         <b-row>
             <b-col col md="6" v-if="showLinkAccount">
                 <b-card header="Link your RSI Account">
-                    <b-alert variant="info" show>
-                        To link your Star Citizen account, simply copy-paste the following token into your "Short Bio" in your <a target="_blank" href="https://robertsspaceindustries.com/account/profile">RSI profile</a>. Then enter your Handle and validate.
-                    </b-alert>
+                    <b-form>
+                        <b-alert variant="success" show>
+                            In order to protect your fleet, we need that you <em>link</em> your RSI account to Fleet Manager.<br/>
+                            This allows us to prevent impersonation of RSI accounts.<br/>
+                            For now, the only best and simplest way is to put a <b>special marker</b> on your <b>RSI biography</b>.
+                        </b-alert>
+                        <b-button v-b-toggle.collapse-step-1 variant="primary" size="lg" v-if="showButtonStep1">Okay, I'm ready to link my account!</b-button>
+                        <b-collapse id="collapse-step-1" class="mt-3" @show="showButtonStep1 = false">
+                            <h4>1. Who are you?</h4>
+                            <b-form-group>
+                                <p class="">Firstly, let us know your Star Citizen Handle.</p>
+                                <b-alert variant="danger" :show="showErrorStep1" v-html="errorStep1Message"></b-alert>
+                                <b-input-group>
+                                    <b-form-input id="form_handle"
+                                                  type="text"
+                                                  v-model="form.handle"
+                                                  placeholder="Type your SC handle then click on search"></b-form-input>
+                                    <b-input-group-append>
+                                        <b-btn variant="success" @click="searchHandle" :disabled="searchingHandle">
+                                            <template v-if="!searchingHandle"><i class="fas fa-search"></i> Search</template>
+                                            <template v-else><i class="fas fa-spinner fa-pulse"></i> Search</template>
+                                        </b-btn>
+                                    </b-input-group-append>
+                                </b-input-group>
+                                <div v-if="searchedCitizen != null" class="row mt-3">
+                                    <div v-if="searchedCitizen.avatarUrl" class="col col-xs-12 col-md-3 col-lg-2">
+                                        <img :src="searchedCitizen.avatarUrl" alt="avatar" class="img-fluid" />
+                                    </div>
+                                    <div class="col">
+                                        <strong>Handle</strong>: {{ searchedCitizen.handle.handle }}<br/>
+                                        <strong>Number</strong>: {{ searchedCitizen.numberSC.number }}<br/>
+                                        <strong>Main orga</strong>: {{ searchedCitizen.mainOrga.sid.sid }}<br/>
+                                        <strong>All orgas</strong>: {{ searchedCitizen.organisations.map(x => x.sid.sid).join(', ') }}<br/>
+                                    </div>
+                                </div>
+                            </b-form-group>
+                            <b-row v-if="searchedCitizen == null">
+                                <b-col>
+                                    <b-alert variant="info" show>
+                                        <i class="fas fa-info-circle"></i>
+                                        Your <b>SC Handle</b> is your <b>RSI username</b> (not your nickname) and can be visible on your <b>RSI Profile panel</b> or <a href="https://robertsspaceindustries.com/account/settings" target="_blank" style="text-decoration: underline"><b>RSI Settings</b></a>.
+                                    </b-alert>
+                                </b-col>
+                                <b-col lg="5" class="text-right">
+                                    <img class="img-fluid" src="../../img/sc-handle.png" alt="How to retrieve your Handle" />
+                                </b-col>
+                            </b-row>
+                        </b-collapse>
 
-                    <p><img src="../../img/sc-handle.png" alt="How to retrieve your Handle" /></p>
-
-                    <b-form @submit="onSubmit">
-                        <b-alert variant="danger" :show="showError" v-html="errorMessage"></b-alert>
-                        <b-form-group label="Account Token" label-for="form_user_token">
-                            <b-input-group>
-                                <b-form-input readonly
-                                              id="form_user_token"
-                                              type="text"
-                                              v-model="userToken"></b-form-input>
-                                <b-input-group-append>
-                                    <b-btn :variant="copied ? 'success' : 'outline-success'"
-                                           v-clipboard:copy="userToken"
-                                           v-clipboard:success="onCopyToken">{{ copied ? 'Copied' : 'Copy' }}</b-btn>
-                                </b-input-group-append>
-                            </b-input-group>
-                        </b-form-group>
-                        <b-form-group label="Handle Star Citizen" label-for="form_handle">
-                            <b-form-input id="form_handle"
-                                          type="text"
-                                          v-model="form.handle"
-                                          required
-                                          placeholder="Your Handle Star Citizen"></b-form-input>
-                        </b-form-group>
-                        <b-button type="submit" :disabled="submitDisabled" variant="success">Link my RSI account</b-button>
+                        <b-button v-b-toggle.collapse-step-2 variant="primary" size="lg" v-if="showButtonStep2">Great, this is my account, let's continue!</b-button>
+                        <b-collapse id="collapse-step-2" class="mt-3" @show="showButtonStep2 = false">
+                            <h4>2. Special marker</h4>
+                            <p>Finally, you have to put this following token into your <a href="https://robertsspaceindustries.com/account/profile" target="_blank" style="text-decoration: underline"><b>RSI short bio</b></a>.</p>
+                            <b-alert variant="danger" :show="showError" v-html="errorMessage"></b-alert>
+                            <div v-if="lastShortBio != null">
+                                <strong>Your actual bio:</strong>
+                                <p style="max-height: 150px; overflow-y: auto;">{{ lastShortBio }}</p>
+                            </div>
+                            <b-form-group>
+                                <b-input-group>
+                                    <b-form-input readonly
+                                                  id="form_user_token"
+                                                  type="text"
+                                                  v-model="userToken"></b-form-input>
+                                    <b-input-group-append>
+                                        <b-btn :variant="copied ? 'success' : 'outline-success'"
+                                               v-clipboard:copy="userToken"
+                                               v-clipboard:success="onCopyToken">{{ copied ? 'Copied' : 'Copy' }}</b-btn>
+                                    </b-input-group-append>
+                                </b-input-group>
+                            </b-form-group>
+                            <b-button type="button" :disabled="submitDisabled" size="lg" variant="success" @click="linkAccount">Done! I've pasted the token in my bio.</b-button>
+                        </b-collapse>
                     </b-form>
                 </b-card>
             </b-col>
@@ -104,6 +148,13 @@
                 showLinkAccount: false,
                 showUpdateHandle: false,
                 refreshingProfile: false,
+                showButtonStep1: true,
+                showButtonStep2: false,
+                showErrorStep1: false,
+                errorStep1Message: '',
+                searchedCitizen: null,
+                searchingHandle: false,
+                lastShortBio: null,
             }
         },
         created() {
@@ -128,7 +179,6 @@
                     toastr.success('Changes saved');
                 }).catch(err => {
                     this.checkAuth(err.response);
-                    // TODO : show errors
                     console.error(err);
                     toastr.error('An error has occurred. Please retry more later.');
                 }).then(_ => {
@@ -175,33 +225,6 @@
                     console.error(err);
                 });
             },
-            onSubmit(ev) {
-                ev.preventDefault();
-
-                const form = new FormData();
-                form.append('handleSC', this.form.handle);
-
-                this.showError = false;
-                this.errorMessage = 'An error has been occurred. Please try again in a moment.';
-                this.submitDisabled = true;
-                axios.post('/api/profile/link-account', form).then(response => {
-                    this.refreshProfile();
-                    toastr.success('Your RSI account has been successfully linked! You can remove the token from your bio.');
-                    this.submitDisabled = false;
-                    this.showLinkAccount = false;
-                    this.showUpdateHandle = true;
-                }).catch(err => {
-                    this.checkAuth(err.response);
-                    this.submitDisabled = false;
-                    this.showError = true;
-                    if (err.response.data.errorMessage) {
-                        this.errorMessage = err.response.data.errorMessage;
-                    } else if (err.response.data.error === 'invalid_form') {
-                        this.errorMessage = err.response.data.formErrors.join("\n");
-                    }
-                    console.error(err);
-                });
-            },
             getMyFleetLink() {
                 if (this.citizen === null) {
                     return '';
@@ -221,6 +244,65 @@
                     console.error(err);
                 }).then(_ => {
                     this.refreshingProfile = false;
+                });
+            },
+            searchHandle() {
+                if (!this.form.handle) {
+                    return;
+                }
+
+                this.searchedCitizen = null;
+                this.showErrorStep1 = false;
+                this.searchingHandle = true;
+                axios.get('/api/search-handle', {
+                    params: {handle: this.form.handle}
+                }).then(response => {
+                    this.searchedCitizen = response.data;
+                    this.showButtonStep2 = true;
+                }).catch(err => {
+                    if (err.response.data.error === 'not_found_handle') {
+                        this.errorStep1Message = `Sorry, it seems that <a href="https://robertsspaceindustries.com/citizens/${this.form.handle}" target="_blank">SC Handle ${this.form.handle}</a> does not exist. Try to check the typo and search again.`;
+                    } else {
+                        this.errorStep1Message = `Sorry, an unexpected error has occurred. Please retry.`;
+                    }
+                    this.showErrorStep1 = true;
+                    console.error(err);
+                }).then(_ => {
+                    this.searchingHandle = false;
+                });
+            },
+            linkAccount() {
+                const form = new FormData();
+                form.append('handleSC', this.searchedCitizen.handle.handle);
+
+                this.lastShortBio = null;
+                this.showError = false;
+                this.errorMessage = 'An error has been occurred. Please try again in a moment.';
+                this.submitDisabled = true;
+                axios.post('/api/profile/link-account', form).then(response => {
+                    this.refreshProfile();
+                    toastr.success('Your RSI account has been successfully linked! You can remove the token from your bio.');
+                    this.submitDisabled = false;
+                    this.showLinkAccount = false;
+                    this.showUpdateHandle = true;
+                }).catch(async err => {
+                    this.submitDisabled = false;
+                    if (err.response.data.error === 'invalid_form') {
+                        const response = await axios.get('/api/search-handle', {
+                            params: {handle: this.form.handle}
+                        });
+                        if (response.data) {
+                            this.searchedCitizen = response.data;
+                            this.lastShortBio = this.searchedCitizen.bio;
+                        }
+                    }
+                    if (err.response.data.errorMessage) {
+                        this.errorMessage = err.response.data.errorMessage;
+                    } else if (err.response.data.error === 'invalid_form') {
+                        this.errorMessage = err.response.data.formErrors.join("\n");
+                    }
+                    this.showError = true;
+                    console.error(err);
                 });
             },
             checkAuth(response) {
