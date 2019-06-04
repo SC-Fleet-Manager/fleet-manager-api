@@ -6,30 +6,32 @@ use App\Domain\Money;
 use App\Entity\Citizen;
 use App\Entity\Fleet;
 use App\Entity\Ship;
+use App\Event\CitizenRefreshEvent;
 use App\Exception\BadCitizenException;
 use App\Exception\FleetUploadedTooCloseException;
 use App\Exception\InvalidFleetDataException;
 use App\Repository\FleetRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class FleetUploadHandler
 {
     private $fleetRepository;
     private $entityManager;
     private $citizenInfosProvider;
-    private $organizationCreator;
+    private $eventDispatcher;
 
     public function __construct(
         FleetRepository $fleetRepository,
         EntityManagerInterface $entityManager,
         CitizenInfosProviderInterface $citizenInfosProvider,
-        OrganizationCreator $organizationCreator
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->fleetRepository = $fleetRepository;
         $this->entityManager = $entityManager;
         $this->citizenInfosProvider = $citizenInfosProvider;
-        $this->organizationCreator = $organizationCreator;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     public function handle(Citizen $citizen, array $fleetData): void
@@ -46,7 +48,7 @@ class FleetUploadHandler
         $citizen->refresh($infos, $this->entityManager);
         $this->entityManager->flush();
 
-        $this->organizationCreator->createOrganization(iterator_to_array($citizen->getOrganizations()));
+        $this->eventDispatcher->dispatch(CitizenRefreshEvent::NAME, new CitizenRefreshEvent($citizen));
 
         $lastVersion = $this->fleetRepository->getLastVersionFleet($citizen);
         if ($lastVersion !== null && $lastVersion->isUploadedDateTooClose()) {

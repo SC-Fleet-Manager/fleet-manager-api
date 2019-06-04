@@ -4,3 +4,8 @@ App\Entity\Organization:
         organizationSid: 'flk'
         name: 'FallKrom'
         publicChoice: 'private'
+    gardiens_flk:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("901ccbf8-fa63-4b07-81aa-f10f60954715"))>']
+        organizationSid: 'gardiens'
+        name: 'Les Gardiens'
+        publicChoice: 'public'

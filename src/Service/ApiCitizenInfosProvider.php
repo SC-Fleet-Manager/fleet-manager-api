@@ -117,7 +117,7 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
         $ci->bio = $bio;
         $ci->avatarUrl = $avatarUrl;
         $ci->registered = $enlisted;
-dump($ci);
+
         $this->logger->info('Citizen infos retrieved.', [
             'handle' => $handleSC->getHandle(),
             'citizen_number' => $citizenNumber,

@@ -81,6 +81,7 @@ class ProfileControllerTest extends WebTestCase
     {
         $citizen = new Citizen();
         $citizen->setActualHandle(new HandleSC('foobar'));
+        $citizen->setNickname('Foo bar');
         $citizen->setNumber(clone $this->user->getCitizen()->getNumber()); // same number !
 
         $citizenInfosProvider = static::$container->get(CitizenInfosProviderInterface::class);
@@ -99,6 +100,7 @@ class ProfileControllerTest extends WebTestCase
     {
         $citizen = new Citizen();
         $citizen->setActualHandle(new HandleSC('foobar'));
+        $citizen->setNickname('Foo bar');
         $citizen->setNumber(new CitizenNumber('foobarbaz')); // different number !
 
         $citizenInfosProvider = static::$container->get(CitizenInfosProviderInterface::class);
@@ -128,6 +130,7 @@ class ProfileControllerTest extends WebTestCase
     {
         $citizen = new Citizen();
         $citizen->setActualHandle(new HandleSC('foobar'));
+        $citizen->setNickname('Foo bar');
         $citizen->setNumber(new CitizenNumber('123456789'));
         $citizen->setBio('4682bc58961264de31d38bf6af18cfe717ab2ba59f34b906668b4d7c0ca65b33'); // same as $this->user->bio !
 
@@ -151,6 +154,7 @@ class ProfileControllerTest extends WebTestCase
     {
         $citizen = new Citizen();
         $citizen->setActualHandle(new HandleSC('ashuvidz')); // handle already linked
+        $citizen->setNickname('Vyrtual Synthese');
         $citizen->setNumber(new CitizenNumber('123456789'));
         $citizen->setBio('4682bc58961264de31d38bf6af18cfe717ab2ba59f34b906668b4d7c0ca65b33'); // same as $this->user->bio !
 
@@ -176,6 +180,7 @@ class ProfileControllerTest extends WebTestCase
     {
         $citizen = new Citizen();
         $citizen->setActualHandle(new HandleSC('foobar'));
+        $citizen->setNickname('Foo bar');
         $citizen->setNumber(new CitizenNumber('123456789'));
         $citizen->setBio('foobar'); // different as $this->user->bio !
 

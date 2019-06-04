@@ -39,8 +39,7 @@ class FleetController extends AbstractController
         ShipInfosProviderInterface $shipInfosProvider,
         OrganizationRepository $organizationRepository,
         LoggerInterface $logger
-    )
-    {
+    ) {
         $this->security = $security;
         $this->citizenRepository = $citizenRepository;
         $this->userRepository = $userRepository;
@@ -212,7 +211,7 @@ class FleetController extends AbstractController
             }
             $shipName = $this->shipInfosProvider->transformProviderToHangar($shipInfo->name);
             $countOwnersAndOwned = $this->citizenRepository->countOwnersAndOwnedOfShip($organization, $shipName, $shipFamilyFilter)[0];
-            if ((int)$countOwnersAndOwned['countOwned'] === 0) {
+            if ((int) $countOwnersAndOwned['countOwned'] === 0) {
                 continue;
             }
             $res[] = [
