@@ -5,7 +5,7 @@
                 <b-card header="Link your RSI Account">
                     <b-form>
                         <b-alert variant="success" show>
-                            In order to protect your fleet, we need that you <em>link</em> your RSI account to Fleet Manager.<br/>
+                            In order to protect your fleet, we need that you <b>link your RSI account</b> to Fleet Manager.<br/>
                             This allows us to prevent impersonation of RSI accounts.<br/>
                             For now, the only best and simplest way is to put a <b>special marker</b> on your <b>RSI biography</b>.
                         </b-alert>
@@ -32,6 +32,7 @@
                                         <img :src="searchedCitizen.avatarUrl" alt="avatar" class="img-fluid" />
                                     </div>
                                     <div class="col">
+                                        <strong>Nickname</strong>: {{ searchedCitizen.nickname }}<br/>
                                         <strong>Handle</strong>: {{ searchedCitizen.handle.handle }}<br/>
                                         <strong>Number</strong>: {{ searchedCitizen.numberSC.number }}<br/>
                                         <strong>Main orga</strong>: {{ searchedCitizen.mainOrga.sid.sid }}<br/>
