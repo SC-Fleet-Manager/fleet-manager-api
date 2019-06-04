@@ -3,23 +3,37 @@
 namespace App\Service;
 
 use App\Domain\CitizenInfos;
+use App\Domain\CitizenNumber;
 use App\Domain\CitizenOrganizationInfo;
 use App\Domain\HandleSC;
 use App\Domain\SpectrumIdentification;
 use App\Entity\Citizen;
+use App\Entity\CitizenOrganization;
+use App\Exception\NotFoundHandleSCException;
 
 class FakeCitizenInfosProvider implements CitizenInfosProviderInterface
 {
     /** @var Citizen */
     private $citizen;
 
-    public function setCitizen(Citizen $citizen): void
+    public function __construct()
+    {
+        $this->citizen = new Citizen();
+        $this->citizen->setActualHandle(new HandleSC('foobar'));
+        $this->citizen->setNickname('Foo bar');
+        $this->citizen->setNumber(new CitizenNumber('123456'));
+    }
+
+    public function setCitizen(?Citizen $citizen): void
     {
         $this->citizen = $citizen;
     }
 
     public function retrieveInfos(HandleSC $handleSC, bool $caching = true): CitizenInfos
     {
+        if ($this->citizen === null) {
+            throw new NotFoundHandleSCException('Citizen not found.');
+        }
         $sourceMainOrga = $this->citizen->getMainOrga();
         $mainOrga = null;
         if ($sourceMainOrga !== null) {

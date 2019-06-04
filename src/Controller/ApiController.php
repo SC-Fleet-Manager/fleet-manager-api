@@ -87,6 +87,12 @@ class ApiController extends AbstractController
     public function searchHandle(Request $request, CitizenInfosProviderInterface $citizenInfosProvider): Response
     {
         $handle = $request->query->get('handle');
+        if ($handle === null) {
+            return $this->json([
+                'error' => 'no_handle',
+                'errorMessage' => 'The handle must not empty.',
+            ], 400);
+        }
 
         try {
             $citizenInfos = $citizenInfosProvider->retrieveInfos(new HandleSC($handle));

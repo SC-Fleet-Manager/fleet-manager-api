@@ -20,6 +20,10 @@ class ProfileControllerTest extends WebTestCase
         $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ioni']);
     }
 
+    /**
+     * @group functional
+     * @group profile
+     */
     public function testIndex(): void
     {
         $this->logIn($this->user);
@@ -50,6 +54,10 @@ class ProfileControllerTest extends WebTestCase
         ], $json);
     }
 
+    /**
+     * @group functional
+     * @group profile
+     */
     public function testIndexNotAuth(): void
     {
         $this->client->xmlHttpRequest('GET', '/api/profile/', [], [], [
@@ -58,6 +66,10 @@ class ProfileControllerTest extends WebTestCase
         $this->assertSame(401, $this->client->getResponse()->getStatusCode());
     }
 
+    /**
+     * @group functional
+     * @group profile
+     */
     public function testSavePreferences(): void
     {
         $this->logIn($this->user);
@@ -69,6 +81,10 @@ class ProfileControllerTest extends WebTestCase
         $this->assertSame(204, $this->client->getResponse()->getStatusCode());
     }
 
+    /**
+     * @group functional
+     * @group profile
+     */
     public function testSavePreferencesNotAuth(): void
     {
         $this->client->xmlHttpRequest('POST', '/api/profile/save-preferences', [], [], [
@@ -77,6 +93,10 @@ class ProfileControllerTest extends WebTestCase
         $this->assertSame(401, $this->client->getResponse()->getStatusCode());
     }
 
+    /**
+     * @group functional
+     * @group profile
+     */
     public function testUpdateHandle(): void
     {
         $citizen = new Citizen();
@@ -96,6 +116,10 @@ class ProfileControllerTest extends WebTestCase
         $this->assertSame(204, $this->client->getResponse()->getStatusCode());
     }
 
+    /**
+     * @group functional
+     * @group profile
+     */
     public function testUpdateHandleBadNumber(): void
     {
         $citizen = new Citizen();
@@ -118,6 +142,10 @@ class ProfileControllerTest extends WebTestCase
         $this->assertSame('invalid_form', $json['error']);
     }
 
+    /**
+     * @group functional
+     * @group profile
+     */
     public function testUpdateHandleNotAuth(): void
     {
         $this->client->xmlHttpRequest('POST', '/api/profile/update-handle', [], [], [
@@ -126,6 +154,10 @@ class ProfileControllerTest extends WebTestCase
         $this->assertSame(401, $this->client->getResponse()->getStatusCode());
     }
 
+    /**
+     * @group functional
+     * @group profile
+     */
     public function testLinkAccount(): void
     {
         $citizen = new Citizen();
@@ -150,6 +182,10 @@ class ProfileControllerTest extends WebTestCase
         $this->assertSame('4682bc58961264de31d38bf6af18cfe717ab2ba59f34b906668b4d7c0ca65b33', $this->user->getCitizen()->getBio());
     }
 
+    /**
+     * @group functional
+     * @group profile
+     */
     public function testLinkAccountAlreadyLinked(): void
     {
         $citizen = new Citizen();
@@ -176,6 +212,10 @@ class ProfileControllerTest extends WebTestCase
         $this->assertNull($oldUser->getCitizen(), 'Citizen of old user should be null.');
     }
 
+    /**
+     * @group functional
+     * @group profile
+     */
     public function testLinkAccountBadToken(): void
     {
         $citizen = new Citizen();
@@ -199,6 +239,10 @@ class ProfileControllerTest extends WebTestCase
         $this->assertSame('invalid_form', $json['error']);
     }
 
+    /**
+     * @group functional
+     * @group profile
+     */
     public function testLinkAccountNotAuth(): void
     {
         $this->client->xmlHttpRequest('POST', '/api/profile/link-account', [], [], [

@@ -16,6 +16,10 @@ class FleetControllerTest extends WebTestCase
         $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ioni']);
     }
 
+    /**
+     * @group functional
+     * @group fleet
+     */
     public function testMyFleetNotAuth(): void
     {
         $this->client->xmlHttpRequest('GET', '/api/fleet/my-fleet', [], [], [
@@ -24,6 +28,10 @@ class FleetControllerTest extends WebTestCase
         $this->assertSame(401, $this->client->getResponse()->getStatusCode());
     }
 
+    /**
+     * @group functional
+     * @group fleet
+     */
     public function testMyFleet(): void
     {
         $this->logIn($this->user);
@@ -53,6 +61,10 @@ class FleetControllerTest extends WebTestCase
         $this->assertArrayHasKey('shipInfos', $json);
     }
 
+    /**
+     * @group functional
+     * @group fleet
+     */
     public function testUserFleetPublic(): void
     {
         $this->client->xmlHttpRequest('GET', '/api/fleet/user-fleet/ionni', [], [], [
@@ -61,6 +73,10 @@ class FleetControllerTest extends WebTestCase
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
     }
 
+    /**
+     * @group functional
+     * @group fleet
+     */
     public function testUserFleetPrivate(): void
     {
         $this->client->xmlHttpRequest('GET', '/api/fleet/user-fleet/ashuvidz', [], [], [

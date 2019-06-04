@@ -26,6 +26,10 @@ class SpaControllerTest extends PantherTestCase
         });
     }
 
+    /**
+     * @group end2end
+     * @group spa
+     */
     public function testIndexSuccessResponse(): void
     {
         $this->client->request('GET', '/');
