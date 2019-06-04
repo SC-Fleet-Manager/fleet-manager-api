@@ -32,3 +32,13 @@ App\Entity\User:
         publicChoice: 'private'
         createdAt: '<(new \DateTimeImmutable("2019-04-04 11:22:33"))>'
         lastConnectedAt: '<(new \DateTimeImmutable("2019-04-05 22:33:44"))>'
+    user_gardiens1:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("46380677-9915-4b7c-87ba-418840cb1772"))>']
+        username: 'Gardien1'
+        discordId: '123456789004'
+        token: 'AoINntaTQPdHZJDrPfDkI687GOkvhAu97LYiDQ2yNmbi4SVMxqlOHKUuXPSvrg4M'
+        apiToken: 'WTuPrMeBZNrSlXvNEXzgAVJafHb1RLmkQBdWzeTZWrheAg0YNqqdMGvvJPJPtGAO'
+        citizen: '@citizen_gardiens1'
+        publicChoice: 'public'
+        createdAt: '<(new \DateTimeImmutable("2019-04-05 11:22:33"))>'
+        lastConnectedAt: '<(new \DateTimeImmutable("2019-04-06 22:33:44"))>'

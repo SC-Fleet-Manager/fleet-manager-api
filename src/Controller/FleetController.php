@@ -149,8 +149,8 @@ class FleetController extends AbstractController
             $filters['shipNames'] ?? [],
             $filters['citizenIds'] ?? [],
             $filters['shipSizes'] ?? [],
-            $filters['shipStatus'] ?? null,
-            );
+            $filters['shipStatus'] ?? null
+        );
 
         $shipFamilies = $organizationFleetHandler->computeShipFamilies(new SpectrumIdentification($organization), $shipFamilyFilter);
         usort($shipFamilies, static function (array $shipFamily1, array $shipFamily2): int {

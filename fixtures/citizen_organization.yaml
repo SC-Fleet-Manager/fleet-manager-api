@@ -9,3 +9,8 @@ App\Entity\CitizenOrganization:
         organizationSid: 'flk'
         rank: 5
         rankName: 'Chef de département'
+    gardiens1_orga_gardiens:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("befc7409-a026-4226-aefd-288b1d03b8ef"))>']
+        organizationSid: 'gardiens'
+        rank: 5
+        rankName: 'Big guard'

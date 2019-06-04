@@ -12,7 +12,7 @@ App\Entity\Ship:
                 warbond: true
                 package_id: "15109407"
                 pledge: "Package - Origin 100i Starter Game Package Warbond"
-                pledge_date: "April 28, 2018"
+                pledge_date: "April 10, 2019"
                 cost: "<('$110.00 USD')>"
         name: 'Cutlass Black'
         manufacturer: 'Drake'
@@ -20,3 +20,21 @@ App\Entity\Ship:
         cost: 110
         insured: true
         fleet: '@fleet_ionni_v1'
+    ship_gardiens1_auroramr_v1:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("c9041365-27a7-4b33-8928-651532e13501"))>']
+        rawData:
+            -
+                manufacturer: "RSI"
+                name: "Aurora MR"
+                lti: false
+                warbond: false
+                package_id: "12345678"
+                pledge: "Aurora MR Standalone"
+                pledge_date: "April 30, 2019"
+                cost: "<('$45.00 USD')>"
+        name: 'Aurora MR'
+        manufacturer: 'RSI'
+        pledgeDate: '<(new \DateTimeImmutable("2019-04-30"))>'
+        cost: 45
+        insured: false
+        fleet: '@fleet_gardiens1_v1'

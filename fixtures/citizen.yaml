@@ -19,3 +19,11 @@ App\Entity\Citizen:
         organisations: ["flk"]
         organizations: ['@ashuvidz_orga_flk']
         mainOrga: '@ashuvidz_orga_flk'
+    citizen_gardiens1:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("1256a87e-65bf-4fb1-9810-35d1f8053be8"))>']
+        number: '<(new \App\Domain\CitizenNumber("345678"))>'
+        nickname: 'Gardien1'
+        actualHandle: '<(new \App\Domain\HandleSC("gardien1"))>'
+        organisations: ["gardiens"]
+        organizations: ['@gardiens1_orga_gardiens']
+        mainOrga: '@gardiens1_orga_gardiens'

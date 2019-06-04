@@ -25,7 +25,9 @@ class FleetControllerTest extends WebTestCase
         $this->client->xmlHttpRequest('GET', '/api/fleet/my-fleet', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
-        $this->assertSame(401, $this->client->getResponse()->getStatusCode());
+
+        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertSame('no_auth', $json['error']);
     }
 
     /**
@@ -70,7 +72,38 @@ class FleetControllerTest extends WebTestCase
         $this->client->xmlHttpRequest('GET', '/api/fleet/user-fleet/ionni', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+
+        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertArraySubset([
+            'fleet' => [
+                'ships' => [
+                    [
+                        'id' => 'a75256db-07fa-4f49-95f9-9f44bd7fbd72',
+                        'name' => 'Cutlass Black',
+                        'manufacturer' => 'Drake',
+                        'pledgeDate' => '2019-04-10T00:00:00+00:00',
+                        'insured' => true,
+                    ],
+                ],
+            ],
+            'shipInfos' => [
+                [
+                    'id' => '56',
+                    'productionStatus' => 'ready',
+                    'minCrew' => 2,
+                    'maxCrew' => 2,
+                    'name' => 'Cutlass Black',
+                    'size' => 'medium',
+                    'pledgeUrl' => 'https://robertsspaceindustries.com/pledge/ships/drake-cutlass/Cutlass-Black',
+                    'manufacturerName' => 'Drake Interplanetary',
+                    'manufacturerCode' => 'DRAK',
+                    'chassisId' => '6',
+                    'chassisName' => 'Cutlass',
+                    'mediaUrl' => 'https://robertsspaceindustries.com/media/7tcxllnna6a9hr/source/Drake_cutlass_storefront_visual.jpg',
+                    'mediaThumbUrl' => 'https://robertsspaceindustries.com/media/7tcxllnna6a9hr/store_small/Drake_cutlass_storefront_visual.jpg',
+                ],
+            ],
+        ], $json);
     }
 
     /**
@@ -86,5 +119,195 @@ class FleetControllerTest extends WebTestCase
 
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('no_rights', $json['error']);
+    }
+
+    /**
+     * @group functional
+     * @group fleet
+     */
+    public function testOrgaFleetsPublicNotAuth(): void
+    {
+        $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/gardiens', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+        ]);
+
+        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertArraySubset([
+            [
+                'chassisId' => '1',
+                'name' => 'Aurora',
+                'count' => 1,
+                'manufacturerCode' => 'RSI',
+                'mediaThumbUrl' => 'https://robertsspaceindustries.com/media/ohbfgn1ebcsnar/store_small/Rsi_aurora_mr_storefront_visual.jpg',
+            ],
+        ], $json);
+    }
+
+    /**
+     * @group functional
+     * @group fleet
+     */
+    public function testOrgaFleetsPrivateAuth(): void
+    {
+        $this->logIn($this->user);
+        $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/flk', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+        ]);
+
+        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertArraySubset([
+            [
+                'chassisId' => '6',
+                'name' => 'Cutlass',
+                'count' => 1,
+                'manufacturerCode' => 'DRAK',
+                'mediaThumbUrl' => 'https://robertsspaceindustries.com/media/7tcxllnna6a9hr/store_small/Drake_cutlass_storefront_visual.jpg',
+            ],
+        ], $json);
+    }
+
+    /**
+     * @group functional
+     * @group fleet
+     */
+    public function testOrgaFleetsPrivateAuthBadOrga(): void
+    {
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Gardien1']);
+        $this->logIn($user);
+        $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/flk', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+        ]);
+
+        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertSame('bad_organization', $json['error']);
+    }
+
+    /**
+     * @group functional
+     * @group fleet
+     */
+    public function testOrgaFleetsPrivateNotAuth(): void
+    {
+        $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/flk', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+        ]);
+
+        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertSame('no_auth', $json['error']);
+    }
+
+    /**
+     * @group functional
+     * @group fleet
+     */
+    public function testOrgaFleetsUsersPublicNotAuth(): void
+    {
+        $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/gardiens/users/Aurora%20MR', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+        ]);
+
+        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertArraySubset([
+            [
+                [
+                    'id' => '46380677-9915-4b7c-87ba-418840cb1772',
+                    'citizen' => [
+                        'id' => '1256a87e-65bf-4fb1-9810-35d1f8053be8',
+                        'nickname' => 'Gardien1',
+                        'actualHandle' => ['handle' => 'gardien1'],
+                        'organisations' => ['gardiens'],
+                        'organizations' => [
+                            [
+                                'id' => 'befc7409-a026-4226-aefd-288b1d03b8ef',
+                                'organizationSid' => 'gardiens',
+                                'rank' => 5,
+                                'rankName' => 'Big guard',
+                            ],
+                        ],
+                        'mainOrga' => [
+                            'id' => 'befc7409-a026-4226-aefd-288b1d03b8ef',
+                            'organizationSid' => 'gardiens',
+                            'rank' => 5,
+                            'rankName' => 'Big guard',
+                        ],
+                    ],
+                    'publicChoice' => 'public',
+                ],
+                'countShips' => '1',
+            ],
+        ], $json);
+    }
+
+    /**
+     * @group functional
+     * @group fleet
+     */
+    public function testOrgaFleetsUsersPrivateAuth(): void
+    {
+        $this->logIn($this->user);
+        $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/flk/users/Cutlass%20Black', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+        ]);
+
+        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertArraySubset([
+            [
+                [
+                    'id' => 'd92e229e-e743-4583-905a-e02c57eacfe0',
+                    'citizen' => [
+                        'id' => '7275c744-6a69-43c2-9ebf-1491a104d5e7',
+                        'nickname' => 'Ioni14',
+                        'actualHandle' => ['handle' => 'ionni'],
+                        'mainOrga' => [
+                            'id' => '41ade55e-6d32-419c-9e48-169fd6c61f34',
+                            'organizationSid' => 'flk',
+                            'rank' => 1,
+                            'rankName' => 'Citoyen',
+                        ],
+                        'organisations' => ['flk'],
+                        'organizations' => [
+                            [
+                                'id' => '41ade55e-6d32-419c-9e48-169fd6c61f34',
+                                'organizationSid' => 'flk',
+                                'rank' => 1,
+                                'rankName' => 'Citoyen',
+                            ],
+                        ],
+                    ],
+                    'publicChoice' => 'public',
+                ],
+                'countShips' => '1',
+            ],
+        ], $json);
+    }
+
+    /**
+     * @group functional
+     * @group fleet
+     */
+    public function testOrgaFleetsUsersPrivateAuthBadOrga(): void
+    {
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Gardien1']);
+        $this->logIn($user);
+        $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/flk/users/Cutlass%20Black', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+        ]);
+
+        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertSame('bad_organization', $json['error']);
+    }
+
+    /**
+     * @group functional
+     * @group fleet
+     */
+    public function testOrgaFleetsUsersPrivateNotAuth(): void
+    {
+        $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/flk/users/Cutlass%20Black', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+        ]);
+
+        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertSame('no_auth', $json['error']);
     }
 }
