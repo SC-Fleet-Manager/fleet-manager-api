@@ -14,3 +14,13 @@ App\Entity\CitizenOrganization:
         organizationSid: 'gardiens'
         rank: 5
         rankName: 'Big guard'
+    ihaveships_orga_flk:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("a193b472-501d-4b97-8dbc-c4076618f347"))>']
+        organizationSid: 'flk'
+        rank: 2
+        rankName: 'Peasant'
+    ihaveships_orga_gardiens:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("fa91e3a0-4930-43de-b202-9d5972681031"))>']
+        organizationSid: 'gardiens'
+        rank: 4
+        rankName: 'Lord'

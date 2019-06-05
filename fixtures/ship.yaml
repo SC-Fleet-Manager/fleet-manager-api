@@ -5,15 +5,14 @@ App\Entity\Ship:
     ship_ionni_cutlassblack_v1:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("a75256db-07fa-4f49-95f9-9f44bd7fbd72"))>']
         rawData:
-            -
-                manufacturer: "Drake"
-                name: "Cutlass Black"
-                lti: true
-                warbond: true
-                package_id: "15109407"
-                pledge: "Package - Origin 100i Starter Game Package Warbond"
-                pledge_date: "April 10, 2019"
-                cost: "<('$110.00 USD')>"
+            manufacturer: "Drake"
+            name: "Cutlass Black"
+            lti: true
+            warbond: true
+            package_id: "15109407"
+            pledge: "Package - Origin 100i Starter Game Package Warbond"
+            pledge_date: "April 10, 2019"
+            cost: "<('$110.00 USD')>"
         name: 'Cutlass Black'
         manufacturer: 'Drake'
         pledgeDate: '<(new \DateTimeImmutable("2019-04-10"))>'
@@ -23,18 +22,119 @@ App\Entity\Ship:
     ship_gardiens1_auroramr_v1:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("c9041365-27a7-4b33-8928-651532e13501"))>']
         rawData:
-            -
-                manufacturer: "RSI"
-                name: "Aurora MR"
-                lti: false
-                warbond: false
-                package_id: "12345678"
-                pledge: "Aurora MR Standalone"
-                pledge_date: "April 30, 2019"
-                cost: "<('$45.00 USD')>"
+            manufacturer: "RSI"
+            name: "Aurora MR"
+            lti: false
+            warbond: false
+            package_id: "12345678"
+            pledge: "Aurora MR Standalone"
+            pledge_date: "April 30, 2019"
+            cost: "<('$45.00 USD')>"
         name: 'Aurora MR'
         manufacturer: 'RSI'
         pledgeDate: '<(new \DateTimeImmutable("2019-04-30"))>'
         cost: 45
         insured: false
         fleet: '@fleet_gardiens1_v1'
+    ship_ihaveships_auroramr_v1:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("e3fd1f7d-5386-422f-bbef-753420c7642d"))>']
+        rawData:
+            manufacturer: "RSI"
+            name: "Aurora MR"
+            lti: true
+            warbond: false
+            package_id: "12345678"
+            pledge: "Aurora MR Standalone"
+            pledge_date: "April 25, 2019"
+            cost: "<('$35.00 USD')>"
+        name: 'Aurora MR'
+        manufacturer: 'RSI'
+        pledgeDate: '<(new \DateTimeImmutable("2019-04-25"))>'
+        cost: 35
+        insured: true
+        fleet: '@fleet_ihaveships_v1'
+    ship_ihaveships_rangercv_v1:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("f25131ad-a74d-4efb-9fbf-81665d09feb8"))>']
+        rawData:
+            manufacturer: "Tumbril"
+            name: "Ranger CV"
+            lti: false
+            warbond: true
+            package_id: "18163621"
+            pledge: "Standalone Ship - Tumbril Ranger CV Warbond "
+            pledge_date: "April 20, 2019"
+            cost: "<('$30.00 USD')>"
+        name: 'Ranger CV'
+        manufacturer: 'Tumbril'
+        pledgeDate: '<(new \DateTimeImmutable("2019-04-20"))>'
+        cost: 30
+        insured: false
+        fleet: '@fleet_ihaveships_v1'
+    ship_ihaveships_dragonflyblack_v1:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("35c1af61-7dca-4f42-8d52-fc0439e23af2"))>']
+        rawData:
+            manufacturer: "Drake"
+            name: "Dragonfly Black"
+            lti: false
+            warbond: false
+            package_id: "16064568"
+            pledge: "Standalone Ship - Drake Dragonfly Black Anniversary 2018"
+            pledge_date: "November 27, 2018"
+            cost: "<('$30.00 USD')>"
+        name: 'Dragonfly Black'
+        manufacturer: 'Drake'
+        pledgeDate: '<(new \DateTimeImmutable("2018-11-27"))>'
+        cost: 40
+        insured: false
+        fleet: '@fleet_ihaveships_v1'
+    ship_ihaveships_cutlassblack_v1:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("8212688b-d2ed-47c2-a3da-422854a4a026"))>']
+        rawData:
+            manufacturer: "Drake"
+            name: "Cutlass Black"
+            lti: true
+            warbond: true
+            package_id: "15109407"
+            pledge: "Package - Origin 100i Starter Game Package Warbond"
+            pledge_date: "March 21, 2019"
+            cost: "<('$95.00 USD')>"
+        name: 'Cutlass Black'
+        manufacturer: 'Drake'
+        pledgeDate: '<(new \DateTimeImmutable("2019-03-21"))>'
+        cost: 95
+        insured: true
+        fleet: '@fleet_ihaveships_v1'
+    ship_ihaveships_constellationandromeda_v1:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("afb85b3b-6e2b-45bb-b099-307890f129c9"))>']
+        rawData:
+            manufacturer: "RSI"
+            name: "Constellation Andromeda"
+            lti: false
+            warbond: false
+            package_id: "13423124"
+            pledge: "Standalone Ship - MISC Freelancer"
+            pledge_date: "March 30, 2019"
+            cost: "<('$225.00 USD')>"
+        name: 'Constellation Andromeda'
+        manufacturer: 'RSI'
+        pledgeDate: '<(new \DateTimeImmutable("2019-03-30"))>'
+        cost: 225
+        insured: false
+        fleet: '@fleet_ihaveships_v1'
+    ship_ihaveships_orion_v1:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("7e7951c4-6dc6-40c5-87ef-6412b7ac658f"))>']
+        rawData:
+            manufacturer: "RSI"
+            name: "Orion"
+            lti: true
+            warbond: false
+            package_id: "17585049"
+            pledge: "Standalone Ship - Aopoa Nox Kue LTI "
+            pledge_date: "February 17, 2019"
+            cost: "<('$325.00 USD')>"
+        name: 'Orion'
+        manufacturer: 'RSI'
+        pledgeDate: '<(new \DateTimeImmutable("2019-02-17"))>'
+        cost: 325
+        insured: true
+        fleet: '@fleet_ihaveships_v1'

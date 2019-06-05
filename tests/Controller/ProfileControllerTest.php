@@ -63,7 +63,73 @@ class ProfileControllerTest extends WebTestCase
         $this->client->xmlHttpRequest('GET', '/api/profile/', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
-        $this->assertSame(401, $this->client->getResponse()->getStatusCode());
+
+        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertSame('no_auth', $json['error']);
+    }
+
+    /**
+     * @group functional
+     * @group profile
+     */
+    public function testRefreshRsiProfile(): void
+    {
+        $this->logIn($this->user);
+        $this->client->xmlHttpRequest('POST', '/api/profile/refresh-rsi-profile', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+        ]);
+
+        $this->assertSame(204, $this->client->getResponse()->getStatusCode());
+    }
+
+    /**
+     * @group functional
+     * @group profile
+     */
+    public function testRefreshRsiProfileTooManyRefresh(): void
+    {
+        $this->logIn($this->user);
+        $this->client->insulate();
+        $this->client->xmlHttpRequest('POST', '/api/profile/refresh-rsi-profile', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+        ]);
+        $this->client->insulate();
+        $this->client->xmlHttpRequest('POST', '/api/profile/refresh-rsi-profile', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+        ]);
+
+        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertSame('too_many_refresh', $json['error']);
+    }
+
+    /**
+     * @group functional
+     * @group profile
+     */
+    public function testRefreshRsiProfileNoCitizen(): void
+    {
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'NoCitizen']);
+        $this->logIn($user);
+        $this->client->xmlHttpRequest('POST', '/api/profile/refresh-rsi-profile', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+        ]);
+
+        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertSame('no_citizen', $json['error']);
+    }
+
+    /**
+     * @group functional
+     * @group profile
+     */
+    public function testRefreshRsiProfileNotAuth(): void
+    {
+        $this->client->xmlHttpRequest('POST', '/api/profile/refresh-rsi-profile', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+        ]);
+
+        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertSame('no_auth', $json['error']);
     }
 
     /**

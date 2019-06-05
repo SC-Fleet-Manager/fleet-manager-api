@@ -488,8 +488,8 @@ EOT
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArraySubset([
             'organizations' => 2,
-            'users' => 4,
-            'ships' => 2,
+            'users' => 5,
+            'ships' => 8,
         ], $json);
     }
 }

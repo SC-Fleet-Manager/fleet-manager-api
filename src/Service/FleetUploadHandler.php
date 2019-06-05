@@ -78,7 +78,7 @@ class FleetUploadHandler
                 ->setManufacturer($shipData['manufacturer'])
                 ->setInsured($shipData['lti'])
                 ->setCost((new Money((int) preg_replace('/^\$(\d+\.\d+)/', '$1', $shipData['cost'])))->getCost())
-                ->setPledgeDate(\DateTimeImmutable::createFromFormat('F d, Y', $shipData['pledge_date']))
+                ->setPledgeDate(\DateTimeImmutable::createFromFormat('F d, Y', $shipData['pledge_date'])->setTime(0, 0))
                 ->setRawData($shipData);
             $fleet->addShip($ship);
         }

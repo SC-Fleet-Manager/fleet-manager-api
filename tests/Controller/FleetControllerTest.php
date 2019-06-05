@@ -136,7 +136,7 @@ class FleetControllerTest extends WebTestCase
             [
                 'chassisId' => '1',
                 'name' => 'Aurora',
-                'count' => 1,
+                'count' => 2,
                 'manufacturerCode' => 'RSI',
                 'mediaThumbUrl' => 'https://robertsspaceindustries.com/media/ohbfgn1ebcsnar/store_small/Rsi_aurora_mr_storefront_visual.jpg',
             ],
@@ -159,7 +159,7 @@ class FleetControllerTest extends WebTestCase
             [
                 'chassisId' => '6',
                 'name' => 'Cutlass',
-                'count' => 1,
+                'count' => 2,
                 'manufacturerCode' => 'DRAK',
                 'mediaThumbUrl' => 'https://robertsspaceindustries.com/media/7tcxllnna6a9hr/store_small/Drake_cutlass_storefront_visual.jpg',
             ],
@@ -250,7 +250,46 @@ class FleetControllerTest extends WebTestCase
         ]);
 
         $json = \json_decode($this->client->getResponse()->getContent(), true);
+        dump($json);
         $this->assertArraySubset([
+            [
+                [
+                    'id' => '503e3bc1-cff9-42b8-9f27-a6064b0a78f2',
+                    'citizen' => [
+                        'id' => '08cc11ec-26ac-4638-8e03-c40b857d32bd',
+                        'nickname' => 'I Have Ships',
+                        'actualHandle' => [
+                            'handle' => 'ihaveships',
+                        ],
+                        'organisations' => [
+                            'flk',
+                            'gardiens',
+                        ],
+                        'organizations' => [
+                            [
+                                'id' => 'a193b472-501d-4b97-8dbc-c4076618f347',
+                                'organizationSid' => 'flk',
+                                'rank' => 2,
+                                'rankName' => 'Peasant',
+                            ],
+                            [
+                                'id' => 'fa91e3a0-4930-43de-b202-9d5972681031',
+                                'organizationSid' => 'gardiens',
+                                'rank' => 4,
+                                'rankName' => 'Lord',
+                            ],
+                        ],
+                        'mainOrga' => [
+                            'id' => 'fa91e3a0-4930-43de-b202-9d5972681031',
+                            'organizationSid' => 'gardiens',
+                            'rank' => 4,
+                            'rankName' => 'Lord',
+                        ],
+                    ],
+                    'publicChoice' => 'public',
+                ],
+                'countShips' => '1',
+            ],
             [
                 [
                     'id' => 'd92e229e-e743-4583-905a-e02c57eacfe0',

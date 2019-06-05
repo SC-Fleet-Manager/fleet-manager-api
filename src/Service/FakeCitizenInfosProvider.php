@@ -8,13 +8,21 @@ use App\Domain\CitizenOrganizationInfo;
 use App\Domain\HandleSC;
 use App\Domain\SpectrumIdentification;
 use App\Entity\Citizen;
-use App\Entity\CitizenOrganization;
 use App\Exception\NotFoundHandleSCException;
 
 class FakeCitizenInfosProvider implements CitizenInfosProviderInterface
 {
+    private const BLACKLIST_HANDLES = ['not_found', 'not_exist'];
+
     /** @var Citizen */
     private $citizen;
+
+    /**
+     * Simulates a provider DB.
+     *
+     * @var CitizenInfos[]
+     */
+    private $knownCitizens = [];
 
     public function __construct()
     {
@@ -22,6 +30,9 @@ class FakeCitizenInfosProvider implements CitizenInfosProviderInterface
         $this->citizen->setActualHandle(new HandleSC('foobar'));
         $this->citizen->setNickname('Foo bar');
         $this->citizen->setNumber(new CitizenNumber('123456'));
+
+        $citizenInfos = new CitizenInfos(new CitizenNumber('135790'), new HandleSC('fake_citizen_1'));
+        $this->knownCitizens[] = $citizenInfos;
     }
 
     public function setCitizen(?Citizen $citizen): void
@@ -31,6 +42,14 @@ class FakeCitizenInfosProvider implements CitizenInfosProviderInterface
 
     public function retrieveInfos(HandleSC $handleSC, bool $caching = true): CitizenInfos
     {
+        if (in_array($handleSC->getHandle(), self::BLACKLIST_HANDLES, true)) {
+            throw new NotFoundHandleSCException('Citizen not found.');
+        }
+        foreach ($this->knownCitizens as $knownCitizen) {
+            if ($knownCitizen->handle->getHandle() === $handleSC->getHandle()) {
+                return $knownCitizen;
+            }
+        }
         if ($this->citizen === null) {
             throw new NotFoundHandleSCException('Citizen not found.');
         }
@@ -50,7 +69,7 @@ class FakeCitizenInfosProvider implements CitizenInfosProviderInterface
                 new SpectrumIdentification($citizenOrga->getOrganizationSid()),
                 $citizenOrga->getRank(),
                 $citizenOrga->getRankName(),
-            );
+                );
             $orgas[] = $orga;
         }
 
