@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Domain\HandleSC;
 use App\Domain\SpectrumIdentification;
 use App\Entity\Citizen;
 use App\Entity\Fleet;
@@ -16,6 +17,7 @@ use App\Repository\CitizenOrganizationRepository;
 use App\Repository\CitizenRepository;
 use App\Repository\OrganizationRepository;
 use App\Service\CitizenFleetGenerator;
+use App\Service\CitizenInfosProviderInterface;
 use App\Service\FleetUploadHandler;
 use App\Service\OrganisationFleetGenerator;
 use App\Service\OrganizationInfosProviderInterface;
@@ -77,6 +79,32 @@ class ApiController extends AbstractController
     public function me(): Response
     {
         return $this->json($this->security->getUser(), 200, [], ['groups' => 'me:read']);
+    }
+
+    /**
+     * @Route("/search-handle", name="search_handle", methods={"GET"})
+     */
+    public function searchHandle(Request $request, CitizenInfosProviderInterface $citizenInfosProvider): Response
+    {
+        $handle = $request->query->get('handle');
+        if ($handle === null) {
+            return $this->json([
+                'error' => 'no_handle',
+                'errorMessage' => 'The handle must not empty.',
+            ], 400);
+        }
+
+        try {
+            $citizenInfos = $citizenInfosProvider->retrieveInfos(new HandleSC($handle));
+
+            return $this->json($citizenInfos);
+        } catch (NotFoundHandleSCException $e) {
+        }
+
+        return $this->json([
+            'error' => 'not_found_handle',
+            'errorMessage' => sprintf('The SC handle %s does not exist.', $handle),
+        ], 404);
     }
 
     /**

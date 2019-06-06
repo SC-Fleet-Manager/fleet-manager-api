@@ -45,16 +45,8 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
 
     private function scrap(HandleSC $handleSC): CitizenInfos
     {
-        // $handleSC = new HandleSC('Sarge701');
-
         $crawler = $this->client->request('GET', self::BASE_URL.'/citizens/'.$handleSC);
         $profileCrawler = $crawler->filter('#public-profile');
-
-        $avatarUrl = null;
-        $avatarCrawler = $profileCrawler->filter('.profile .thumb img');
-        if ($avatarCrawler->count() > 0) {
-            $avatarUrl = self::BASE_URL.$avatarCrawler->attr('src');
-        }
 
         $citizenNumber = null;
         $citizenNumberCrawler = $profileCrawler->filter('.citizen-record .value');
@@ -65,6 +57,18 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
         if ($citizenNumber === null) {
             $this->logger->error(sprintf('Handle %s does not exist', (string) $handleSC), []);
             throw new NotFoundHandleSCException(sprintf('Handle %s does not exist', (string) $handleSC));
+        }
+
+        $nickname = null;
+        $nicknameCrawler = $profileCrawler->filter('.profile .info .entry:first-child .value');
+        if ($nicknameCrawler->count() > 0) {
+            $nickname = trim($nicknameCrawler->text());
+        }
+
+        $avatarUrl = null;
+        $avatarCrawler = $profileCrawler->filter('.profile .thumb img');
+        if ($avatarCrawler->count() > 0) {
+            $avatarUrl = self::BASE_URL.$avatarCrawler->attr('src');
         }
 
         $enlisted = null;
@@ -104,6 +108,7 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
             clone $handleSC
         );
 
+        $ci->nickname = $nickname;
         if ($mainOrga !== null) {
             $ci->organisations[] = $mainOrga;
         }

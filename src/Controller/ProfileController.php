@@ -274,7 +274,7 @@ class ProfileController extends AbstractController
 
                 return $this->json([
                     'error' => 'invalid_form',
-                    'formErrors' => ['Your RSI bio does not contain this token.'],
+                    'formErrors' => ['Sorry, your RSI bio does not contain this token. Please copy-paste the following token to your RSI short bio.'],
                 ], 400);
             }
             $this->attachCitizenToUser($user, $citizenInfos);
@@ -284,7 +284,7 @@ class ProfileController extends AbstractController
 
             return $this->json([
                 'error' => 'not_found_handle',
-                'errorMessage' => sprintf('The SC handle %s does not exist.', $linkAccount->handleSC),
+                'errorMessage' => sprintf('The SC handle %s does not exist. Try to check the typo.', $linkAccount->handleSC),
             ], 400);
         }
 

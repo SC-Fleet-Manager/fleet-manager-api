@@ -39,6 +39,14 @@ class Citizen
     private $number;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255)
+     * @Groups({"profile", "orga_fleet"})
+     */
+    private $nickname;
+
+    /**
      * @var HandleSC
      *
      * @ORM\Column(type="string", length=255)
@@ -140,6 +148,18 @@ class Citizen
     public function setNumber(?CitizenNumber $number): self
     {
         $this->number = $number;
+
+        return $this;
+    }
+
+    public function getNickname(): ?string
+    {
+        return $this->nickname;
+    }
+
+    public function setNickname(?string $nickname): self
+    {
+        $this->nickname = $nickname;
 
         return $this;
     }
@@ -324,6 +344,7 @@ class Citizen
 
     public function refresh(CitizenInfos $infos, EntityManagerInterface $em): void
     {
+        $this->setNickname($infos->nickname);
         $this->setBio($infos->bio);
         $this->setLastRefresh(new \DateTimeImmutable());
 

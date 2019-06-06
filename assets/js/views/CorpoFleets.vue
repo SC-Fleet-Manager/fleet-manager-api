@@ -14,11 +14,11 @@
                             </b-form>
                         </b-col>
                         <b-col xs="12" sm="12" md="6" class="mb-3" v-if="organization !== null">
-                            <img v-if="organization.avatarUrl" :src="organization.avatarUrl" alt="organization's logo" class="img-avatar" style="max-height: 8rem;" />
+                            <a :href="'https://robertsspaceindustries.com/orgs/'+organization.organizationSid" target="_blank"><img v-if="organization.avatarUrl" :src="organization.avatarUrl" alt="organization's logo" class="img-fluid" style="max-height: 8rem;" /></a>
                             <div class="d-inline-block align-top">
-                                <h4>{{ organization.name }}</h4>
+                                <h4><a :href="'https://robertsspaceindustries.com/orgs/'+organization.organizationSid" target="_blank">{{ organization.name }}</a></h4>
                                 <div class="position-relative" v-if="citizen != null && citizenOrgaInfo != null">
-                                    <span class="rank-icon" :class="{'rank-icon-active': (i <= citizenOrgaInfo.rank) }" v-for="i in 5"></span>
+                                    <i class="fas fa-star rank-icon" :class="{'rank-icon-active': (i <= citizenOrgaInfo.rank) }" v-for="i in 5"></i>
                                 </div>
                                 <p v-if="citizen != null && citizenOrgaInfo != null"><strong>{{ citizenOrgaInfo.rankName }}</strong></p>
                             </div>
@@ -48,15 +48,18 @@
                         </b-col>
                     </b-row>
                     <b-row>
-                        <template v-if="(citizen == null && organization !== null && organization.publicChoice !== 'public')
-                                        || (citizen != null && !organizations[sid] && organization !== null && organization.publicChoice !== 'public')">
+                        <template v-if="!loadingOrgaFleet && ((citizen == null && (organization === null || organization.publicChoice !== 'public'))
+                                        || (citizen != null && !organizations[sid] && organization !== null && organization.publicChoice !== 'public'))">
                             <b-col>
                                 <b-alert show variant="danger">Sorry, this organization's fleet does not exist or is private. Try to <a href="/">login</a> to see it.</b-alert>
                             </b-col>
                         </template>
                         <template v-else>
-                            <b-col v-if="shipFamilies.length === 0">
+                            <b-col v-if="shipFamilies.length === 0 && !loadingOrgaFleet">
                                 <b-alert show variant="warning">Sorry, no ships have been found.</b-alert>
+                            </b-col>
+                            <b-col col xl="12" lg="12" md="12" sm="12" xs="12" v-if="loadingOrgaFleet" class="text-center">
+                                <i class="fas fa-circle-notch fa-spin fa-5x" style="color:#ccc"></i>
                             </b-col>
                         </template>
                         <template v-for="(shipFamily, index) in shipFamilies">
@@ -94,8 +97,6 @@
     const BREAKPOINTS = {xs: 0, sm: 576, md: 768, lg: 992, xl: 1200};
 
     /*
-     * TODO : ajouter info orga global sur les cas publics
-     *
      * PUBLIC
      *      - logged
      *          - my orga : OK : see ships + filters + button export + orga selector + info orga
@@ -120,6 +121,7 @@
                 actualBreakpoint: 'xs',
                 organizations: {}, // orga infos of the citizens
                 refreshedSid: null,
+                loadingOrgaFleet: false,
                 filterOptionsCitizens: [],
                 filterOptionsShips: [],
                 filterOptionsShipSize: [
@@ -147,6 +149,13 @@
         mounted() {
             window.addEventListener('resize', this.refreshBreakpoint);
             this.refreshBreakpoint();
+        },
+        beforeRouteLeave (to, from, next) {
+            this.filterShipName = [];
+            this.filterCitizenId = [];
+            this.filterShipSize = [];
+            this.filterShipStatus = null;
+            next();
         },
         computed: {
             citizenOrgaInfo() {
@@ -295,6 +304,7 @@
                 this.refreshedSid = this.sid;
                 this.shipFamilies = [];
 
+                this.loadingOrgaFleet = true;
                 axios.get(`/api/fleet/orga-fleets/${this.sid}`, {
                     params: {
                         'filters[shipNames]': this.filterShipName,
@@ -318,6 +328,8 @@
                         toastr.error(err.response.data.errorMessage);
                     }
                     console.error(err);
+                }).then(_ => {
+                    this.loadingOrgaFleet = false;
                 });
             },
             refreshFiltersOptions() {
@@ -377,16 +389,21 @@
 </script>
 
 <style lang="scss">
+    @import '../../css/vendors/variables';
     @import '~vue-select/src/scss/vue-select';
 
     .rank-icon {
         display: inline-block;
-        width: 30px;
-        height: 30px;
-        background: url('../../img/orgs-ranks.png') no-repeat 50% -78px;
+        font-size: 2rem;
+        margin-right: 2px;
+        color: #d8d8d8;
 
         &.rank-icon-active {
-            background-position: 50% -16px;
+            color: $primary;
         }
+    }
+
+    .vs__dropdown-option--selected {
+        background: #d8d8d8;
     }
 </style>

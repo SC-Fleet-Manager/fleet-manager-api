@@ -10,6 +10,11 @@ class CitizenInfos
     public $numberSC;
 
     /**
+     * @var string
+     */
+    public $nickname;
+
+    /**
      * @var HandleSC
      */
     public $handle;
