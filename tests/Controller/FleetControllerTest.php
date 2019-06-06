@@ -250,7 +250,6 @@ class FleetControllerTest extends WebTestCase
         ]);
 
         $json = \json_decode($this->client->getResponse()->getContent(), true);
-        dump($json);
         $this->assertArraySubset([
             [
                 [
