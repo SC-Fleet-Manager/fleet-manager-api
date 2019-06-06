@@ -52,4 +52,32 @@ class OrganizationCreator
 
         $this->entityManager->flush();
     }
+
+    /**
+     * @param string[] $organizationSids
+     */
+    public function createAndUpdateOrganizationsFromSids(array $organizationSids): void
+    {
+        /** @var Organization[] $existingOrgas */
+        $existingOrgas = $this->entityManager->getRepository(Organization::class)->findBy(['organizationSid' => $organizationSids]);
+        foreach ($organizationSids as $orgaSid) {
+            $organization = null;
+            foreach ($existingOrgas as $existingOrga) {
+                if ($existingOrga->getOrganizationSid() === $orgaSid) {
+                    $organization = $existingOrga;
+                    break;
+                }
+            }
+            if ($organization === null) {
+                $organization = new Organization(Uuid::uuid4());
+                $organization->setOrganizationSid($orgaSid);
+                $this->entityManager->persist($organization);
+            }
+            $providerOrgaInfos = $this->orgaInfosProvider->retrieveInfos(new SpectrumIdentification($orgaSid));
+            $organization->setAvatarUrl($providerOrgaInfos->avatarUrl);
+            $organization->setName($providerOrgaInfos->fullname);
+        }
+
+        $this->entityManager->flush();
+    }
 }
