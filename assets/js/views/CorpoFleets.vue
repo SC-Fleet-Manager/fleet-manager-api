@@ -257,9 +257,6 @@
                         // not exist
                         return;
                     }
-                    if (err.response.data.errorMessage) {
-                        toastr.error(err.response.data.errorMessage);
-                    }
                     console.error(err);
                 });
             },
@@ -324,8 +321,9 @@
                         // not exist
                         return;
                     }
-                    if (err.response.data.errorMessage) {
-                        toastr.error(err.response.data.errorMessage);
+                    if (err.response.status === 400 && err.response.data.error === 'no_citizen_created') {
+                        // no citizen created
+                        return;
                     }
                     console.error(err);
                 }).then(_ => {
@@ -344,8 +342,9 @@
                         // not exist
                         return;
                     }
-                    if (err.response.data.errorMessage) {
-                        toastr.error(err.response.data.errorMessage);
+                    if (err.response.status === 400 && err.response.data.error === 'no_citizen_created') {
+                        // no citizen created
+                        return;
                     }
                     console.error(err);
                 });
@@ -360,8 +359,9 @@
                         // not exist
                         return;
                     }
-                    if (err.response.data.errorMessage) {
-                        toastr.error(err.response.data.errorMessage);
+                    if (err.response.status === 400 && err.response.data.error === 'no_citizen_created') {
+                        // no citizen created
+                        return;
                     }
                     console.error(err);
                 });
