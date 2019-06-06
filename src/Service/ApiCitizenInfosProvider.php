@@ -94,7 +94,7 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
             $mainOrga = new CitizenOrganizationInfo(new SpectrumIdentification($sid), $rank, $rankName);
         }
         $orgaAffiliates = [];
-        $crawler->filter('.org.affiliation.visibility-V')->each(static function (Crawler $node) {
+        $crawler->filter('.org.affiliation.visibility-V')->each(static function (Crawler $node) use (&$orgaAffiliates) {
             $sid = $node->filterXPath('//p[contains(.//*/text(), "Spectrum Identification (SID)")]/*[contains(@class, "value")]')->text();
             $rankName = $node->filterXPath('//p[contains(.//*/text(), "Organization rank")]/*[contains(@class, "value")]')->text();
             $rank = $node->filter('.ranking .active')->count();

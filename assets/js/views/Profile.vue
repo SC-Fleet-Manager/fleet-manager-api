@@ -33,10 +33,10 @@
                                     </div>
                                     <div class="col">
                                         <strong>Nickname</strong>: {{ searchedCitizen.nickname }}<br/>
-                                        <strong>Handle</strong>: {{ searchedCitizen.handle.handle }}<br/>
+                                        <strong>Handle</strong>: <a :href="'https://robertsspaceindustries.com/citizens/'+searchedCitizen.handle.handle" target="_blank">{{ searchedCitizen.handle.handle }}</a><br/>
                                         <strong>Number</strong>: {{ searchedCitizen.numberSC.number }}<br/>
-                                        <strong>Main orga</strong>: {{ searchedCitizen.mainOrga.sid.sid }}<br/>
-                                        <strong>All orgas</strong>: {{ searchedCitizen.organisations.map(x => x.sid.sid).join(', ') }}<br/>
+                                        <strong>Main orga</strong>: <span v-html="searchedCitizen.mainOrga ? formatOrganizationList([searchedCitizen.mainOrga]) : ''"></span><br/>
+                                        <strong>All orgas</strong>: <span v-html="formatOrganizationList(searchedCitizen.organisations)"></span><br/>
                                     </div>
                                 </div>
                             </b-form-group>
@@ -56,14 +56,17 @@
                         <b-button v-b-toggle.collapse-step-2 variant="primary" size="lg" v-if="showButtonStep2">Great, this is my account, let's continue!</b-button>
                         <b-collapse id="collapse-step-2" class="mt-3" @show="showButtonStep2 = false">
                             <h4>2. Special marker</h4>
-                            <p>Finally, you have to put this following token into your <a href="https://robertsspaceindustries.com/account/profile" target="_blank" style="text-decoration: underline"><b>RSI short bio</b></a>.</p>
+                            <p>
+                                Finally, you have to put this following token into your <a href="https://robertsspaceindustries.com/account/profile" target="_blank" style="text-decoration: underline"><b>RSI short bio</b></a>.<br/>
+                                Don't worry, you can remove it just after your successful link. ;)
+                            </p>
                             <b-alert variant="danger" :show="showError" v-html="errorMessage"></b-alert>
                             <div v-if="lastShortBio != null">
                                 <strong>Your actual bio:</strong>
                                 <p style="max-height: 150px; overflow-y: auto;">{{ lastShortBio }}</p>
                             </div>
                             <b-form-group>
-                                <b-input-group>
+                                <b-input-group prepend="Token">
                                     <b-form-input readonly
                                                   id="form_user_token"
                                                   type="text"
@@ -271,6 +274,13 @@
                 }).then(_ => {
                     this.searchingHandle = false;
                 });
+            },
+            formatOrganizationList(orgas) {
+                let res = [];
+                for (let orga of orgas) {
+                    res.push(`<a href="https://robertsspaceindustries.com/orgs/${orga.sid.sid}" target="_blank">${orga.sid.sid}</a>`);
+                }
+                return res.join(', ');
             },
             linkAccount() {
                 const form = new FormData();
