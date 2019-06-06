@@ -34,7 +34,7 @@ class SpaControllerTest extends PantherTestCase
 
     private function login(?string $userId = null): void
     {
-        $this->client->request('GET', '/connect/discord' . ($userId ? "?userId=$userId" : ''));
+        $this->client->request('GET', '/connect/discord'.($userId ? "?userId=$userId" : ''));
     }
 
     /**
@@ -94,7 +94,7 @@ class SpaControllerTest extends PantherTestCase
         // Organizations' fleets
         $this->client->clickLink("Organizations' fleets");
         $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
-            return (int)$driver->executeScript('return document.querySelectorAll(".card-ship").length;') > 0;
+            return (int) $driver->executeScript('return document.querySelectorAll(".card-ship").length;') > 0;
         });
         $this->client->refreshCrawler();
         $this->assertSame('Select an organization', $this->client->findElement(WebDriverBy::cssSelector('label[for="select-orga"]'))->getText());
@@ -186,7 +186,7 @@ class SpaControllerTest extends PantherTestCase
      */
     public function testOrganizationFleets(): void
     {
-        $this->login('503e3bc1-cff9-42b8-9f27-a6064b0a78f2');
+        $this->login('503e3bc1-cff9-42b8-9f27-a6064b0a78f2'); // multiple orga + ships each size
 
         // check main orga as default orga
         $this->client->request('GET', '/profile');
@@ -195,7 +195,7 @@ class SpaControllerTest extends PantherTestCase
         });
         $this->client->clickLink("Organizations' fleets");
         $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
-            return (int)$driver->executeScript('return document.querySelectorAll(".card-ship").length;') > 0;
+            return (int) $driver->executeScript('return document.querySelectorAll(".card-ship").length;') > 0;
         });
         $this->assertSame('http://apache-test/organization-fleet/gardiens', $this->client->getCurrentURL());
         $this->assertSame('gardiens', $this->client->executeScript('return document.getElementById("select-orga").value'));
@@ -314,5 +314,54 @@ class SpaControllerTest extends PantherTestCase
         $this->assertSame('1', $cardShips[4]->findElement(WebDriverBy::className('card-ship-counter'))->getText());
         $this->assertSame('RSI - Aurora', $cardShips[5]->findElement(WebDriverBy::className('card-title'))->getText());
         $this->assertSame('1', $cardShips[5]->findElement(WebDriverBy::className('card-ship-counter'))->getText());
+
+        // Public + Logged + Not My Orga
+        $this->login('d92e229e-e743-4583-905a-e02c57eacfe0'); // orga flk
+
+        $this->client->request('GET', '/organization-fleet/gardiens'); // orga public + not my orga
+        $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+            return (int) $driver->executeScript('return document.querySelectorAll(".card-ship").length;') > 0;
+        });
+        $this->assertCount(6, $this->client->findElements(WebDriverBy::className('card-ship')));
+        $this->assertFalse($this->client->executeScript('return !!document.getElementById("select-orga");'), 'There must not be the orga selector.');
+        $this->assertContains('Les Gardiens', $this->client->findElement(WebDriverBy::cssSelector('h4 a'))->getText());
+        $this->assertCount(0, $this->client->findElements(WebDriverBy::xpath('//button[contains(text(), "Export fleet")]')));
+        $this->assertCount(1, $this->client->findElements(WebDriverBy::id('filters_input_ship_name')));
+        $this->assertCount(1, $this->client->findElements(WebDriverBy::id('filters_input_citizen_id')));
+        $this->assertCount(1, $this->client->findElements(WebDriverBy::id('filters_input_ship_size')));
+        $this->assertCount(1, $this->client->findElements(WebDriverBy::id('filters_input_ship_status')));
+
+        // Private + Logged + Not My Orga
+        $this->login('46380677-9915-4b7c-87ba-418840cb1772'); // orga gardiens
+        $this->client->request('GET', '/organization-fleet/flk'); // orga private + not my orga
+        $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+            return count($driver->findElements(WebDriverBy::className('alert'))) > 0;
+        });
+        $this->assertContains('FallKrom', $this->client->findElement(WebDriverBy::cssSelector('h4 a'))->getText());
+        $this->assertContains("Sorry, this organization's fleet does not exist or is private. Try to login to see it.", $this->client->findElement(WebDriverBy::className('alert-danger'))->getText());
+
+        // Public + Logout
+        $this->client->request('GET', '/logout');
+        $this->client->request('GET', '/organization-fleet/gardiens'); // orga public
+        $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+            return (int) $driver->executeScript('return document.querySelectorAll(".card-ship").length;') > 0;
+        });
+        $this->assertCount(6, $this->client->findElements(WebDriverBy::className('card-ship')));
+        $this->assertFalse($this->client->executeScript('return !!document.getElementById("select-orga");'), 'There must not be the orga selector.');
+        $this->assertContains('Les Gardiens', $this->client->findElement(WebDriverBy::cssSelector('h4 a'))->getText());
+        $this->assertCount(0, $this->client->findElements(WebDriverBy::xpath('//button[contains(text(), "Export fleet")]')));
+        $this->assertCount(1, $this->client->findElements(WebDriverBy::id('filters_input_ship_name')));
+        $this->assertCount(1, $this->client->findElements(WebDriverBy::id('filters_input_citizen_id')));
+        $this->assertCount(1, $this->client->findElements(WebDriverBy::id('filters_input_ship_size')));
+        $this->assertCount(1, $this->client->findElements(WebDriverBy::id('filters_input_ship_status')));
+
+        // Private + Logout
+        $this->client->request('GET', '/logout');
+        $this->client->request('GET', '/organization-fleet/flk'); // orga private
+        $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+            return count($driver->findElements(WebDriverBy::className('alert'))) > 0;
+        });
+        $this->assertContains('FallKrom', $this->client->findElement(WebDriverBy::cssSelector('h4 a'))->getText());
+        $this->assertContains("Sorry, this organization's fleet does not exist or is private. Try to login to see it.", $this->client->findElement(WebDriverBy::className('alert-danger'))->getText());
     }
 }
