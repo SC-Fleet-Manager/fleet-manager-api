@@ -7,3 +7,13 @@ App\Entity\Fleet:
         owner: '@citizen_ionni'
         version: 1
         uploadDate: '<(new \DateTimeImmutable("2019-04-05"))>'
+    fleet_gardiens1_v1:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("1399338e-5303-4b6e-9dee-fd41e66d7647"))>']
+        owner: '@citizen_gardiens1'
+        version: 1
+        uploadDate: '<(new \DateTimeImmutable("2019-04-06"))>'
+    fleet_ihaveships_v1:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("7418a47d-6bdd-4023-bd4e-5d2e0fcff6c1"))>']
+        owner: '@citizen_ihaveships'
+        version: 1
+        uploadDate: '<(new \DateTimeImmutable("2019-04-07"))>'

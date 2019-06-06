@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Domain\HandleSC;
 use App\Domain\SpectrumIdentification;
 use App\Entity\Citizen;
 use App\Entity\Fleet;
@@ -12,8 +13,11 @@ use App\Exception\InvalidFleetDataException;
 use App\Exception\NotFoundHandleSCException;
 use App\Form\Dto\FleetUpload;
 use App\Form\FleetUploadForm;
+use App\Repository\CitizenOrganizationRepository;
 use App\Repository\CitizenRepository;
+use App\Repository\OrganizationRepository;
 use App\Service\CitizenFleetGenerator;
+use App\Service\CitizenInfosProviderInterface;
 use App\Service\FleetUploadHandler;
 use App\Service\OrganisationFleetGenerator;
 use App\Service\OrganizationInfosProviderInterface;
@@ -43,6 +47,7 @@ class ApiController extends AbstractController
     private $organisationFleetGenerator;
     private $organizationInfosProvider;
     private $citizenRepository;
+    private $organizationRepository;
     private $serializer;
 
     public function __construct(
@@ -53,6 +58,7 @@ class ApiController extends AbstractController
         OrganisationFleetGenerator $organisationFleetGenerator,
         OrganizationInfosProviderInterface $organizationInfosProvider,
         CitizenRepository $citizenRepository,
+        OrganizationRepository $organizationRepository,
         SerializerInterface $serializer
     ) {
         $this->logger = $logger;
@@ -62,6 +68,7 @@ class ApiController extends AbstractController
         $this->organisationFleetGenerator = $organisationFleetGenerator;
         $this->organizationInfosProvider = $organizationInfosProvider;
         $this->citizenRepository = $citizenRepository;
+        $this->organizationRepository = $organizationRepository;
         $this->serializer = $serializer;
     }
 
@@ -72,6 +79,32 @@ class ApiController extends AbstractController
     public function me(): Response
     {
         return $this->json($this->security->getUser(), 200, [], ['groups' => 'me:read']);
+    }
+
+    /**
+     * @Route("/search-handle", name="search_handle", methods={"GET"})
+     */
+    public function searchHandle(Request $request, CitizenInfosProviderInterface $citizenInfosProvider): Response
+    {
+        $handle = $request->query->get('handle');
+        if ($handle === null) {
+            return $this->json([
+                'error' => 'no_handle',
+                'errorMessage' => 'The handle must not empty.',
+            ], 400);
+        }
+
+        try {
+            $citizenInfos = $citizenInfosProvider->retrieveInfos(new HandleSC($handle));
+
+            return $this->json($citizenInfos);
+        } catch (NotFoundHandleSCException $e) {
+        }
+
+        return $this->json([
+            'error' => 'not_found_handle',
+            'errorMessage' => sprintf('The SC handle %s does not exist.', $handle),
+        ], 404);
     }
 
     /**
@@ -93,6 +126,52 @@ class ApiController extends AbstractController
         }
 
         return $this->json($res);
+    }
+
+    /**
+     * @Route("/organization/{sid}", name="organization", methods={"GET"})
+     */
+    public function organization(string $sid): Response
+    {
+        $orga = $this->organizationRepository->findOneBy(['organizationSid' => $sid]);
+        if ($orga === null) {
+            return $this->json([
+                'error' => 'orga_not_exist',
+                'errorMessage' => sprintf('The organization %s does not exist.', $sid),
+            ], 404);
+        }
+
+        return $this->json($orga);
+    }
+
+    /**
+     * @Route("/manageable-organizations", name="manageable_organizations", methods={"GET"})
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
+     */
+    public function manageableOrganizations(CitizenOrganizationRepository $citizenOrganizationRepository): Response
+    {
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $citizen = $user->getCitizen();
+        if ($citizen === null) {
+            return $this->json([
+                'error' => 'no_citizen_created',
+                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
+            ], 400);
+        }
+
+        $sids = [];
+        foreach ($citizen->getOrganizations() as $citizenOrga) {
+            $citizenOrgas = $citizenOrganizationRepository->findGreaterThanRank($citizenOrga->getOrganizationSid(), $citizenOrga->getRank());
+            if (count($citizenOrgas) === 0) {
+                // granted to manage $citizenOrga settings
+                $sids[] = $citizenOrga->getOrganizationSid();
+            }
+        }
+
+        $manageableOrgas = $this->organizationRepository->findBy(['organizationSid' => $sids]);
+
+        return $this->json($manageableOrgas);
     }
 
     /**
@@ -277,18 +356,12 @@ class ApiController extends AbstractController
         }
 
         $file = $this->organisationFleetGenerator->generateFleetFile(new SpectrumIdentification($organization));
-        $filename = 'organization_fleet.json';
 
-        $response = new BinaryFileResponse($file);
-        $response->headers->set('Content-Type', 'application/json');
-        $response->deleteFileAfterSend();
-        $response->setContentDisposition(
-            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            $filename,
-            $filename
-        );
+        $fileResponse = $this->file($file, 'organization_fleet.json');
+        $fileResponse->headers->set('Content-Type', 'application/json');
+        $fileResponse->deleteFileAfterSend();
 
-        return $response;
+        return $fileResponse;
     }
 
     /**
@@ -364,6 +437,7 @@ class ApiController extends AbstractController
         file_put_contents($filepath, $csv);
 
         $file = $this->file($filepath, 'export_'.$organization.'.csv');
+        $file->headers->set('Content-Type', 'application/csv');
         $file->deleteFileAfterSend();
 
         return $file;

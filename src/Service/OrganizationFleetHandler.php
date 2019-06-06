@@ -2,14 +2,11 @@
 
 namespace App\Service;
 
-use App\Domain\ShipInfo;
 use App\Domain\SpectrumIdentification;
 use App\Entity\Citizen;
 use App\Service\Dto\ShipFamilyFilter;
 use Doctrine\ORM\EntityManagerInterface;
-use GuzzleHttp\Client;
 use Psr\Log\LoggerInterface;
-use Psr\SimpleCache\CacheInterface;
 
 class OrganizationFleetHandler
 {
@@ -41,6 +38,13 @@ class OrganizationFleetHandler
                     continue;
                 }
                 $found = true;
+                // filtering
+                if (count($filter->shipSizes) > 0 && !in_array($shipInfo->size, $filter->shipSizes, false)) {
+                    continue;
+                }
+                if ($filter->shipStatus !== null && $filter->shipStatus !== $shipInfo->productionStatus) {
+                    continue;
+                }
                 if (!isset($shipFamilies[$shipInfo->chassisId])) {
                     $shipFamilies[$shipInfo->chassisId] = [
                         'chassisId' => $shipInfo->chassisId,
@@ -55,7 +59,7 @@ class OrganizationFleetHandler
                 break;
             }
             if (!$found) {
-                $this->logger->warning('A persited ship was not found in the shipInfosPovider', ['orgaShip' => $orgaShip->getId(), 'shipInfosProvider' => get_class($this->shipInfosProvider)]);
+                $this->logger->warning('A persited ship was not found in the shipInfosPovider', ['orgaShip' => $orgaShip->getId(), 'shipName' => $orgaShip->getName(), 'shipInfosProvider' => get_class($this->shipInfosProvider)]);
             }
         }
 

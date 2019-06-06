@@ -6,6 +6,7 @@ use App\Domain\SpectrumIdentification;
 use App\Entity\Citizen;
 use App\Entity\Fleet;
 use App\Entity\Ship;
+use App\Entity\User;
 use App\Service\Dto\ShipFamilyFilter;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
@@ -31,7 +32,7 @@ class CitizenRepository extends ServiceEntityRepository
             ->leftJoin('f.ships', 's')
             ->addSelect('s')
             ->where('c.organisations LIKE :orga')
-            ->setParameter('orga', '%"' . $organizationId . '"%')
+            ->setParameter('orga', '%"'.$organizationId.'"%')
             ->getQuery();
         $q->useResultCache(true);
         $q->setResultCacheLifetime(30);
@@ -57,11 +58,19 @@ class CitizenRepository extends ServiceEntityRepository
             WHERE c.organisations LIKE :orgaId 
         EOT;
         // filtering
-        if ($filter->shipName !== null) {
-            $sql .= ' AND s.name LIKE :shipName ';
+        if (count($filter->shipNames) > 0) {
+            $sql .= ' AND (';
+            foreach ($filter->shipNames as $i => $filterShipName) {
+                $sql .= sprintf(' s.name = :shipName_%d OR ', $i);
+            }
+            $sql .= ' 1=0) ';
         }
-        if ($filter->citizenName !== null) {
-            $sql .= ' AND c.actual_handle LIKE :citizenName ';
+        if (count($filter->citizenIds) > 0) {
+            $sql .= ' AND (';
+            foreach ($filter->citizenIds as $i => $filterCitizenId) {
+                $sql .= sprintf(' c.id = :citizenId_%d OR ', $i);
+            }
+            $sql .= ' 1=0) ';
         }
 
         $rsm = new ResultSetMappingBuilder($this->_em);
@@ -70,12 +79,12 @@ class CitizenRepository extends ServiceEntityRepository
         $rsm->addJoinedEntityFromClassMetadata(Citizen::class, 'c', 'f', 'owner', ['id' => 'citizenId']);
 
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
-        $stmt->setParameter(':orgaId', '%"' . $organizationId . '"%');
-        if ($filter->shipName !== null) {
-            $stmt->setParameter('shipName', '%' . $filter->shipName . '%');
+        $stmt->setParameter(':orgaId', '%"'.$organizationId.'"%');
+        foreach ($filter->shipNames as $i => $filterShipName) {
+            $stmt->setParameter('shipName_'.$i, $filterShipName);
         }
-        if ($filter->citizenName !== null) {
-            $stmt->setParameter('citizenName', '%' . $filter->citizenName . '%');
+        foreach ($filter->citizenIds as $i => $filterCitizenId) {
+            $stmt->setParameter('citizenId_'.$i, $filterCitizenId);
         }
 
         return $stmt->getResult();
@@ -96,11 +105,19 @@ class CitizenRepository extends ServiceEntityRepository
             WHERE c.organisations LIKE :orgaId 
         EOT;
         // filtering
-        if ($filter->shipName !== null) {
-            $sql .= ' AND s.name LIKE :filterShipName ';
+        if (count($filter->shipNames) > 0) {
+            $sql .= ' AND (';
+            foreach ($filter->shipNames as $i => $filterShipName) {
+                $sql .= sprintf(' s.name = :shipName_%d OR ', $i);
+            }
+            $sql .= ' 1=0) ';
         }
-        if ($filter->citizenName !== null) {
-            $sql .= ' AND c.actual_handle LIKE :filterCitizenName ';
+        if (count($filter->citizenIds) > 0) {
+            $sql .= ' AND (';
+            foreach ($filter->citizenIds as $i => $filterCitizenId) {
+                $sql .= sprintf(' c.id = :citizenId_%d OR ', $i);
+            }
+            $sql .= ' 1=0) ';
         }
 
         $rsm = new ResultSetMapping();
@@ -108,27 +125,32 @@ class CitizenRepository extends ServiceEntityRepository
         $rsm->addScalarResult('countOwned', 'countOwned');
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
         $stmt->setParameters([
-            'orgaId' => '%"' . $organizationId . '"%',
+            'orgaId' => '%"'.$organizationId.'"%',
             'shipName' => mb_strtolower($shipName),
         ]);
-        if ($filter->shipName !== null) {
-            $stmt->setParameter('filterShipName', '%' . $filter->shipName . '%');
+        foreach ($filter->shipNames as $i => $filterShipName) {
+            $stmt->setParameter('shipName_'.$i, $filterShipName);
         }
-        if ($filter->citizenName !== null) {
-            $stmt->setParameter('filterCitizenName', '%' . $filter->citizenName . '%');
+        foreach ($filter->citizenIds as $i => $filterCitizenId) {
+            $stmt->setParameter('citizenId_'.$i, $filterCitizenId);
         }
 
         return $stmt->getScalarResult();
     }
 
-    public function getOwnersOfShip(string $organizationId, string $shipName, ShipFamilyFilter $filter, int $page = null, int $itemsPerPage = 10): iterable
+    /**
+     * @return User[]
+     */
+    public function getOwnersOfShip(string $organizationId, string $shipName, ShipFamilyFilter $filter, int $page = null, int $itemsPerPage = 10): array
     {
-        $citizenMetadata = $this->getClassMetadata();
+        $userMetadata = $this->_em->getClassMetadata(User::class);
+        $citizenMetadata = $this->_em->getClassMetadata(Citizen::class);
         $fleetMetadata = $this->_em->getClassMetadata(Fleet::class);
         $shipMetadata = $this->_em->getClassMetadata(Ship::class);
 
         $sql = <<<EOT
-            SELECT c.*, c.id as citizenId, COUNT(s.id) as countShips FROM {$citizenMetadata->getTableName()} c
+            SELECT u.*, u.id as userId, c.*, c.id as citizenId, COUNT(s.id) as countShips FROM {$userMetadata->getTableName()} u
+            INNER JOIN {$citizenMetadata->getTableName()} c ON u.citizen_id = c.id
             INNER JOIN {$fleetMetadata->getTableName()} f ON c.id = f.owner_id AND f.id = (
                 SELECT f2.id FROM {$fleetMetadata->getTableName()} f2 WHERE f2.owner_id = f.owner_id ORDER BY f2.version DESC LIMIT 1
             )
@@ -136,14 +158,22 @@ class CitizenRepository extends ServiceEntityRepository
             WHERE c.organisations LIKE :orgaId
         EOT;
         // filtering
-        if ($filter->shipName !== null) {
-            $sql .= ' AND s.name LIKE :filterShipName ';
+        if (count($filter->shipNames) > 0) {
+            $sql .= ' AND (';
+            foreach ($filter->shipNames as $i => $filterShipName) {
+                $sql .= sprintf(' s.name = :shipName_%d OR ', $i);
+            }
+            $sql .= ' 1=0) ';
         }
-        if ($filter->citizenName !== null) {
-            $sql .= ' AND c.actual_handle LIKE :filterCitizenName ';
+        if (count($filter->citizenIds) > 0) {
+            $sql .= ' AND (';
+            foreach ($filter->citizenIds as $i => $filterCitizenId) {
+                $sql .= sprintf(' c.id = :citizenId_%d OR ', $i);
+            }
+            $sql .= ' 1=0) ';
         }
         $sql .= <<<EOT
-            GROUP BY c.id
+            GROUP BY u.id, c.id
             ORDER BY countShips DESC
         EOT;
         // pagination
@@ -152,12 +182,13 @@ class CitizenRepository extends ServiceEntityRepository
         }
 
         $rsm = new ResultSetMappingBuilder($this->_em);
-        $rsm->addRootEntityFromClassMetadata(Citizen::class, 'c', ['id' => 'citizenId']);
+        $rsm->addRootEntityFromClassMetadata(User::class, 'u', ['id' => 'userId']);
+        $rsm->addJoinedEntityFromClassMetadata(Citizen::class, 'c', 'u', 'citizen', ['id' => 'citizenId']);
         $rsm->addScalarResult('countShips', 'countShips');
 
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
         $stmt->setParameters([
-            'orgaId' => '%"' . $organizationId . '"%',
+            'orgaId' => '%"'.$organizationId.'"%',
             'shipName' => mb_strtolower($shipName),
         ]);
         if ($page !== null) {
@@ -165,11 +196,11 @@ class CitizenRepository extends ServiceEntityRepository
             $stmt->setParameter('first', ($page - 1) * $itemsPerPage);
             $stmt->setParameter('countItems', $itemsPerPage);
         }
-        if ($filter->shipName !== null) {
-            $stmt->setParameter('filterShipName', '%' . $filter->shipName . '%');
+        foreach ($filter->shipNames as $i => $filterShipName) {
+            $stmt->setParameter('shipName_'.$i, $filterShipName);
         }
-        if ($filter->citizenName !== null) {
-            $stmt->setParameter('filterCitizenName', '%' . $filter->citizenName . '%');
+        foreach ($filter->citizenIds as $i => $filterCitizenId) {
+            $stmt->setParameter('citizenId_'.$i, $filterCitizenId);
         }
 
         return $stmt->getResult();

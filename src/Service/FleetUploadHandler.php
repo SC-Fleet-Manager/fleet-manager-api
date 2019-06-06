@@ -6,27 +6,32 @@ use App\Domain\Money;
 use App\Entity\Citizen;
 use App\Entity\Fleet;
 use App\Entity\Ship;
+use App\Event\CitizenRefreshEvent;
 use App\Exception\BadCitizenException;
 use App\Exception\FleetUploadedTooCloseException;
 use App\Exception\InvalidFleetDataException;
 use App\Repository\FleetRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class FleetUploadHandler
 {
     private $fleetRepository;
     private $entityManager;
     private $citizenInfosProvider;
+    private $eventDispatcher;
 
     public function __construct(
         FleetRepository $fleetRepository,
         EntityManagerInterface $entityManager,
-        CitizenInfosProviderInterface $citizenInfosProvider
+        CitizenInfosProviderInterface $citizenInfosProvider,
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->fleetRepository = $fleetRepository;
         $this->entityManager = $entityManager;
         $this->citizenInfosProvider = $citizenInfosProvider;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     public function handle(Citizen $citizen, array $fleetData): void
@@ -40,13 +45,10 @@ class FleetUploadHandler
             throw new BadCitizenException(sprintf('The SC number %s is not equal to %s.', $citizen->getNumber(), $infos->numberSC));
         }
 
-        $citizen->setBio($infos->bio);
-        $citizen->setOrganisations([]);
-        foreach ($infos->organisations as $organisation) {
-            $citizen->addOrganisation(is_object($organisation) ? clone $organisation : $organisation);
-        }
-        $citizen->setLastRefresh(new \DateTimeImmutable());
+        $citizen->refresh($infos, $this->entityManager);
         $this->entityManager->flush();
+
+        $this->eventDispatcher->dispatch(CitizenRefreshEvent::NAME, new CitizenRefreshEvent($citizen));
 
         $lastVersion = $this->fleetRepository->getLastVersionFleet($citizen);
         if ($lastVersion !== null && $lastVersion->isUploadedDateTooClose()) {
@@ -76,7 +78,7 @@ class FleetUploadHandler
                 ->setManufacturer($shipData['manufacturer'])
                 ->setInsured($shipData['lti'])
                 ->setCost((new Money((int) preg_replace('/^\$(\d+\.\d+)/', '$1', $shipData['cost'])))->getCost())
-                ->setPledgeDate(\DateTimeImmutable::createFromFormat('F d, Y', $shipData['pledge_date']))
+                ->setPledgeDate(\DateTimeImmutable::createFromFormat('F d, Y', $shipData['pledge_date'])->setTime(0, 0))
                 ->setRawData($shipData);
             $fleet->addShip($ship);
         }

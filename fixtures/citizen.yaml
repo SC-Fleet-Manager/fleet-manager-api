@@ -1,12 +1,37 @@
+include:
+    - citizen_organization.yaml
+
 App\Entity\Citizen:
     citizen_ionni:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("7275c744-6a69-43c2-9ebf-1491a104d5e7"))>']
         number: '<(new \App\Domain\CitizenNumber("123456"))>'
+        nickname: 'Ioni14'
         actualHandle: '<(new \App\Domain\HandleSC("ionni"))>'
         organisations: ["flk"]
+        organizations: ['@ionni_orga_flk']
+        mainOrga: '@ionni_orga_flk'
         bio: 'This is my bio'
     citizen_ashuvidz:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("3de45df8-3e84-4a69-8e9d-7bff1faa5281"))>']
         number: '<(new \App\Domain\CitizenNumber("234567"))>'
+        nickname: 'VyrtualSynthese'
         actualHandle: '<(new \App\Domain\HandleSC("ashuvidz"))>'
         organisations: ["flk"]
+        organizations: ['@ashuvidz_orga_flk']
+        mainOrga: '@ashuvidz_orga_flk'
+    citizen_gardiens1:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("1256a87e-65bf-4fb1-9810-35d1f8053be8"))>']
+        number: '<(new \App\Domain\CitizenNumber("345678"))>'
+        nickname: 'Gardien1'
+        actualHandle: '<(new \App\Domain\HandleSC("gardien1"))>'
+        organisations: ["gardiens"]
+        organizations: ['@gardiens1_orga_gardiens']
+        mainOrga: '@gardiens1_orga_gardiens'
+    citizen_ihaveships:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("08cc11ec-26ac-4638-8e03-c40b857d32bd"))>']
+        number: '<(new \App\Domain\CitizenNumber("9198126"))>'
+        nickname: 'I Have Ships'
+        actualHandle: '<(new \App\Domain\HandleSC("ihaveships"))>'
+        organisations: ["flk", "gardiens"]
+        organizations: ['@ihaveships_orga_flk', '@ihaveships_orga_gardiens']
+        mainOrga: '@ihaveships_orga_gardiens'

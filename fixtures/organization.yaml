@@ -1,0 +1,11 @@
+App\Entity\Organization:
+    orga_flk:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("80db0703-dd43-49a0-93d3-89947b9ab321"))>']
+        organizationSid: 'flk'
+        name: 'FallKrom'
+        publicChoice: 'private'
+    gardiens_flk:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("901ccbf8-fa63-4b07-81aa-f10f60954715"))>']
+        organizationSid: 'gardiens'
+        name: 'Les Gardiens'
+        publicChoice: 'public'

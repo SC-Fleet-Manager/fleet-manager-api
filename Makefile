@@ -6,6 +6,7 @@ CONSOLE=bin/console
 PHPUNIT=bin/phpunit
 PHP_CS_FIXER=vendor/bin/php-cs-fixer
 EXEC_PHP=$(DOCKER_COMPOSE) exec -u ${UID}:${GID} php
+EXEC_PHP_NOTTY=$(DOCKER_COMPOSE) exec -T -u ${UID}:${GID} php
 EXEC_PHP_ROOT=$(DOCKER_COMPOSE) exec php
 EXEC_MYSQL=$(DOCKER_COMPOSE) exec -T mysql
 EXEC_COMPOSER=$(EXEC_PHP) composer
@@ -91,16 +92,23 @@ fixtures: vendor								## executes all fixtures
 .PHONY: qa tests phpunit-tests phpcsfix lint-twig lint-yaml
 qa: phpcsfix lint-twig lint-yaml tests					## launch tests + syntax checks
 
-tests: phpunit-tests							## launch all tests
-phpunit-tests: vendor							## launch unit + functional tests (PHPUnit /w Panther)
-	$(EXEC_PHP) $(PHPUNIT) $(c)
+tests:									## reset db tests + launch all tests
+	$(MAKE) db-reset-tests
+	$(MAKE) para-tests
+para-tests: unit-tests functional-tests end2end-tests			## launch all tests parallelisable
+unit-tests: vendor							## launch unit tests
+	$(EXEC_PHP_NOTTY) $(PHPUNIT) --group=unit $(c)
+functional-tests: vendor						## launch functional tests
+	$(EXEC_PHP_NOTTY) $(PHPUNIT) --group=functional $(c)
+end2end-tests: vendor							## launch end2end tests
+	$(EXEC_PHP_NOTTY) $(PHPUNIT) --group=end2end $(c)
 
 phpcsfix: vendor							## fix syntax of all PHP sources
 	$(EXEC_PHP) $(PHP_CS_FIXER) fix
 lint-twig: vendor							## check syntax of templates
 	$(EXEC_CONSOLE) lint:twig templates
 lint-yaml: vendor							## check syntax of yaml files
-	$(EXEC_CONSOLE) lint:yaml --parse-tags *.yml fixtures/*.yaml k8s/*.yaml
+	$(EXEC_CONSOLE) lint:yaml --parse-tags *.yml fixtures/*.yaml
 
 # Files generation
 vendor: composer.lock

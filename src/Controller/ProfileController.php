@@ -5,13 +5,17 @@ namespace App\Controller;
 use App\Domain\CitizenInfos;
 use App\Domain\HandleSC;
 use App\Entity\Citizen;
+use App\Entity\Organization;
 use App\Entity\User;
+use App\Event\CitizenRefreshEvent;
 use App\Exception\NotFoundHandleSCException;
 use App\Form\Dto\LinkAccount;
 use App\Form\Dto\UpdateHandle;
 use App\Form\LinkAccountForm;
 use App\Form\UpdateHandleForm;
+use App\Repository\CitizenOrganizationRepository;
 use App\Repository\CitizenRepository;
+use App\Repository\OrganizationRepository;
 use App\Repository\UserRepository;
 use App\Service\CitizenInfosProviderInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -19,6 +23,7 @@ use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -39,6 +44,7 @@ class ProfileController extends AbstractController
     private $formFactory;
     private $entityManager;
     private $serializer;
+    private $eventDispatcher;
 
     public function __construct(
         Logger $profileLinkAccountLogger,
@@ -48,7 +54,8 @@ class ProfileController extends AbstractController
         UserRepository $userRepository,
         Security $security,
         FormFactoryInterface $formFactory,
-        SerializerInterface $serializer
+        SerializerInterface $serializer,
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->profileLinkAccountLogger = $profileLinkAccountLogger;
         $this->citizenInfosProvider = $citizenInfosProvider;
@@ -58,6 +65,7 @@ class ProfileController extends AbstractController
         $this->formFactory = $formFactory;
         $this->entityManager = $entityManager;
         $this->serializer = $serializer;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -96,7 +104,6 @@ class ProfileController extends AbstractController
             ], 400);
         }
 
-        // TODO : refactor this into a separate service (DRY with FleetUploadHandler)
         $citizenInfos = $this->citizenInfosProvider->retrieveInfos(clone $citizen->getActualHandle());
         if (!$citizenInfos->numberSC->equals($citizen->getNumber())) {
             return $this->json([
@@ -105,14 +112,10 @@ class ProfileController extends AbstractController
             ], 400);
         }
 
-        $citizen->setOrganisations([]);
-        foreach ($citizenInfos->organisations as $organisation) {
-            $citizen->addOrganisation(is_object($organisation) ? clone $organisation : $organisation);
-        }
-        $citizen->setBio($citizenInfos->bio);
-        $citizen->setLastRefresh(new \DateTimeImmutable());
-
+        $citizen->refresh($citizenInfos, $this->entityManager);
         $this->entityManager->flush();
+
+        $this->eventDispatcher->dispatch(CitizenRefreshEvent::NAME, new CitizenRefreshEvent($citizen));
 
         return $this->json(null, 204);
     }
@@ -121,7 +124,7 @@ class ProfileController extends AbstractController
      * @Route("/save-preferences", name="save_preferences", methods={"POST"}, condition="request.getContentType() == 'json'")
      * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
      */
-    public function savePreferences(Request $request): Response
+    public function savePreferences(Request $request, CitizenOrganizationRepository $citizenOrganizationRepository, OrganizationRepository $organizationRepository): Response
     {
         /** @var User $user */
         $user = $this->security->getUser();
@@ -130,8 +133,26 @@ class ProfileController extends AbstractController
 
         // TODO : make a formtype
         $user->setPublicChoice($content['publicChoice'] ?? User::PUBLIC_CHOICE_PRIVATE);
-
         $this->entityManager->flush();
+
+        $orgaPublicChoices = $content['orgaPublicChoices'] ?? [];
+        $citizen = $user->getCitizen();
+        if ($citizen !== null) {
+            foreach ($orgaPublicChoices as $sid => $publicChoice) {
+                $orga = $citizen->getOrgaBySid($sid);
+                if ($orga === null) {
+                    continue;
+                }
+                if (!in_array($publicChoice, [Organization::PUBLIC_CHOICE_PRIVATE, Organization::PUBLIC_CHOICE_PUBLIC], true)) {
+                    continue;
+                }
+                $citizenOrgas = $citizenOrganizationRepository->findGreaterThanRank($sid, $orga->getRank());
+                if (count($citizenOrgas) === 0) {
+                    // granted to manage $citizenOrga settings
+                    $organizationRepository->updatePublicChoice($sid, $publicChoice);
+                }
+            }
+        }
 
         return $this->json(null, 204);
     }
@@ -185,9 +206,11 @@ class ProfileController extends AbstractController
                     'formErrors' => ['This SC handle does not have the same SC number than yours.'],
                 ], 400);
             }
-
             $citizen->setActualHandle(new HandleSC($updateHandle->handleSC));
+            $citizen->refresh($citizenInfos, $this->entityManager);
             $this->entityManager->flush();
+
+            $this->eventDispatcher->dispatch(CitizenRefreshEvent::NAME, new CitizenRefreshEvent($citizen));
         } catch (NotFoundHandleSCException $e) {
             return $this->json([
                 'error' => 'not_found_handle',
@@ -251,7 +274,7 @@ class ProfileController extends AbstractController
 
                 return $this->json([
                     'error' => 'invalid_form',
-                    'formErrors' => ['Your RSI bio does not contain this token.'],
+                    'formErrors' => ['Sorry, your RSI bio does not contain this token. Please copy-paste the following token to your RSI short bio.'],
                 ], 400);
             }
             $this->attachCitizenToUser($user, $citizenInfos);
@@ -261,7 +284,7 @@ class ProfileController extends AbstractController
 
             return $this->json([
                 'error' => 'not_found_handle',
-                'errorMessage' => sprintf('The SC handle %s does not exist.', $linkAccount->handleSC),
+                'errorMessage' => sprintf('The SC handle %s does not exist. Try to check the typo.', $linkAccount->handleSC),
             ], 400);
         }
 
@@ -308,14 +331,8 @@ class ProfileController extends AbstractController
 
         $citizen
             ->setNumber(clone $citizenInfos->numberSC)
-            ->setActualHandle(clone $citizenInfos->handle)
-            ->setBio($citizenInfos->bio)
-            ->setLastRefresh(new \DateTimeImmutable());
-        $citizen->setOrganisations([]);
-        foreach ($citizenInfos->organisations as $organisation) {
-            $citizen->addOrganisation(clone $organisation);
-        }
-
+            ->setActualHandle(clone $citizenInfos->handle);
+        $citizen->refresh($citizenInfos, $this->entityManager);
         if ($isNew) {
             $this->entityManager->persist($citizen);
         }
@@ -325,6 +342,9 @@ class ProfileController extends AbstractController
             ['citizenId' => $citizen->getId(), 'citizenHandle' => $citizen->getActualHandle()->getHandle(), 'infos' => $citizenInfos, 'userId' => $user->getId(), 'username' => $user->getNickname()]);
 
         $this->entityManager->flush();
+
+        $this->eventDispatcher->dispatch(CitizenRefreshEvent::NAME, new CitizenRefreshEvent($citizen));
+        // TODO : link CitizenOrganization with Organization
     }
 
     private function isTokenValid(User $user, CitizenInfos $citizenInfos): bool
