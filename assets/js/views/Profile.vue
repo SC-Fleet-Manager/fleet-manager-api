@@ -118,8 +118,7 @@
                                 </b-input-group-append>
                             </b-input-group>
                         </b-form-group>
-
-                        <b-alert variant="warning" :show="true">
+                        <b-alert variant="warning" :show="citizen.countRedactedOrganizations > 0">
                             <h5><i class="fas fa-exclamation-triangle"></i> Redacted orgas</h5>
                             You have <strong>{{ citizen.countRedactedOrganizations }} redacted organizations</strong><template v-if="citizen.redactedMainOrga"> including your main orga</template>. Therefore, you will not be able to see their fleet.<br/>
                             To display them, you have to set <strong>"Visible"</strong> in your <a href="https://robertsspaceindustries.com/account/organization" target="_blank">RSI account</a>.

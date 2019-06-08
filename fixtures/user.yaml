@@ -52,3 +52,13 @@ App\Entity\User:
         publicChoice: 'public'
         createdAt: '<(new \DateTimeImmutable("2019-04-06 11:22:33"))>'
         lastConnectedAt: '<(new \DateTimeImmutable("2019-04-07 22:33:44"))>'
+    user_need_refresh:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("9a634812-97dd-4c10-892f-6b7a9b7a2921"))>']
+        username: 'needRefresh'
+        discordId: '123456789006'
+        token: '5Ysoc291ezVnpxT8BnPYbS5gu5HDjWRH3TIejY9bPIOlQQgULiUqF0fFZuQYXHIe'
+        apiToken: 'nvOrHMQHwkUpXKzeRlgkLPdy8x1yml5RwqcQw3mkvmWPSu9GYVyfMVq6w7Qxevi5'
+        citizen: '@citizen_need_refresh'
+        publicChoice: 'private'
+        createdAt: '<(new \DateTimeImmutable("2019-04-07 11:22:33"))>'
+        lastConnectedAt: '<(new \DateTimeImmutable("2019-04-08 22:33:44"))>'

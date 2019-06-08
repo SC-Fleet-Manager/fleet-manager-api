@@ -13,7 +13,6 @@
                 <b-form-file id="form_fleetfile"
                              v-model="form.fleetFile"
                              :state="Boolean(form.fleetFile)"
-                             required
                              placeholder="Choose/Drop your fleet file (.json)"
                              accept=".json"></b-form-file>
             </b-form-group>
