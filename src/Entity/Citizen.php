@@ -76,6 +76,14 @@ class Citizen
     private $bio;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"profile"})
+     */
+    private $avatarUrl;
+
+    /**
      * @var \DateTimeInterface
      *
      * @ORM\Column(type="datetimetz_immutable", nullable=true)
@@ -240,6 +248,18 @@ class Citizen
         return $this;
     }
 
+    public function getAvatarUrl(): ?string
+    {
+        return $this->avatarUrl;
+    }
+
+    public function setAvatarUrl(?string $avatarUrl): self
+    {
+        $this->avatarUrl = $avatarUrl;
+
+        return $this;
+    }
+
     /**
      * @return iterable|CitizenOrganization[]
      */
@@ -361,6 +381,7 @@ class Citizen
     {
         $this->setNickname($infos->nickname);
         $this->setBio($infos->bio);
+        $this->setAvatarUrl($infos->avatarUrl);
         $this->setLastRefresh(new \DateTimeImmutable());
 
         $this->setRedactedMainOrga($infos->redactedMainOrga);

@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -43,6 +42,13 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255, unique=false)
      */
     private $discordId;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=15, nullable=true)
+     */
+    private $discordTag;
 
     /**
      * @var string
@@ -150,6 +156,18 @@ class User implements UserInterface
     public function setDiscordId(string $discordId): self
     {
         $this->discordId = $discordId;
+
+        return $this;
+    }
+
+    public function getDiscordTag(): ?string
+    {
+        return $this->discordTag;
+    }
+
+    public function setDiscordTag(?string $discordTag): self
+    {
+        $this->discordTag = $discordTag;
 
         return $this;
     }

@@ -86,6 +86,8 @@ class FakeCitizenInfosProvider implements CitizenInfosProviderInterface
             clone $this->citizen->getActualHandle()
         );
         $ci->nickname = $this->citizen->getNickname();
+        $ci->countRedactedOrganizations = $this->citizen->getCountRedactedOrganizations();
+        $ci->redactedMainOrga = $this->citizen->isRedactedMainOrga();
         $ci->mainOrga = $mainOrga;
         $ci->organizations = [];
         if ($mainOrga !== null) {

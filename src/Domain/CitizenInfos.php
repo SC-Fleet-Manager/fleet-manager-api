@@ -27,7 +27,7 @@ class CitizenInfos
     /**
      * @var int
      */
-    public $countRedactedOrganizations;
+    public $countRedactedOrganizations = 0;
 
     /**
      * @var CitizenOrganizationInfo
@@ -37,7 +37,7 @@ class CitizenInfos
     /**
      * @var bool
      */
-    public $redactedMainOrga;
+    public $redactedMainOrga = false;
 
     /**
      * @var string
@@ -45,7 +45,7 @@ class CitizenInfos
     public $avatarUrl;
 
     /**
-     * @var bool
+     * @var \DateTimeInterface
      */
     public $registered;
 

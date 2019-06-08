@@ -18,7 +18,7 @@ hwi_oauth:
                 identifier: id
                 nickname: username
                 realname: username
-#                discordtag: discriminator
+                discordtag: discriminator
             options:
                 csrf: true
     connect: ~
