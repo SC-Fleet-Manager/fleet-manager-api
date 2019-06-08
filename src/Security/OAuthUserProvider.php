@@ -30,6 +30,25 @@ class OAuthUserProvider extends BaseProvider
 
     private function persistOAuthInfos(UserResponseInterface $response): void
     {
+
+
+
+
+
+
+
+        // TODO : get discord discriminant
+        dump($response);
+
+
+
+
+
+
+
+
+
+
         $user = $this->userRepository->getByDiscordId($response->getUsername());
         if ($user === null) {
             $user = $this->userRepository->getByUsername($response->getNickname());

@@ -85,6 +85,7 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
 
         $crawler = $this->client->request('GET', self::BASE_URL.'/citizens/'.$handleSC.'/organizations');
         $mainOrga = null;
+        $mainOrgaRedacted = false;
         $mainOrgaCrawler = $crawler->filter('.org.main.visibility-V');
         if ($mainOrgaCrawler->count() > 0) {
             $sid = $mainOrgaCrawler->filterXPath('//p[contains(.//*/text(), "Spectrum Identification (SID)")]/*[contains(@class, "value")]')->text();
@@ -92,7 +93,10 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
             $rank = $mainOrgaCrawler->filter('.ranking .active')->count();
 
             $mainOrga = new CitizenOrganizationInfo(new SpectrumIdentification($sid), $rank, $rankName);
+        } elseif ($crawler->filter('.org.main.visibility-R')->count() > 0) {
+            $mainOrgaRedacted = true;
         }
+
         $orgaAffiliates = [];
         $crawler->filter('.org.affiliation.visibility-V')->each(static function (Crawler $node) use (&$orgaAffiliates) {
             $sid = $node->filterXPath('//p[contains(.//*/text(), "Spectrum Identification (SID)")]/*[contains(@class, "value")]')->text();
@@ -102,6 +106,7 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
             $orga = new CitizenOrganizationInfo(new SpectrumIdentification($sid), $rank, $rankName);
             $orgaAffiliates[] = $orga;
         });
+        $redactedAffiliates = $crawler->filter('.org.affiliation.visibility-R')->count();
 
         $ci = new CitizenInfos(
             new CitizenNumber($citizenNumber),
@@ -117,6 +122,8 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
         $ci->bio = $bio;
         $ci->avatarUrl = $avatarUrl;
         $ci->registered = $enlisted;
+        $ci->redactedMainOrga = $mainOrgaRedacted;
+        $ci->countRedactedOrganizations = $redactedAffiliates + ($mainOrgaRedacted ? 1 : 0);
 
         $this->logger->info('Citizen infos retrieved.', [
             'handle' => $handleSC->getHandle(),

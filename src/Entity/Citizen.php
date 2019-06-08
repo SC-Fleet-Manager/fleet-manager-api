@@ -91,6 +91,8 @@ class Citizen
     private $organizations;
 
     /**
+     * Redacted affiliates orgas + redacted main orga.
+     *
      * @var int
      *
      * @ORM\Column(type="integer", options={"defaults":0})
@@ -360,6 +362,9 @@ class Citizen
         $this->setNickname($infos->nickname);
         $this->setBio($infos->bio);
         $this->setLastRefresh(new \DateTimeImmutable());
+
+        $this->setRedactedMainOrga($infos->redactedMainOrga);
+        $this->setCountRedactedOrganizations($infos->countRedactedOrganizations);
 
         foreach ($this->getOrganizations() as $orga) {
             $em->remove($orga);

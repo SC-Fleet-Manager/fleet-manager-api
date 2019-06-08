@@ -25,9 +25,19 @@ class CitizenInfos
     public $organizations;
 
     /**
+     * @var int
+     */
+    public $countRedactedOrganizations;
+
+    /**
      * @var CitizenOrganizationInfo
      */
     public $mainOrga;
+
+    /**
+     * @var bool
+     */
+    public $redactedMainOrga;
 
     /**
      * @var string

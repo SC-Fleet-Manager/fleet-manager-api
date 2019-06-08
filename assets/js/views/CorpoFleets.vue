@@ -9,6 +9,7 @@
                                 <b-form-group label="Select an organization" label-for="select-orga" class="js-select-orga">
                                     <b-form-select id="select-orga" :value="selectedSid" @change="selectSid">
                                         <option v-for="citizenOrga in citizen.organizations" :key="citizenOrga.organization.organizationSid" :value="citizenOrga.organization.organizationSid">{{ citizenOrga.organization.name }}</option>
+                                        <option v-if="citizen.countRedactedOrganizations > 0" disabled>+{{ citizen.countRedactedOrganizations }} redacted organizations</option> <!--TODO (see FAQ)-->
                                     </b-form-select>
                                 </b-form-group>
                             </b-form>
