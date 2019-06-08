@@ -4,7 +4,9 @@ namespace App\Repository;
 
 use App\Domain\SpectrumIdentification;
 use App\Entity\Citizen;
+use App\Entity\CitizenOrganization;
 use App\Entity\Fleet;
+use App\Entity\Organization;
 use App\Entity\Ship;
 use App\Entity\User;
 use App\Service\Dto\ShipFamilyFilter;
@@ -23,21 +25,22 @@ class CitizenRepository extends ServiceEntityRepository
     /**
      * @return iterable|Citizen[]
      */
-    public function getByOrganisation(SpectrumIdentification $organizationId): iterable
+    public function getByOrganization(SpectrumIdentification $organizationId): iterable
     {
-        $q = $this->createQueryBuilder('c')
-            ->select('c')
-            ->leftJoin('c.fleets', 'f')
-            ->addSelect('f')
-            ->leftJoin('f.ships', 's')
-            ->addSelect('s')
-            ->where('c.organisations LIKE :orga')
-            ->setParameter('orga', '%"'.$organizationId.'"%')
-            ->getQuery();
-        $q->useResultCache(true);
-        $q->setResultCacheLifetime(30);
+        $dql = '
+            SELECT c, f, s FROM App\Entity\Citizen c
+            INNER JOIN c.organizations citizenOrga
+            INNER JOIN citizenOrga.organization orga
+            LEFT JOIN c.fleets f
+            LEFT JOIN f.ships s
+            WHERE orga.organizationSid = :sid
+        ';
+        $query = $this->_em->createQuery($dql);
+        $query->setParameter('sid', mb_strtolower($organizationId->getSid()));
+        $query->useResultCache(true);
+        $query->setResultCacheLifetime(30);
 
-        return $q->getResult();
+        return $query->getResult();
     }
 
     /**
@@ -48,14 +51,18 @@ class CitizenRepository extends ServiceEntityRepository
         $citizenMetadata = $this->getClassMetadata();
         $fleetMetadata = $this->_em->getClassMetadata(Fleet::class);
         $shipMetadata = $this->_em->getClassMetadata(Ship::class);
+        $citizenOrgaMetadata = $this->_em->getClassMetadata(CitizenOrganization::class);
+        $orgaMetadata = $this->_em->getClassMetadata(Organization::class);
 
         $sql = <<<EOT
             SELECT *, c.id as citizenId, f.id AS fleetId, s.id AS shipId FROM {$citizenMetadata->getTableName()} c 
+            INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON citizenOrga.citizen_id = c.id
+            INNER JOIN {$orgaMetadata->getTableName()} orga ON orga.id = citizenOrga.organization_id
             INNER JOIN {$fleetMetadata->getTableName()} f ON c.id = f.owner_id AND f.id = (
                 SELECT f2.id FROM {$fleetMetadata->getTableName()} f2 WHERE f2.owner_id = f.owner_id ORDER BY f2.version DESC LIMIT 1
             )
             INNER JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id
-            WHERE c.organisations LIKE :orgaId 
+            WHERE orga.organization_sid = :sid 
         EOT;
         // filtering
         if (count($filter->shipNames) > 0) {
@@ -79,7 +86,7 @@ class CitizenRepository extends ServiceEntityRepository
         $rsm->addJoinedEntityFromClassMetadata(Citizen::class, 'c', 'f', 'owner', ['id' => 'citizenId']);
 
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
-        $stmt->setParameter(':orgaId', '%"'.$organizationId.'"%');
+        $stmt->setParameter('sid', mb_strtolower($organizationId->getSid()));
         foreach ($filter->shipNames as $i => $filterShipName) {
             $stmt->setParameter('shipName_'.$i, $filterShipName);
         }
@@ -95,14 +102,18 @@ class CitizenRepository extends ServiceEntityRepository
         $citizenMetadata = $this->getClassMetadata();
         $fleetMetadata = $this->_em->getClassMetadata(Fleet::class);
         $shipMetadata = $this->_em->getClassMetadata(Ship::class);
+        $citizenOrgaMetadata = $this->_em->getClassMetadata(CitizenOrganization::class);
+        $orgaMetadata = $this->_em->getClassMetadata(Organization::class);
 
         $sql = <<<EOT
             SELECT count(DISTINCT c.id) as countOwners, count(*) as countOwned FROM {$citizenMetadata->getTableName()} c 
+            INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON citizenOrga.citizen_id = c.id
+            INNER JOIN {$orgaMetadata->getTableName()} orga ON orga.id = citizenOrga.organization_id
             INNER JOIN {$fleetMetadata->getTableName()} f ON c.id = f.owner_id AND f.id = (
                 SELECT f2.id FROM {$fleetMetadata->getTableName()} f2 WHERE f2.owner_id = f.owner_id ORDER BY f2.version DESC LIMIT 1
             )
             INNER JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id and LOWER(s.name) = :shipName 
-            WHERE c.organisations LIKE :orgaId 
+            WHERE orga.organization_sid = :sid 
         EOT;
         // filtering
         if (count($filter->shipNames) > 0) {
@@ -125,7 +136,7 @@ class CitizenRepository extends ServiceEntityRepository
         $rsm->addScalarResult('countOwned', 'countOwned');
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
         $stmt->setParameters([
-            'orgaId' => '%"'.$organizationId.'"%',
+            'sid' => mb_strtolower($organizationId),
             'shipName' => mb_strtolower($shipName),
         ]);
         foreach ($filter->shipNames as $i => $filterShipName) {
@@ -147,15 +158,19 @@ class CitizenRepository extends ServiceEntityRepository
         $citizenMetadata = $this->_em->getClassMetadata(Citizen::class);
         $fleetMetadata = $this->_em->getClassMetadata(Fleet::class);
         $shipMetadata = $this->_em->getClassMetadata(Ship::class);
+        $citizenOrgaMetadata = $this->_em->getClassMetadata(CitizenOrganization::class);
+        $orgaMetadata = $this->_em->getClassMetadata(Organization::class);
 
         $sql = <<<EOT
             SELECT u.*, u.id as userId, c.*, c.id as citizenId, COUNT(s.id) as countShips FROM {$userMetadata->getTableName()} u
             INNER JOIN {$citizenMetadata->getTableName()} c ON u.citizen_id = c.id
+            INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON citizenOrga.citizen_id = c.id
+            INNER JOIN {$orgaMetadata->getTableName()} orga ON orga.id = citizenOrga.organization_id
             INNER JOIN {$fleetMetadata->getTableName()} f ON c.id = f.owner_id AND f.id = (
                 SELECT f2.id FROM {$fleetMetadata->getTableName()} f2 WHERE f2.owner_id = f.owner_id ORDER BY f2.version DESC LIMIT 1
             )
             INNER JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id and LOWER(s.name) = :shipName
-            WHERE c.organisations LIKE :orgaId
+            WHERE orga.organization_sid = :sid 
         EOT;
         // filtering
         if (count($filter->shipNames) > 0) {
@@ -188,7 +203,7 @@ class CitizenRepository extends ServiceEntityRepository
 
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
         $stmt->setParameters([
-            'orgaId' => '%"'.$organizationId.'"%',
+            'sid' => mb_strtolower($organizationId),
             'shipName' => mb_strtolower($shipName),
         ]);
         if ($page !== null) {

@@ -43,10 +43,12 @@ const router = new Router({
                     beforeEnter(to, from, next) {
                         axios.get('/api/profile/').then(response => {
                             const citizen = response.data.citizen;
-                            if (citizen === null ||  citizen.organisations.length === 0) {
+                            if (citizen === null ||  citizen.organizations.length === 0) {
                                 next();
                             }
-                            const defaultOrga = citizen.mainOrga !== null ? citizen.mainOrga.organizationSid : citizen.organisations[0];
+                            const defaultOrga = citizen.mainOrga !== null ? citizen.mainOrga.organization.organizationSid : (
+                                citizen.organizations[0].organization !== null ? citizen.organizations[0].organization.organizationSid : citizen.organizations[0].organizationSid
+                            );
                             next({ path: `/organization-fleet/${defaultOrga}` });
                         }).catch(err => {
                             next();

@@ -32,6 +32,14 @@ class FakeCitizenInfosProvider implements CitizenInfosProviderInterface
         $this->citizen->setNumber(new CitizenNumber('123456'));
 
         $citizenInfos = new CitizenInfos(new CitizenNumber('135790'), new HandleSC('fake_citizen_1'));
+        $citizenInfos->mainOrga = new CitizenOrganizationInfo(new SpectrumIdentification('flk'), 3, 'Soldier');
+        $citizenInfos->organizations[] = $citizenInfos->mainOrga;
+        $citizenInfos->organizations[] = new CitizenOrganizationInfo(new SpectrumIdentification('gardiens'), 4, 'Captain');
+        $citizenInfos->nickname = 'Fake Citizen 1';
+        $this->knownCitizens[] = $citizenInfos;
+
+        $citizenInfos = new CitizenInfos(new CitizenNumber('16919861'), new HandleSC('user_nocitizen_well_formed_bio'));
+        $citizenInfos->bio = '18vkFOQV3iWVggC4xuvft11FXPZUiqLzMyxTjRZMECnQTD10lvXLWB1TFt9CUOaT';
         $this->knownCitizens[] = $citizenInfos;
     }
 
@@ -68,8 +76,8 @@ class FakeCitizenInfosProvider implements CitizenInfosProviderInterface
             $orga = new CitizenOrganizationInfo(
                 new SpectrumIdentification($citizenOrga->getOrganizationSid()),
                 $citizenOrga->getRank(),
-                $citizenOrga->getRankName(),
-                );
+                $citizenOrga->getRankName()
+            );
             $orgas[] = $orga;
         }
 
@@ -78,12 +86,14 @@ class FakeCitizenInfosProvider implements CitizenInfosProviderInterface
             clone $this->citizen->getActualHandle()
         );
         $ci->nickname = $this->citizen->getNickname();
+        $ci->countRedactedOrganizations = $this->citizen->getCountRedactedOrganizations();
+        $ci->redactedMainOrga = $this->citizen->isRedactedMainOrga();
         $ci->mainOrga = $mainOrga;
-        $ci->organisations = [];
+        $ci->organizations = [];
         if ($mainOrga !== null) {
-            $ci->organisations[] = $mainOrga;
+            $ci->organizations[] = $mainOrga;
         }
-        $ci->organisations = array_merge($ci->organisations, $orgas);
+        $ci->organizations = array_merge($ci->organizations, $orgas);
         $ci->bio = $this->citizen->getBio();
         $ci->avatarUrl = 'http://example.com/fake-avatar.png';
         $ci->registered = new \DateTimeImmutable('2018-01-01 12:00:00');

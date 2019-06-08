@@ -31,9 +31,16 @@ class CitizenOrganization
      * @var string
      *
      * @ORM\Column(type="string", length=31)
-     * @Groups({"profile", "orga_fleet"})
      */
     private $organizationSid;
+
+    /**
+     * @var Organization
+     *
+     * @ORM\ManyToOne(targetEntity="App\Entity\Organization", fetch="EAGER")
+     * @Groups({"profile", "orga_fleet"})
+     */
+    private $organization;
 
     /**
      * orga rank from 0 to 5 (6 values).
@@ -84,6 +91,18 @@ class CitizenOrganization
     public function setOrganizationSid(?string $sid): self
     {
         $this->organizationSid = $sid;
+
+        return $this;
+    }
+
+    public function getOrganization(): ?Organization
+    {
+        return $this->organization;
+    }
+
+    public function setOrganization(?Organization $organization): self
+    {
+        $this->organization = $organization;
 
         return $this;
     }

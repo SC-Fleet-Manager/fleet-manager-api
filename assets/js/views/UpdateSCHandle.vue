@@ -1,9 +1,14 @@
 <template>
     <b-card header="Update Star Citizen handle" class="js-update-sc-handle">
-        <p>
-            <strong>SC Handle : </strong>{{ citizen != null ? citizen.actualHandle.handle : '' }}<br/>
-            <strong>SC Number : </strong>{{ citizen != null ? citizen.number.number : '' }}
-        </p>
+        <div class="row mb-3">
+            <div v-if="citizen.avatarUrl" class="col col-xs-12 col-md-3 col-lg-2">
+                <img :src="citizen.avatarUrl" alt="avatar" class="img-fluid" />
+            </div>
+            <div class="col">
+                <strong>SC Handle : </strong>{{ citizen != null ? citizen.actualHandle.handle : '' }}<br/>
+                <strong>SC Number : </strong>{{ citizen != null ? citizen.number.number : '' }}
+            </div>
+        </div>
         <b-form @submit="onSubmit">
             <b-alert variant="danger" :show="showError" v-html="errorMessage"></b-alert>
             <b-form-group>

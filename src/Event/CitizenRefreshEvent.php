@@ -3,12 +3,10 @@
 namespace App\Event;
 
 use App\Entity\Citizen;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class CitizenRefreshEvent extends Event
 {
-    public const NAME = 'citizen_refresh';
-
     private $citizen;
 
     public function __construct(Citizen $citizen)

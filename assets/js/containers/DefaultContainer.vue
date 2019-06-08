@@ -101,14 +101,13 @@
                             disabled: this.citizen === null,
                         },
                     });
-
-                    if (this.citizen.organisations.length > 0) {
+                    if (this.citizen.organizations.length > 0) {
                         nav.push({
                             name: 'Organizations\' fleets',
                             url: '/organizations-fleets',
                             icon: 'fas fa-fighter-jet',
                             attributes: {
-                                disabled: this.citizen === null || this.citizen.organisations.length === 0,
+                                disabled: this.citizen === null || this.citizen.organizations.length === 0,
                             },
                         });
                     }

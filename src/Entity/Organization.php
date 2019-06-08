@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\OrganizationRepository")
@@ -25,6 +26,7 @@ class Organization
      * @var string
      *
      * @ORM\Column(type="string", length=31, unique=true)
+     * @Groups({"profile", "orga_fleet"})
      */
     private $organizationSid;
 
@@ -32,6 +34,7 @@ class Organization
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"profile", "orga_fleet"})
      */
     private $name;
 
@@ -39,6 +42,7 @@ class Organization
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"profile", "orga_fleet"})
      */
     private $avatarUrl;
 

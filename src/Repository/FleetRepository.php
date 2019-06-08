@@ -16,24 +16,6 @@ class FleetRepository extends ServiceEntityRepository
         parent::__construct($registry, Fleet::class);
     }
 
-    public function getLastVersionFleet(Citizen $citizen): ?Fleet
-    {
-        $qb = $this->createQueryBuilder('f');
-        $q = $qb
-            ->select('f')
-            ->join('f.owner', 'o')
-            ->addSelect('o')
-            ->leftJoin('f.ships', 's')
-            ->addSelect('s')
-            ->where('f.owner = :owner')
-            ->orderBy('f.version', 'DESC')
-            ->setParameter('owner', $citizen->getId())
-            ->setMaxResults(1)
-            ->getQuery();
-
-        return $q->getOneOrNullResult();
-    }
-
     public function countTotalShips(): int
     {
         $fleetMetadata = $this->getClassMetadata();
@@ -52,6 +34,7 @@ class FleetRepository extends ServiceEntityRepository
         $rsm->addScalarResult('countShips', 'countShips');
 
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
+        $stmt->useResultCache(true, 300);
 
         return $stmt->getSingleScalarResult();
     }

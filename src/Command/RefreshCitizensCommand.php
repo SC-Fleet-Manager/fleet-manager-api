@@ -73,7 +73,7 @@ class RefreshCitizensCommand extends Command
         $orgaSids = [];
         foreach ($citizens as $citizen) {
             $citizenInfos = $this->citizenInfosProvider->retrieveInfos($citizen->getActualHandle());
-            foreach ($citizenInfos->organisations as $orgaInfo) {
+            foreach ($citizenInfos->organizations as $orgaInfo) {
                 if (!in_array($orgaInfo->sid->getSid(), $orgaSids, true)) {
                     $orgaSids[] = $orgaInfo->sid->getSid();
                 }

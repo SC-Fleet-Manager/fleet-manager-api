@@ -30,9 +30,9 @@ yu:										## yarn upgrade
 composer: 								## exec PHP composer with arbitrary args c="<args>"
 	$(EXEC_COMPOSER) $(c)
 ci:										## composer install
-	$(EXEC_COMPOSER) install --no-interaction
+	$(EXEC_COMPOSER) install -o
 cu:										## composer update
-	$(EXEC_COMPOSER) update --lock --no-scripts --no-interaction
+	$(EXEC_COMPOSER) update -o
 console:								## exec SF console with arbitrary args c="<args>"
 	$(EXEC_CONSOLE) $(c)
 cc:										## clear and rebuild the cache

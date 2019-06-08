@@ -22,7 +22,12 @@ class CitizenInfos
     /**
      * @var iterable|CitizenOrganizationInfo[]
      */
-    public $organisations;
+    public $organizations;
+
+    /**
+     * @var int
+     */
+    public $countRedactedOrganizations = 0;
 
     /**
      * @var CitizenOrganizationInfo
@@ -30,12 +35,17 @@ class CitizenInfos
     public $mainOrga;
 
     /**
+     * @var bool
+     */
+    public $redactedMainOrga = false;
+
+    /**
      * @var string
      */
     public $avatarUrl;
 
     /**
-     * @var bool
+     * @var \DateTimeInterface
      */
     public $registered;
 
@@ -48,6 +58,6 @@ class CitizenInfos
     {
         $this->numberSC = $numberSC;
         $this->handle = $handle;
-        $this->organisations = [];
+        $this->organizations = [];
     }
 }

@@ -10,25 +10,21 @@ use App\Event\CitizenRefreshEvent;
 use App\Exception\BadCitizenException;
 use App\Exception\FleetUploadedTooCloseException;
 use App\Exception\InvalidFleetDataException;
-use App\Repository\FleetRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class FleetUploadHandler
 {
-    private $fleetRepository;
     private $entityManager;
     private $citizenInfosProvider;
     private $eventDispatcher;
 
     public function __construct(
-        FleetRepository $fleetRepository,
         EntityManagerInterface $entityManager,
         CitizenInfosProviderInterface $citizenInfosProvider,
         EventDispatcherInterface $eventDispatcher
     ) {
-        $this->fleetRepository = $fleetRepository;
         $this->entityManager = $entityManager;
         $this->citizenInfosProvider = $citizenInfosProvider;
         $this->eventDispatcher = $eventDispatcher;
@@ -48,9 +44,9 @@ class FleetUploadHandler
         $citizen->refresh($infos, $this->entityManager);
         $this->entityManager->flush();
 
-        $this->eventDispatcher->dispatch(CitizenRefreshEvent::NAME, new CitizenRefreshEvent($citizen));
+        $this->eventDispatcher->dispatch(new CitizenRefreshEvent($citizen));
 
-        $lastVersion = $this->fleetRepository->getLastVersionFleet($citizen);
+        $lastVersion = $citizen->getLastFleet();
         if ($lastVersion !== null && $lastVersion->isUploadedDateTooClose()) {
             throw new FleetUploadedTooCloseException(
                 sprintf('Last version of the fleet was uploaded on %s', $lastVersion->getUploadDate()->format('Y-m-d H:i')));

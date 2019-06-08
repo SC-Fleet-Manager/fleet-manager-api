@@ -74,6 +74,7 @@ class Fleet
     public function setOwner(Citizen $owner): self
     {
         $this->owner = $owner;
+        $owner->addFleet($this);
 
         return $this;
     }
