@@ -5,7 +5,10 @@
             <img v-show="imgLazyLoaded" :src="shipVariant.shipInfo.mediaThumbUrl" :alt="shipVariant.shipInfo.name + ' ship picture'" class="img-fluid" @load="imgLazyLoaded = true" />
             <div class="ship-family-detail-variant-counter">{{ shipVariant.countTotalShips }}</div>
         </div>
-        <h4>{{ shipVariant.shipInfo.name }} <!--<a href="#" title="Go to pledge"><i class="fa fa-link"></i></a>--></h4>
+        <h4>
+            <a v-once v-if="shipVariant.shipInfo.pledgeUrl" :href="shipVariant.shipInfo.pledgeUrl" target="_blank" title="Go to pledge">{{ shipVariant.shipInfo.name }}</a>
+            <template v-once v-else>{{ shipVariant.shipInfo.name }}</template>
+        </h4>
 <!--        <div class="mb-3"><b-form-input type="text" v-model="search[ship.shipInfo.id]" placeholder="Search citizen"></b-form-input></div>&ndash;&gt;-->
         <div class="ship-family-detail-variant-ownerlist" @scroll="onUsersScroll">
             <div v-for="user in shipVariantUsers">
@@ -75,7 +78,16 @@
                     case 'orga':
                         // only if logged + hasOrga(selectedSid)
                         const citizen = this.$store.getters.citizen;
-                        return citizen !== null && citizen.organisations.indexOf(this.selectedSid) !== -1;
+                        if (citizen === null) {
+                            return false;
+                        }
+                        for (let citizenOrga of citizen.organizations) {
+                            if (citizenOrga.organization.organizationSid === this.selectedSid) {
+                                return true;
+                            }
+                        }
+
+                        return false;
                 }
                 return false;
             }

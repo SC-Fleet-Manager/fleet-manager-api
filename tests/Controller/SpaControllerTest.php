@@ -4,13 +4,13 @@ namespace App\Tests\Controller;
 
 use Facebook\WebDriver\WebDriver;
 use Facebook\WebDriver\WebDriverBy;
-use Hautelook\AliceBundle\PhpUnit\RefreshDatabaseTrait;
+use Hautelook\AliceBundle\PhpUnit\ReloadDatabaseTrait;
 use Symfony\Component\Panther\Client;
 use Symfony\Component\Panther\PantherTestCase;
 
 class SpaControllerTest extends PantherTestCase
 {
-    use RefreshDatabaseTrait;
+    use ReloadDatabaseTrait;
 
     private $client;
 
@@ -178,6 +178,66 @@ class SpaControllerTest extends PantherTestCase
             return count($driver->findElements(WebDriverBy::className('toast-message'))) > 0;
         });
         $this->assertContains('Your new SC Handle has been successfully updated!', $this->client->findElement(WebDriverBy::cssSelector('.toast-success'))->getText());
+
+        // Link RSI Account
+        $this->login('2a288e5d-f83f-4b0d-9275-3351b8cb3848');
+        $this->client->request('GET', '/profile');
+        $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+            return strpos($driver->findElement(WebDriverBy::className('card-header'))->getText(), 'Link your RSI Account') !== false;
+        });
+        $this->client->findElement(WebDriverBy::xpath('//button[contains(text(), "Okay, I\'m ready to link my account")]'))->click();
+        $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+            return count($driver->findElements(WebDriverBy::cssSelector('.collapse.show'))) === 1;
+        });
+        $this->assertContains('1. Who are you?', $this->client->findElement(WebDriverBy::cssSelector('#collapse-step-1 h4'))->getText());
+        $this->client->findElement(WebDriverBy::cssSelector('input#form_handle'))->sendKeys('not_found');
+        $this->client->findElement(WebDriverBy::xpath('//button[contains(text(), "Search")]'))->click();
+        $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+            return count($driver->findElements(WebDriverBy::className('alert-danger'))) > 0;
+        });
+        $this->assertContains('Sorry, it seems that SC Handle not_found does not exist. Try to check the typo and search again.', $this->client->findElement(WebDriverBy::cssSelector('.alert.alert-danger'))->getText());
+        $this->client->findElement(WebDriverBy::cssSelector('input#form_handle'))->clear();
+        $this->client->findElement(WebDriverBy::cssSelector('input#form_handle'))->sendKeys('fake_citizen_1');
+        $this->client->findElement(WebDriverBy::xpath('//button[contains(text(), "Search")]'))->click();
+        $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+            return strpos($driver->findElement(WebDriverBy::cssSelector('#collapse-step-1'))->getText(), 'Handle: fake_citizen_1') !== false;
+        });
+
+        $this->assertContains('Nickname: Fake Citizen 1', $this->client->findElement(WebDriverBy::cssSelector('#collapse-step-1'))->getText());
+        $this->assertContains('Handle: fake_citizen_1', $this->client->findElement(WebDriverBy::cssSelector('#collapse-step-1'))->getText());
+        $this->assertContains('Number: 135790', $this->client->findElement(WebDriverBy::cssSelector('#collapse-step-1'))->getText());
+        $this->assertContains('Main orga: flk', $this->client->findElement(WebDriverBy::cssSelector('#collapse-step-1'))->getText());
+        $this->assertContains('All orgas: flk, gardiens', $this->client->findElement(WebDriverBy::cssSelector('#collapse-step-1'))->getText());
+
+        $this->client->findElement(WebDriverBy::xpath('//button[contains(text(), "Great, this is my account, let\'s continue!")]'))->click();
+        $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+            return count($driver->findElements(WebDriverBy::cssSelector('.collapse.show'))) === 2;
+        });
+        $this->assertContains('2. Special marker', $this->client->findElement(WebDriverBy::cssSelector('#collapse-step-2 h4'))->getText());
+        $this->assertSame(64, $this->client->executeScript('return document.getElementById("form_user_token").value.length;'), 'The token must be 64 chars long.');
+
+        $this->client->findElement(WebDriverBy::xpath('//button[contains(text(), "Done! I\'ve pasted the token in my bio.")]'))->click();
+        $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+            return count($driver->findElements(WebDriverBy::className('alert-danger'))) > 0;
+        });
+        $this->assertContains('Sorry, your RSI bio does not contain this token. Please copy-paste the following token to your RSI short bio.', $this->client->findElement(WebDriverBy::cssSelector('.alert.alert-danger'))->getText());
+
+        // set a well-formed short bio user
+        $this->client->findElement(WebDriverBy::cssSelector('input#form_handle'))->clear();
+        $this->client->findElement(WebDriverBy::cssSelector('input#form_handle'))->sendKeys('user_nocitizen_well_formed_bio'); // we are logged with "nocitizen" user
+        $this->client->findElement(WebDriverBy::xpath('//button[contains(text(), "Search")]'))->click();
+        $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+            return strpos($driver->findElement(WebDriverBy::cssSelector('#collapse-step-1'))->getText(), 'Handle: user_nocitizen_well_formed_bio') !== false;
+        });
+        $this->client->findElement(WebDriverBy::xpath('//button[contains(text(), "Great, this is my account, let\'s continue!")]'))->click();
+        $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+            return count($driver->findElements(WebDriverBy::cssSelector('.collapse.show'))) === 2;
+        });
+        $this->client->findElement(WebDriverBy::xpath('//button[contains(text(), "Done! I\'ve pasted the token in my bio.")]'))->click();
+        $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+            return count($driver->findElements(WebDriverBy::className('toast-message'))) > 0;
+        });
+        $this->assertContains('Your RSI account has been successfully linked! You can remove the token from your bio.', $this->client->findElement(WebDriverBy::cssSelector('.toast-success'))->getText());
     }
 
     /**
@@ -291,7 +351,8 @@ class SpaControllerTest extends PantherTestCase
         $this->client->executeScript(<<<EOT
             document.getElementById("select-orga").value = "flk";
             document.getElementById("select-orga").dispatchEvent(new Event("change"));
-        EOT);
+        EOT
+        );
         $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
             return strpos($driver->findElement(WebDriverBy::cssSelector('h4 a'))->getText(), 'FallKrom') !== false;
         });
@@ -362,6 +423,10 @@ class SpaControllerTest extends PantherTestCase
             return count($driver->findElements(WebDriverBy::className('alert'))) > 0;
         });
         $this->assertContains('FallKrom', $this->client->findElement(WebDriverBy::cssSelector('h4 a'))->getText());
+        $this->assertContains("Sorry, this organization's fleet does not exist or is private. Try to login to see it.", $this->client->findElement(WebDriverBy::className('alert-danger'))->getText());
+
+        $this->client->request('GET', '/organization-fleet/not_exist'); // inexistent orga
+        $this->pause(10);
         $this->assertContains("Sorry, this organization's fleet does not exist or is private. Try to login to see it.", $this->client->findElement(WebDriverBy::className('alert-danger'))->getText());
     }
 }

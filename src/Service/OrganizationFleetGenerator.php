@@ -5,7 +5,7 @@ namespace App\Service;
 use App\Domain\SpectrumIdentification;
 use App\Repository\CitizenRepository;
 
-class OrganisationFleetGenerator
+class OrganizationFleetGenerator
 {
     private $citizenRepository;
 
@@ -14,13 +14,13 @@ class OrganisationFleetGenerator
         $this->citizenRepository = $citizenRepository;
     }
 
-    public function generateFleetFile(SpectrumIdentification $organisationTrigram): \SplFileInfo
+    public function generateFleetFile(SpectrumIdentification $organizationSid): \SplFileInfo
     {
-        $citizens = $this->citizenRepository->getByOrganisation($organisationTrigram);
+        $citizens = $this->citizenRepository->getByOrganization($organizationSid);
 
         $orgaFleetData = [[]];
         foreach ($citizens as $citizen) {
-            $fleet = $citizen->getLastVersionFleet();
+            $fleet = $citizen->getLastFleet();
             if ($fleet === null) {
                 continue;
             }

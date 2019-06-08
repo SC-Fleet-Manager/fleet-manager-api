@@ -1,26 +1,34 @@
+include:
+    - organization.yaml
+
 App\Entity\CitizenOrganization:
     ionni_orga_flk:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("41ade55e-6d32-419c-9e48-169fd6c61f34"))>']
         organizationSid: 'flk'
+        organization: '@orga_flk'
         rank: 1
         rankName: 'Citoyen'
     ashuvidz_orga_flk:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("aacc1290-1d6d-41f0-b579-cf67d733118d"))>']
         organizationSid: 'flk'
+        organization: '@orga_flk'
         rank: 5
         rankName: 'Chef de département'
     gardiens1_orga_gardiens:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("befc7409-a026-4226-aefd-288b1d03b8ef"))>']
         organizationSid: 'gardiens'
+        organization: '@orga_gardiens'
         rank: 5
         rankName: 'Big guard'
     ihaveships_orga_flk:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("a193b472-501d-4b97-8dbc-c4076618f347"))>']
         organizationSid: 'flk'
+        organization: '@orga_flk'
         rank: 2
         rankName: 'Peasant'
     ihaveships_orga_gardiens:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("fa91e3a0-4930-43de-b202-9d5972681031"))>']
         organizationSid: 'gardiens'
+        organization: '@orga_gardiens'
         rank: 4
         rankName: 'Lord'

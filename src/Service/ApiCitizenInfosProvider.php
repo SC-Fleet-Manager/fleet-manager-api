@@ -110,9 +110,9 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
 
         $ci->nickname = $nickname;
         if ($mainOrga !== null) {
-            $ci->organisations[] = $mainOrga;
+            $ci->organizations[] = $mainOrga;
         }
-        $ci->organisations = array_merge($ci->organisations, $orgaAffiliates);
+        $ci->organizations = array_merge($ci->organizations, $orgaAffiliates);
         $ci->mainOrga = $mainOrga;
         $ci->bio = $bio;
         $ci->avatarUrl = $avatarUrl;

@@ -1,7 +1,7 @@
 <template>
     <div class="animated fadeIn">
         <b-row>
-            <b-col col md="6" v-if="showLinkAccount">
+            <b-col col xl="6" v-if="showLinkAccount">
                 <b-card header="Link your RSI Account">
                     <b-form>
                         <b-alert variant="success" show>
@@ -10,7 +10,7 @@
                             For now, the only best and simplest way is to put a <b>special marker</b> on your <b>RSI biography</b>.
                         </b-alert>
                         <b-button v-b-toggle.collapse-step-1 variant="primary" size="lg" v-if="showButtonStep1">Okay, I'm ready to link my account!</b-button>
-                        <b-collapse id="collapse-step-1" class="mt-3" @show="showButtonStep1 = false">
+                        <b-collapse id="collapse-step-1" class="mt-3" @show="showButtonStep1 = false" v-model="showCollapseStep1">
                             <h4>1. Who are you?</h4>
                             <b-form-group>
                                 <p class="">Firstly, let us know your Star Citizen Handle.</p>
@@ -19,7 +19,9 @@
                                     <b-form-input id="form_handle"
                                                   type="text"
                                                   v-model="form.handle"
-                                                  placeholder="Type your SC handle then click on search"></b-form-input>
+                                                  placeholder="Type your SC handle then click on search"
+                                                  @keyup.enter="searchHandle"
+                                    ></b-form-input>
                                     <b-input-group-append>
                                         <b-btn variant="success" @click="searchHandle" :disabled="searchingHandle">
                                             <template v-if="!searchingHandle"><i class="fas fa-search"></i> Search</template>
@@ -36,7 +38,7 @@
                                         <strong>Handle</strong>: <a :href="'https://robertsspaceindustries.com/citizens/'+searchedCitizen.handle.handle" target="_blank">{{ searchedCitizen.handle.handle }}</a><br/>
                                         <strong>Number</strong>: {{ searchedCitizen.numberSC.number }}<br/>
                                         <strong>Main orga</strong>: <span v-html="searchedCitizen.mainOrga ? formatOrganizationList([searchedCitizen.mainOrga]) : ''"></span><br/>
-                                        <strong>All orgas</strong>: <span v-html="formatOrganizationList(searchedCitizen.organisations)"></span><br/>
+                                        <strong>All orgas</strong>: <span v-html="formatOrganizationList(searchedCitizen.organizations)"></span><br/>
                                     </div>
                                 </div>
                             </b-form-group>
@@ -54,7 +56,7 @@
                         </b-collapse>
 
                         <b-button v-b-toggle.collapse-step-2 variant="primary" size="lg" v-if="showButtonStep2">Great, this is my account, let's continue!</b-button>
-                        <b-collapse id="collapse-step-2" class="mt-3" @show="showButtonStep2 = false">
+                        <b-collapse id="collapse-step-2" class="mt-3" @show="showButtonStep2 = false" v-model="showCollapseStep2">
                             <h4>2. Special marker</h4>
                             <p>
                                 Finally, you have to put this following token into your <a href="https://robertsspaceindustries.com/account/profile" target="_blank" style="text-decoration: underline"><b>RSI short bio</b></a>.<br/>
@@ -159,6 +161,8 @@
                 searchedCitizen: null,
                 searchingHandle: false,
                 lastShortBio: null,
+                showCollapseStep1: false,
+                showCollapseStep2: false,
             }
         },
         created() {
@@ -257,6 +261,7 @@
 
                 this.searchedCitizen = null;
                 this.showErrorStep1 = false;
+                this.showCollapseStep2 = false;
                 this.searchingHandle = true;
                 axios.get('/api/search-handle', {
                     params: {handle: this.form.handle}
@@ -270,6 +275,7 @@
                         this.errorStep1Message = `Sorry, an unexpected error has occurred. Please retry.`;
                     }
                     this.showErrorStep1 = true;
+                    this.showButtonStep2 = false;
                     console.error(err);
                 }).then(_ => {
                     this.searchingHandle = false;

@@ -24,7 +24,7 @@ class CitizenFleetGenerator
         }
 
         $fleetData = [];
-        $fleet = $citizen->getLastVersionFleet();
+        $fleet = $citizen->getLastFleet();
         if ($fleet !== null) {
             $fleetData = $fleet->createRawData();
         }

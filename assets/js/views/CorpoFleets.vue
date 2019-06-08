@@ -2,13 +2,13 @@
     <div class="animated fadeIn">
         <b-row>
             <b-col>
-                <b-card :header="citizen != null && organizations[sid] ? 'Your organizations\' fleets' : orgaFullname +' fleet'" class="js-organizations-fleets">
+                <b-card :header="citizen != null && citizenOrgaInfo != null ? 'Your organizations\' fleets' : orgaFullname +' fleet'" class="js-organizations-fleets">
                     <b-row>
-                        <b-col v-if="citizen != null && hasOrganization(sid)" xl="3" lg="3" md="4" sm="12" class="mb-3">
+                        <b-col v-if="citizen != null && citizenOrgaInfo != null" xl="3" lg="3" md="4" sm="12" class="mb-3">
                             <b-form>
                                 <b-form-group label="Select an organization" label-for="select-orga" class="js-select-orga">
                                     <b-form-select id="select-orga" :value="selectedSid" @change="selectSid">
-                                        <option v-for="orga in citizen.organisations" :key="orga" :value="orga">{{ organizations[orga] ? organizations[orga].fullname : orga }}</option>
+                                        <option v-for="citizenOrga in citizen.organizations" :key="citizenOrga.organization.organizationSid" :value="citizenOrga.organization.organizationSid">{{ citizenOrga.organization.name }}</option>
                                     </b-form-select>
                                 </b-form-group>
                             </b-form>
@@ -24,7 +24,7 @@
                             </div>
                         </b-col>
                     </b-row>
-                    <b-row v-if="citizen != null && organizations[sid]">
+                    <b-row v-if="citizen != null && citizenOrgaInfo != null">
                         <b-col col xl="2" lg="3" md="4" class="mb-3">
                             <b-dropdown variant="primary">
                                 <template slot="button-content"><i class="fas fa-cloud-download-alt"></i> Export fleet</template>
@@ -33,7 +33,7 @@
                             </b-dropdown>
                         </b-col>
                     </b-row>
-                    <b-row class="mb-3" v-if="sid != null && ((citizen != null && organizations[sid]) || (organization !== null && organization.publicChoice === 'public'))">
+                    <b-row class="mb-3" v-if="sid != null && ((citizen != null && citizenOrgaInfo != null) || (organization !== null && organization.publicChoice === 'public'))">
                         <b-col col xl="2" lg="3" md="4" xs="6">
                             <v-select id="filters_input_ship_name" :reduce="item => item.id" v-model="filterShipName" :options="filterOptionsShips" multiple @input="refreshOrganizationFleet(true)" placeholder="Filter by ship name"></v-select>
                         </b-col>
@@ -49,7 +49,7 @@
                     </b-row>
                     <b-row>
                         <template v-if="!loadingOrgaFleet && ((citizen == null && (organization === null || organization.publicChoice !== 'public'))
-                                        || (citizen != null && !organizations[sid] && organization !== null && organization.publicChoice !== 'public'))">
+                                        || (citizen != null && citizenOrgaInfo == null && (organization == null || organization.publicChoice !== 'public')))">
                             <b-col>
                                 <b-alert show variant="danger">Sorry, this organization's fleet does not exist or is private. Try to <a href="/">login</a> to see it.</b-alert>
                             </b-col>
@@ -119,7 +119,6 @@
                 citizen: null,
                 shipFamilies: [], // families of ships (e.g. "Aurora" for MR, LX, etc.) that have the selected orga (no displayed if no orga members have this family).
                 actualBreakpoint: 'xs',
-                organizations: {}, // orga infos of the citizens
                 refreshedSid: null,
                 loadingOrgaFleet: false,
                 filterOptionsCitizens: [],
@@ -159,8 +158,11 @@
         },
         computed: {
             citizenOrgaInfo() {
+                if (this.citizen === null) {
+                    return null;
+                }
                 for (let orgaInfo of this.citizen.organizations) {
-                    if (orgaInfo.organizationSid === this.selectedSid) {
+                    if (orgaInfo.organization.organizationSid === this.selectedSid) {
                         return orgaInfo;
                     }
                 }
@@ -206,8 +208,6 @@
             orgaFullname() {
                 if (this.organization !== null && this.organization.organizationSid === this.selectedSid && this.organization.name !== null) {
                     return this.organization.name;
-                } else if (this.organizations[this.selectedSid]) {
-                    return this.organizations[this.selectedSid].fullname;
                 }
 
                 return this.selectedSid;
@@ -246,38 +246,35 @@
                 this.updateSid(value);
             },
             refreshOrganization() {
-                axios.get(`/api/organization/${this.sid}`).then(response => {
-                    this.organization = response.data;
-                }).catch(err => {
-                    if (err.response.status === 401) {
-                        // not connected
-                        return;
+                if (this.citizen === null) {
+                    axios.get(`/api/organization/${this.sid}`).then(response => {
+                        this.organization = response.data;
+                    }).catch(err => {
+                        if (err.response.status === 401) {
+                            // not connected
+                            return;
+                        }
+                        if (err.response.status === 404) {
+                            // not exist
+                            return;
+                        }
+                        console.error(err);
+                    });
+                    return;
+                }
+                for (let citizenOrga of this.citizen.organizations) {
+                    if (citizenOrga.organization.organizationSid === this.selectedSid) {
+                        this.organization = citizenOrga.organization;
+                        console.log('refreshOrganization this.organization ; ', this.organization);
+                        break;
                     }
-                    if (err.response.status === 404) {
-                        // not exist
-                        return;
-                    }
-                    console.error(err);
-                });
+                }
             },
             refreshProfile() {
                 axios.get('/api/profile/').then(response => {
                     this.citizen = response.data.citizen;
-                }).catch(err => {
-                    if (err.response.status === 401) {
-                        // not connected
-                        return;
-                    }
-                    if (err.response.data.errorMessage) {
-                        toastr.error(err.response.data.errorMessage);
-                    }
-                    console.error(err);
-                });
-
-                axios.get('/api/my-orgas').then(response => {
-                    for (let orga of response.data) {
-                        this.$set(this.organizations, orga.spectrumId.sid, orga);
-                    }
+                    console.log('refreshProfile this.citizen ; ', this.citizen);
+                    this.refreshOrganization();
                 }).catch(err => {
                     if (err.response.status === 401) {
                         // not connected
@@ -290,19 +287,20 @@
                 });
             },
             refreshOrganizationFleet(force) {
-                if (!force && this.refreshedSid === this.sid) {
+                if (!force && this.refreshedSid === this.selectedSid) {
                     // not multiple refresh
                     return;
                 }
-                if (this.refreshedSid !== this.sid) {
+                console.log('refreshOrganizationFleet');
+                if (this.refreshedSid !== this.selectedSid) {
                     this.refreshOrganization();
                     this.refreshFiltersOptions();
                 }
-                this.refreshedSid = this.sid;
+                this.refreshedSid = this.selectedSid;
                 this.shipFamilies = [];
 
                 this.loadingOrgaFleet = true;
-                axios.get(`/api/fleet/orga-fleets/${this.sid}`, {
+                axios.get(`/api/fleet/orga-fleets/${this.selectedSid}`, {
                     params: {
                         'filters[shipNames]': this.filterShipName,
                         'filters[citizenIds]': this.filterCitizenId,
@@ -331,7 +329,7 @@
                 });
             },
             refreshFiltersOptions() {
-                axios.get(`/api/organization/${this.sid}/citizens`).then(response => {
+                axios.get(`/api/organization/${this.selectedSid}/citizens`).then(response => {
                     this.filterOptionsCitizens = response.data;
                 }).catch(err => {
                     if (err.response.status === 401) {
@@ -348,7 +346,7 @@
                     }
                     console.error(err);
                 });
-                axios.get(`/api/organization/${this.sid}/ships`).then(response => {
+                axios.get(`/api/organization/${this.selectedSid}/ships`).then(response => {
                     this.filterOptionsShips = response.data;
                 }).catch(err => {
                     if (err.response.status === 401) {
@@ -381,9 +379,6 @@
                     this.actualBreakpoint = 'xl';
                 }
             },
-            hasOrganization(sid) {
-                return this.citizen.organisations.indexOf(sid) !== -1;
-            }
         }
     }
 </script>

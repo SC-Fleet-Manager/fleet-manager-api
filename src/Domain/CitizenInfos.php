@@ -22,7 +22,7 @@ class CitizenInfos
     /**
      * @var iterable|CitizenOrganizationInfo[]
      */
-    public $organisations;
+    public $organizations;
 
     /**
      * @var CitizenOrganizationInfo
@@ -48,6 +48,6 @@ class CitizenInfos
     {
         $this->numberSC = $numberSC;
         $this->handle = $handle;
-        $this->organisations = [];
+        $this->organizations = [];
     }
 }
