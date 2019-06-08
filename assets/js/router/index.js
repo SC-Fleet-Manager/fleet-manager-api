@@ -46,7 +46,6 @@ const router = new Router({
                             if (citizen === null ||  citizen.organizations.length === 0) {
                                 next();
                             }
-                            console.log(citizen);
                             const defaultOrga = citizen.mainOrga !== null ? citizen.mainOrga.organization.organizationSid : (
                                 citizen.organizations[0].organization !== null ? citizen.organizations[0].organization.organizationSid : citizen.organizations[0].organizationSid
                             );

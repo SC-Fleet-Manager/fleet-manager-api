@@ -186,7 +186,6 @@ class LinkAccountController extends AbstractController
         $this->entityManager->flush();
 
         $this->eventDispatcher->dispatch(new CitizenRefreshEvent($citizen));
-        // TODO : link CitizenOrganization with Organization
     }
 
     private function isTokenValid(User $user, CitizenInfos $citizenInfos): bool

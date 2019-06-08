@@ -265,7 +265,6 @@
                 for (let citizenOrga of this.citizen.organizations) {
                     if (citizenOrga.organization.organizationSid === this.selectedSid) {
                         this.organization = citizenOrga.organization;
-                        console.log('refreshOrganization this.organization ; ', this.organization);
                         break;
                     }
                 }
@@ -273,7 +272,6 @@
             refreshProfile() {
                 axios.get('/api/profile/').then(response => {
                     this.citizen = response.data.citizen;
-                    console.log('refreshProfile this.citizen ; ', this.citizen);
                     this.refreshOrganization();
                 }).catch(err => {
                     if (err.response.status === 401) {
@@ -291,7 +289,6 @@
                     // not multiple refresh
                     return;
                 }
-                console.log('refreshOrganizationFleet');
                 if (this.refreshedSid !== this.selectedSid) {
                     this.refreshOrganization();
                     this.refreshFiltersOptions();
