@@ -41,6 +41,13 @@ class FakeCitizenInfosProvider implements CitizenInfosProviderInterface
         $citizenInfos = new CitizenInfos(new CitizenNumber('16919861'), new HandleSC('user_nocitizen_well_formed_bio'));
         $citizenInfos->bio = '18vkFOQV3iWVggC4xuvft11FXPZUiqLzMyxTjRZMECnQTD10lvXLWB1TFt9CUOaT';
         $this->knownCitizens[] = $citizenInfos;
+
+        $citizenInfos = new CitizenInfos(new CitizenNumber('45224582'), new HandleSC('need_refresh'));
+        $citizenInfos->mainOrga = new CitizenOrganizationInfo(new SpectrumIdentification('flk'), 1, 'Newbie');
+        $citizenInfos->organizations[] = $citizenInfos->mainOrga;
+        $citizenInfos->organizations[] = new CitizenOrganizationInfo(new SpectrumIdentification('gardiens'), 1, 'Noob');
+        $citizenInfos->nickname = 'NeedRefresh';
+        $this->knownCitizens[] = $citizenInfos;
     }
 
     public function setCitizen(?Citizen $citizen): void

@@ -2,11 +2,9 @@
 
 namespace App\Entity;
 
-use App\Domain\CitizenInfos;
 use App\Domain\CitizenNumber;
 use App\Domain\HandleSC;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -375,34 +373,5 @@ class Citizen
         }
 
         return null;
-    }
-
-    public function refresh(CitizenInfos $infos, EntityManagerInterface $em): void
-    {
-        $this->setNickname($infos->nickname);
-        $this->setBio($infos->bio);
-        $this->setAvatarUrl($infos->avatarUrl);
-        $this->setLastRefresh(new \DateTimeImmutable());
-
-        $this->setRedactedMainOrga($infos->redactedMainOrga);
-        $this->setCountRedactedOrganizations($infos->countRedactedOrganizations);
-
-        foreach ($this->getOrganizations() as $orga) {
-            $em->remove($orga);
-        }
-
-        $this->setMainOrga(null);
-        $this->clearOrganizations();
-        foreach ($infos->organizations as $orgaInfo) {
-            $orga = new CitizenOrganization(Uuid::uuid4());
-            $orga->setCitizen($this);
-            $orga->setOrganizationSid($orgaInfo->sid->getSid());
-            $orga->setRank($orgaInfo->rank);
-            $orga->setRankName($orgaInfo->rankName);
-            $this->addOrganization($orga);
-            if ($infos->mainOrga === $orgaInfo) {
-                $this->setMainOrga($orga);
-            }
-        }
     }
 }

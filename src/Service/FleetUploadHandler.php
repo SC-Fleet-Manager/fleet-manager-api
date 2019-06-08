@@ -6,28 +6,26 @@ use App\Domain\Money;
 use App\Entity\Citizen;
 use App\Entity\Fleet;
 use App\Entity\Ship;
-use App\Event\CitizenRefreshEvent;
 use App\Exception\BadCitizenException;
 use App\Exception\FleetUploadedTooCloseException;
 use App\Exception\InvalidFleetDataException;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class FleetUploadHandler
 {
     private $entityManager;
     private $citizenInfosProvider;
-    private $eventDispatcher;
+    private $citizenRefresher;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         CitizenInfosProviderInterface $citizenInfosProvider,
-        EventDispatcherInterface $eventDispatcher
+        CitizenRefresher $citizenRefresher
     ) {
         $this->entityManager = $entityManager;
         $this->citizenInfosProvider = $citizenInfosProvider;
-        $this->eventDispatcher = $eventDispatcher;
+        $this->citizenRefresher = $citizenRefresher;
     }
 
     public function handle(Citizen $citizen, array $fleetData): void
@@ -41,10 +39,8 @@ class FleetUploadHandler
             throw new BadCitizenException(sprintf('The SC number %s is not equal to %s.', $citizen->getNumber(), $infos->numberSC));
         }
 
-        $citizen->refresh($infos, $this->entityManager);
+        $this->citizenRefresher->refreshCitizen($citizen, $infos);
         $this->entityManager->flush();
-
-        $this->eventDispatcher->dispatch(new CitizenRefreshEvent($citizen));
 
         $lastVersion = $citizen->getLastFleet();
         if ($lastVersion !== null && $lastVersion->isUploadedDateTooClose()) {

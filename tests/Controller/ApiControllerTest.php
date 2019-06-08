@@ -470,7 +470,7 @@ class ApiControllerTest extends WebTestCase
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArraySubset([
             'organizations' => 2,
-            'users' => 5,
+            'users' => 6,
             'ships' => 8,
         ], $json);
     }

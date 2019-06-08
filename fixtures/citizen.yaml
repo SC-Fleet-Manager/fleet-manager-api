@@ -38,3 +38,10 @@ App\Entity\Citizen:
         mainOrga: '@ihaveships_orga_gardiens'
         fleets: ['@fleet_ihaveships_v1']
         lastFleet: '@fleet_ihaveships_v1'
+    citizen_need_refresh:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("4498ab8d-39ba-4bf3-bea9-77bf7464feae"))>']
+        number: '<(new \App\Domain\CitizenNumber("45224582"))>'
+        nickname: 'NeedRefresh'
+        actualHandle: '<(new \App\Domain\HandleSC("need_refresh"))>'
+        organizations: []
+        mainOrga: null

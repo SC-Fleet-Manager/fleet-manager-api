@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import axios from 'axios';
+import toastr from 'toastr';
 
 // Containers
 const DefaultContainer = () => import('../containers/DefaultContainer');
@@ -44,7 +45,8 @@ const router = new Router({
                         axios.get('/api/profile/').then(response => {
                             const citizen = response.data.citizen;
                             if (citizen === null ||  citizen.organizations.length === 0) {
-                                next();
+                                toastr.error('Sorry, you have no visible organizations to access this page.');
+                                next({ path: '/profile' });
                             }
                             const defaultOrga = citizen.mainOrga !== null ? citizen.mainOrga.organization.organizationSid : (
                                 citizen.organizations[0].organization !== null ? citizen.organizations[0].organization.organizationSid : citizen.organizations[0].organizationSid
@@ -78,6 +80,10 @@ const router = new Router({
             path: '/privacy-policy',
             name: 'Privacy policy',
             component: PrivacyPolicy
+        },
+        {
+            path: '/404',
+            component: Page404
         },
         {
             path: '*',

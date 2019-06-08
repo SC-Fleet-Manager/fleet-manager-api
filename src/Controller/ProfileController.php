@@ -5,17 +5,16 @@ namespace App\Controller;
 use App\Domain\HandleSC;
 use App\Entity\Organization;
 use App\Entity\User;
-use App\Event\CitizenRefreshEvent;
 use App\Exception\NotFoundHandleSCException;
 use App\Form\Dto\UpdateHandle;
 use App\Form\UpdateHandleForm;
 use App\Repository\CitizenOrganizationRepository;
 use App\Repository\OrganizationRepository;
 use App\Service\CitizenInfosProviderInterface;
+use App\Service\CitizenRefresher;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,20 +30,20 @@ class ProfileController extends AbstractController
     private $security;
     private $formFactory;
     private $entityManager;
-    private $eventDispatcher;
+    private $citizenRefresher;
 
     public function __construct(
         CitizenInfosProviderInterface $citizenInfosProvider,
         EntityManagerInterface $entityManager,
         Security $security,
         FormFactoryInterface $formFactory,
-        EventDispatcherInterface $eventDispatcher
+        CitizenRefresher $citizenRefresher
     ) {
         $this->citizenInfosProvider = $citizenInfosProvider;
         $this->security = $security;
         $this->formFactory = $formFactory;
         $this->entityManager = $entityManager;
-        $this->eventDispatcher = $eventDispatcher;
+        $this->citizenRefresher = $citizenRefresher;
     }
 
     /**
@@ -91,10 +90,8 @@ class ProfileController extends AbstractController
             ], 400);
         }
 
-        $citizen->refresh($citizenInfos, $this->entityManager);
+        $this->citizenRefresher->refreshCitizen($citizen, $citizenInfos);
         $this->entityManager->flush();
-
-        $this->eventDispatcher->dispatch(new CitizenRefreshEvent($citizen));
 
         return $this->json(null, 204);
     }
@@ -185,10 +182,8 @@ class ProfileController extends AbstractController
                 ], 400);
             }
             $citizen->setActualHandle(new HandleSC($updateHandle->handleSC));
-            $citizen->refresh($citizenInfos, $this->entityManager);
+            $this->citizenRefresher->refreshCitizen($citizen, $citizenInfos);
             $this->entityManager->flush();
-
-            $this->eventDispatcher->dispatch(new CitizenRefreshEvent($citizen));
         } catch (NotFoundHandleSCException $e) {
             return $this->json([
                 'error' => 'not_found_handle',

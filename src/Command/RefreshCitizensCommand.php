@@ -5,7 +5,7 @@ namespace App\Command;
 use App\Entity\Citizen;
 use App\Repository\CitizenRepository;
 use App\Service\CitizenInfosProviderInterface;
-use App\Service\OrganizationCreator;
+use App\Service\CitizenRefresher;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -16,19 +16,19 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class RefreshCitizensCommand extends Command
 {
     private $citizenInfosProvider;
-    private $organizationCreator;
+    private $citizenRefresher;
     private $citizenRepository;
     private $entityManager;
 
     public function __construct(
         CitizenInfosProviderInterface $citizenInfosProvider,
-        OrganizationCreator $organizationCreator,
+        CitizenRefresher $citizenRefresher,
         CitizenRepository $citizenRepository,
         EntityManagerInterface $entityManager
     ) {
         parent::__construct();
         $this->citizenInfosProvider = $citizenInfosProvider;
-        $this->organizationCreator = $organizationCreator;
+        $this->citizenRefresher = $citizenRefresher;
         $this->citizenRepository = $citizenRepository;
         $this->entityManager = $entityManager;
     }
@@ -78,7 +78,7 @@ class RefreshCitizensCommand extends Command
                     $orgaSids[] = $orgaInfo->sid->getSid();
                 }
             }
-            $citizen->refresh($citizenInfos, $this->entityManager);
+            $this->citizenRefresher->refreshCitizen($citizen, $citizenInfos);
 
             if ($cc % 10 === 0) {
                 $output->writeln(sprintf('%d citizens refresh.', $cc));
@@ -87,10 +87,6 @@ class RefreshCitizensCommand extends Command
         }
         $this->entityManager->flush();
         $io->success('Citizens refreshed successfully.');
-
-        $output->writeln(sprintf('Create and update %d organizations...', count($orgaSids)));
-        $this->organizationCreator->createAndUpdateOrganizationsFromSids($orgaSids);
-        $io->success('Organizations refreshed successfully.');
 
         return 0;
     }

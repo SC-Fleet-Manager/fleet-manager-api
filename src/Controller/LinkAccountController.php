@@ -6,19 +6,18 @@ use App\Domain\CitizenInfos;
 use App\Domain\HandleSC;
 use App\Entity\Citizen;
 use App\Entity\User;
-use App\Event\CitizenRefreshEvent;
 use App\Exception\NotFoundHandleSCException;
 use App\Form\Dto\LinkAccount;
 use App\Form\LinkAccountForm;
 use App\Repository\CitizenRepository;
 use App\Repository\UserRepository;
 use App\Service\CitizenInfosProviderInterface;
+use App\Service\CitizenRefresher;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -39,7 +38,7 @@ class LinkAccountController extends AbstractController
     private $formFactory;
     private $entityManager;
     private $serializer;
-    private $eventDispatcher;
+    private $citizenRefresher;
 
     public function __construct(
         Logger $profileLinkAccountLogger,
@@ -50,7 +49,7 @@ class LinkAccountController extends AbstractController
         Security $security,
         FormFactoryInterface $formFactory,
         SerializerInterface $serializer,
-        EventDispatcherInterface $eventDispatcher
+        CitizenRefresher $citizenRefresher
     ) {
         $this->profileLinkAccountLogger = $profileLinkAccountLogger;
         $this->citizenInfosProvider = $citizenInfosProvider;
@@ -60,7 +59,7 @@ class LinkAccountController extends AbstractController
         $this->formFactory = $formFactory;
         $this->entityManager = $entityManager;
         $this->serializer = $serializer;
-        $this->eventDispatcher = $eventDispatcher;
+        $this->citizenRefresher = $citizenRefresher;
     }
 
     /**
@@ -174,7 +173,7 @@ class LinkAccountController extends AbstractController
         $citizen
             ->setNumber(clone $citizenInfos->numberSC)
             ->setActualHandle(clone $citizenInfos->handle);
-        $citizen->refresh($citizenInfos, $this->entityManager);
+        $this->citizenRefresher->refreshCitizen($citizen, $citizenInfos);
         if ($isNew) {
             $this->entityManager->persist($citizen);
         }
@@ -184,8 +183,6 @@ class LinkAccountController extends AbstractController
             ['citizenId' => $citizen->getId(), 'citizenHandle' => $citizen->getActualHandle()->getHandle(), 'infos' => $citizenInfos, 'userId' => $user->getId(), 'username' => $user->getNickname()]);
 
         $this->entityManager->flush();
-
-        $this->eventDispatcher->dispatch(new CitizenRefreshEvent($citizen));
     }
 
     private function isTokenValid(User $user, CitizenInfos $citizenInfos): bool
