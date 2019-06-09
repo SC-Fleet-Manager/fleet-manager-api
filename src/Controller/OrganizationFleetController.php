@@ -3,11 +3,10 @@
 namespace App\Controller;
 
 use App\Domain\SpectrumIdentification;
-use App\Entity\Organization;
 use App\Entity\User;
 use App\Repository\CitizenRepository;
-use App\Repository\OrganizationRepository;
 use App\Service\Dto\ShipFamilyFilter;
+use App\Service\FleetOrganizationGuard;
 use App\Service\OrganizationFleetGenerator;
 use App\Service\OrganizationFleetHandler;
 use App\Service\ShipInfosProviderInterface;
@@ -27,23 +26,23 @@ class OrganizationFleetController extends AbstractController
     private $security;
     private $citizenRepository;
     private $shipInfosProvider;
-    private $organizationRepository;
     private $organizationFleetGenerator;
+    private $fleetOrganizationGuard;
     private $logger;
 
     public function __construct(
         Security $security,
         CitizenRepository $citizenRepository,
         ShipInfosProviderInterface $shipInfosProvider,
-        OrganizationRepository $organizationRepository,
         OrganizationFleetGenerator $organizationFleetGenerator,
+        FleetOrganizationGuard $fleetOrganizationGuard,
         LoggerInterface $logger
     ) {
         $this->security = $security;
         $this->citizenRepository = $citizenRepository;
         $this->shipInfosProvider = $shipInfosProvider;
-        $this->organizationRepository = $organizationRepository;
         $this->organizationFleetGenerator = $organizationFleetGenerator;
+        $this->fleetOrganizationGuard = $fleetOrganizationGuard;
         $this->logger = $logger;
     }
 
@@ -80,7 +79,7 @@ class OrganizationFleetController extends AbstractController
      */
     public function orgaFleets(Request $request, string $organization, OrganizationFleetHandler $organizationFleetHandler): Response
     {
-        if (null !== $response = $this->checkAccessibleOrganization($organization)) {
+        if (null !== $response = $this->fleetOrganizationGuard->checkAccessibleOrganization($organization)) {
             return $response;
         }
 
@@ -104,7 +103,7 @@ class OrganizationFleetController extends AbstractController
      */
     public function orgaFleetsAdmins(string $organization): Response
     {
-        if (null !== $response = $this->checkAccessibleOrganization($organization)) {
+        if (null !== $response = $this->fleetOrganizationGuard->checkAccessibleOrganization($organization)) {
             return $response;
         }
 
@@ -118,7 +117,7 @@ class OrganizationFleetController extends AbstractController
      */
     public function orgaFleetFamily(Request $request, string $organization, string $chassisId): Response
     {
-        if (null !== $response = $this->checkAccessibleOrganization($organization)) {
+        if (null !== $response = $this->fleetOrganizationGuard->checkAccessibleOrganization($organization)) {
             return $response;
         }
 
@@ -161,7 +160,7 @@ class OrganizationFleetController extends AbstractController
         $page = $request->query->getInt('page', 1);
         $itemsPerPage = 10;
 
-        if (null !== $response = $this->checkAccessibleOrganization($organization)) {
+        if (null !== $response = $this->fleetOrganizationGuard->checkAccessibleOrganization($organization)) {
             return $response;
         }
 
@@ -212,7 +211,7 @@ class OrganizationFleetController extends AbstractController
      */
     public function orgaFleetHiddenUsers(string $organization, string $providerShipName): Response
     {
-        if (null !== $response = $this->checkAccessibleOrganization($organization)) {
+        if (null !== $response = $this->fleetOrganizationGuard->checkAccessibleOrganization($organization)) {
             return $response;
         }
 
@@ -266,41 +265,5 @@ class OrganizationFleetController extends AbstractController
         });
 
         return $shipFamilyFilter;
-    }
-
-    private function checkAccessibleOrganization(string $orgaSid): ?Response
-    {
-        if (!$this->isPublicOrga($orgaSid)) {
-            $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
-
-            /** @var User $user */
-            $user = $this->security->getUser();
-            $citizen = $user->getCitizen();
-            if ($citizen === null) {
-                return $this->json([
-                    'error' => 'no_citizen_created',
-                    'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
-                ], 400);
-            }
-            if (!$citizen->hasOrganization($orgaSid)) {
-                return $this->json([
-                    'error' => 'bad_organization',
-                    'errorMessage' => sprintf('The organization %s does not exist.', $orgaSid),
-                ], 404);
-            }
-        }
-
-        return null;
-    }
-
-    private function isPublicOrga(string $organizationSid): bool
-    {
-        /** @var Organization $orga */
-        $orga = $this->organizationRepository->findOneBy(['organizationSid' => $organizationSid]);
-        if ($orga === null) {
-            return false;
-        }
-
-        return $orga->getPublicChoice() === Organization::PUBLIC_CHOICE_PUBLIC;
     }
 }

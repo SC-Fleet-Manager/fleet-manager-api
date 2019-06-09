@@ -33,7 +33,7 @@
                                 <p v-if="citizen != null && citizenOrgaInfo != null"><strong>{{ citizenOrgaInfo.rankName }}</strong></p>
                             </div>
                         </b-col>
-                        <b-col col class="mb-3 text-right" v-if="citizen != null && citizenOrgaInfo != null">
+                        <b-col col class="mb-3 text-right" v-if="!notEnoughRightsMessage && citizen != null && citizenOrgaInfo != null">
                             <b-dropdown variant="primary">
                                 <template slot="button-content"><i class="fas fa-cloud-download-alt"></i> Export fleet</template>
                                 <b-dropdown-item download :disabled="selectedSid == null || shipFamilies.length == 0" :href="'/api/create-organization-fleet-file/'+selectedSid" ><i class="fas fa-file-code"></i> Export <strong>{{ selectedSid != null ? orgaFullname : 'N/A' }}</strong> fleet (.json)</b-dropdown-item>
@@ -41,7 +41,7 @@
                             </b-dropdown>
                         </b-col>
                     </b-row>
-                    <b-row class="mb-3" v-if="sid != null && ((citizen != null && citizenOrgaInfo != null) || (organization !== null && organization.publicChoice === 'public'))">
+                    <b-row class="mb-3" v-if="!notEnoughRightsMessage && sid != null && ((citizen != null && citizenOrgaInfo != null) || (organization !== null && organization.publicChoice === 'public'))">
                         <b-col sm="6" md="6" lg="4" xl="2">
                             <v-select id="filters_input_ship_name" :reduce="item => item.id" v-model="filterShipName" :options="filterOptionsShips" multiple @input="refreshOrganizationFleet(true)" placeholder="Filter by ship name"></v-select>
                         </b-col>
@@ -56,19 +56,27 @@
                         </b-col>
                     </b-row>
                     <b-row>
-                        <template v-if="!loadingOrgaFleet && ((citizen == null && (organization === null || organization.publicChoice !== 'public'))
-                                        || (citizen != null && citizenOrgaInfo == null && (organization == null || organization.publicChoice !== 'public')))">
+                        <!-- TODO : VERY UGLY THIS SHIT !! -->
+                        <template v-if="notEnoughRightsMessage">
                             <b-col>
-                                <b-alert show variant="danger">Sorry, this organization's fleet does not exist or is private. Try to <a href="/">login</a> to see it.</b-alert>
+                                <b-alert show variant="danger" v-html="notEnoughRightsMessage"></b-alert>
                             </b-col>
                         </template>
                         <template v-else>
-                            <b-col v-if="shipFamilies.length === 0 && !loadingOrgaFleet">
-                                <b-alert show variant="warning">Sorry, no ships have been found.</b-alert>
-                            </b-col>
-                            <b-col col xl="12" lg="12" md="12" sm="12" xs="12" v-if="loadingOrgaFleet" class="text-center">
-                                <i class="fas fa-circle-notch fa-spin fa-5x" style="color:#ccc"></i>
-                            </b-col>
+                            <template v-if="!loadingOrgaFleet && ((citizen == null && (organization === null || organization.publicChoice !== 'public'))
+                                            || (citizen != null && citizenOrgaInfo == null && (organization == null || organization.publicChoice !== 'public')))">
+                                <b-col>
+                                    <b-alert show variant="danger">Sorry, this organization's fleet does not exist or is private. Try to <a href="/">login</a> to see it.</b-alert>
+                                </b-col>
+                            </template>
+                            <template v-else>
+                                <b-col v-if="shipFamilies.length === 0 && !loadingOrgaFleet">
+                                    <b-alert show variant="warning">Sorry, no ships have been found.</b-alert>
+                                </b-col>
+                                <b-col col xl="12" lg="12" md="12" sm="12" xs="12" v-if="loadingOrgaFleet" class="text-center">
+                                    <i class="fas fa-circle-notch fa-spin fa-5x" style="color:#ccc"></i>
+                                </b-col>
+                            </template>
                         </template>
                         <template v-for="(shipFamily, index) in shipFamilies">
                             <ShipFamily :key="shipFamily.chassisId" :shipFamily="shipFamily" :index="index"></ShipFamily>
@@ -138,6 +146,7 @@
                 orgaPublicChoice: null,
                 fleetPolicyErrors: false,
                 fleetPolicyErrorMessages: null,
+                notEnoughRightsMessage: null,
                 savingPreferences: false,
                 citizen: null,
                 orgaFleetAdmins: [],
@@ -261,6 +270,7 @@
                 }
             },
             selectedSid() {
+                this.notEnoughRightsMessage = null;
                 this.refreshOrganizationFleet();
                 this.refreshAdmins();
             },
@@ -368,6 +378,9 @@
                         // no citizen created
                         return;
                     }
+                    if (err.response.status === 403 && err.response.data.error.startsWith('not_enough_rights')) {
+                        this.notEnoughRightsMessage = err.response.data.errorMessage;
+                    }
                     console.error(err);
                 });
             },
@@ -407,6 +420,9 @@
                         // no citizen created
                         return;
                     }
+                    if (err.response.status === 403 && err.response.data.error.startsWith('not_enough_rights')) {
+                        this.notEnoughRightsMessage = err.response.data.errorMessage;
+                    }
                     console.error(err);
                 }).then(_ => {
                     this.loadingOrgaFleet = false;
@@ -428,6 +444,9 @@
                         // no citizen created
                         return;
                     }
+                    if (err.response.status === 403 && err.response.data.error.startsWith('not_enough_rights')) {
+                        this.notEnoughRightsMessage = err.response.data.errorMessage;
+                    }
                     console.error(err);
                 });
                 axios.get(`/api/organization/${this.selectedSid}/ships`).then(response => {
@@ -444,6 +463,9 @@
                     if (err.response.status === 400 && err.response.data.error === 'no_citizen_created') {
                         // no citizen created
                         return;
+                    }
+                    if (err.response.status === 403 && err.response.data.error.startsWith('not_enough_rights')) {
+                        this.notEnoughRightsMessage = err.response.data.errorMessage;
                     }
                     console.error(err);
                 });
