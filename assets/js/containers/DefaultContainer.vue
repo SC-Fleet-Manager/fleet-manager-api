@@ -103,9 +103,9 @@
                     });
                     if (this.citizen.organizations.length > 0) {
                         nav.push({
-                            name: 'Organizations\' fleets',
+                            name: 'My Orgas',
                             url: '/organizations-fleets',
-                            icon: 'fas fa-fighter-jet',
+                            icon: 'fas fa-space-shuttle',
                             attributes: {
                                 disabled: this.citizen === null || this.citizen.organizations.length === 0,
                             },

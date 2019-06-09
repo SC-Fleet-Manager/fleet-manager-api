@@ -76,7 +76,7 @@ class FleetController extends AbstractController
             throw $this->createNotFoundException(sprintf('User of citizen %s does not exist.', $handle));
         }
 
-        if (!$this->isGranted(null, $user)) {
+        if (!$this->isGranted('ACCESS_USER_FLEET', $user)) {
             return $this->json([
                 'error' => 'no_rights',
                 'errorMessage' => 'You have no rights to see this fleet.',

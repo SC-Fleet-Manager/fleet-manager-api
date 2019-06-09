@@ -104,30 +104,33 @@ class ProfileController extends AbstractController
     {
         /** @var User $user */
         $user = $this->security->getUser();
-
         $content = \json_decode($request->getContent(), true);
 
-        $user->setPublicChoice($content['publicChoice'] ?? User::PUBLIC_CHOICE_PRIVATE);
-        $this->entityManager->flush();
-
-        $orgaPublicChoices = $content['orgaPublicChoices'] ?? [];
-        $citizen = $user->getCitizen();
-        if ($citizen !== null) {
-            foreach ($orgaPublicChoices as $sid => $publicChoice) {
-                $orga = $citizen->getOrgaBySid($sid);
-                if ($orga === null) {
-                    continue;
-                }
-                if (!in_array($publicChoice, [Organization::PUBLIC_CHOICE_PRIVATE, Organization::PUBLIC_CHOICE_PUBLIC], true)) {
-                    continue;
-                }
-                $citizenOrgas = $citizenOrganizationRepository->findGreaterThanRank($sid, $orga->getRank());
-                if (count($citizenOrgas) === 0) {
-                    // granted to manage $citizenOrga settings
-                    $organizationRepository->updatePublicChoice($sid, $publicChoice);
-                }
-            }
+        if (!isset($content['publicChoice'])) {
+            return $this->json([
+                'error' => 'invalid_form',
+                'errorMessage' => 'The field publicChoice must not be blank.',
+            ], 400);
         }
+        $user->setPublicChoice($content['publicChoice']);
+
+        $orgaVisibilityChoices = $content['orgaVisibilityChoices'] ?? [];
+        $citizen = $user->getCitizen();
+        if ($citizen === null) {
+            return $this->json([
+                'error' => 'no_citizen_created',
+                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
+            ], 400);
+        }
+        foreach ($orgaVisibilityChoices as $sid => $visibilityChoice) {
+            $orga = $citizen->getOrgaBySid($sid);
+            if ($orga === null) {
+                continue;
+            }
+            $orga->setVisibility($visibilityChoice);
+        }
+
+        $this->entityManager->flush();
 
         return $this->json(null, 204);
     }

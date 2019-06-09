@@ -95,16 +95,22 @@
                     <b-form>
                         <b-button type="button" variant="secondary" :disabled="refreshingProfile" @click="refreshMyRsiProfile" class="mb-3" title="Force to retrieve your public profile from RSI"><i class="fas fa-sync-alt" :class="{'fa-spin': refreshingProfile}"></i>
                             Refresh my RSI Profile</b-button>
-                        <b-form-group label="Personal fleet policy">
+
+                        <b-form-group label="Personal fleet policy" class="col-4">
                             <b-form-radio v-model="publicChoice" @change="savePublicChoice" :disabled="savingPreferences" name="public-choice" value="private">Private</b-form-radio>
                             <b-form-radio v-model="publicChoice" @change="savePublicChoice" :disabled="savingPreferences" name="public-choice" value="orga">Organizations only</b-form-radio>
                             <b-form-radio v-model="publicChoice" @change="savePublicChoice" :disabled="savingPreferences" name="public-choice" value="public">Public</b-form-radio>
                         </b-form-group>
-                        <!-- TODO uncomment this shit -->
-                        <!--<b-form-group :label="'Organization ' + orga.organizationSid + ' fleet policy'" v-for="orga in manageableOrgas" :key="orga.organizationSid">
-                            <b-form-radio v-model="orgaPublicChoices[orga.organizationSid]" @change="saveOrgaPublicChoice($event, orga)" :disabled="savingPreferences" :name="'orga-public-choice-' + orga.organizationSid" value="private">Private</b-form-radio>
-                            <b-form-radio v-model="orgaPublicChoices[orga.organizationSid]" @change="saveOrgaPublicChoice($event, orga)" :disabled="savingPreferences" :name="'orga-public-choice-' + orga.organizationSid" value="public">Public</b-form-radio>
-                        </b-form-group>-->
+                        <div v-if="publicChoice === 'orga'" class="mb-3">
+                            <div v-for="orga in citizen.organizations" :key="orga.organization.organizationSid">
+                                <div class="d-inline-block" style="min-width:150px;">{{ orga.organization.name }}</div>
+                                <div class="d-inline-block">
+                                    <b-form-radio class="d-inline-block" v-model="orgaVisibilityChoices[orga.organization.organizationSid]" @change="saveOrgaVisibilityChoices($event, orga.organization)" :disabled="savingPreferences" name="orga-visibility-choice" value="private">Private</b-form-radio>
+                                    <b-form-radio class="d-inline-block" v-model="orgaVisibilityChoices[orga.organization.organizationSid]" @change="saveOrgaVisibilityChoices($event, orga.organization)" :disabled="savingPreferences" name="orga-visibility-choice" value="admin">Admin only</b-form-radio>
+                                    <b-form-radio class="d-inline-block" v-model="orgaVisibilityChoices[orga.organization.organizationSid]" @change="saveOrgaVisibilityChoices($event, orga.organization)" :disabled="savingPreferences" name="orga-visibility-choice" value="orga">Orga only</b-form-radio>
+                                </div>
+                            </div>
+                        </div>
                         <b-form-group>
                             <b-input-group prepend="My fleet link">
                                 <b-form-input readonly
@@ -146,7 +152,7 @@
                 },
                 myFleetLink: null,
                 publicChoice: null,
-                orgaPublicChoices: {},
+                orgaVisibilityChoices: {},
                 manageableOrgas: [],
                 savingPreferences: false,
                 preferencesLoaded: false,
@@ -179,15 +185,15 @@
                 this.publicChoice = value;
                 this.savePreferences();
             },
-            saveOrgaPublicChoice(value, orga) {
-                this.$set(this.orgaPublicChoices, orga.organizationSid, value);
+            saveOrgaVisibilityChoices(value, orga) {
+                this.$set(this.orgaVisibilityChoices, orga.organizationSid, value);
                 this.savePreferences();
             },
             savePreferences() {
                 this.savingPreferences = true;
                 axios.post('/api/profile/save-preferences', {
                     publicChoice: this.publicChoice,
-                    orgaPublicChoices: this.orgaPublicChoices,
+                    orgaVisibilityChoices: this.orgaVisibilityChoices,
                 }).then(response => {
                     toastr.success('Changes saved');
                 }).catch(err => {
@@ -213,28 +219,16 @@
                     this.myFleetLink = this.getMyFleetLink();
                     this.publicChoice = response.data.publicChoice;
                     this.updateProfile(this.citizen);
-                    this.refreshManageableOrgas();
+
+                    for (let orga of this.citizen.organizations) {
+                        this.$set(this.orgaVisibilityChoices, orga.organization.organizationSid, orga.visibility);
+                    }
                 }).catch(err => {
                     this.checkAuth(err.response);
                     this.showError = true;
                     if (err.response.data.errorMessage) {
                         this.errorMessage = err.response.data.errorMessage;
                     }
-                    console.error(err);
-                });
-            },
-            refreshManageableOrgas() {
-                if (this.citizen === null) {
-                    return;
-                }
-                axios.get('/api/manageable-organizations').then(response => {
-                    this.manageableOrgas = response.data;
-                    for (let orga of this.manageableOrgas) {
-                        this.$set(this.orgaPublicChoices, orga.organizationSid, orga.publicChoice);
-                    }
-                }).catch(err => {
-                    this.checkAuth(err.response);
-                    toastr.error('Sorry, can\'t retrieve manageable organizations.');
                     console.error(err);
                 });
             },
