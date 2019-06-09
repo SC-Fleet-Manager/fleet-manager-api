@@ -2,19 +2,28 @@
     <div class="animated fadeIn">
         <b-row>
             <b-col>
-                <b-card :header="citizen != null && citizenOrgaInfo != null ? 'Your organizations\' fleets' : orgaFullname +' fleet'" class="js-organizations-fleets">
+                <nav class="mb-3 navbar navbar-light bg-light" v-if="citizen != null && citizenOrgaInfo != null">
+                    <ul class="nav">
+                        <b-dropdown
+                            v-if="citizen.organizations.length >= 2 || citizen.countRedactedOrganizations > 0"
+                            id="select-orga"
+                            class="js-select-orga nav-item"
+                            split
+                            :split-variant="menu == 'fleet' ? 'primary' : 'outline-primary'"
+                            :text="organization.name ? organization.name : 'No selected orga'"
+                            variant="outline-primary"
+                            @click="menu = 'fleet'"
+                        >
+                            <b-dropdown-item :active="organization.organizationSid == citizenOrga.organization.organizationSid" v-for="citizenOrga in citizen.organizations" :key="citizenOrga.organization.organizationSid" @click="changeSelectedOrga(citizenOrga)">{{ citizenOrga.organization.name }}</b-dropdown-item>
+                            <b-dropdown-item v-if="citizen.countRedactedOrganizations > 0" disabled>+{{ citizen.countRedactedOrganizations }} redacted organizations</b-dropdown-item>
+                        </b-dropdown>
+                        <b-button v-else id="select-orga" class="nav-item" variant="primary">{{ organization.name ? organization.name : 'No selected orga' }}</b-button>
+                        <b-button v-if="isAdmin" class="nav-item ml-3" :variant="menu == 'admin_panel' ? 'primary' : 'outline-primary'" @click="menu = 'admin_panel'">Admin panel</b-button>
+                    </ul>
+                </nav>
+                <b-card v-if="menu == 'fleet'" class="js-organizations-fleets">
                     <b-row>
-                        <b-col v-if="citizen != null && citizenOrgaInfo != null" xl="3" lg="3" md="4" sm="12" class="mb-3">
-                            <b-form>
-                                <b-form-group label="Select an organization" label-for="select-orga" class="js-select-orga">
-                                    <b-form-select id="select-orga" :value="selectedSid" @change="selectSid">
-                                        <option v-for="citizenOrga in citizen.organizations" :key="citizenOrga.organization.organizationSid" :value="citizenOrga.organization.organizationSid">{{ citizenOrga.organization.name }}</option>
-                                        <option v-if="citizen.countRedactedOrganizations > 0" disabled>+{{ citizen.countRedactedOrganizations }} redacted organizations</option> <!--TODO (see FAQ)-->
-                                    </b-form-select>
-                                </b-form-group>
-                            </b-form>
-                        </b-col>
-                        <b-col xs="12" sm="12" md="6" class="mb-3" v-if="organization !== null">
+                        <b-col sm="10" md="8" lg="6" xl="6" class="mb-3" v-if="organization !== null">
                             <a :href="'https://robertsspaceindustries.com/orgs/'+organization.organizationSid" target="_blank"><img v-if="organization.avatarUrl" :src="organization.avatarUrl" alt="organization's logo" class="img-fluid" style="max-height: 8rem;" /></a>
                             <div class="d-inline-block align-top">
                                 <h4><a :href="'https://robertsspaceindustries.com/orgs/'+organization.organizationSid" target="_blank">{{ organization.name }}</a></h4>
@@ -24,9 +33,7 @@
                                 <p v-if="citizen != null && citizenOrgaInfo != null"><strong>{{ citizenOrgaInfo.rankName }}</strong></p>
                             </div>
                         </b-col>
-                    </b-row>
-                    <b-row v-if="citizen != null && citizenOrgaInfo != null">
-                        <b-col col xl="2" lg="3" md="4" class="mb-3">
+                        <b-col col class="mb-3 text-right" v-if="citizen != null && citizenOrgaInfo != null">
                             <b-dropdown variant="primary">
                                 <template slot="button-content"><i class="fas fa-cloud-download-alt"></i> Export fleet</template>
                                 <b-dropdown-item download :disabled="selectedSid == null || shipFamilies.length == 0" :href="'/api/create-organization-fleet-file/'+selectedSid" ><i class="fas fa-file-code"></i> Export <strong>{{ selectedSid != null ? orgaFullname : 'N/A' }}</strong> fleet (.json)</b-dropdown-item>
@@ -35,16 +42,16 @@
                         </b-col>
                     </b-row>
                     <b-row class="mb-3" v-if="sid != null && ((citizen != null && citizenOrgaInfo != null) || (organization !== null && organization.publicChoice === 'public'))">
-                        <b-col col xl="2" lg="3" md="4" xs="6">
+                        <b-col sm="6" md="6" lg="4" xl="2">
                             <v-select id="filters_input_ship_name" :reduce="item => item.id" v-model="filterShipName" :options="filterOptionsShips" multiple @input="refreshOrganizationFleet(true)" placeholder="Filter by ship name"></v-select>
                         </b-col>
-                        <b-col col xl="2" lg="3" md="4" xs="6">
+                        <b-col sm="6" md="6" lg="4" xl="2">
                             <v-select id="filters_input_citizen_id" :reduce="item => item.id" v-model="filterCitizenId" :options="filterOptionsCitizens" multiple @input="refreshOrganizationFleet(true)" placeholder="Filter by citizen"></v-select>
                         </b-col>
-                        <b-col col xl="2" lg="3" md="4" xs="6">
+                        <b-col sm="6" md="6" lg="4" xl="2">
                             <v-select id="filters_input_ship_size" :reduce="item => item.id" v-model="filterShipSize" :options="filterOptionsShipSize" multiple @input="refreshOrganizationFleet(true)" placeholder="Filter by ship size"></v-select>
                         </b-col>
-                        <b-col col xl="2" lg="3" md="4" xs="6">
+                        <b-col sm="6" md="6" lg="4" xl="2">
                             <v-select id="filters_input_ship_status" :reduce="item => item.id" v-model="filterShipStatus" :options="filterOptionsShipStatus" @input="refreshOrganizationFleet(true)" placeholder="Filter by ship status"></v-select>
                         </b-col>
                     </b-row>
@@ -81,6 +88,9 @@
                         </template>
                     </b-row>
                 </b-card>
+                <b-card v-if="menu == 'admin_panel'">
+
+                </b-card>
             </b-col>
         </b-row>
     </div>
@@ -96,6 +106,8 @@
 
     const { mapGetters, mapMutations, mapActions } = createNamespacedHelpers('orga_fleet');
     const BREAKPOINTS = {xs: 0, sm: 576, md: 768, lg: 992, xl: 1200};
+    const MENU_FLEET = 'fleet';
+    const MENU_ADMIN_PANEL = 'admin_panel';
 
     /*
      * PUBLIC
@@ -116,8 +128,10 @@
         components: {vSelect, ShipFamily, ShipFamilyDetail},
         data() {
             return {
+                menu: MENU_FLEET,
                 organization: null,
                 citizen: null,
+                orgaFleetAdmins: [],
                 shipFamilies: [], // families of ships (e.g. "Aurora" for MR, LX, etc.) that have the selected orga (no displayed if no orga members have this family).
                 actualBreakpoint: 'xs',
                 refreshedSid: null,
@@ -212,7 +226,19 @@
                 }
 
                 return this.selectedSid;
-            }
+            },
+            isAdmin() {
+                if (this.citizen === null) {
+                    return false;
+                }
+                for (let admin of this.orgaFleetAdmins) {
+                    if (admin.id === this.citizen.id) {
+                        return true;
+                    }
+                }
+
+                return false;
+            },
         },
         watch: {
             organization(orga) {
@@ -227,6 +253,7 @@
             },
             selectedSid() {
                 this.refreshOrganizationFleet();
+                this.refreshAdmins();
             },
             selectedShipVariants(shipVariants) {
                 for (let ship of shipVariants) {
@@ -245,6 +272,10 @@
             selectSid(value) {
                 this.$router.replace({ path: `/organization-fleet/${value}` });
                 this.updateSid(value);
+            },
+            changeSelectedOrga(orga) {
+                this.menu = MENU_FLEET;
+                this.selectSid(orga.organization.organizationSid);
             },
             refreshOrganization() {
                 if (this.citizen === null) {
@@ -281,6 +312,27 @@
                     }
                     if (err.response.data.errorMessage) {
                         toastr.error(err.response.data.errorMessage);
+                    }
+                    console.error(err);
+                });
+
+                this.refreshAdmins();
+            },
+            refreshAdmins() {
+                axios.get(`/api/fleet/orga-fleets/${this.selectedSid}/admins`).then(response => {
+                    this.orgaFleetAdmins = response.data;
+                }).catch(err => {
+                    if (err.response.status === 401) {
+                        // not connected
+                        return;
+                    }
+                    if (err.response.status === 404) {
+                        // not exist
+                        return;
+                    }
+                    if (err.response.status === 400 && err.response.data.error === 'no_citizen_created') {
+                        // no citizen created
+                        return;
                     }
                     console.error(err);
                 });

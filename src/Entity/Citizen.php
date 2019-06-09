@@ -23,7 +23,7 @@ class Citizen
      *
      * @ORM\Id()
      * @ORM\Column(type="uuid", unique=true)
-     * @Groups({"profile", "orga_fleet"})
+     * @Groups({"profile", "orga_fleet", "orga_fleet_admin"})
      */
     private $id;
 
@@ -47,7 +47,7 @@ class Citizen
      * @var HandleSC
      *
      * @ORM\Column(type="string", length=255)
-     * @Groups({"profile", "orga_fleet"})
+     * @Groups({"profile", "orga_fleet", "orga_fleet_admin"})
      */
     private $actualHandle;
 

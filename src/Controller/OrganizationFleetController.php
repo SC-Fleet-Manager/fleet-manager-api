@@ -100,6 +100,20 @@ class OrganizationFleetController extends AbstractController
     }
 
     /**
+     * @Route("/fleet/orga-fleets/{organization}/admins", name="orga_fleets_admins", methods={"GET"}, options={"expose":true})
+     */
+    public function orgaFleetsAdmins(string $organization): Response
+    {
+        if (null !== $response = $this->checkAccessibleOrganization($organization)) {
+            return $response;
+        }
+
+        $admins = $this->citizenRepository->findAdminByOrganization($organization);
+
+        return $this->json($admins, 200, [], ['groups' => 'orga_fleet_admin']);
+    }
+
+    /**
      * @Route("/fleet/orga-fleets/{organization}/{chassisId}", name="orga_fleet_family", methods={"GET"}, options={"expose":true})
      */
     public function orgaFleetFamily(Request $request, string $organization, string $chassisId): Response
