@@ -144,7 +144,7 @@ class OrganizationFleetController extends AbstractController
      */
     public function orgaFleetUsers(Request $request, string $organization, string $providerShipName): Response
     {
-        $page = $request->query->get('page', 1);
+        $page = $request->query->getInt('page', 1);
         $itemsPerPage = 10;
 
         if (null !== $response = $this->checkAccessibleOrganization($organization)) {
@@ -174,6 +174,7 @@ class OrganizationFleetController extends AbstractController
             $loggedCitizen = $this->getUser()->getCitizen();
         }
 
+        $countOwners = $this->citizenRepository->countOwnersOfShip($organization, $shipName, $loggedCitizen, $shipFamilyFilter);
         $users = $this->citizenRepository->getOwnersOfShip(
             $organization,
             $shipName,
@@ -182,8 +183,43 @@ class OrganizationFleetController extends AbstractController
             $page,
             $itemsPerPage
         );
+        $lastPage = (int) ceil($countOwners / $itemsPerPage);
 
-        return $this->json($users, 200, [], ['groups' => 'orga_fleet']);
+        return $this->json([
+            'users' => $users,
+            'page' => $page,
+            'lastPage' => $lastPage > 0 ? $lastPage : 1,
+            'total' => $countOwners,
+        ], 200, [], ['groups' => 'orga_fleet']);
+    }
+
+    /**
+     * @Route("/fleet/orga-fleets/{organization}/hidden-users/{providerShipName}", name="orga_fleet_hidden_users", methods={"GET"}, options={"expose":true})
+     */
+    public function orgaFleetHiddenUsers(string $organization, string $providerShipName): Response
+    {
+        if (null !== $response = $this->checkAccessibleOrganization($organization)) {
+            return $response;
+        }
+
+        $shipName = $this->shipInfosProvider->transformProviderToHangar($providerShipName);
+        $shipInfo = $this->shipInfosProvider->getShipByName($providerShipName);
+        if ($shipInfo === null) {
+            $this->logger->warning('Ship not found in the ship infos provider.', ['hangarShipName' => $providerShipName, 'provider' => get_class($this->shipInfosProvider)]);
+
+            return $this->json([]);
+        }
+
+        $loggedCitizen = null;
+        if ($this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+            $loggedCitizen = $this->getUser()->getCitizen();
+        }
+
+        $totalHiddenOwners = $this->citizenRepository->countHiddenOwnersOfShip($organization, $shipName, $loggedCitizen);
+
+        return $this->json([
+            'hiddenUsers' => $totalHiddenOwners,
+        ]);
     }
 
     private function getShipFamilyFilter($request, string $organizationSid): ShipFamilyFilter

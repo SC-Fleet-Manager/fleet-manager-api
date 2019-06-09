@@ -13,9 +13,12 @@
         <div class="ship-family-detail-variant-ownerlist" @scroll="onUsersScroll">
             <div v-for="user in shipVariantUsers">
                 <a :href="'/citizen/'+user[0].citizen.actualHandle.handle" target="_blank">{{ user[0].citizen.actualHandle.handle }}</a>
-                <template v-else>{{ user[0].citizen.actualHandle.handle }}</template>
                 : {{ user.countShips }}
             </div>
+            <i v-if="shipVariantHiddenUsers > 0">
+                <template v-if="shipVariantHiddenUsers == 1">+ {{ shipVariantHiddenUsers }} hidden owner</template>
+                <template v-else>+ {{ shipVariantHiddenUsers }} hidden owners</template>
+            </i>
         </div>
     </div>
 </template>
@@ -32,6 +35,7 @@
         data() {
             return {
                 shipVariantUsers: [],
+                shipVariantHiddenUsers: null,
                 page: 2,
                 atBottom: false,
                 imgLazyLoaded: false
@@ -49,6 +53,7 @@
         watch: {
             shipVariantUsersTrackChanges() {
                 this.shipVariantUsers = this.$store.getters['orga_fleet/shipVariantUser'](this.shipVariant.shipInfo.id);
+                this.shipVariantHiddenUsers = this.$store.state.orga_fleet.shipVariantHiddenUsers[this.shipVariant.shipInfo.id];
             },
         },
         methods: {

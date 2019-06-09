@@ -149,9 +149,7 @@ class CitizenRepository extends ServiceEntityRepository
             SELECT *, c.id as citizenId, f.id AS fleetId, s.id AS shipId FROM {$citizenMetadata->getTableName()} c 
             INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON citizenOrga.citizen_id = c.id
             INNER JOIN {$orgaMetadata->getTableName()} orga ON orga.id = citizenOrga.organization_id
-            INNER JOIN {$fleetMetadata->getTableName()} f ON c.id = f.owner_id AND f.id = (
-                SELECT f2.id FROM {$fleetMetadata->getTableName()} f2 WHERE f2.owner_id = f.owner_id ORDER BY f2.version DESC LIMIT 1
-            )
+            INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
             INNER JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id
             WHERE orga.organization_sid = :sid 
         EOT;
@@ -200,9 +198,7 @@ class CitizenRepository extends ServiceEntityRepository
             SELECT count(DISTINCT c.id) as countOwners, count(*) as countOwned FROM {$citizenMetadata->getTableName()} c 
             INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON citizenOrga.citizen_id = c.id
             INNER JOIN {$orgaMetadata->getTableName()} orga ON orga.id = citizenOrga.organization_id
-            INNER JOIN {$fleetMetadata->getTableName()} f ON c.id = f.owner_id AND f.id = (
-                SELECT f2.id FROM {$fleetMetadata->getTableName()} f2 WHERE f2.owner_id = f.owner_id ORDER BY f2.version DESC LIMIT 1
-            )
+            INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
             INNER JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id and LOWER(s.name) = :shipName 
             WHERE orga.organization_sid = :sid 
         EOT;
@@ -342,5 +338,154 @@ class CitizenRepository extends ServiceEntityRepository
         }
 
         return $stmt->getResult();
+    }
+
+    /**
+     * @param Citizen|null $viewerCitizen the logged citizen
+     *
+     * @return int
+     */
+    public function countOwnersOfShip(string $organizationId, string $shipName, ?Citizen $viewerCitizen, ShipFamilyFilter $filter): int
+    {
+        $userMetadata = $this->_em->getClassMetadata(User::class);
+        $citizenMetadata = $this->_em->getClassMetadata(Citizen::class);
+        $fleetMetadata = $this->_em->getClassMetadata(Fleet::class);
+        $shipMetadata = $this->_em->getClassMetadata(Ship::class);
+        $citizenOrgaMetadata = $this->_em->getClassMetadata(CitizenOrganization::class);
+        $orgaMetadata = $this->_em->getClassMetadata(Organization::class);
+
+        $sql = <<<EOT
+            SELECT COUNT(DISTINCT c.id) as total
+            FROM {$orgaMetadata->getTableName()} orga
+            INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON orga.id = citizenOrga.organization_id AND orga.organization_sid = :sid
+            INNER JOIN {$citizenMetadata->getTableName()} c ON citizenOrga.citizen_id = c.id
+            INNER JOIN {$userMetadata->getTableName()} u ON u.citizen_id = c.id
+            INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
+            INNER JOIN {$shipMetadata->getTableName()} s ON s.fleet_id = f.id and LOWER(s.name) = :shipName
+            WHERE (
+                u.public_choice = :userPublicChoicePublic
+                OR (u.public_choice = :userPublicChoiceOrga AND (
+                        # visibility ORGA : visible by everyone
+                        # visibility ADMIN : visible only by highest orga rank
+                        # visibility PRIVATE : visible by anybody
+                        citizenOrga.visibility = :visibilityOrga
+                        OR (citizenOrga.visibility = :visibilityAdmin AND :viewerCitizenId IS NOT NULL AND :viewerCitizenId IN (
+                                # select highest ranks of this orga
+                                SELECT co.citizen_id
+                                FROM {$orgaMetadata->getTableName()} o
+                                INNER JOIN {$citizenOrgaMetadata->getTableName()} co ON co.organization_id = o.id AND o.organization_sid = :sid
+                                WHERE co.rank = (
+                                    SELECT max(co.rank) AS maxRank
+                                    FROM {$orgaMetadata->getTableName()} o
+                                    INNER JOIN {$citizenOrgaMetadata->getTableName()} co ON co.organization_id = o.id AND o.organization_sid = :sid
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        EOT;
+
+        // filtering
+        if (count($filter->shipNames) > 0) {
+            $sql .= ' AND (';
+            foreach ($filter->shipNames as $i => $filterShipName) {
+                $sql .= sprintf(' s.name = :shipName_%d OR ', $i);
+            }
+            $sql .= ' 1=0) ';
+        }
+        if (count($filter->citizenIds) > 0) {
+            $sql .= ' AND (';
+            foreach ($filter->citizenIds as $i => $filterCitizenId) {
+                $sql .= sprintf(' c.id = :citizenId_%d OR ', $i);
+            }
+            $sql .= ' 1=0) ';
+        }
+
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addScalarResult('total', 'total');
+
+        $stmt = $this->_em->createNativeQuery($sql, $rsm);
+        $stmt->setParameters([
+            'sid' => mb_strtolower($organizationId),
+            'shipName' => mb_strtolower($shipName),
+            'visibilityOrga' => CitizenOrganization::VISIBILITY_ORGA,
+            'visibilityAdmin' => CitizenOrganization::VISIBILITY_ADMIN,
+            'userPublicChoicePublic' => User::PUBLIC_CHOICE_PUBLIC,
+            'userPublicChoiceOrga' => User::PUBLIC_CHOICE_ORGANIZATION,
+            'viewerCitizenId' => $viewerCitizen !== null ? $viewerCitizen->getId()->toString() : null,
+        ]);
+        foreach ($filter->shipNames as $i => $filterShipName) {
+            $stmt->setParameter('shipName_' . $i, $filterShipName);
+        }
+        foreach ($filter->citizenIds as $i => $filterCitizenId) {
+            $stmt->setParameter('citizenId_' . $i, $filterCitizenId);
+        }
+
+        return $stmt->getSingleScalarResult();
+    }
+
+    /**
+     * @param Citizen|null $viewerCitizen the logged citizen
+     *
+     * @return int
+     */
+    public function countHiddenOwnersOfShip(string $organizationId, string $shipName, ?Citizen $viewerCitizen): int
+    {
+        $userMetadata = $this->_em->getClassMetadata(User::class);
+        $citizenMetadata = $this->_em->getClassMetadata(Citizen::class);
+        $fleetMetadata = $this->_em->getClassMetadata(Fleet::class);
+        $shipMetadata = $this->_em->getClassMetadata(Ship::class);
+        $citizenOrgaMetadata = $this->_em->getClassMetadata(CitizenOrganization::class);
+        $orgaMetadata = $this->_em->getClassMetadata(Organization::class);
+
+        $sql = <<<EOT
+            SELECT COUNT(DISTINCT c.id) as total
+            FROM {$orgaMetadata->getTableName()} orga
+            INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON orga.id = citizenOrga.organization_id AND orga.organization_sid = :sid
+            INNER JOIN {$citizenMetadata->getTableName()} c ON citizenOrga.citizen_id = c.id
+            INNER JOIN {$userMetadata->getTableName()} u ON u.citizen_id = c.id
+            INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
+            INNER JOIN {$shipMetadata->getTableName()} s ON s.fleet_id = f.id and LOWER(s.name) = :shipName
+            # notice the NOT to inverse the normal condition
+            WHERE NOT (
+                u.public_choice = :userPublicChoicePublic
+                OR (u.public_choice = :userPublicChoiceOrga AND (
+                        # visibility ORGA : visible by everyone
+                        # visibility ADMIN : visible only by highest orga rank
+                        # visibility PRIVATE : visible by anybody
+                        citizenOrga.visibility = :visibilityOrga
+                        OR (citizenOrga.visibility = :visibilityAdmin AND :viewerCitizenId IS NOT NULL AND :viewerCitizenId IN (
+                                # select highest ranks of this orga
+                                SELECT co.citizen_id
+                                FROM {$orgaMetadata->getTableName()} o
+                                INNER JOIN {$citizenOrgaMetadata->getTableName()} co ON co.organization_id = o.id AND o.organization_sid = :sid
+                                WHERE co.rank = (
+                                    SELECT max(co.rank) AS maxRank
+                                    FROM {$orgaMetadata->getTableName()} o
+                                    INNER JOIN {$citizenOrgaMetadata->getTableName()} co ON co.organization_id = o.id AND o.organization_sid = :sid
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        EOT;
+
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addScalarResult('total', 'total');
+
+        $stmt = $this->_em->createNativeQuery($sql, $rsm);
+        $stmt->setParameters([
+            'sid' => mb_strtolower($organizationId),
+            'shipName' => mb_strtolower($shipName),
+            'visibilityOrga' => CitizenOrganization::VISIBILITY_ORGA,
+            'visibilityAdmin' => CitizenOrganization::VISIBILITY_ADMIN,
+            'userPublicChoicePublic' => User::PUBLIC_CHOICE_PUBLIC,
+            'userPublicChoiceOrga' => User::PUBLIC_CHOICE_ORGANIZATION,
+            'viewerCitizenId' => $viewerCitizen !== null ? $viewerCitizen->getId()->toString() : null,
+        ]);
+
+        return $stmt->getSingleScalarResult();
     }
 }
