@@ -46,12 +46,15 @@ class OrganizationController extends AbstractController
      */
     public function citizens(string $organizationSid): Response
     {
-        if (!$this->isPublicOrga($organizationSid)) {
-            $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
-
+        $citizen = null;
+        if ($this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             /** @var User $user */
             $user = $this->security->getUser();
             $citizen = $user->getCitizen();
+        }
+        if (!$this->isPublicOrga($organizationSid)) {
+            $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
+
             if ($citizen === null) {
                 return $this->json([
                     'error' => 'no_citizen_created',
@@ -66,8 +69,9 @@ class OrganizationController extends AbstractController
             }
         }
 
-        $citizens = $this->citizenRepository->getByOrganization(new SpectrumIdentification($organizationSid));
+        $citizens = $this->citizenRepository->findVisiblesByOrganization($organizationSid, $citizen);
 
+        // format for vue-select data
         $res = array_map(static function (Citizen $citizen) {
             return [
                 'id' => $citizen->getId(),

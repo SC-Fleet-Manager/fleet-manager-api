@@ -104,15 +104,21 @@ class ProfileController extends AbstractController
     {
         /** @var User $user */
         $user = $this->security->getUser();
-
         $content = \json_decode($request->getContent(), true);
 
         $user->setPublicChoice($content['publicChoice'] ?? User::PUBLIC_CHOICE_PRIVATE);
-        $this->entityManager->flush();
 
         $orgaPublicChoices = $content['orgaPublicChoices'] ?? [];
+        $orgaVisibilityChoices = $content['orgaVisibilityChoices'] ?? [];
         $citizen = $user->getCitizen();
         if ($citizen !== null) {
+            foreach ($orgaVisibilityChoices as $sid => $visibilityChoice) {
+                $orga = $citizen->getOrgaBySid($sid);
+                if ($orga === null) {
+                    continue;
+                }
+                $orga->setVisibility($visibilityChoice);
+            }
             foreach ($orgaPublicChoices as $sid => $publicChoice) {
                 $orga = $citizen->getOrgaBySid($sid);
                 if ($orga === null) {
@@ -128,6 +134,8 @@ class ProfileController extends AbstractController
                 }
             }
         }
+
+        $this->entityManager->flush();
 
         return $this->json(null, 204);
     }

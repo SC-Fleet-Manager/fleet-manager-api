@@ -367,7 +367,7 @@ class Citizen
     public function getOrgaBySid(string $sid): ?CitizenOrganization
     {
         foreach ($this->organizations as $orga) {
-            if ($orga->getOrganizationSid() === $sid) {
+            if ($orga->getOrganization()->getOrganizationSid() === $sid) {
                 return $orga;
             }
         }

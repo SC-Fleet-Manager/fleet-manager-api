@@ -84,7 +84,7 @@ class OrganizationFleetController extends AbstractController
             return $response;
         }
 
-        $shipFamilyFilter = $this->getShipFamilyFilter($request);
+        $shipFamilyFilter = $this->getShipFamilyFilter($request, $organization);
 
         $shipFamilies = $organizationFleetHandler->computeShipFamilies(new SpectrumIdentification($organization), $shipFamilyFilter);
         usort($shipFamilies, static function (array $shipFamily1, array $shipFamily2): int {
@@ -108,7 +108,7 @@ class OrganizationFleetController extends AbstractController
             return $response;
         }
 
-        $shipFamilyFilter = $this->getShipFamilyFilter($request);
+        $shipFamilyFilter = $this->getShipFamilyFilter($request, $organization);
 
         $shipsInfos = $this->shipInfosProvider->getShipsByChassisId($chassisId);
 
@@ -151,7 +151,7 @@ class OrganizationFleetController extends AbstractController
             return $response;
         }
 
-        $shipFamilyFilter = $this->getShipFamilyFilter($request);
+        $shipFamilyFilter = $this->getShipFamilyFilter($request, $organization);
 
         $shipName = $this->shipInfosProvider->transformProviderToHangar($providerShipName);
         $shipInfo = $this->shipInfosProvider->getShipByName($providerShipName);
@@ -169,9 +169,15 @@ class OrganizationFleetController extends AbstractController
             return $this->json([]);
         }
 
+        $loggedCitizen = null;
+        if ($this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+            $loggedCitizen = $this->getUser()->getCitizen();
+        }
+
         $users = $this->citizenRepository->getOwnersOfShip(
             $organization,
             $shipName,
+            $loggedCitizen,
             $shipFamilyFilter,
             $page,
             $itemsPerPage
@@ -180,16 +186,36 @@ class OrganizationFleetController extends AbstractController
         return $this->json($users, 200, [], ['groups' => 'orga_fleet']);
     }
 
-    private function getShipFamilyFilter($request): ShipFamilyFilter
+    private function getShipFamilyFilter($request, string $organizationSid): ShipFamilyFilter
     {
         $filters = $request->query->get('filters', []);
 
-        return new ShipFamilyFilter(
+        $shipFamilyFilter = new ShipFamilyFilter(
             $filters['shipNames'] ?? [],
             $filters['citizenIds'] ?? [],
             $filters['shipSizes'] ?? [],
             $filters['shipStatus'] ?? null
         );
+
+        // remove non visibles filters (e.g., private citizens, etc.)
+        $loggedCitizen = null;
+        if ($this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+            /** @var User $user */
+            $user = $this->security->getUser();
+            $loggedCitizen = $user->getCitizen();
+        }
+        $visibleCitizens = $this->citizenRepository->findVisiblesByOrganization($organizationSid, $loggedCitizen);
+        $shipFamilyFilter->citizenIds = array_filter($shipFamilyFilter->citizenIds, static function (string $citizenId) use (&$visibleCitizens): bool {
+            foreach ($visibleCitizens as $visibleCitizen) {
+                if ($citizenId === $visibleCitizen->getId()->toString()) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
+
+        return $shipFamilyFilter;
     }
 
     private function checkAccessibleOrganization(string $orgaSid): ?Response
