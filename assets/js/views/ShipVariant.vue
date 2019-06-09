@@ -12,7 +12,7 @@
 <!--        <div class="mb-3"><b-form-input type="text" v-model="search[ship.shipInfo.id]" placeholder="Search citizen"></b-form-input></div>&ndash;&gt;-->
         <div class="ship-family-detail-variant-ownerlist" @scroll="onUsersScroll">
             <div v-for="user in shipVariantUsers">
-                <a v-if="canAccessToHisFleet(user)" :href="'/citizen/'+user[0].citizen.actualHandle.handle" target="_blank">{{ user[0].citizen.actualHandle.handle }}</a>
+                <a :href="'/citizen/'+user[0].citizen.actualHandle.handle" target="_blank">{{ user[0].citizen.actualHandle.handle }}</a>
                 <template v-else>{{ user[0].citizen.actualHandle.handle }}</template>
                 : {{ user.countShips }}
             </div>
@@ -68,28 +68,6 @@
                 } else {
                     this.atBottom = false;
                 }
-            },
-            canAccessToHisFleet(user) {
-                switch (user[0].publicChoice) {
-                    case 'public':
-                        return true;
-                    case 'private':
-                        return false;
-                    case 'orga':
-                        // only if logged + hasOrga(selectedSid)
-                        const citizen = this.$store.getters.citizen;
-                        if (citizen === null) {
-                            return false;
-                        }
-                        for (let citizenOrga of citizen.organizations) {
-                            if (citizenOrga.organization.organizationSid === this.selectedSid) {
-                                return true;
-                            }
-                        }
-
-                        return false;
-                }
-                return false;
             }
         }
     };
