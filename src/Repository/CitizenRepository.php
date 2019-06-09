@@ -101,6 +101,38 @@ class CitizenRepository extends ServiceEntityRepository
         return $stmt->getResult();
     }
 
+    /**
+     * @return Citizen[]
+     */
+    public function findAdminByOrganization(string $organizationSid): array
+    {
+        $citizenMetadata = $this->_em->getClassMetadata(Citizen::class);
+        $citizenOrgaMetadata = $this->_em->getClassMetadata(CitizenOrganization::class);
+        $orgaMetadata = $this->_em->getClassMetadata(Organization::class);
+
+        $sql = <<<EOT
+            SELECT c.*, c.id AS citizenId
+            FROM {$orgaMetadata->getTableName()} o
+            INNER JOIN {$citizenOrgaMetadata->getTableName()} co ON co.organization_id = o.id AND o.organization_sid = :sid
+            INNER JOIN {$citizenMetadata->getTableName()} c ON c.id = co.citizen_id
+            WHERE co.rank = (
+                SELECT max(co.rank) AS maxRank
+                FROM {$orgaMetadata->getTableName()} o
+                INNER JOIN {$citizenOrgaMetadata->getTableName()} co ON co.organization_id = o.id AND o.organization_sid = :sid
+            )
+        EOT;
+
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addRootEntityFromClassMetadata(Citizen::class, 'c', ['id' => 'citizenId']);
+
+        $stmt = $this->_em->createNativeQuery($sql, $rsm);
+        $stmt->setParameters([
+            'sid' => mb_strtolower($organizationSid),
+        ]);
+        $stmt->useResultCache(true, 30);
+
+        return $stmt->getResult();
+    }
 
     /**
      * @return Ship[]

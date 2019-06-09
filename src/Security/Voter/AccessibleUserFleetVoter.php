@@ -3,7 +3,9 @@
 namespace App\Security\Voter;
 
 use App\Entity\Citizen;
+use App\Entity\CitizenOrganization;
 use App\Entity\User;
+use App\Repository\CitizenRepository;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\Security;
@@ -11,10 +13,12 @@ use Symfony\Component\Security\Core\Security;
 class AccessibleUserFleetVoter extends Voter
 {
     private $security;
+    private $citizenRepository;
 
-    public function __construct(Security $security)
+    public function __construct(Security $security, CitizenRepository $citizenRepository)
     {
         $this->security = $security;
+        $this->citizenRepository = $citizenRepository;
     }
 
     protected function supports($attribute, $subject): bool
@@ -36,7 +40,7 @@ class AccessibleUserFleetVoter extends Voter
         /** @var User $me */
         $me = $token->getUser();
 
-        // private only it's myself
+        // private only if it's myself
         if ($subject->getPublicChoice() === User::PUBLIC_CHOICE_PRIVATE) {
             return $me->getId()->equals($subject->getId());
         }
@@ -45,23 +49,57 @@ class AccessibleUserFleetVoter extends Voter
             return false;
         }
         $citizen = $subject->getCitizen();
-        if ($citizen === null || $me->getCitizen() === null) {
+        $viewerCitizen = $me->getCitizen();
+        if ($citizen === null || $viewerCitizen === null) {
             return false;
         }
 
-        return $this->hasCommonOrga($citizen, $me->getCitizen());
-    }
+        // Orga only
+        // compare my (subject) orgas and viewer (me) orgas
+        // ** if one case show the fleet then display it ** (visible > not visible)
+        $commonOrgas = $this->getCommonOrgas($citizen, $me->getCitizen());
 
-    private function hasCommonOrga(Citizen $citizen1, Citizen $citizen2): bool
-    {
-        foreach ($citizen1->getOrganizations() as $orga1) {
-            foreach ($citizen2->getOrganizations() as $orga2) {
-                if ($orga1->getOrganization()->getId()->equals($orga2->getId())) {
-                    return true;
+        // there is a common orga that is visibility ORGA ?
+        foreach ($commonOrgas as $commonOrga) {
+            if ($commonOrga->getVisibility() === CitizenOrganization::VISIBILITY_ORGA) {
+                return true;
+            }
+        }
+
+        // there is a common orga that is visibility ADMIN
+        // AND viewer is ADMIN of that same orga
+        foreach ($commonOrgas as $commonOrga) {
+            if ($commonOrga->getVisibility() === CitizenOrganization::VISIBILITY_ADMIN) {
+                // viewer is ADMIN of this orga ?
+                $admins = $this->citizenRepository->findAdminByOrganization($commonOrga->getOrganization()->getOrganizationSid());
+                foreach ($admins as $admin) {
+                    if ($admin->getId()->equals($viewerCitizen->getId())) {
+                        return true;
+                    }
                 }
             }
         }
 
+        // visibility PRIVATE
+
         return false;
+    }
+
+    /**
+     * @return CitizenOrganization[] owned by $viewedCitizen
+     */
+    private function getCommonOrgas(Citizen $viewedCitizen, Citizen $viewerCitizen): array
+    {
+        $res = [];
+        foreach ($viewedCitizen->getOrganizations() as $viewedOrga) {
+            foreach ($viewerCitizen->getOrganizations() as $viewerOrga) {
+                if ($viewedOrga->getOrganization()->getId()->toString($viewerOrga->getOrganization()->getId())) {
+                    $res[] = $viewedOrga;
+                    break;
+                }
+            }
+        }
+
+        return $res;
     }
 }
