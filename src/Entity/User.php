@@ -18,6 +18,11 @@ class User implements UserInterface
     public const PUBLIC_CHOICE_PRIVATE = 'private';
     public const PUBLIC_CHOICE_ORGANIZATION = 'orga';
     public const PUBLIC_CHOICE_PUBLIC = 'public';
+    public const PUBLIC_CHOICES = [
+        self::PUBLIC_CHOICE_PRIVATE,
+        self::PUBLIC_CHOICE_ORGANIZATION,
+        self::PUBLIC_CHOICE_PUBLIC,
+    ];
 
     /**
      * @var UuidInterface
@@ -100,7 +105,7 @@ class User implements UserInterface
     public function __construct(?UuidInterface $id = null)
     {
         $this->id = $id;
-        $this->publicChoice = self::PUBLIC_CHOICE_PRIVATE;
+        $this->publicChoice = self::PUBLIC_CHOICE_ORGANIZATION;
         $this->createdAt = new \DateTimeImmutable();
     }
 
@@ -215,11 +220,7 @@ class User implements UserInterface
 
     public function setPublicChoice(string $publicChoice): self
     {
-        if (in_array($publicChoice, [
-            self::PUBLIC_CHOICE_PRIVATE,
-            self::PUBLIC_CHOICE_ORGANIZATION,
-            self::PUBLIC_CHOICE_PUBLIC,
-        ], true)) {
+        if (in_array($publicChoice, self::PUBLIC_CHOICES, true)) {
             $this->publicChoice = $publicChoice;
         }
 

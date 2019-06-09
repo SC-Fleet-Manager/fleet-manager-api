@@ -23,7 +23,7 @@ class AccessibleUserFleetVoter extends Voter
 
     protected function supports($attribute, $subject): bool
     {
-        return $subject instanceof User;
+        return $subject instanceof User && $attribute === 'ACCESS_USER_FLEET';
     }
 
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token): bool

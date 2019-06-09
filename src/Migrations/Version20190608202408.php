@@ -15,6 +15,7 @@ final class Version20190608202408 extends AbstractMigration
     public function up(Schema $schema): void
     {
         $this->addSql("ALTER TABLE citizen_organization ADD visibility VARCHAR(15) DEFAULT 'orga' NOT NULL");
+        $this->addSql("UPDATE user SET public_choice='orga' WHERE public_choice='private'");
     }
 
     public function down(Schema $schema): void
