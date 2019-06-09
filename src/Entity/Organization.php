@@ -12,7 +12,13 @@ use Symfony\Component\Serializer\Annotation\Groups;
 class Organization
 {
     public const PUBLIC_CHOICE_PRIVATE = 'private';
+    public const PUBLIC_CHOICE_ADMIN = 'admin';
     public const PUBLIC_CHOICE_PUBLIC = 'public';
+    public const PUBLIC_CHOICES = [
+        self::PUBLIC_CHOICE_PRIVATE,
+        self::PUBLIC_CHOICE_ADMIN,
+        self::PUBLIC_CHOICE_PUBLIC,
+    ];
 
     /**
      * @var UuidInterface
@@ -108,7 +114,9 @@ class Organization
 
     public function setPublicChoice(string $publicChoice): self
     {
-        $this->publicChoice = $publicChoice;
+        if (in_array($publicChoice, self::PUBLIC_CHOICES, true)) {
+            $this->publicChoice = $publicChoice;
+        }
 
         return $this;
     }

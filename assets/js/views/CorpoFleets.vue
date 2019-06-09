@@ -89,7 +89,12 @@
                     </b-row>
                 </b-card>
                 <b-card v-if="menu == 'admin_panel'">
-
+                    <b-alert variant="danger" :show="fleetPolicyErrors" v-html="fleetPolicyErrorMessages"></b-alert>
+                    <b-form-group :label="'Fleet policy of '+organization.name">
+                        <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="private">Members only</b-form-radio>
+                        <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="admin">Admin only</b-form-radio>
+                        <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="public">Public</b-form-radio>
+                    </b-form-group>
                 </b-card>
             </b-col>
         </b-row>
@@ -130,6 +135,10 @@
             return {
                 menu: MENU_FLEET,
                 organization: null,
+                orgaPublicChoice: null,
+                fleetPolicyErrors: false,
+                fleetPolicyErrorMessages: null,
+                savingPreferences: false,
                 citizen: null,
                 orgaFleetAdmins: [],
                 shipFamilies: [], // families of ships (e.g. "Aurora" for MR, LX, etc.) that have the selected orga (no displayed if no orga members have this family).
@@ -277,10 +286,35 @@
                 this.menu = MENU_FLEET;
                 this.selectSid(orga.organization.organizationSid);
             },
+            savePreferences() {
+                this.savingPreferences = true;
+                this.fleetPolicyErrors = false;
+                axios.post(`/api/organization/${this.organization.organizationSid}/save-preferences`, {
+                   publicChoice: this.orgaPublicChoice,
+                }).then(response => {
+                    toastr.success('Changes saved');
+                }).catch(err => {
+                    // this.checkAuth(err.response);
+                    if (err.response.data.errorMessage) {
+                        this.fleetPolicyErrorMessages = err.response.data.errorMessage;
+                    } else {
+                        toastr.error('An error has occurred. Please retry more later.');
+                    }
+                    this.fleetPolicyErrors = true;
+                    console.error(err);
+                }).then(_ => {
+                    this.savingPreferences = false;
+                });
+            },
+            saveOrgaPublicChoice(value) {
+                this.orgaPublicChoice = value;
+                this.savePreferences();
+            },
             refreshOrganization() {
                 if (this.citizen === null) {
                     axios.get(`/api/organization/${this.sid}`).then(response => {
                         this.organization = response.data;
+                        this.orgaPublicChoice = this.organization.publicChoice;
                     }).catch(err => {
                         if (err.response.status === 401) {
                             // not connected

@@ -6,11 +6,14 @@ use App\Domain\SpectrumIdentification;
 use App\Entity\Citizen;
 use App\Entity\Organization;
 use App\Entity\User;
+use App\Repository\CitizenOrganizationRepository;
 use App\Repository\CitizenRepository;
 use App\Repository\OrganizationRepository;
 use App\Repository\ShipRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
@@ -23,22 +26,82 @@ class OrganizationController extends AbstractController
 {
     private $security;
     private $citizenRepository;
+    private $citizenOrganizationRepository;
     private $organizationRepository;
     private $shipRepository;
+    private $entityManager;
     private $serializer;
 
     public function __construct(
         Security $security,
         CitizenRepository $citizenRepository,
+        CitizenOrganizationRepository $citizenOrganizationRepository,
         OrganizationRepository $organizationRepository,
         ShipRepository $shipRepository,
+        EntityManagerInterface $entityManager,
         SerializerInterface $serializer
     ) {
         $this->security = $security;
         $this->citizenRepository = $citizenRepository;
+        $this->citizenOrganizationRepository = $citizenOrganizationRepository;
         $this->organizationRepository = $organizationRepository;
         $this->shipRepository = $shipRepository;
+        $this->entityManager = $entityManager;
         $this->serializer = $serializer;
+    }
+
+    /**
+     * @Route("/organization/{organizationSid}/save-preferences", name="save_preferences", methods={"POST"}, condition="request.getContentType() == 'json'")
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
+     */
+    public function savePreferences(Request $request, string $organizationSid): Response
+    {
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $content = \json_decode($request->getContent(), true);
+
+        $citizen = $user->getCitizen();
+        if ($citizen === null) {
+            return $this->json([
+                'error' => 'no_citizen_created',
+                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
+            ], 400);
+        }
+        /** @var Organization|null $organization */
+        $organization = $this->organizationRepository->findOneBy(['organizationSid' => $organizationSid]);
+        if ($organization === null) {
+            return $this->json([
+                'error' => 'not_found_orga',
+                'errorMessage' => sprintf('The organization "%s" does not exist.', $organizationSid),
+            ], 404);
+        }
+
+        $admins = $this->citizenRepository->findAdminByOrganization($organizationSid);
+        $isAdmin = false;
+        foreach ($admins as $admin) {
+            if ($admin->getId()->equals($citizen->getId())) {
+                $isAdmin = true;
+                break;
+            }
+        }
+        if (!$isAdmin) {
+            return $this->json([
+                'error' => 'not_enough_rights',
+                'errorMessage' => sprintf('You must be an admin of %s to change their settings. Try to refresh your RSI profile in your <a href="/profile">profile page</a>.', $organization->getName()),
+            ], 403);
+        }
+
+        if (!isset($content['publicChoice'])) {
+            return $this->json([
+                'error' => 'invalid_form',
+                'errorMessage' => 'The field publicChoice must not be blank.',
+            ], 400);
+        }
+
+        $organization->setPublicChoice($content['publicChoice']);
+        $this->entityManager->flush();
+
+        return $this->json(null, 204);
     }
 
     /**
