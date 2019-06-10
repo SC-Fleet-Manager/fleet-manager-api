@@ -190,11 +190,11 @@ class ProfileControllerTest extends WebTestCase
     public function testSavePreferences(): void
     {
         $this->logIn($this->user);
-        $this->client->xmlHttpRequest('POST', '/api/profile/save-preferences', [
-            'publicChoice' => 'private',
-        ], [], [
+        $this->client->xmlHttpRequest('POST', '/api/profile/save-preferences', [], [], [
             'CONTENT_TYPE' => 'application/json',
-        ]);
+        ], json_encode([
+            'publicChoice' => 'private',
+        ]));
         $this->assertSame(204, $this->client->getResponse()->getStatusCode());
     }
 

@@ -34,11 +34,12 @@
                             </div>
                         </b-col>
                         <b-col col class="mb-3 text-right" v-if="!notEnoughRightsMessage && citizen != null && citizenOrgaInfo != null">
-                            <b-dropdown variant="primary">
+                            <b-dropdown variant="primary" class="mb-2">
                                 <template slot="button-content"><i class="fas fa-cloud-download-alt"></i> Export fleet</template>
                                 <b-dropdown-item download :disabled="selectedSid == null || shipFamilies.length == 0" :href="'/api/create-organization-fleet-file/'+selectedSid" ><i class="fas fa-file-code"></i> Export <strong>{{ selectedSid != null ? orgaFullname : 'N/A' }}</strong> fleet (.json)</b-dropdown-item>
                                 <b-dropdown-item download :disabled="selectedSid == null || shipFamilies.length == 0" :href="'/api/export-orga-fleet/'+selectedSid"><i class="fas fa-file-csv"></i> Export <strong>{{ selectedSid != null ? orgaFullname : 'N/A' }}</strong> fleet (.csv)</b-dropdown-item>
                             </b-dropdown>
+                            <!--<p><b>{{ orgaStats.countUploadedFleets }}</b> uploaded fleets for <b>{{ orgaStats.totalCitizen }}</b> members</p>-->
                         </b-col>
                     </b-row>
                     <b-row class="mb-3" v-if="!notEnoughRightsMessage && sid != null && ((citizen != null && citizenOrgaInfo != null) || (organization !== null && organization.publicChoice === 'public'))">
@@ -143,6 +144,7 @@
             return {
                 menu: MENU_FLEET,
                 organization: null,
+                orgaStats: {},
                 orgaPublicChoice: null,
                 fleetPolicyErrors: false,
                 fleetPolicyErrorMessages: null,
@@ -336,6 +338,19 @@
                         }
                         console.error(err);
                     });
+                    // axios.get(`/api/orga-stats/${this.sid}`).then(response => {
+                    //     this.orgaStats = response.data;
+                    // }).catch(err => {
+                    //     if (err.response.status === 401) {
+                    //         // not connected
+                    //         return;
+                    //     }
+                    //     if (err.response.status === 404) {
+                    //         // not exist
+                    //         return;
+                    //     }
+                    //     console.error(err);
+                    // });
                     return;
                 }
                 for (let citizenOrga of this.citizen.organizations) {

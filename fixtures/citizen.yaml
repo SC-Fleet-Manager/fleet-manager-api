@@ -45,3 +45,31 @@ App\Entity\Citizen:
         actualHandle: '<(new \App\Domain\HandleSC("need_refresh"))>'
         organizations: []
         mainOrga: null
+    citizen_pulsar42_admin:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("f0cdc161-f50c-4aad-b587-ae92d2d4a530"))>']
+        number: '<(new \App\Domain\CitizenNumber("52415421"))>'
+        nickname: 'Admin de Pulsar42'
+        actualHandle: '<(new \App\Domain\HandleSC("pulsar42_admin"))>'
+        organizations: ['@pulsar42_admin_orga_pulsar42']
+        mainOrga: '@pulsar42_admin_orga_pulsar42'
+    citizen_pulsar42_member1:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("8120759d-807e-47b2-949a-0ebb1ef152f3"))>']
+        number: '<(new \App\Domain\CitizenNumber("87261281"))>'
+        nickname: 'Member1 de Pulsar42'
+        actualHandle: '<(new \App\Domain\HandleSC("pulsar42_member1"))>'
+        organizations: ['@pulsar42_member1_orga_pulsar42']
+        mainOrga: '@pulsar42_member1_orga_pulsar42'
+    citizen_pulsar42_member2:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("165d226f-9ce4-4da3-a86e-e9e3fbb9c586"))>']
+        number: '<(new \App\Domain\CitizenNumber("51413521"))>'
+        nickname: 'Member2 de Pulsar42'
+        actualHandle: '<(new \App\Domain\HandleSC("pulsar42_member2"))>'
+        organizations: ['@pulsar42_member2_orga_pulsar42']
+        mainOrga: '@pulsar42_member2_orga_pulsar42'
+    citizen_pulsar42_member3:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("3c201cad-860e-4e7b-a072-0b496bb97464"))>']
+        number: '<(new \App\Domain\CitizenNumber("80171478"))>'
+        nickname: 'Member3 de Pulsar42'
+        actualHandle: '<(new \App\Domain\HandleSC("pulsar42_member3"))>'
+        organizations: ['@pulsar42_member3_orga_pulsar42']
+        mainOrga: '@pulsar42_member3_orga_pulsar42'

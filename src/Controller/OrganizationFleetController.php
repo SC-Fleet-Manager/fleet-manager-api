@@ -55,6 +55,30 @@ class OrganizationFleetController extends AbstractController
     }
 
     /**
+     * @Route("/orga-stats/{organization}", name="orga_stats", methods={"GET"})
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
+     */
+    public function orgaStats(string $organization): Response
+    {
+        if (null !== $response = $this->fleetOrganizationGuard->checkAccessibleOrganization($organization)) {
+            return $response;
+        }
+
+        $citizens = $this->citizenRepository->getByOrganization(new SpectrumIdentification($organization));
+        $totalCitizen = count($citizens);
+
+        $countUploadedFleets = 0;
+        foreach ($citizens as $citizen) {
+            $countUploadedFleets += $citizen->getLastFleet() !== null ? 1 : 0;
+        }
+
+        return $this->json([
+            'totalCitizen' => $totalCitizen,
+            'countUploadedFleets' => $countUploadedFleets,
+        ]);
+    }
+
+    /**
      * Combines all last version fleets of all citizen members of a specific organization.
      * Returns a downloadable json file.
      *

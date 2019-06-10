@@ -3,13 +3,10 @@
 namespace App\Controller;
 
 use App\Domain\HandleSC;
-use App\Entity\Organization;
 use App\Entity\User;
 use App\Exception\NotFoundHandleSCException;
 use App\Form\Dto\UpdateHandle;
 use App\Form\UpdateHandleForm;
-use App\Repository\CitizenOrganizationRepository;
-use App\Repository\OrganizationRepository;
 use App\Service\CitizenInfosProviderInterface;
 use App\Service\CitizenRefresher;
 use Doctrine\ORM\EntityManagerInterface;
@@ -100,7 +97,7 @@ class ProfileController extends AbstractController
      * @Route("/save-preferences", name="save_preferences", methods={"POST"}, condition="request.getContentType() == 'json'")
      * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
      */
-    public function savePreferences(Request $request, CitizenOrganizationRepository $citizenOrganizationRepository, OrganizationRepository $organizationRepository): Response
+    public function savePreferences(Request $request): Response
     {
         /** @var User $user */
         $user = $this->security->getUser();
