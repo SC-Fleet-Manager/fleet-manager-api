@@ -6,6 +6,7 @@ use App\Domain\SpectrumIdentification;
 use App\Entity\User;
 use App\Repository\CitizenRepository;
 use App\Service\Dto\ShipFamilyFilter;
+use App\Service\Exporter\OrganizationFleetExporter;
 use App\Service\FleetOrganizationGuard;
 use App\Service\OrganizationFleetGenerator;
 use App\Service\OrganizationFleetHandler;
@@ -29,6 +30,7 @@ class OrganizationFleetController extends AbstractController
     private $shipInfosProvider;
     private $organizationFleetGenerator;
     private $fleetOrganizationGuard;
+    private $orgaFleetExporter;
     private $logger;
     private $serializer;
 
@@ -38,6 +40,7 @@ class OrganizationFleetController extends AbstractController
         ShipInfosProviderInterface $shipInfosProvider,
         OrganizationFleetGenerator $organizationFleetGenerator,
         FleetOrganizationGuard $fleetOrganizationGuard,
+        OrganizationFleetExporter $orgaFleetExporter,
         LoggerInterface $logger,
         SerializerInterface $serializer
     ) {
@@ -46,6 +49,7 @@ class OrganizationFleetController extends AbstractController
         $this->shipInfosProvider = $shipInfosProvider;
         $this->organizationFleetGenerator = $organizationFleetGenerator;
         $this->fleetOrganizationGuard = $fleetOrganizationGuard;
+        $this->orgaFleetExporter = $orgaFleetExporter;
         $this->logger = $logger;
         $this->serializer = $serializer;
     }
@@ -82,57 +86,7 @@ class OrganizationFleetController extends AbstractController
             return $response;
         }
 
-        $citizens = $this->citizenRepository->getByOrganization(new SpectrumIdentification($organization));
-
-        $ships = [];
-        $totalColumn = [];
-        foreach ($citizens as $citizen) {
-            $citizenHandle = $citizen->getActualHandle()->getHandle();
-            $lastFleet = $citizen->getLastFleet();
-            if ($lastFleet === null) {
-                continue;
-            }
-            foreach ($lastFleet->getShips() as $ship) {
-                if (!isset($ships[$ship->getName()])) {
-                    $ships[$ship->getName()] = [$citizenHandle => 1];
-                } elseif (!isset($ships[$ship->getName()][$citizenHandle])) {
-                    $ships[$ship->getName()][$citizenHandle] = 1;
-                } else {
-                    ++$ships[$ship->getName()][$citizenHandle];
-                }
-            }
-        }
-        ksort($ships);
-
-        $data = [];
-        foreach ($ships as $shipName => $owners) {
-            $total = 0;
-            $columns = [];
-            foreach ($owners as $ownerName => $countOwner) {
-                $total += $countOwner;
-                $columns[$ownerName] = $countOwner;
-                if (!isset($totalColumn[$ownerName])) {
-                    $totalColumn[$ownerName] = $countOwner;
-                } else {
-                    $totalColumn[$ownerName] += $countOwner;
-                }
-            }
-            $data[] = array_merge([
-                'Ship Model' => $shipName,
-                'Ship Total' => $total,
-            ], $columns);
-        }
-
-        $total = 0;
-        $columns = [];
-        foreach ($totalColumn as $ownerName => $countOwner) {
-            $total += $countOwner;
-            $columns[$ownerName] = $countOwner;
-        }
-        $data[] = array_merge([
-            'Ship Model' => 'Total',
-            'Ship Total' => $total,
-        ], $columns);
+        $data = $this->orgaFleetExporter->exportOrgaFleet($organization);
 
         $csv = $this->serializer->serialize($data, 'csv');
         $filepath = sys_get_temp_dir().'/'.uniqid('', true);
