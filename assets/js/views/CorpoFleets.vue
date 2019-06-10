@@ -14,10 +14,10 @@
                             variant="outline-primary"
                             @click="menu = 'fleet'"
                         >
-                            <b-dropdown-item :active="organization.organizationSid == citizenOrga.organization.organizationSid" v-for="citizenOrga in citizen.organizations" :key="citizenOrga.organization.organizationSid" @click="changeSelectedOrga(citizenOrga)">{{ citizenOrga.organization.name }}</b-dropdown-item>
+                            <b-dropdown-item :active="organization.organizationSid == citizenOrga.organization.organizationSid" v-for="citizenOrga in citizen.organizations" :key="citizenOrga.organization.organizationSid" @click="changeSelectedOrga(citizenOrga.organization)">{{ citizenOrga.organization.name }}</b-dropdown-item>
                             <b-dropdown-item v-if="citizen.countRedactedOrganizations > 0" disabled>+{{ citizen.countRedactedOrganizations }} redacted organizations</b-dropdown-item>
                         </b-dropdown>
-                        <b-button v-else id="select-orga" class="nav-item" variant="primary">{{ organization.name ? organization.name : 'No selected orga' }}</b-button>
+                        <b-button v-else id="select-orga" class="js-select-orga nav-item" :variant="menu == 'fleet' ? 'primary' : 'outline-primary'" @click="menu = 'fleet'">{{ organization.name ? organization.name : 'No selected orga' }}</b-button>
                         <b-button v-if="isAdmin" class="nav-item ml-3" :variant="menu == 'admin_panel' ? 'primary' : 'outline-primary'" @click="menu = 'admin_panel'">Admin panel</b-button>
                     </ul>
                 </nav>
@@ -294,7 +294,7 @@
             },
             changeSelectedOrga(orga) {
                 this.menu = MENU_FLEET;
-                this.selectSid(orga.organization.organizationSid);
+                this.selectSid(orga.organizationSid);
             },
             savePreferences() {
                 this.savingPreferences = true;
