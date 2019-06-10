@@ -65,6 +65,17 @@ class ExtensionController extends AbstractController
     public function export(Request $request): Response
     {
         $contents = $request->getContent();
+        if (($contentSize = strlen($contents)) >= 2 * 1000 * 1000) {
+            $errors = [sprintf('The data are too large (%.2f MB). Allowed maximum size is 2 MB.', $contentSize / (1000 * 1000))];
+            $this->logger->warning('Upload fleet form error.', [
+                'form_errors' => $errors,
+            ]);
+
+            return $this->json([
+                'error' => 'invalid_form',
+                'formErrors' => $errors,
+            ], 400);
+        }
         $fleetData = \json_decode($contents, true);
 
         if (JSON_ERROR_NONE !== $jsonError = json_last_error()) {
