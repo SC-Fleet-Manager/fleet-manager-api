@@ -186,6 +186,6 @@ class Ship
             && mb_strtolower($this->manufacturer) === mb_strtolower($other->manufacturer)
             && $this->insured === $other->insured
             && $this->cost === $other->cost
-            && $this->pledgeDate->getTimestamp() === $other->pledgeDate->getTimestamp();
+            && $this->pledgeDate->format('Ymd') === $other->pledgeDate->format('Ymd');
     }
 }

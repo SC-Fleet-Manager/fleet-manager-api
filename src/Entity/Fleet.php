@@ -71,10 +71,12 @@ class Fleet
         return $this->owner;
     }
 
-    public function setOwner(Citizen $owner): self
+    public function setOwner(?Citizen $owner): self
     {
         $this->owner = $owner;
-        $owner->addFleet($this);
+        if ($owner !== null) {
+            $owner->addFleet($this);
+        }
 
         return $this;
     }
