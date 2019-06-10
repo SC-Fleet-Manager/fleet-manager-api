@@ -125,7 +125,7 @@ class Fleet
 
     public function isUploadedDateTooClose(): bool
     {
-        return $this->uploadDate >= new \DateTimeImmutable('-30 minutes');
+        return $this->uploadDate >= new \DateTimeImmutable('-15 minutes');
     }
 
     public function createRawData(): array

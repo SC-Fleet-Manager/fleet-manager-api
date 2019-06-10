@@ -179,4 +179,13 @@ class Ship
 
         return $this;
     }
+
+    public function equals(self $other): bool
+    {
+        return mb_strtolower($this->name) === mb_strtolower($other->name)
+            && mb_strtolower($this->manufacturer) === mb_strtolower($other->manufacturer)
+            && $this->insured === $other->insured
+            && $this->cost === $other->cost
+            && $this->pledgeDate->getTimestamp() === $other->pledgeDate->getTimestamp();
+    }
 }
