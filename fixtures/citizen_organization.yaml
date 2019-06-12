@@ -45,7 +45,7 @@ App\Entity\CitizenOrganization:
         organization: '@orga_pulsar42'
         rank: 1
         rankName: 'Member1'
-        visibility: 'orga'
+        visibility: 'private'
     pulsar42_member2_orga_pulsar42:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("1ff7c240-bad0-453b-a94c-6bef25363753"))>']
         organizationSid: 'pulsar42'
@@ -59,4 +59,4 @@ App\Entity\CitizenOrganization:
         organization: '@orga_pulsar42'
         rank: 3
         rankName: 'Member3'
-        visibility: 'private'
+        visibility: 'orga'

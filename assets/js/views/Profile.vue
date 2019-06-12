@@ -220,8 +220,10 @@
                     this.publicChoice = response.data.publicChoice;
                     this.updateProfile(this.citizen);
 
-                    for (let orga of this.citizen.organizations) {
-                        this.$set(this.orgaVisibilityChoices, orga.organization.organizationSid, orga.visibility);
+                    if (this.citizen) {
+                        for (let orga of this.citizen.organizations) {
+                            this.$set(this.orgaVisibilityChoices, orga.organization.organizationSid, orga.visibility);
+                        }
                     }
                 }).catch(err => {
                     this.checkAuth(err.response);
@@ -268,7 +270,9 @@
                     this.searchedCitizen = response.data;
                     this.showButtonStep2 = true;
                 }).catch(err => {
-                    if (err.response.data.error === 'not_found_handle') {
+                    if (err.response.data.error === 'invalid_form') {
+                        this.errorStep1Message = err.response.data.formErrors.join('<br/>');
+                    } else if (err.response.data.error === 'not_found_handle') {
                         this.errorStep1Message = `Sorry, it seems that <a href="https://robertsspaceindustries.com/citizens/${this.form.handle}" target="_blank">SC Handle ${this.form.handle}</a> does not exist. Try to check the typo and search again.`;
                     } else {
                         this.errorStep1Message = `Sorry, an unexpected error has occurred. Please retry.`;

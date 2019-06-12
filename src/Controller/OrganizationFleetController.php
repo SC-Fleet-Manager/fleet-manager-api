@@ -149,6 +149,7 @@ class OrganizationFleetController extends AbstractController
 
     /**
      * @Route("/fleet/orga-fleets/{organization}/admins", name="orga_fleets_admins", methods={"GET"}, options={"expose":true})
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      */
     public function orgaFleetsAdmins(string $organization): Response
     {

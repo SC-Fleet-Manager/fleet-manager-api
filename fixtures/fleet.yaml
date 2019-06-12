@@ -11,3 +11,11 @@ App\Entity\Fleet:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("7418a47d-6bdd-4023-bd4e-5d2e0fcff6c1"))>']
         version: 1
         uploadDate: '<(new \DateTimeImmutable("2019-04-07"))>'
+    fleet_pulsar42_member1_v1:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("cfd0851a-b04b-412f-9f9e-82468bb97e78"))>']
+        version: 1
+        uploadDate: '<(new \DateTimeImmutable("2019-04-08"))>'
+    fleet_pulsar42_member2_v1:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("afe8552d-3c85-4742-aef9-ffe1b1b9b2af"))>']
+        version: 1
+        uploadDate: '<(new \DateTimeImmutable("2019-04-09"))>'

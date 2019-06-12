@@ -7,14 +7,16 @@ use App\Entity\Citizen;
 use App\Entity\Fleet;
 use App\Entity\User;
 use App\Exception\NotFoundHandleSCException;
+use App\Form\Dto\LinkAccount;
+use App\Form\LinkAccountForm;
 use App\Repository\CitizenOrganizationRepository;
 use App\Repository\OrganizationRepository;
 use App\Service\CitizenFleetGenerator;
 use App\Service\CitizenInfosProviderInterface;
-use App\Service\OrganizationInfosProviderInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -27,19 +29,19 @@ class ApiController extends AbstractController
 {
     private $security;
     private $citizenFleetGenerator;
-    private $organizationInfosProvider;
     private $organizationRepository;
+    private $formFactory;
 
     public function __construct(
         Security $security,
         CitizenFleetGenerator $citizenFleetGenerator,
-        OrganizationInfosProviderInterface $organizationInfosProvider,
-        OrganizationRepository $organizationRepository
+        OrganizationRepository $organizationRepository,
+        FormFactoryInterface $formFactory
     ) {
         $this->security = $security;
         $this->citizenFleetGenerator = $citizenFleetGenerator;
-        $this->organizationInfosProvider = $organizationInfosProvider;
         $this->organizationRepository = $organizationRepository;
+        $this->formFactory = $formFactory;
     }
 
     /**
@@ -48,15 +50,26 @@ class ApiController extends AbstractController
     public function searchHandle(Request $request, CitizenInfosProviderInterface $citizenInfosProvider): Response
     {
         $handle = $request->query->get('handle');
-        if ($handle === null) {
+
+        $linkAccount = new LinkAccount();
+        $form = $this->formFactory->createNamedBuilder('', LinkAccountForm::class, $linkAccount)->getForm();
+        $form->submit(['handleSC' => $handle]);
+
+        if (!$form->isValid()) {
+            $formErrors = $form->getErrors(true);
+            $errors = [];
+            foreach ($formErrors as $formError) {
+                $errors[] = $formError->getMessage();
+            }
+
             return $this->json([
-                'error' => 'no_handle',
-                'errorMessage' => 'The handle must not empty.',
+                'error' => 'invalid_form',
+                'formErrors' => $errors,
             ], 400);
         }
 
         try {
-            $citizenInfos = $citizenInfosProvider->retrieveInfos(new HandleSC($handle));
+            $citizenInfos = $citizenInfosProvider->retrieveInfos(new HandleSC($linkAccount->handleSC));
 
             return $this->json($citizenInfos);
         } catch (NotFoundHandleSCException $e) {

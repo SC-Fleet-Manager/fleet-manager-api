@@ -59,6 +59,8 @@ App\Entity\Citizen:
         actualHandle: '<(new \App\Domain\HandleSC("pulsar42_member1"))>'
         organizations: ['@pulsar42_member1_orga_pulsar42']
         mainOrga: '@pulsar42_member1_orga_pulsar42'
+        fleets: ['@fleet_pulsar42_member1_v1']
+        lastFleet: '@fleet_pulsar42_member1_v1'
     citizen_pulsar42_member2:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("165d226f-9ce4-4da3-a86e-e9e3fbb9c586"))>']
         number: '<(new \App\Domain\CitizenNumber("51413521"))>'
@@ -66,6 +68,8 @@ App\Entity\Citizen:
         actualHandle: '<(new \App\Domain\HandleSC("pulsar42_member2"))>'
         organizations: ['@pulsar42_member2_orga_pulsar42']
         mainOrga: '@pulsar42_member2_orga_pulsar42'
+        fleets: ['@fleet_pulsar42_member2_v1']
+        lastFleet: '@fleet_pulsar42_member2_v1'
     citizen_pulsar42_member3:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("3c201cad-860e-4e7b-a072-0b496bb97464"))>']
         number: '<(new \App\Domain\CitizenNumber("80171478"))>'
