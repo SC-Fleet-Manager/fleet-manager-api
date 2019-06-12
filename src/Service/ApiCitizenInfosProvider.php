@@ -35,7 +35,7 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
 
     public function retrieveInfos(HandleSC $handleSC, bool $caching = true): CitizenInfos
     {
-        return $this->cache->get('citizen_info_'.$handleSC, function (CacheItem $cacheItem) use ($handleSC) {
+        return $this->cache->get('citizen_info_'.sha1($handleSC->getHandle()), function (CacheItem $cacheItem) use ($handleSC) {
             $cacheItem->tag(['citizen_infos']);
             $cacheItem->expiresAfter(1200); // 20min
 

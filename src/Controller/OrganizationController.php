@@ -17,7 +17,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
-use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * @Route("/api", name="api_organization_")
@@ -29,7 +28,6 @@ class OrganizationController extends AbstractController
     private $organizationRepository;
     private $shipRepository;
     private $entityManager;
-    private $serializer;
     private $fleetOrganizationGuard;
 
     public function __construct(
@@ -38,7 +36,6 @@ class OrganizationController extends AbstractController
         OrganizationRepository $organizationRepository,
         ShipRepository $shipRepository,
         EntityManagerInterface $entityManager,
-        SerializerInterface $serializer,
         FleetOrganizationGuard $fleetOrganizationGuard
     ) {
         $this->security = $security;
@@ -46,7 +43,6 @@ class OrganizationController extends AbstractController
         $this->organizationRepository = $organizationRepository;
         $this->shipRepository = $shipRepository;
         $this->entityManager = $entityManager;
-        $this->serializer = $serializer;
         $this->fleetOrganizationGuard = $fleetOrganizationGuard;
     }
 
@@ -156,84 +152,5 @@ class OrganizationController extends AbstractController
         }, $ships);
 
         return $this->json($res);
-    }
-
-    /**
-     * @Route("/export-orga-fleet/{organization}", name="export_orga_fleet", methods={"GET"})
-     * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
-     */
-    public function exportOrgaFleet(string $organization): Response
-    {
-        /** @var User $user */
-        $user = $this->security->getUser();
-        $citizen = $user->getCitizen();
-        if ($citizen === null) {
-            throw $this->createNotFoundException(sprintf('The user "%s" has no citizens.', $user->getId()));
-        }
-        if (!$citizen->hasOrganization($organization)) {
-            throw $this->createNotFoundException(sprintf('The citizen "%s" does not have the organization "%s".', $citizen->getId(), $organization));
-        }
-
-        $citizens = $this->citizenRepository->getByOrganization(new SpectrumIdentification($organization));
-
-        $ships = [];
-        $totalColumn = [];
-        foreach ($citizens as $citizen) {
-            $citizenHandle = $citizen->getActualHandle()->getHandle();
-            $lastFleet = $citizen->getLastFleet();
-            if ($lastFleet === null) {
-                continue;
-            }
-            foreach ($lastFleet->getShips() as $ship) {
-                if (!isset($ships[$ship->getName()])) {
-                    $ships[$ship->getName()] = [$citizenHandle => 1];
-                } elseif (!isset($ships[$ship->getName()][$citizenHandle])) {
-                    $ships[$ship->getName()][$citizenHandle] = 1;
-                } else {
-                    ++$ships[$ship->getName()][$citizenHandle];
-                }
-            }
-        }
-        ksort($ships);
-
-        $data = [];
-        foreach ($ships as $shipName => $owners) {
-            $total = 0;
-            $columns = [];
-            foreach ($owners as $ownerName => $countOwner) {
-                $total += $countOwner;
-                $columns[$ownerName] = $countOwner;
-                if (!isset($totalColumn[$ownerName])) {
-                    $totalColumn[$ownerName] = $countOwner;
-                } else {
-                    $totalColumn[$ownerName] += $countOwner;
-                }
-            }
-            $data[] = array_merge([
-                'Ship Model' => $shipName,
-                'Ship Total' => $total,
-            ], $columns);
-        }
-
-        $total = 0;
-        $columns = [];
-        foreach ($totalColumn as $ownerName => $countOwner) {
-            $total += $countOwner;
-            $columns[$ownerName] = $countOwner;
-        }
-        $data[] = array_merge([
-            'Ship Model' => 'Total',
-            'Ship Total' => $total,
-        ], $columns);
-
-        $csv = $this->serializer->serialize($data, 'csv');
-        $filepath = sys_get_temp_dir().'/'.uniqid('', true);
-        file_put_contents($filepath, $csv);
-
-        $file = $this->file($filepath, 'export_'.$organization.'.csv');
-        $file->headers->set('Content-Type', 'application/csv');
-        $file->deleteFileAfterSend();
-
-        return $file;
     }
 }

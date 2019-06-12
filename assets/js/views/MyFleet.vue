@@ -93,6 +93,9 @@
                     this.ships = [];
                     if (response.data.fleet !== null) {
                         this.ships = response.data.fleet.ships;
+                        this.ships.sort((ship1, ship2) => {
+                            return ship1.name > ship2.name ? 1 : -1;
+                        });
                     }
                     this.shipInfos = response.data.shipInfos;
                 }).catch(err => {

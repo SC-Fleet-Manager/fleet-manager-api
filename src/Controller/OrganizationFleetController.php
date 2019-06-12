@@ -6,6 +6,7 @@ use App\Domain\SpectrumIdentification;
 use App\Entity\User;
 use App\Repository\CitizenRepository;
 use App\Service\Dto\ShipFamilyFilter;
+use App\Service\Exporter\OrganizationFleetExporter;
 use App\Service\FleetOrganizationGuard;
 use App\Service\OrganizationFleetGenerator;
 use App\Service\OrganizationFleetHandler;
@@ -17,6 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * @Route("/api", name="orga_fleet_")
@@ -28,7 +30,9 @@ class OrganizationFleetController extends AbstractController
     private $shipInfosProvider;
     private $organizationFleetGenerator;
     private $fleetOrganizationGuard;
+    private $orgaFleetExporter;
     private $logger;
+    private $serializer;
 
     public function __construct(
         Security $security,
@@ -36,14 +40,42 @@ class OrganizationFleetController extends AbstractController
         ShipInfosProviderInterface $shipInfosProvider,
         OrganizationFleetGenerator $organizationFleetGenerator,
         FleetOrganizationGuard $fleetOrganizationGuard,
-        LoggerInterface $logger
+        OrganizationFleetExporter $orgaFleetExporter,
+        LoggerInterface $logger,
+        SerializerInterface $serializer
     ) {
         $this->security = $security;
         $this->citizenRepository = $citizenRepository;
         $this->shipInfosProvider = $shipInfosProvider;
         $this->organizationFleetGenerator = $organizationFleetGenerator;
         $this->fleetOrganizationGuard = $fleetOrganizationGuard;
+        $this->orgaFleetExporter = $orgaFleetExporter;
         $this->logger = $logger;
+        $this->serializer = $serializer;
+    }
+
+    /**
+     * @Route("/orga-stats/{organization}", name="orga_stats", methods={"GET"})
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
+     */
+    public function orgaStats(string $organization): Response
+    {
+        if (null !== $response = $this->fleetOrganizationGuard->checkAccessibleOrganization($organization)) {
+            return $response;
+        }
+
+        $citizens = $this->citizenRepository->getByOrganization(new SpectrumIdentification($organization));
+        $totalCitizen = count($citizens);
+
+        $countUploadedFleets = 0;
+        foreach ($citizens as $citizen) {
+            $countUploadedFleets += $citizen->getLastFleet() !== null ? 1 : 0;
+        }
+
+        return $this->json([
+            'totalCitizen' => $totalCitizen,
+            'countUploadedFleets' => $countUploadedFleets,
+        ]);
     }
 
     /**
@@ -55,14 +87,8 @@ class OrganizationFleetController extends AbstractController
      */
     public function createOrganizationFleetFile(string $organization): Response
     {
-        /** @var User $user */
-        $user = $this->security->getUser();
-        $citizen = $user->getCitizen();
-        if ($citizen === null) {
-            throw $this->createNotFoundException(sprintf('The user "%s" has no citizens.', $user->getId()));
-        }
-        if (!$citizen->hasOrganization($organization)) {
-            throw $this->createNotFoundException(sprintf('The citizen "%s" does not have the organization "%s".', $citizen->getId(), $organization));
+        if (null !== $response = $this->fleetOrganizationGuard->checkAccessibleOrganization($organization)) {
+            return $response;
         }
 
         $file = $this->organizationFleetGenerator->generateFleetFile(new SpectrumIdentification($organization));
@@ -72,6 +98,29 @@ class OrganizationFleetController extends AbstractController
         $fileResponse->deleteFileAfterSend();
 
         return $fileResponse;
+    }
+
+    /**
+     * @Route("/export-orga-fleet/{organization}", name="export_orga_fleet", methods={"GET"})
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
+     */
+    public function exportOrgaFleet(string $organization): Response
+    {
+        if (null !== $response = $this->fleetOrganizationGuard->checkAccessibleOrganization($organization)) {
+            return $response;
+        }
+
+        $data = $this->orgaFleetExporter->exportOrgaFleet($organization);
+
+        $csv = $this->serializer->serialize($data, 'csv');
+        $filepath = sys_get_temp_dir().'/'.uniqid('', true);
+        file_put_contents($filepath, $csv);
+
+        $file = $this->file($filepath, 'export_'.$organization.'.csv');
+        $file->headers->set('Content-Type', 'application/csv');
+        $file->deleteFileAfterSend();
+
+        return $file;
     }
 
     /**
@@ -100,6 +149,7 @@ class OrganizationFleetController extends AbstractController
 
     /**
      * @Route("/fleet/orga-fleets/{organization}/admins", name="orga_fleets_admins", methods={"GET"}, options={"expose":true})
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      */
     public function orgaFleetsAdmins(string $organization): Response
     {

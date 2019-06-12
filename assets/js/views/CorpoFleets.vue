@@ -14,10 +14,10 @@
                             variant="outline-primary"
                             @click="menu = 'fleet'"
                         >
-                            <b-dropdown-item :active="organization.organizationSid == citizenOrga.organization.organizationSid" v-for="citizenOrga in citizen.organizations" :key="citizenOrga.organization.organizationSid" @click="changeSelectedOrga(citizenOrga)">{{ citizenOrga.organization.name }}</b-dropdown-item>
+                            <b-dropdown-item :active="organization.organizationSid == citizenOrga.organization.organizationSid" v-for="citizenOrga in citizen.organizations" :key="citizenOrga.organization.organizationSid" @click="changeSelectedOrga(citizenOrga.organization)">{{ citizenOrga.organization.name }}</b-dropdown-item>
                             <b-dropdown-item v-if="citizen.countRedactedOrganizations > 0" disabled>+{{ citizen.countRedactedOrganizations }} redacted organizations</b-dropdown-item>
                         </b-dropdown>
-                        <b-button v-else id="select-orga" class="nav-item" variant="primary">{{ organization.name ? organization.name : 'No selected orga' }}</b-button>
+                        <b-button v-else id="select-orga" class="js-select-orga nav-item" :variant="menu == 'fleet' ? 'primary' : 'outline-primary'" @click="menu = 'fleet'">{{ organization.name ? organization.name : 'No selected orga' }}</b-button>
                         <b-button v-if="isAdmin" class="nav-item ml-3" :variant="menu == 'admin_panel' ? 'primary' : 'outline-primary'" @click="menu = 'admin_panel'">Admin panel</b-button>
                     </ul>
                 </nav>
@@ -34,11 +34,12 @@
                             </div>
                         </b-col>
                         <b-col col class="mb-3 text-right" v-if="!notEnoughRightsMessage && citizen != null && citizenOrgaInfo != null">
-                            <b-dropdown variant="primary">
+                            <b-dropdown variant="primary" class="mb-2">
                                 <template slot="button-content"><i class="fas fa-cloud-download-alt"></i> Export fleet</template>
                                 <b-dropdown-item download :disabled="selectedSid == null || shipFamilies.length == 0" :href="'/api/create-organization-fleet-file/'+selectedSid" ><i class="fas fa-file-code"></i> Export <strong>{{ selectedSid != null ? orgaFullname : 'N/A' }}</strong> fleet (.json)</b-dropdown-item>
                                 <b-dropdown-item download :disabled="selectedSid == null || shipFamilies.length == 0" :href="'/api/export-orga-fleet/'+selectedSid"><i class="fas fa-file-csv"></i> Export <strong>{{ selectedSid != null ? orgaFullname : 'N/A' }}</strong> fleet (.csv)</b-dropdown-item>
                             </b-dropdown>
+                            <!--<p><b>{{ orgaStats.countUploadedFleets }}</b> uploaded fleets for <b>{{ orgaStats.totalCitizen }}</b> members</p>-->
                         </b-col>
                     </b-row>
                     <b-row class="mb-3" v-if="!notEnoughRightsMessage && sid != null && ((citizen != null && citizenOrgaInfo != null) || (organization !== null && organization.publicChoice === 'public'))">
@@ -99,9 +100,9 @@
                 <b-card v-if="menu == 'admin_panel'">
                     <b-alert variant="danger" :show="fleetPolicyErrors" v-html="fleetPolicyErrorMessages"></b-alert>
                     <b-form-group :label="'Fleet policy of '+organization.name">
-                        <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="private">Members only</b-form-radio>
-                        <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="admin">Admin only</b-form-radio>
-                        <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="public">Public</b-form-radio>
+                        <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="private">Members only <i class="fas fa-info-circle" v-b-tooltip.hover title="Only the orga's members can see the orga's fleet."></i></b-form-radio>
+                        <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="admin">Admin only <i class="fas fa-info-circle" v-b-tooltip.hover title="Only the highest ranks (admins) of the orga can see the orga's fleet."></i></b-form-radio>
+                        <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="public">Public <i class="fas fa-info-circle" v-b-tooltip.hover title="Everyone can see the orga's fleet."></i></b-form-radio>
                     </b-form-group>
                 </b-card>
             </b-col>
@@ -143,6 +144,7 @@
             return {
                 menu: MENU_FLEET,
                 organization: null,
+                orgaStats: {},
                 orgaPublicChoice: null,
                 fleetPolicyErrors: false,
                 fleetPolicyErrorMessages: null,
@@ -294,7 +296,7 @@
             },
             changeSelectedOrga(orga) {
                 this.menu = MENU_FLEET;
-                this.selectSid(orga.organization.organizationSid);
+                this.selectSid(orga.organizationSid);
             },
             savePreferences() {
                 this.savingPreferences = true;
@@ -336,6 +338,19 @@
                         }
                         console.error(err);
                     });
+                    // axios.get(`/api/orga-stats/${this.sid}`).then(response => {
+                    //     this.orgaStats = response.data;
+                    // }).catch(err => {
+                    //     if (err.response.status === 401) {
+                    //         // not connected
+                    //         return;
+                    //     }
+                    //     if (err.response.status === 404) {
+                    //         // not exist
+                    //         return;
+                    //     }
+                    //     console.error(err);
+                    // });
                     return;
                 }
                 for (let citizenOrga of this.citizen.organizations) {

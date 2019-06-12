@@ -9,3 +9,8 @@ App\Entity\Organization:
         organizationSid: 'gardiens'
         name: 'Les Gardiens'
         publicChoice: 'public'
+    orga_pulsar42:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("7d29f1d8-05e0-40e0-8874-fab399de5867"))>']
+        organizationSid: 'pulsar42'
+        name: 'Pulsar42'
+        publicChoice: 'admin'

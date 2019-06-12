@@ -27,7 +27,7 @@ class ApiOrganizationInfosProvider implements OrganizationInfosProviderInterface
 
     public function retrieveInfos(SpectrumIdentification $sid): OrganizationInfos
     {
-        return $this->cache->get('organization_info_'.$sid, function (CacheItem $cacheItem) use ($sid) {
+        return $this->cache->get('organization_info_'.$sid->getSid(), function (CacheItem $cacheItem) use ($sid) {
             $cacheItem->tag(['organization_infos']);
             $cacheItem->expiresAfter(new \DateInterval('P7D'));
 

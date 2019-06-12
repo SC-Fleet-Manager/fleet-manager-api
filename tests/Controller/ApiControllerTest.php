@@ -122,7 +122,7 @@ class ApiControllerTest extends WebTestCase
 
         $this->assertSame(400, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame('no_handle', $json['error']);
+        $this->assertSame('invalid_form', $json['error']);
     }
 
     /**
@@ -398,68 +398,6 @@ class ApiControllerTest extends WebTestCase
      * @group functional
      * @group api
      */
-    public function testCreateOrgaFleetFile(): void
-    {
-        $this->logIn($this->user);
-        $this->client->xmlHttpRequest('GET', '/api/create-organization-fleet-file/flk', [], [], [
-            'CONTENT_TYPE' => 'application/json',
-        ]);
-        /** @var BinaryFileResponse $response */
-        $response = $this->client->getResponse();
-        $this->assertSame('application/json', $response->headers->get('Content-Type'));
-        $this->assertSame('attachment; filename=organization_fleet.json', $response->headers->get('Content-Disposition'));
-    }
-
-    /**
-     * @group functional
-     * @group api
-     */
-    public function testCreateOrgaFleetFileNotAuth(): void
-    {
-        $this->client->xmlHttpRequest('GET', '/api/create-organization-fleet-file/flk', [], [], [
-            'CONTENT_TYPE' => 'application/json',
-        ]);
-
-        $this->assertSame(401, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame('no_auth', $json['error']);
-    }
-
-    /**
-     * @group functional
-     * @group api
-     */
-    public function testExportOrgaFleet(): void
-    {
-        $this->logIn($this->user);
-        $this->client->xmlHttpRequest('GET', '/api/export-orga-fleet/flk', [], [], [
-            'CONTENT_TYPE' => 'application/json',
-        ]);
-        /** @var BinaryFileResponse $response */
-        $response = $this->client->getResponse();
-        $this->assertSame('application/csv', $response->headers->get('Content-Type'));
-        $this->assertSame('attachment; filename=export_flk.csv', $response->headers->get('Content-Disposition'));
-    }
-
-    /**
-     * @group functional
-     * @group api
-     */
-    public function testExportOrgaFleetNotAuth(): void
-    {
-        $this->client->xmlHttpRequest('GET', '/api/export-orga-fleet/flk', [], [], [
-            'CONTENT_TYPE' => 'application/json',
-        ]);
-
-        $this->assertSame(401, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame('no_auth', $json['error']);
-    }
-
-    /**
-     * @group functional
-     * @group api
-     */
     public function testNumbers(): void
     {
         $this->client->xmlHttpRequest('GET', '/api/numbers', [], [], [
@@ -469,9 +407,9 @@ class ApiControllerTest extends WebTestCase
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArraySubset([
-            'organizations' => 2,
-            'users' => 6,
-            'ships' => 8,
+            'organizations' => 3,
+            'users' => 10,
+            'ships' => 10,
         ], $json);
     }
 }
