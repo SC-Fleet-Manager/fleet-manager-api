@@ -39,6 +39,14 @@ class Fleet
     /**
      * @var \DateTimeImmutable
      *
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     * @Groups({"my-fleet"})
+     */
+    private $refreshDate;
+
+    /**
+     * @var \DateTimeImmutable
+     *
      * @ORM\Column(type="datetime_immutable")
      * @Groups({"my-fleet"})
      */
@@ -48,7 +56,6 @@ class Fleet
      * @var iterable|Ship[]
      *
      * @ORM\OneToMany(targetEntity="App\Entity\Ship", mappedBy="fleet", fetch="EAGER", cascade={"all"})
-     * @ORM\JoinColumn(onDelete="CASCADE")
      * @Groups({"my-fleet", "public-fleet"})
      */
     private $ships;
@@ -101,6 +108,18 @@ class Fleet
     public function setUploadDate(\DateTimeImmutable $uploadDate): self
     {
         $this->uploadDate = $uploadDate;
+
+        return $this;
+    }
+
+    public function getRefreshDate(): ?\DateTimeImmutable
+    {
+        return $this->refreshDate;
+    }
+
+    public function setRefreshDate(?\DateTimeImmutable $refreshDate): self
+    {
+        $this->refreshDate = $refreshDate;
 
         return $this;
     }

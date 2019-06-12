@@ -50,11 +50,12 @@ class FleetUploadHandler
 
         $fleet = $this->createNewFleet($fleetData, $lastVersion);
 
-        if ($lastVersion !== null && !$this->hasDiff($fleet, $lastVersion)) {
-            $lastVersion->setUploadDate(new \DateTimeImmutable());
-        } else {
+        if ($lastVersion === null || $this->hasDiff($fleet, $lastVersion)) {
             $fleet->setOwner($citizen);
+            $fleet->setRefreshDate(new \DateTimeImmutable());
             $this->entityManager->persist($fleet);
+        } else {
+            $lastVersion->setRefreshDate(new \DateTimeImmutable());
         }
 
         $this->entityManager->flush();
