@@ -97,17 +97,17 @@
                             Refresh my RSI Profile</b-button>
 
                         <b-form-group label="Personal fleet policy" class="col-4">
-                            <b-form-radio v-model="publicChoice" @change="savePublicChoice" :disabled="savingPreferences" name="public-choice" value="private">Private</b-form-radio>
-                            <b-form-radio v-model="publicChoice" @change="savePublicChoice" :disabled="savingPreferences" name="public-choice" value="orga">Organizations only</b-form-radio>
-                            <b-form-radio v-model="publicChoice" @change="savePublicChoice" :disabled="savingPreferences" name="public-choice" value="public">Public</b-form-radio>
+                            <b-form-radio v-model="publicChoice" @change="savePublicChoice" :disabled="savingPreferences" name="public-choice" value="private">Private <i class="fas fa-info-circle" v-b-tooltip.hover title="Only you see your fleet and your name is hidden on your orgas' fleets."></i></b-form-radio>
+                            <b-form-radio v-model="publicChoice" @change="savePublicChoice" :disabled="savingPreferences" name="public-choice" value="orga">Organizations only <i class="fas fa-info-circle" v-b-tooltip.hover title="Allows you to fine-grained set your visibility on each orgas."></i></b-form-radio>
+                            <b-form-radio v-model="publicChoice" @change="savePublicChoice" :disabled="savingPreferences" name="public-choice" value="public">Public <i class="fas fa-info-circle" v-b-tooltip.hover title="Everyone can see your fleet and your name is visible in your orgas' fleets."></i></b-form-radio>
                         </b-form-group>
                         <div v-if="publicChoice === 'orga'" class="mb-3">
                             <div v-for="orga in citizen.organizations" :key="orga.organization.organizationSid">
                                 <div class="d-inline-block" style="min-width:150px;">{{ orga.organization.name }}</div>
                                 <div class="d-inline-block">
-                                    <b-form-radio class="d-inline-block" v-model="orgaVisibilityChoices[orga.organization.organizationSid]" @change="saveOrgaVisibilityChoices($event, orga.organization)" :disabled="savingPreferences" name="orga-visibility-choice" value="private">Private</b-form-radio>
-                                    <b-form-radio class="d-inline-block" v-model="orgaVisibilityChoices[orga.organization.organizationSid]" @change="saveOrgaVisibilityChoices($event, orga.organization)" :disabled="savingPreferences" name="orga-visibility-choice" value="admin">Admin only</b-form-radio>
-                                    <b-form-radio class="d-inline-block" v-model="orgaVisibilityChoices[orga.organization.organizationSid]" @change="saveOrgaVisibilityChoices($event, orga.organization)" :disabled="savingPreferences" name="orga-visibility-choice" value="orga">Orga only</b-form-radio>
+                                    <b-form-radio class="d-inline-block mr-3" v-model="orgaVisibilityChoices[orga.organization.organizationSid]" @change="saveOrgaVisibilityChoices($event, orga.organization)" :disabled="savingPreferences" name="orga-visibility-choice" value="private">Private <i class="fas fa-info-circle" v-b-tooltip.hover title="Your fleet is not visible for these orga's members and your name is not visible on this orga's fleet."></i></b-form-radio>
+                                    <b-form-radio class="d-inline-block mr-3" v-model="orgaVisibilityChoices[orga.organization.organizationSid]" @change="saveOrgaVisibilityChoices($event, orga.organization)" :disabled="savingPreferences" name="orga-visibility-choice" value="admin">Admin only <i class="fas fa-info-circle" v-b-tooltip.hover title="Only the highest ranks (admins) of this orga can see your fleet and your name in this orga's fleet."></i></b-form-radio>
+                                    <b-form-radio class="d-inline-block" v-model="orgaVisibilityChoices[orga.organization.organizationSid]" @change="saveOrgaVisibilityChoices($event, orga.organization)" :disabled="savingPreferences" name="orga-visibility-choice" value="orga">Orga only <i class="fas fa-info-circle" v-b-tooltip.hover title="You and these orga's members only can see your fleet and your name is visible on this orga's fleet."></i></b-form-radio>
                                 </div>
                             </div>
                         </div>
