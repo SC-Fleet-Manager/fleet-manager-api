@@ -363,6 +363,16 @@
             refreshProfile() {
                 axios.get('/api/profile/').then(response => {
                     this.citizen = response.data.citizen;
+                    this.citizen.organizations.sort((orga1, orga2) => {
+                        if (this.citizen.mainOrga) {
+                            if (this.citizen.mainOrga.id === orga1.id) {
+                                return -1;
+                            } else if (this.citizen.mainOrga.id === orga2.id) {
+                                return 1;
+                            }
+                        }
+                        return orga1.organization.name > orga2.organization.name ? 1 : -1;
+                    });
                     this.refreshOrganization();
                 }).catch(err => {
                     if (err.response.status === 401) {
