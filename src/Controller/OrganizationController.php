@@ -115,6 +115,15 @@ class OrganizationController extends AbstractController
             $citizen = $user->getCitizen();
         }
 
+        // orga public + not in this orga ? we can't filter by citizens
+        if ($citizen !== null) {
+            if (!$citizen->hasOrganization($organizationSid)) {
+                return $this->json([]);
+            }
+        } else {
+            return $this->json([]);
+        }
+
         $citizens = $this->citizenRepository->findVisiblesByOrganization($organizationSid, $citizen);
 
         // format for vue-select data

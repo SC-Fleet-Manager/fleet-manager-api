@@ -14,6 +14,7 @@ use App\Service\ShipInfosProviderInterface;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -157,6 +158,20 @@ class OrganizationFleetController extends AbstractController
             return $response;
         }
 
+        // If viewer is not in this orga, he doesn't see the users
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $citizen = $user->getCitizen();
+        if ($citizen === null) {
+            return new JsonResponse([
+                'error' => 'no_citizen_created',
+                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
+            ], 400);
+        }
+        if (!$citizen->hasOrganization($organization)) {
+            return new JsonResponse([]);
+        }
+
         $admins = $this->citizenRepository->findAdminByOrganization($organization);
 
         return $this->json($admins, 200, [], ['groups' => 'orga_fleet_admin']);
@@ -214,6 +229,34 @@ class OrganizationFleetController extends AbstractController
             return $response;
         }
 
+        // If viewer is not in this orga, he doesn't see the users
+        if ($this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+            /** @var User $user */
+            $user = $this->security->getUser();
+            $citizen = $user->getCitizen();
+            if ($citizen === null) {
+                return new JsonResponse([
+                    'error' => 'no_citizen_created',
+                    'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
+                ], 400);
+            }
+            if (!$citizen->hasOrganization($organization)) {
+                return new JsonResponse([
+                    'users' => [],
+                    'page' => 1,
+                    'lastPage' => 1,
+                    'total' => 0,
+                ]);
+            }
+        } else {
+            return new JsonResponse([
+                'users' => [],
+                'page' => 1,
+                'lastPage' => 1,
+                'total' => 0,
+            ]);
+        }
+
         $shipFamilyFilter = $this->getShipFamilyFilter($request, $organization);
 
         $shipName = $this->shipInfosProvider->transformProviderToHangar($providerShipName);
@@ -265,6 +308,28 @@ class OrganizationFleetController extends AbstractController
             return $response;
         }
 
+        // If viewer is not in this orga, he doesn't see the users
+        if ($this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+            /** @var User $user */
+            $user = $this->security->getUser();
+            $citizen = $user->getCitizen();
+            if ($citizen === null) {
+                return new JsonResponse([
+                    'error' => 'no_citizen_created',
+                    'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
+                ], 400);
+            }
+            if (!$citizen->hasOrganization($organization)) {
+                return new JsonResponse([
+                    'hiddenUsers' => 0,
+                ]);
+            }
+        } else {
+            return new JsonResponse([
+                'hiddenUsers' => 0,
+            ]);
+        }
+
         $shipName = $this->shipInfosProvider->transformProviderToHangar($providerShipName);
         $shipInfo = $this->shipInfosProvider->getShipByName($providerShipName);
         if ($shipInfo === null) {
@@ -303,6 +368,16 @@ class OrganizationFleetController extends AbstractController
             $user = $this->security->getUser();
             $loggedCitizen = $user->getCitizen();
         }
+
+        // orga public + not in this orga ? we can't filter by citizens
+        if ($loggedCitizen !== null) {
+            if (!$loggedCitizen->hasOrganization($organizationSid)) {
+                $shipFamilyFilter->citizenIds = [];
+            }
+        } else {
+            $shipFamilyFilter->citizenIds = [];
+        }
+
         $visibleCitizens = $this->citizenRepository->findVisiblesByOrganization($organizationSid, $loggedCitizen);
         $shipFamilyFilter->citizenIds = array_filter($shipFamilyFilter->citizenIds, static function (string $citizenId) use (&$visibleCitizens): bool {
             foreach ($visibleCitizens as $visibleCitizen) {

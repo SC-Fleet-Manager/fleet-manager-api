@@ -46,7 +46,7 @@
                         <b-col sm="6" md="6" lg="4" xl="2">
                             <v-select id="filters_input_ship_name" :reduce="item => item.id" v-model="filterShipName" :options="filterOptionsShips" multiple @input="refreshOrganizationFleet(true)" placeholder="Filter by ship name"></v-select>
                         </b-col>
-                        <b-col sm="6" md="6" lg="4" xl="2">
+                        <b-col sm="6" md="6" lg="4" xl="2" v-if="isInSelectedOrganization">
                             <v-select id="filters_input_citizen_id" :reduce="item => item.id" v-model="filterCitizenId" :options="filterOptionsCitizens" multiple @input="refreshOrganizationFleet(true)" placeholder="Filter by citizen"></v-select>
                         </b-col>
                         <b-col sm="6" md="6" lg="4" xl="2">
@@ -192,6 +192,17 @@
             next();
         },
         computed: {
+            isInSelectedOrganization() {
+                if (this.citizen === null) {
+                    return false;
+                }
+                for (let orga of this.citizen.organizations) {
+                    if (orga.organization.organizationSid === this.selectedSid) {
+                        return true;
+                    }
+                }
+                return false;
+            },
             citizenOrgaInfo() {
                 if (this.citizen === null) {
                     return null;
@@ -277,6 +288,10 @@
                 this.refreshAdmins();
             },
             selectedShipVariants(shipVariants) {
+                if (this.citizen === null) {
+                    // public orga : we don't display the members
+                    return;
+                }
                 for (let ship of shipVariants) {
                     this.loadShipVariantUsers({ ship, page: 1 });
                 }
