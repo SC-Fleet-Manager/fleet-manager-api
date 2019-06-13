@@ -33,7 +33,7 @@
                                 <p v-if="citizen != null && citizenOrgaInfo != null"><strong>{{ citizenOrgaInfo.rankName }}</strong></p>
                             </div>
                         </b-col>
-                        <b-col col class="mb-3 text-right" v-if="!notEnoughRightsMessage && citizen != null && citizenOrgaInfo != null">
+                        <b-col col class="mb-3 text-right" v-if="!loadingOrgaFleet && !notEnoughRightsMessage && citizenOrgaInfo != null">
                             <b-dropdown variant="primary" class="mb-2">
                                 <template slot="button-content"><i class="fas fa-cloud-download-alt"></i> Export fleet</template>
                                 <b-dropdown-item download :disabled="selectedSid == null || shipFamilies.length == 0" :href="'/api/create-organization-fleet-file/'+selectedSid" ><i class="fas fa-file-code"></i> Export <strong>{{ selectedSid != null ? orgaFullname : 'N/A' }}</strong> fleet (.json)</b-dropdown-item>
