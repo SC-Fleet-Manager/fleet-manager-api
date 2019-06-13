@@ -89,6 +89,32 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
             $shipInfos[$shipInfo->id] = $shipInfo;
         }
 
+        $shipInfos = array_merge($shipInfos, $this->getSpecialCases());
+
+        return $shipInfos;
+    }
+
+    private function getSpecialCases(): array
+    {
+        $shipInfos = [];
+
+        // add Greycat PTV
+        $shipInfo = new ShipInfo();
+        $shipInfo->id = '0';
+        $shipInfo->productionStatus = ShipInfo::FLIGHT_READY;
+        $shipInfo->minCrew = 1;
+        $shipInfo->maxCrew = 2;
+        $shipInfo->name = 'Greycat PTV';
+        $shipInfo->size = ShipInfo::SIZE_VEHICLE;
+        $shipInfo->pledgeUrl = self::BASE_URL.'/pledge/Standalone-Ships/Greycat-PTV-Buggy';
+        $shipInfo->manufacturerName = 'Greycat Industrial';
+        $shipInfo->manufacturerCode = 'GRIN'; // id=84
+        $shipInfo->chassisId = '0';
+        $shipInfo->chassisName = static::transformChassisIdToFamilyName($shipInfo->chassisId);
+        $shipInfo->mediaUrl = self::BASE_URL.'/media/5rg8z7erquf0wr/source/Buggy.jpg';
+        $shipInfo->mediaThumbUrl = self::BASE_URL.'/media/5rg8z7erquf0wr/store_small/Buggy.jpg';
+        $shipInfos[$shipInfo->id] = $shipInfo;
+
         return $shipInfos;
     }
 
@@ -125,6 +151,7 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
     public static function transformChassisIdToFamilyName(string $chassisId): string
     {
         switch ($chassisId) {
+            case '0': return 'Greycat';
             case '1': return 'Aurora';
             case '2': return '300';
             case '3': return 'Hornet';

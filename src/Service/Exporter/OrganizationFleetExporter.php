@@ -27,7 +27,7 @@ class OrganizationFleetExporter
             if ($lastFleet === null) {
                 continue;
             }
-            $lastFleetRow[$citizenHandle] = $lastFleet->getUploadDate()->format('Y-m-d H:i');
+            $lastFleetRow[$citizenHandle] = $lastFleet->getUploadDate()->format('Y-m-d');
             foreach ($lastFleet->getShips() as $ship) {
                 if (!isset($ships[$ship->getName()])) {
                     $ships[$ship->getName()] = [$citizenHandle => 1];
