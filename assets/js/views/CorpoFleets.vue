@@ -59,14 +59,14 @@
                     <b-row>
                         <!-- TODO : VERY UGLY THIS SHIT !! -->
                         <template v-if="notEnoughRightsMessage">
-                            <b-col>
+                            <b-col sm="12" md="12" lg="12" xl="12">
                                 <b-alert show variant="danger" v-html="notEnoughRightsMessage"></b-alert>
                             </b-col>
                         </template>
                         <template v-else>
                             <template v-if="!loadingOrgaFleet && ((citizen == null && (organization === null || organization.publicChoice !== 'public'))
                                             || (citizen != null && citizenOrgaInfo == null && (organization == null || organization.publicChoice !== 'public')))">
-                                <b-col>
+                                <b-col sm="12" md="12" lg="12" xl="12">
                                     <b-alert show variant="danger">Sorry, this organization's fleet does not exist or is private. Try to <a href="/">login</a> to see it.</b-alert>
                                 </b-col>
                             </template>
