@@ -64,8 +64,7 @@
                             </b-col>
                         </template>
                         <template v-else>
-                            <template v-if="!loadingOrgaFleet && ((citizen == null && (organization === null || organization.publicChoice !== 'public'))
-                                            || (citizen != null && citizenOrgaInfo == null && (organization == null || organization.publicChoice !== 'public')))">
+                            <template v-if="!loadingOrgaFleet && notFoundError">
                                 <b-col sm="12" md="12" lg="12" xl="12">
                                     <b-alert show variant="danger">Sorry, this organization's fleet does not exist or is private. Try to <a href="/">login</a> to see it.</b-alert>
                                 </b-col>
@@ -149,6 +148,7 @@
                 fleetPolicyErrors: false,
                 fleetPolicyErrorMessages: null,
                 notEnoughRightsMessage: null,
+                notFoundError: false,
                 savingPreferences: false,
                 citizen: null,
                 orgaFleetAdmins: [],
@@ -412,6 +412,7 @@
                 this.shipFamilies = [];
 
                 this.loadingOrgaFleet = true;
+                this.notFoundError = false;
                 axios.get(`/api/fleet/orga-fleets/${this.selectedSid}`, {
                     params: {
                         'filters[shipNames]': this.filterShipName,
@@ -423,6 +424,7 @@
                     this.selectShipFamily({index: null, shipFamily: null});
                     this.shipFamilies = response.data;
                 }).catch(err => {
+                    this.notFoundError = true;
                     if (err.response.status === 401) {
                         // not connected
                         return;

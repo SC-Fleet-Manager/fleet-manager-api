@@ -241,6 +241,7 @@ class SpaControllerTest extends PantherTestCase
     /**
      * @group end2end
      * @group spa
+     * @group spa_orgas
      */
     public function testOrganizationFleets(): void
     {
