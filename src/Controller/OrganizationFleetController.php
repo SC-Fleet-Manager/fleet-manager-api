@@ -92,6 +92,21 @@ class OrganizationFleetController extends AbstractController
             return $response;
         }
 
+        // If viewer is not in this orga, he doesn't see the users
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $citizen = $user->getCitizen();
+        if ($citizen === null) {
+            return new JsonResponse([
+                'error' => 'no_citizen_created',
+            ], 400);
+        }
+        if (!$citizen->hasOrganization($organization)) {
+            return new JsonResponse([
+                'error' => 'not_in_orga',
+            ], 404);
+        }
+
         $file = $this->organizationFleetGenerator->generateFleetFile(new SpectrumIdentification($organization));
 
         $fileResponse = $this->file($file, 'organization_fleet.json');
@@ -109,6 +124,21 @@ class OrganizationFleetController extends AbstractController
     {
         if (null !== $response = $this->fleetOrganizationGuard->checkAccessibleOrganization($organization)) {
             return $response;
+        }
+
+        // If viewer is not in this orga, he doesn't see the users
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $citizen = $user->getCitizen();
+        if ($citizen === null) {
+            return new JsonResponse([
+                'error' => 'no_citizen_created',
+            ], 400);
+        }
+        if (!$citizen->hasOrganization($organization)) {
+            return new JsonResponse([
+                'error' => 'not_in_orga',
+            ], 404);
         }
 
         $data = $this->orgaFleetExporter->exportOrgaFleet($organization);

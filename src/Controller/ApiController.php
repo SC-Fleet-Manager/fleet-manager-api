@@ -17,6 +17,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -140,13 +141,17 @@ class ApiController extends AbstractController
         $user = $this->security->getUser();
         $citizen = $user->getCitizen();
         if ($citizen === null) {
-            throw $this->createNotFoundException(sprintf('The user "%s" has no citizens.', $user->getId()));
+            return new JsonResponse([
+                'error' => 'no_citizen_created',
+            ], 400);
         }
 
         try {
             $file = $this->citizenFleetGenerator->generateFleetFile($citizen->getNumber());
         } catch (\Exception $e) {
-            throw $this->createNotFoundException('The fleet file could not be generated.');
+            return new JsonResponse([
+                'error' => 'file_not_generated',
+            ], 400);
         }
 
         $fileResponse = $this->file($file, 'citizen_fleet.json');
