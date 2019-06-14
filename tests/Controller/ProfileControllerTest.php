@@ -30,8 +30,8 @@ class ProfileControllerTest extends WebTestCase
         $this->client->xmlHttpRequest('GET', '/api/profile/', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
 
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArraySubset([
             'id' => 'd92e229e-e743-4583-905a-e02c57eacfe0',
@@ -45,8 +45,31 @@ class ProfileControllerTest extends WebTestCase
                 'actualHandle' => [
                     'handle' => 'ionni',
                 ],
-                'organisations' => ['flk'],
+                'mainOrga' => [
+                    'id' => '41ade55e-6d32-419c-9e48-169fd6c61f34',
+                    'organization' => [
+                        'organizationSid' => 'flk',
+                        'name' => 'FallKrom',
+                        'avatarUrl' => null,
+                    ],
+                    'rank' => 1,
+                    'rankName' => 'Citoyen',
+                ],
+                'organizations' => [
+                    [
+                        'id' => '41ade55e-6d32-419c-9e48-169fd6c61f34',
+                        'organization' => [
+                            'organizationSid' => 'flk',
+                            'name' => 'FallKrom',
+                            'avatarUrl' => null,
+                        ],
+                        'rank' => 1,
+                        'rankName' => 'Citoyen',
+                    ],
+                ],
                 'bio' => 'This is my bio',
+                'countRedactedOrganizations' => 0,
+                'redactedMainOrga' => false,
             ],
             'publicChoice' => 'public',
             'createdAt' => '2019-04-02T11:22:33+00:00',
@@ -64,6 +87,7 @@ class ProfileControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
+        $this->assertSame(401, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('no_auth', $json['error']);
     }
@@ -74,12 +98,36 @@ class ProfileControllerTest extends WebTestCase
      */
     public function testRefreshRsiProfile(): void
     {
-        $this->logIn($this->user);
+        /** @var User $user */
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'needRefresh']);
+        $this->logIn($user);
+
+        $this->assertNull($user->getCitizen()->getMainOrga(), 'Main orga of user need_refresh must be null before refresh.');
+        $this->assertCount(0, $user->getCitizen()->getOrganizations(), 'User need_refresh must have no orgas before refresh.');
+
         $this->client->xmlHttpRequest('POST', '/api/profile/refresh-rsi-profile', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
 
         $this->assertSame(204, $this->client->getResponse()->getStatusCode());
+
+        $this->assertSame('80db0703-dd43-49a0-93d3-89947b9ab321', $user->getCitizen()->getMainOrga()->getOrganization()->getId()->toString());
+        $this->assertSame('flk', $user->getCitizen()->getMainOrga()->getOrganization()->getOrganizationSid());
+
+        $this->assertCount(2, $user->getCitizen()->getOrganizations());
+        $orga1 = $user->getCitizen()->getOrganizations()[0];
+        $this->assertSame('80db0703-dd43-49a0-93d3-89947b9ab321', $orga1->getOrganization()->getId()->toString());
+        $this->assertSame('flk', $orga1->getOrganization()->getOrganizationSid());
+        $this->assertSame('FallKrom', $orga1->getOrganization()->getName());
+        $this->assertSame(1, $orga1->getRank());
+        $this->assertSame('Newbie', $orga1->getRankName());
+
+        $orga2 = $user->getCitizen()->getOrganizations()[1];
+        $this->assertSame('901ccbf8-fa63-4b07-81aa-f10f60954715', $orga2->getOrganization()->getId()->toString());
+        $this->assertSame('gardiens', $orga2->getOrganization()->getOrganizationSid());
+        $this->assertSame('Les Gardiens', $orga2->getOrganization()->getName());
+        $this->assertSame(1, $orga2->getRank());
+        $this->assertSame('Noob', $orga2->getRankName());
     }
 
     /**
@@ -98,6 +146,7 @@ class ProfileControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
+        $this->assertSame(400, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('too_many_refresh', $json['error']);
     }
@@ -114,6 +163,7 @@ class ProfileControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
+        $this->assertSame(400, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('no_citizen', $json['error']);
     }
@@ -128,6 +178,7 @@ class ProfileControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
+        $this->assertSame(401, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('no_auth', $json['error']);
     }
@@ -139,11 +190,11 @@ class ProfileControllerTest extends WebTestCase
     public function testSavePreferences(): void
     {
         $this->logIn($this->user);
-        $this->client->xmlHttpRequest('POST', '/api/profile/save-preferences', [
-            'publicChoice' => 'private',
-        ], [], [
+        $this->client->xmlHttpRequest('POST', '/api/profile/save-preferences', [], [], [
             'CONTENT_TYPE' => 'application/json',
-        ]);
+        ], json_encode([
+            'publicChoice' => 'private',
+        ]));
         $this->assertSame(204, $this->client->getResponse()->getStatusCode());
     }
 
@@ -202,8 +253,8 @@ class ProfileControllerTest extends WebTestCase
         ], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
-        $this->assertSame(400, $this->client->getResponse()->getStatusCode());
 
+        $this->assertSame(400, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('invalid_form', $json['error']);
     }
@@ -299,8 +350,8 @@ class ProfileControllerTest extends WebTestCase
         ], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
-        $this->assertSame(400, $this->client->getResponse()->getStatusCode());
 
+        $this->assertSame(400, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('invalid_form', $json['error']);
     }

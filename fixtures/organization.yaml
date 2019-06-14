@@ -4,8 +4,13 @@ App\Entity\Organization:
         organizationSid: 'flk'
         name: 'FallKrom'
         publicChoice: 'private'
-    gardiens_flk:
+    orga_gardiens:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("901ccbf8-fa63-4b07-81aa-f10f60954715"))>']
         organizationSid: 'gardiens'
         name: 'Les Gardiens'
         publicChoice: 'public'
+    orga_pulsar42:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("7d29f1d8-05e0-40e0-8874-fab399de5867"))>']
+        organizationSid: 'pulsar42'
+        name: 'Pulsar42'
+        publicChoice: 'admin'

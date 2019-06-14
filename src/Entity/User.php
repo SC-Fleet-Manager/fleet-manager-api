@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -19,6 +18,11 @@ class User implements UserInterface
     public const PUBLIC_CHOICE_PRIVATE = 'private';
     public const PUBLIC_CHOICE_ORGANIZATION = 'orga';
     public const PUBLIC_CHOICE_PUBLIC = 'public';
+    public const PUBLIC_CHOICES = [
+        self::PUBLIC_CHOICE_PRIVATE,
+        self::PUBLIC_CHOICE_ORGANIZATION,
+        self::PUBLIC_CHOICE_PUBLIC,
+    ];
 
     /**
      * @var UuidInterface
@@ -43,6 +47,13 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255, unique=false)
      */
     private $discordId;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=15, nullable=true)
+     */
+    private $discordTag;
 
     /**
      * @var string
@@ -94,7 +105,7 @@ class User implements UserInterface
     public function __construct(?UuidInterface $id = null)
     {
         $this->id = $id;
-        $this->publicChoice = self::PUBLIC_CHOICE_PRIVATE;
+        $this->publicChoice = self::PUBLIC_CHOICE_ORGANIZATION;
         $this->createdAt = new \DateTimeImmutable();
     }
 
@@ -154,6 +165,18 @@ class User implements UserInterface
         return $this;
     }
 
+    public function getDiscordTag(): ?string
+    {
+        return $this->discordTag;
+    }
+
+    public function setDiscordTag(?string $discordTag): self
+    {
+        $this->discordTag = $discordTag;
+
+        return $this;
+    }
+
     public function getToken(): ?string
     {
         return $this->token;
@@ -197,11 +220,7 @@ class User implements UserInterface
 
     public function setPublicChoice(string $publicChoice): self
     {
-        if (in_array($publicChoice, [
-            self::PUBLIC_CHOICE_PRIVATE,
-            self::PUBLIC_CHOICE_ORGANIZATION,
-            self::PUBLIC_CHOICE_PUBLIC,
-        ], true)) {
+        if (in_array($publicChoice, self::PUBLIC_CHOICES, true)) {
             $this->publicChoice = $publicChoice;
         }
 

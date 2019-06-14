@@ -6,32 +6,26 @@ use App\Domain\Money;
 use App\Entity\Citizen;
 use App\Entity\Fleet;
 use App\Entity\Ship;
-use App\Event\CitizenRefreshEvent;
 use App\Exception\BadCitizenException;
 use App\Exception\FleetUploadedTooCloseException;
 use App\Exception\InvalidFleetDataException;
-use App\Repository\FleetRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class FleetUploadHandler
 {
-    private $fleetRepository;
     private $entityManager;
     private $citizenInfosProvider;
-    private $eventDispatcher;
+    private $citizenRefresher;
 
     public function __construct(
-        FleetRepository $fleetRepository,
         EntityManagerInterface $entityManager,
         CitizenInfosProviderInterface $citizenInfosProvider,
-        EventDispatcherInterface $eventDispatcher
+        CitizenRefresher $citizenRefresher
     ) {
-        $this->fleetRepository = $fleetRepository;
         $this->entityManager = $entityManager;
         $this->citizenInfosProvider = $citizenInfosProvider;
-        $this->eventDispatcher = $eventDispatcher;
+        $this->citizenRefresher = $citizenRefresher;
     }
 
     public function handle(Citizen $citizen, array $fleetData): void
@@ -45,38 +39,61 @@ class FleetUploadHandler
             throw new BadCitizenException(sprintf('The SC number %s is not equal to %s.', $citizen->getNumber(), $infos->numberSC));
         }
 
-        $citizen->refresh($infos, $this->entityManager);
+        $this->citizenRefresher->refreshCitizen($citizen, $infos);
         $this->entityManager->flush();
 
-        $this->eventDispatcher->dispatch(CitizenRefreshEvent::NAME, new CitizenRefreshEvent($citizen));
-
-        $lastVersion = $this->fleetRepository->getLastVersionFleet($citizen);
+        $lastVersion = $citizen->getLastFleet();
         if ($lastVersion !== null && $lastVersion->isUploadedDateTooClose()) {
             throw new FleetUploadedTooCloseException(
-                sprintf('Last version of the fleet was uploaded on %s', $lastVersion->getUploadDate()->format('Y-m-d H:i')));
+                sprintf('Last version of the fleet was uploaded at %s', $lastVersion->getUploadDate()->format('Y-m-d H:i')));
         }
 
-        $fleet = $this->createNewFleet($citizen, $fleetData, $lastVersion);
-        $this->entityManager->persist($fleet);
+        $fleet = $this->createNewFleet($fleetData, $lastVersion);
+
+        if ($lastVersion === null || $this->hasDiff($fleet, $lastVersion)) {
+            $fleet->setOwner($citizen);
+            $fleet->setRefreshDate(new \DateTimeImmutable());
+            $this->entityManager->persist($fleet);
+        } else {
+            $lastVersion->setRefreshDate(new \DateTimeImmutable());
+        }
+
         $this->entityManager->flush();
     }
 
-    private function createNewFleet(Citizen $citizen, array $fleetData, ?Fleet $lastVersionFleet = null): Fleet
+    private function hasDiff(Fleet $newFleet, Fleet $lastFleet): bool
+    {
+        if (count($newFleet->getShips()) !== count($lastFleet->getShips())) {
+            return true;
+        }
+        $countSameShips = 0;
+        foreach ($newFleet->getShips() as $newShip) {
+            foreach ($lastFleet->getShips() as $lastShip) {
+                if ($newShip->equals($lastShip)) {
+                    ++$countSameShips;
+                    break;
+                }
+            }
+        }
+
+        return $countSameShips !== count($newFleet->getShips());
+    }
+
+    private function createNewFleet(array $fleetData, ?Fleet $lastVersionFleet = null): Fleet
     {
         if (!$this->isFleetDataValid($fleetData)) {
             throw new InvalidFleetDataException('The fleet data is invalid.');
         }
 
         $fleet = new Fleet(Uuid::uuid4());
-        $fleet->setOwner($citizen);
         $fleet->setVersion($lastVersionFleet === null ? 1 : ($lastVersionFleet->getVersion() + 1));
 
         foreach ($fleetData as $shipData) {
             $ship = new Ship(Uuid::uuid4());
             $ship
-                ->setName($shipData['name'])
-                ->setManufacturer($shipData['manufacturer'])
-                ->setInsured($shipData['lti'])
+                ->setName(trim($shipData['name']))
+                ->setManufacturer(trim($shipData['manufacturer']))
+                ->setInsured((bool) $shipData['lti'])
                 ->setCost((new Money((int) preg_replace('/^\$(\d+\.\d+)/', '$1', $shipData['cost'])))->getCost())
                 ->setPledgeDate(\DateTimeImmutable::createFromFormat('F d, Y', $shipData['pledge_date'])->setTime(0, 0))
                 ->setRawData($shipData);

@@ -35,6 +35,7 @@ class ApiControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('d92e229e-e743-4583-905a-e02c57eacfe0', $json['id']);
         $this->assertSame('Ioni', $json['nickname']);
@@ -51,6 +52,7 @@ class ApiControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
+        $this->assertSame(401, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('no_auth', $json['error']);
     }
@@ -76,6 +78,7 @@ class ApiControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArraySubset([
             'numberSC' => ['number' => '123456'],
@@ -102,6 +105,7 @@ class ApiControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
+        $this->assertSame(404, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('not_found_handle', $json['error']);
     }
@@ -116,43 +120,9 @@ class ApiControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
+        $this->assertSame(400, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame('no_handle', $json['error']);
-    }
-
-    /**
-     * @group functional
-     * @group api
-     */
-    public function testMyOrgas(): void
-    {
-        $this->logIn($this->user);
-        $this->client->xmlHttpRequest('GET', '/api/my-orgas', [], [], [
-            'CONTENT_TYPE' => 'application/json',
-        ]);
-
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertArraySubset([
-            [
-                'fullname' => 'FallKrom',
-                'spectrumId' => ['sid' => 'flk'],
-                'avatarUrl' => 'https://robertsspaceindustries.com/media/o0snhh0rt8ncgr/logo/FLK-Logo.png',
-            ],
-        ], $json);
-    }
-
-    /**
-     * @group functional
-     * @group api
-     */
-    public function testMyOrgasNotAuth(): void
-    {
-        $this->client->xmlHttpRequest('GET', '/api/my-orgas', [], [], [
-            'CONTENT_TYPE' => 'application/json',
-        ]);
-
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame('no_auth', $json['error']);
+        $this->assertSame('invalid_form', $json['error']);
     }
 
     /**
@@ -165,6 +135,7 @@ class ApiControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArraySubset([
             'id' => '80db0703-dd43-49a0-93d3-89947b9ab321',
@@ -185,6 +156,7 @@ class ApiControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
+        $this->assertSame(404, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('orga_not_exist', $json['error']);
     }
@@ -201,6 +173,7 @@ class ApiControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArraySubset([
             [
@@ -224,6 +197,7 @@ class ApiControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertEmpty($json);
     }
@@ -240,6 +214,7 @@ class ApiControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
+        $this->assertSame(400, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('no_citizen_created', $json['error']);
     }
@@ -254,6 +229,7 @@ class ApiControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
+        $this->assertSame(401, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('no_auth', $json['error']);
     }
@@ -277,29 +253,29 @@ class ApiControllerTest extends WebTestCase
     public function testValidExport(): void
     {
         $jsonContent = <<<EOT
-[
-  {
-    "manufacturer": "Drake",
-    "name": "Cutlass Black",
-    "lti": true,
-    "warbond": true,
-    "package_id": "15109407",
-    "pledge": "Package - Origin 100i Starter Game Package Warbond",
-    "pledge_date": "April 28, 2018",
-    "cost": "$110.00 USD"
-  },
-  {
-    "manufacturer": "Tumbril",
-    "name": "Cyclone",
-    "lti": false,
-    "warbond": false,
-    "package_id": "15186605",
-    "pledge": "Standalone Ship - Tumbril Cyclone ",
-    "pledge_date": "May 15, 2018",
-    "cost": "$55.00 USD"
-  }
-]
-EOT;
+            [
+              {
+                "manufacturer": "Drake",
+                "name": "Cutlass Black",
+                "lti": true,
+                "warbond": true,
+                "package_id": "15109407",
+                "pledge": "Package - Origin 100i Starter Game Package Warbond",
+                "pledge_date": "April 28, 2018",
+                "cost": "$110.00 USD"
+              },
+              {
+                "manufacturer": "Tumbril",
+                "name": "Cyclone",
+                "lti": false,
+                "warbond": false,
+                "package_id": "15186605",
+                "pledge": "Standalone Ship - Tumbril Cyclone ",
+                "pledge_date": "May 15, 2018",
+                "cost": "$55.00 USD"
+              }
+            ]
+        EOT;
 
         $citizenInfosProvider = static::$container->get(CitizenInfosProviderInterface::class);
         $citizenInfosProvider->setCitizen($this->user->getCitizen());
@@ -317,6 +293,8 @@ EOT;
         $this->assertCount(2, $lastFleet->getShips());
         $this->assertSame('Cutlass Black', $lastFleet->getShips()[0]->getName());
         $this->assertSame('Cyclone', $lastFleet->getShips()[1]->getName());
+
+        $this->assertTrue($lastFleet->getId()->equals($this->user->getCitizen()->getLastFleet()->getId()), 'Last fleet is inconsistent.');
     }
 
     /**
@@ -326,29 +304,29 @@ EOT;
     public function testValidUpload(): void
     {
         file_put_contents(sys_get_temp_dir().'/test-fleet.json', <<<EOT
-[
-  {
-    "manufacturer": "Drake",
-    "name": "Cutlass Black",
-    "lti": true,
-    "warbond": true,
-    "package_id": "15109407",
-    "pledge": "Package - Origin 100i Starter Game Package Warbond",
-    "pledge_date": "April 28, 2018",
-    "cost": "$110.00 USD"
-  },
-  {
-    "manufacturer": "Tumbril",
-    "name": "Cyclone",
-    "lti": false,
-    "warbond": false,
-    "package_id": "15186605",
-    "pledge": "Standalone Ship - Tumbril Cyclone ",
-    "pledge_date": "May 15, 2018",
-    "cost": "$55.00 USD"
-  }
-]
-EOT
+            [
+              {
+                "manufacturer": "Drake",
+                "name": "Cutlass Black",
+                "lti": true,
+                "warbond": true,
+                "package_id": "15109407",
+                "pledge": "Package - Origin 100i Starter Game Package Warbond",
+                "pledge_date": "April 28, 2018",
+                "cost": "$110.00 USD"
+              },
+              {
+                "manufacturer": "Tumbril",
+                "name": "Cyclone",
+                "lti": false,
+                "warbond": false,
+                "package_id": "15186605",
+                "pledge": "Standalone Ship - Tumbril Cyclone ",
+                "pledge_date": "May 15, 2018",
+                "cost": "$55.00 USD"
+              }
+            ]
+        EOT
         );
         $citizenInfosProvider = static::$container->get(CitizenInfosProviderInterface::class);
         $citizenInfosProvider->setCitizen($this->user->getCitizen());
@@ -361,7 +339,7 @@ EOT
         $this->assertSame(204, $this->client->getResponse()->getStatusCode());
 
         /** @var Fleet $lastFleet */
-        $lastFleet = $this->doctrine->getRepository(Fleet::class)->findOneBy(['owner' => $this->user->getCitizen()], ['version' => 'desc']);
+        $lastFleet = $this->user->getCitizen()->getLastFleet();
         $this->assertSame(2, $lastFleet->getVersion());
         $this->assertCount(2, $lastFleet->getShips());
         $this->assertSame('Cutlass Black', $lastFleet->getShips()[0]->getName());
@@ -377,9 +355,9 @@ EOT
         $this->logIn($this->user);
         $this->client->xmlHttpRequest('POST', '/api/upload', [
             'fleetFile' => null,
-        ], []);
-        $this->assertSame(400, $this->client->getResponse()->getStatusCode());
+        ]);
 
+        $this->assertSame(400, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('invalid_form', $json['error']);
         $this->assertArraySubset(['You must upload a fleet file.'], $json['formErrors']);
@@ -411,66 +389,7 @@ EOT
             'CONTENT_TYPE' => 'application/json',
         ]);
 
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame('no_auth', $json['error']);
-    }
-
-    /**
-     * @group functional
-     * @group api
-     */
-    public function testCreateOrgaFleetFile(): void
-    {
-        $this->logIn($this->user);
-        $this->client->xmlHttpRequest('GET', '/api/create-organization-fleet-file/flk', [], [], [
-            'CONTENT_TYPE' => 'application/json',
-        ]);
-        /** @var BinaryFileResponse $response */
-        $response = $this->client->getResponse();
-        $this->assertSame('application/json', $response->headers->get('Content-Type'));
-        $this->assertSame('attachment; filename=organization_fleet.json', $response->headers->get('Content-Disposition'));
-    }
-
-    /**
-     * @group functional
-     * @group api
-     */
-    public function testCreateOrgaFleetFileNotAuth(): void
-    {
-        $this->client->xmlHttpRequest('GET', '/api/create-organization-fleet-file/flk', [], [], [
-            'CONTENT_TYPE' => 'application/json',
-        ]);
-
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame('no_auth', $json['error']);
-    }
-
-    /**
-     * @group functional
-     * @group api
-     */
-    public function testExportOrgaFleet(): void
-    {
-        $this->logIn($this->user);
-        $this->client->xmlHttpRequest('GET', '/api/export-orga-fleet/flk', [], [], [
-            'CONTENT_TYPE' => 'application/json',
-        ]);
-        /** @var BinaryFileResponse $response */
-        $response = $this->client->getResponse();
-        $this->assertSame('application/csv', $response->headers->get('Content-Type'));
-        $this->assertSame('attachment; filename=export_flk.csv', $response->headers->get('Content-Disposition'));
-    }
-
-    /**
-     * @group functional
-     * @group api
-     */
-    public function testExportOrgaFleetNotAuth(): void
-    {
-        $this->client->xmlHttpRequest('GET', '/api/export-orga-fleet/flk', [], [], [
-            'CONTENT_TYPE' => 'application/json',
-        ]);
-
+        $this->assertSame(401, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('no_auth', $json['error']);
     }
@@ -485,11 +404,12 @@ EOT
             'CONTENT_TYPE' => 'application/json',
         ]);
 
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArraySubset([
-            'organizations' => 2,
-            'users' => 5,
-            'ships' => 8,
+            'organizations' => 3,
+            'users' => 10,
+            'ships' => 10,
         ], $json);
     }
 }

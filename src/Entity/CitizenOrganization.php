@@ -11,6 +11,15 @@ use Symfony\Component\Serializer\Annotation\Groups;
  */
 class CitizenOrganization
 {
+    public const VISIBILITY_PRIVATE = 'private';
+    public const VISIBILITY_ADMIN = 'admin';
+    public const VISIBILITY_ORGA = 'orga';
+    public const VISIBILITIES = [
+        self::VISIBILITY_PRIVATE,
+        self::VISIBILITY_ADMIN,
+        self::VISIBILITY_ORGA,
+    ];
+
     /**
      * @var UuidInterface
      *
@@ -31,9 +40,16 @@ class CitizenOrganization
      * @var string
      *
      * @ORM\Column(type="string", length=31)
-     * @Groups({"profile", "orga_fleet"})
      */
     private $organizationSid;
+
+    /**
+     * @var Organization
+     *
+     * @ORM\ManyToOne(targetEntity="App\Entity\Organization", fetch="EAGER")
+     * @Groups({"profile", "orga_fleet"})
+     */
+    private $organization;
 
     /**
      * orga rank from 0 to 5 (6 values).
@@ -53,10 +69,19 @@ class CitizenOrganization
      */
     private $rankName;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=15, options={"default":"orga"})
+     * @Groups({"profile"})
+     */
+    private $visibility;
+
     public function __construct(?UuidInterface $id = null)
     {
         $this->id = $id;
         $this->rank = 0;
+        $this->visibility = self::VISIBILITY_ORGA;
     }
 
     public function getId(): ?UuidInterface
@@ -88,6 +113,18 @@ class CitizenOrganization
         return $this;
     }
 
+    public function getOrganization(): ?Organization
+    {
+        return $this->organization;
+    }
+
+    public function setOrganization(?Organization $organization): self
+    {
+        $this->organization = $organization;
+
+        return $this;
+    }
+
     public function getRank(): int
     {
         return $this->rank;
@@ -108,6 +145,20 @@ class CitizenOrganization
     public function setRankName(?string $rankName): self
     {
         $this->rankName = $rankName;
+
+        return $this;
+    }
+
+    public function getVisibility(): string
+    {
+        return $this->visibility;
+    }
+
+    public function setVisibility(string $visibility): self
+    {
+        if (in_array($visibility, self::VISIBILITIES, true)) {
+            $this->visibility = $visibility;
+        }
 
         return $this;
     }

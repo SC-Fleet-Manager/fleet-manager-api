@@ -42,7 +42,7 @@
         "hautelook/alice-bundle": "^2.3",
         "symfony/browser-kit": "*",
         "symfony/debug-pack": "^1.0",
-        "symfony/panther": "v0.2.0",
+        "symfony/panther": "v0.4.0",
         "symfony/phpunit-bridge": "*"
     },
     "config": {
@@ -87,7 +87,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": true,
-            "require": "4.2.*"
+            "require": "4.3.*"
         }
     }
 }

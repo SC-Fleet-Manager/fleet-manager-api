@@ -2,12 +2,9 @@
 
 namespace App\Entity;
 
-use App\Domain\CitizenInfos;
 use App\Domain\CitizenNumber;
 use App\Domain\HandleSC;
-use App\Domain\SpectrumIdentification;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -26,7 +23,7 @@ class Citizen
      *
      * @ORM\Id()
      * @ORM\Column(type="uuid", unique=true)
-     * @Groups({"profile", "orga_fleet"})
+     * @Groups({"profile", "orga_fleet", "orga_fleet_admin"})
      */
     private $id;
 
@@ -41,7 +38,7 @@ class Citizen
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @Groups({"profile", "orga_fleet"})
      */
     private $nickname;
@@ -50,19 +47,9 @@ class Citizen
      * @var HandleSC
      *
      * @ORM\Column(type="string", length=255)
-     * @Groups({"profile", "orga_fleet"})
+     * @Groups({"profile", "orga_fleet", "orga_fleet_admin"})
      */
     private $actualHandle;
-
-    /**
-     * TODO : remove this when possible (in favor of $organizations).
-     *
-     * @var iterable|string[]
-     *
-     * @ORM\Column(type="json")
-     * @Groups({"profile", "orga_fleet"})
-     */
-    private $organisations;
 
     /**
      * @var iterable|Fleet[]
@@ -87,6 +74,14 @@ class Citizen
     private $bio;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"profile"})
+     */
+    private $avatarUrl;
+
+    /**
      * @var \DateTimeInterface
      *
      * @ORM\Column(type="datetimetz_immutable", nullable=true)
@@ -102,6 +97,16 @@ class Citizen
     private $organizations;
 
     /**
+     * Redacted affiliates orgas + redacted main orga.
+     *
+     * @var int
+     *
+     * @ORM\Column(type="integer", options={"defaults":0})
+     * @Groups({"profile", "orga_fleet"})
+     */
+    private $countRedactedOrganizations;
+
+    /**
      * @var CitizenOrganization
      *
      * @ORM\OneToOne(targetEntity="CitizenOrganization", fetch="EAGER", cascade={"all"})
@@ -109,26 +114,21 @@ class Citizen
      */
     private $mainOrga;
 
+    /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean", options={"defaults":false})
+     * @Groups({"profile", "orga_fleet"})
+     */
+    private $redactedMainOrga;
+
     public function __construct(?UuidInterface $id = null)
     {
         $this->id = $id;
-        $this->organisations = [];
         $this->fleets = new ArrayCollection();
         $this->organizations = new ArrayCollection();
-    }
-
-    public function getLastVersionFleet(): ?Fleet
-    {
-        $maxVersion = 0;
-        $lastFleet = null;
-        foreach ($this->fleets as $fleet) {
-            if ($fleet->getVersion() > $maxVersion) {
-                $maxVersion = $fleet->getVersion();
-                $lastFleet = $fleet;
-            }
-        }
-
-        return $lastFleet;
+        $this->countRedactedOrganizations = 0;
+        $this->redactedMainOrga = false;
     }
 
     public function getId(): ?UuidInterface
@@ -193,43 +193,6 @@ class Citizen
     }
 
     /**
-     * @return iterable|string[]
-     */
-    public function getOrganisations(): iterable
-    {
-        return $this->organisations;
-    }
-
-    public function hasOrganisation(string $sid): bool
-    {
-        return \in_array($sid, $this->organisations, true);
-    }
-
-    /**
-     * @param string|SpectrumIdentification $sid
-     */
-    public function addOrganisation($sid): self
-    {
-        if ($sid instanceof SpectrumIdentification) {
-            $sid = $sid->getSid();
-        }
-        if (!$this->hasOrganisation($sid)) {
-            $this->organisations[] = $sid;
-        }
-
-        return $this;
-    }
-
-    public function setOrganisations(array $sids): self
-    {
-        foreach ($sids as $sid) {
-            $this->addOrganisation($sid);
-        }
-
-        return $this;
-    }
-
-    /**
      * @return iterable|Fleet[]
      */
     public function getFleets(): iterable
@@ -239,9 +202,22 @@ class Citizen
 
     public function addFleet(Fleet $fleet): self
     {
+        if ($fleet->getOwner() !== $this) {
+            $fleet->setOwner($this);
+        }
         if (!$this->fleets->contains($fleet)) {
             $this->fleets->add($fleet);
         }
+
+        return $this;
+    }
+
+    public function removeFleet(Fleet $fleet): self
+    {
+        if ($fleet->getOwner() !== null) {
+            $fleet->setOwner(null);
+        }
+        $this->fleets->removeElement($fleet);
 
         return $this;
     }
@@ -270,12 +246,45 @@ class Citizen
         return $this;
     }
 
+    public function getAvatarUrl(): ?string
+    {
+        return $this->avatarUrl;
+    }
+
+    public function setAvatarUrl(?string $avatarUrl): self
+    {
+        $this->avatarUrl = $avatarUrl;
+
+        return $this;
+    }
+
     /**
      * @return iterable|CitizenOrganization[]
      */
     public function getOrganizations(): iterable
     {
         return $this->organizations;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getOrganizationSids(): array
+    {
+        return $this->organizations->map(static function (CitizenOrganization $citizenOrganization): string {
+            return $citizenOrganization->getOrganizationSid();
+        })->toArray();
+    }
+
+    public function hasOrganization(string $sid): bool
+    {
+        foreach ($this->organizations as $orga) {
+            if ($orga->getOrganization()->getOrganizationSid() === $sid) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function clearOrganizations(): self
@@ -301,6 +310,30 @@ class Citizen
             $orga->setCitizen(null);
         }
         $this->organizations->removeElement($orga);
+
+        return $this;
+    }
+
+    public function getCountRedactedOrganizations(): int
+    {
+        return $this->countRedactedOrganizations;
+    }
+
+    public function setCountRedactedOrganizations(int $countRedactedOrganizations): self
+    {
+        $this->countRedactedOrganizations = $countRedactedOrganizations;
+
+        return $this;
+    }
+
+    public function isRedactedMainOrga(): bool
+    {
+        return $this->redactedMainOrga;
+    }
+
+    public function setRedactedMainOrga(bool $redactedMainOrga): self
+    {
+        $this->redactedMainOrga = $redactedMainOrga;
 
         return $this;
     }
@@ -334,38 +367,11 @@ class Citizen
     public function getOrgaBySid(string $sid): ?CitizenOrganization
     {
         foreach ($this->organizations as $orga) {
-            if ($orga->getOrganizationSid() === $sid) {
+            if ($orga->getOrganization()->getOrganizationSid() === $sid) {
                 return $orga;
             }
         }
 
         return null;
-    }
-
-    public function refresh(CitizenInfos $infos, EntityManagerInterface $em): void
-    {
-        $this->setNickname($infos->nickname);
-        $this->setBio($infos->bio);
-        $this->setLastRefresh(new \DateTimeImmutable());
-
-        foreach ($this->getOrganizations() as $orga) {
-            $em->remove($orga);
-        }
-
-        $this->setMainOrga(null);
-        $this->clearOrganizations();
-        $this->setOrganisations([]); // TODO : backward compatibility
-        foreach ($infos->organisations as $orgaInfo) {
-            $orga = new CitizenOrganization(Uuid::uuid4());
-            $orga->setCitizen($this);
-            $orga->setOrganizationSid($orgaInfo->sid->getSid());
-            $orga->setRank($orgaInfo->rank);
-            $orga->setRankName($orgaInfo->rankName);
-            $this->addOrganisation($orga->getOrganizationSid()); // TODO : backward compatibility
-            $this->addOrganization($orga);
-            if ($infos->mainOrga === $orgaInfo) {
-                $this->setMainOrga($orga);
-            }
-        }
     }
 }

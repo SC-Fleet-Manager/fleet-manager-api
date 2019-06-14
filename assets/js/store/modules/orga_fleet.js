@@ -5,8 +5,10 @@ const state = {
     selectedIndex: null, // index of the ship family in the page. used to compute where the details will open
     selectedShipFamily: null, // {chassisId: "00", name: "xx", ...}
     selectedShipVariants: [], // [{countTotalOwners: 0, countTotalShips: 0, shipInfo: {id: "00", name: "xxx", mediaThumbUrl: "https://...", ...}}, {...}]
-    shipVariantUsersTrackChanges: 0, // +1 at each update
+    shipVariantUsersTrackChanges: 0, // +1 at each update TODO : only update the right ShipVariant instead of all !
     shipVariantUsers: {}, // {"<ship id>": {...}}
+    shipVariantUsersMetadata: {}, // { page, lastPage, total }
+    shipVariantHiddenUsers: {}, // {"<ship id>": <count hidden>}
     filterShipName: [],
     filterCitizenId: [],
     filterShipSize: [],
@@ -41,13 +43,18 @@ const mutations = {
         state.selectedShipVariants = payload.shipVariants;
         state.selectedIndex = payload.selectedIndex;
     },
-    updateShipVariantsUsers(state, { users, shipId }) {
+    updateShipVariantsHiddenUsers(state, { shipId, countHidden }) {
+        state.shipVariantHiddenUsers[shipId] = countHidden;
+        ++state.shipVariantUsersTrackChanges;
+    },
+    updateShipVariantsUsers(state, { users, page, lastPage, total, shipId }) {
         if (!state.shipVariantUsers[shipId]) {
             state.shipVariantUsers[shipId] = [];
         }
         for (let user of users) {
             state.shipVariantUsers[shipId].push(user);
         }
+        state.shipVariantUsersMetadata[shipId] = { page, lastPage, total };
         ++state.shipVariantUsersTrackChanges;
     },
     updateSid(state, value) {
@@ -71,9 +78,23 @@ const actions = {
             },
         }).then(response => {
             commit('updateShipVariantsUsers', {
-                users: response.data,
+                users: response.data.users,
+                page: response.data.page,
+                lastPage: response.data.lastPage,
+                total: response.data.total,
                 shipId: ship.shipInfo.id,
             });
+            if (response.data.lastPage === response.data.page) {
+                // we are on the last page : load how many hidden there are.
+                axios.get(`/api/fleet/orga-fleets/${state.selectedSid}/hidden-users/${ship.shipInfo.name}`).then(response => {
+                    commit('updateShipVariantsHiddenUsers', {
+                        shipId: ship.shipInfo.id,
+                        countHidden: response.data.hiddenUsers,
+                    });
+                }).catch(err => {
+                    console.error(err);
+                });
+            }
         }).catch(err => {
             // this.checkAuth(err.response);
             console.error(err);

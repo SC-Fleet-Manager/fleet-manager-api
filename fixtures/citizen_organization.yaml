@@ -1,26 +1,62 @@
+include:
+    - organization.yaml
+
 App\Entity\CitizenOrganization:
     ionni_orga_flk:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("41ade55e-6d32-419c-9e48-169fd6c61f34"))>']
         organizationSid: 'flk'
+        organization: '@orga_flk'
         rank: 1
         rankName: 'Citoyen'
     ashuvidz_orga_flk:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("aacc1290-1d6d-41f0-b579-cf67d733118d"))>']
         organizationSid: 'flk'
+        organization: '@orga_flk'
         rank: 5
         rankName: 'Chef de département'
     gardiens1_orga_gardiens:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("befc7409-a026-4226-aefd-288b1d03b8ef"))>']
         organizationSid: 'gardiens'
+        organization: '@orga_gardiens'
         rank: 5
         rankName: 'Big guard'
     ihaveships_orga_flk:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("a193b472-501d-4b97-8dbc-c4076618f347"))>']
         organizationSid: 'flk'
+        organization: '@orga_flk'
         rank: 2
         rankName: 'Peasant'
     ihaveships_orga_gardiens:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("fa91e3a0-4930-43de-b202-9d5972681031"))>']
         organizationSid: 'gardiens'
+        organization: '@orga_gardiens'
         rank: 4
         rankName: 'Lord'
+    pulsar42_admin_orga_pulsar42:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("65667680-5ce0-4e99-9767-8942bc5723e1"))>']
+        organizationSid: 'pulsar42'
+        organization: '@orga_pulsar42'
+        rank: 5
+        rankName: 'Admin'
+        visibility: 'orga'
+    pulsar42_member1_orga_pulsar42:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("9f603c6f-7f3e-4ded-89b2-5fa9e3e78664"))>']
+        organizationSid: 'pulsar42'
+        organization: '@orga_pulsar42'
+        rank: 1
+        rankName: 'Member1'
+        visibility: 'private'
+    pulsar42_member2_orga_pulsar42:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("1ff7c240-bad0-453b-a94c-6bef25363753"))>']
+        organizationSid: 'pulsar42'
+        organization: '@orga_pulsar42'
+        rank: 2
+        rankName: 'Member2'
+        visibility: 'admin'
+    pulsar42_member3_orga_pulsar42:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("4697ac85-b0d2-4b39-8f2c-aac56e4a4365"))>']
+        organizationSid: 'pulsar42'
+        organization: '@orga_pulsar42'
+        rank: 3
+        rankName: 'Member3'
+        visibility: 'orga'

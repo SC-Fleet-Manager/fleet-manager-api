@@ -35,7 +35,7 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
 
     public function retrieveInfos(HandleSC $handleSC, bool $caching = true): CitizenInfos
     {
-        return $this->cache->get('citizen_info_'.$handleSC, function (CacheItem $cacheItem) use ($handleSC) {
+        return $this->cache->get('citizen_info_'.sha1($handleSC->getHandle()), function (CacheItem $cacheItem) use ($handleSC) {
             $cacheItem->tag(['citizen_infos']);
             $cacheItem->expiresAfter(1200); // 20min
 
@@ -85,6 +85,7 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
 
         $crawler = $this->client->request('GET', self::BASE_URL.'/citizens/'.$handleSC.'/organizations');
         $mainOrga = null;
+        $mainOrgaRedacted = false;
         $mainOrgaCrawler = $crawler->filter('.org.main.visibility-V');
         if ($mainOrgaCrawler->count() > 0) {
             $sid = $mainOrgaCrawler->filterXPath('//p[contains(.//*/text(), "Spectrum Identification (SID)")]/*[contains(@class, "value")]')->text();
@@ -92,7 +93,10 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
             $rank = $mainOrgaCrawler->filter('.ranking .active')->count();
 
             $mainOrga = new CitizenOrganizationInfo(new SpectrumIdentification($sid), $rank, $rankName);
+        } elseif ($crawler->filter('.org.main.visibility-R')->count() > 0) {
+            $mainOrgaRedacted = true;
         }
+
         $orgaAffiliates = [];
         $crawler->filter('.org.affiliation.visibility-V')->each(static function (Crawler $node) use (&$orgaAffiliates) {
             $sid = $node->filterXPath('//p[contains(.//*/text(), "Spectrum Identification (SID)")]/*[contains(@class, "value")]')->text();
@@ -102,6 +106,7 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
             $orga = new CitizenOrganizationInfo(new SpectrumIdentification($sid), $rank, $rankName);
             $orgaAffiliates[] = $orga;
         });
+        $redactedAffiliates = $crawler->filter('.org.affiliation.visibility-R')->count();
 
         $ci = new CitizenInfos(
             new CitizenNumber($citizenNumber),
@@ -110,13 +115,15 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
 
         $ci->nickname = $nickname;
         if ($mainOrga !== null) {
-            $ci->organisations[] = $mainOrga;
+            $ci->organizations[] = $mainOrga;
         }
-        $ci->organisations = array_merge($ci->organisations, $orgaAffiliates);
+        $ci->organizations = array_merge($ci->organizations, $orgaAffiliates);
         $ci->mainOrga = $mainOrga;
         $ci->bio = $bio;
         $ci->avatarUrl = $avatarUrl;
         $ci->registered = $enlisted;
+        $ci->redactedMainOrga = $mainOrgaRedacted;
+        $ci->countRedactedOrganizations = $redactedAffiliates + ($mainOrgaRedacted ? 1 : 0);
 
         $this->logger->info('Citizen infos retrieved.', [
             'handle' => $handleSC->getHandle(),

@@ -2,18 +2,28 @@
     <div class="animated fadeIn">
         <b-row>
             <b-col>
-                <b-card :header="citizen != null && organizations[sid] ? 'Your organizations\' fleets' : orgaFullname +' fleet'" class="js-organizations-fleets">
+                <nav class="mb-3 navbar navbar-light bg-light" v-if="citizen != null && citizenOrgaInfo != null">
+                    <ul class="nav">
+                        <b-dropdown
+                            v-if="citizen.organizations.length >= 2 || citizen.countRedactedOrganizations > 0"
+                            id="select-orga"
+                            class="js-select-orga nav-item"
+                            split
+                            :split-variant="menu == 'fleet' ? 'primary' : 'outline-primary'"
+                            :text="organization.name ? organization.name : 'No selected orga'"
+                            variant="outline-primary"
+                            @click="menu = 'fleet'"
+                        >
+                            <b-dropdown-item :active="organization.organizationSid == citizenOrga.organization.organizationSid" v-for="citizenOrga in citizen.organizations" :key="citizenOrga.organization.organizationSid" @click="changeSelectedOrga(citizenOrga.organization)">{{ citizenOrga.organization.name }}</b-dropdown-item>
+                            <b-dropdown-item v-if="citizen.countRedactedOrganizations > 0" disabled>+{{ citizen.countRedactedOrganizations }} redacted organizations</b-dropdown-item>
+                        </b-dropdown>
+                        <b-button v-else id="select-orga" class="js-select-orga nav-item" :variant="menu == 'fleet' ? 'primary' : 'outline-primary'" @click="menu = 'fleet'">{{ organization.name ? organization.name : 'No selected orga' }}</b-button>
+                        <b-button v-if="isAdmin" class="nav-item ml-3" :variant="menu == 'admin_panel' ? 'primary' : 'outline-primary'" @click="menu = 'admin_panel'">Admin panel</b-button>
+                    </ul>
+                </nav>
+                <b-card v-if="menu == 'fleet'" class="js-organizations-fleets">
                     <b-row>
-                        <b-col v-if="citizen != null && hasOrganization(sid)" xl="3" lg="3" md="4" sm="12" class="mb-3">
-                            <b-form>
-                                <b-form-group label="Select an organization" label-for="select-orga" class="js-select-orga">
-                                    <b-form-select id="select-orga" :value="selectedSid" @change="selectSid">
-                                        <option v-for="orga in citizen.organisations" :key="orga" :value="orga">{{ organizations[orga] ? organizations[orga].fullname : orga }}</option>
-                                    </b-form-select>
-                                </b-form-group>
-                            </b-form>
-                        </b-col>
-                        <b-col xs="12" sm="12" md="6" class="mb-3" v-if="organization !== null">
+                        <b-col sm="10" md="8" lg="6" xl="6" class="mb-3" v-if="organization !== null">
                             <a :href="'https://robertsspaceindustries.com/orgs/'+organization.organizationSid" target="_blank"><img v-if="organization.avatarUrl" :src="organization.avatarUrl" alt="organization's logo" class="img-fluid" style="max-height: 8rem;" /></a>
                             <div class="d-inline-block align-top">
                                 <h4><a :href="'https://robertsspaceindustries.com/orgs/'+organization.organizationSid" target="_blank">{{ organization.name }}</a></h4>
@@ -23,44 +33,50 @@
                                 <p v-if="citizen != null && citizenOrgaInfo != null"><strong>{{ citizenOrgaInfo.rankName }}</strong></p>
                             </div>
                         </b-col>
-                    </b-row>
-                    <b-row v-if="citizen != null && organizations[sid]">
-                        <b-col col xl="2" lg="3" md="4" class="mb-3">
-                            <b-dropdown variant="primary">
+                        <b-col col class="mb-3 text-right" v-if="!loadingOrgaFleet && !notEnoughRightsMessage && citizenOrgaInfo != null">
+                            <b-dropdown variant="primary" class="mb-2">
                                 <template slot="button-content"><i class="fas fa-cloud-download-alt"></i> Export fleet</template>
                                 <b-dropdown-item download :disabled="selectedSid == null || shipFamilies.length == 0" :href="'/api/create-organization-fleet-file/'+selectedSid" ><i class="fas fa-file-code"></i> Export <strong>{{ selectedSid != null ? orgaFullname : 'N/A' }}</strong> fleet (.json)</b-dropdown-item>
                                 <b-dropdown-item download :disabled="selectedSid == null || shipFamilies.length == 0" :href="'/api/export-orga-fleet/'+selectedSid"><i class="fas fa-file-csv"></i> Export <strong>{{ selectedSid != null ? orgaFullname : 'N/A' }}</strong> fleet (.csv)</b-dropdown-item>
                             </b-dropdown>
+                            <!--<p><b>{{ orgaStats.countUploadedFleets }}</b> uploaded fleets for <b>{{ orgaStats.totalCitizen }}</b> members</p>-->
                         </b-col>
                     </b-row>
-                    <b-row class="mb-3" v-if="sid != null && ((citizen != null && organizations[sid]) || (organization !== null && organization.publicChoice === 'public'))">
-                        <b-col col xl="2" lg="3" md="4" xs="6">
+                    <b-row class="mb-3" v-if="!notEnoughRightsMessage && sid != null && ((citizen != null && citizenOrgaInfo != null) || (organization !== null && organization.publicChoice === 'public'))">
+                        <b-col sm="6" md="6" lg="4" xl="2">
                             <v-select id="filters_input_ship_name" :reduce="item => item.id" v-model="filterShipName" :options="filterOptionsShips" multiple @input="refreshOrganizationFleet(true)" placeholder="Filter by ship name"></v-select>
                         </b-col>
-                        <b-col col xl="2" lg="3" md="4" xs="6">
+                        <b-col sm="6" md="6" lg="4" xl="2" v-if="isInSelectedOrganization">
                             <v-select id="filters_input_citizen_id" :reduce="item => item.id" v-model="filterCitizenId" :options="filterOptionsCitizens" multiple @input="refreshOrganizationFleet(true)" placeholder="Filter by citizen"></v-select>
                         </b-col>
-                        <b-col col xl="2" lg="3" md="4" xs="6">
+                        <b-col sm="6" md="6" lg="4" xl="2">
                             <v-select id="filters_input_ship_size" :reduce="item => item.id" v-model="filterShipSize" :options="filterOptionsShipSize" multiple @input="refreshOrganizationFleet(true)" placeholder="Filter by ship size"></v-select>
                         </b-col>
-                        <b-col col xl="2" lg="3" md="4" xs="6">
+                        <b-col sm="6" md="6" lg="4" xl="2">
                             <v-select id="filters_input_ship_status" :reduce="item => item.id" v-model="filterShipStatus" :options="filterOptionsShipStatus" @input="refreshOrganizationFleet(true)" placeholder="Filter by ship status"></v-select>
                         </b-col>
                     </b-row>
                     <b-row>
-                        <template v-if="!loadingOrgaFleet && ((citizen == null && (organization === null || organization.publicChoice !== 'public'))
-                                        || (citizen != null && !organizations[sid] && organization !== null && organization.publicChoice !== 'public'))">
-                            <b-col>
-                                <b-alert show variant="danger">Sorry, this organization's fleet does not exist or is private. Try to <a href="/">login</a> to see it.</b-alert>
+                        <!-- TODO : VERY UGLY THIS SHIT !! -->
+                        <template v-if="notEnoughRightsMessage">
+                            <b-col sm="12" md="12" lg="12" xl="12">
+                                <b-alert show variant="danger" v-html="notEnoughRightsMessage"></b-alert>
                             </b-col>
                         </template>
                         <template v-else>
-                            <b-col v-if="shipFamilies.length === 0 && !loadingOrgaFleet">
-                                <b-alert show variant="warning">Sorry, no ships have been found.</b-alert>
-                            </b-col>
-                            <b-col col xl="12" lg="12" md="12" sm="12" xs="12" v-if="loadingOrgaFleet" class="text-center">
-                                <i class="fas fa-circle-notch fa-spin fa-5x" style="color:#ccc"></i>
-                            </b-col>
+                            <template v-if="!loadingOrgaFleet && notFoundError">
+                                <b-col sm="12" md="12" lg="12" xl="12">
+                                    <b-alert show variant="danger">Sorry, this organization's fleet does not exist or is private. Try to <a href="/">login</a> to see it.</b-alert>
+                                </b-col>
+                            </template>
+                            <template v-else>
+                                <b-col v-if="shipFamilies.length === 0 && !loadingOrgaFleet">
+                                    <b-alert show variant="warning">Sorry, no ships have been found.</b-alert>
+                                </b-col>
+                                <b-col col xl="12" lg="12" md="12" sm="12" xs="12" v-if="loadingOrgaFleet" class="text-center">
+                                    <i class="fas fa-circle-notch fa-spin fa-5x" style="color:#ccc"></i>
+                                </b-col>
+                            </template>
                         </template>
                         <template v-for="(shipFamily, index) in shipFamilies">
                             <ShipFamily :key="shipFamily.chassisId" :shipFamily="shipFamily" :index="index"></ShipFamily>
@@ -80,6 +96,14 @@
                         </template>
                     </b-row>
                 </b-card>
+                <b-card v-if="menu == 'admin_panel'">
+                    <b-alert variant="danger" :show="fleetPolicyErrors" v-html="fleetPolicyErrorMessages"></b-alert>
+                    <b-form-group :label="'Fleet policy of '+organization.name">
+                        <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="private">Members only <i class="fas fa-info-circle" v-b-tooltip.hover title="Only the orga's members can see the orga's fleet."></i></b-form-radio>
+                        <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="admin">Admin only <i class="fas fa-info-circle" v-b-tooltip.hover title="Only the highest ranks (admins) of the orga can see the orga's fleet."></i></b-form-radio>
+                        <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="public">Public <i class="fas fa-info-circle" v-b-tooltip.hover title="Everyone can see the orga's fleet."></i></b-form-radio>
+                    </b-form-group>
+                </b-card>
             </b-col>
         </b-row>
     </div>
@@ -95,6 +119,8 @@
 
     const { mapGetters, mapMutations, mapActions } = createNamespacedHelpers('orga_fleet');
     const BREAKPOINTS = {xs: 0, sm: 576, md: 768, lg: 992, xl: 1200};
+    const MENU_FLEET = 'fleet';
+    const MENU_ADMIN_PANEL = 'admin_panel';
 
     /*
      * PUBLIC
@@ -115,11 +141,19 @@
         components: {vSelect, ShipFamily, ShipFamilyDetail},
         data() {
             return {
+                menu: MENU_FLEET,
                 organization: null,
+                orgaStats: {},
+                orgaPublicChoice: null,
+                fleetPolicyErrors: false,
+                fleetPolicyErrorMessages: null,
+                notEnoughRightsMessage: null,
+                notFoundError: false,
+                savingPreferences: false,
                 citizen: null,
+                orgaFleetAdmins: [],
                 shipFamilies: [], // families of ships (e.g. "Aurora" for MR, LX, etc.) that have the selected orga (no displayed if no orga members have this family).
                 actualBreakpoint: 'xs',
-                organizations: {}, // orga infos of the citizens
                 refreshedSid: null,
                 loadingOrgaFleet: false,
                 filterOptionsCitizens: [],
@@ -158,9 +192,23 @@
             next();
         },
         computed: {
+            isInSelectedOrganization() {
+                if (this.citizen === null) {
+                    return false;
+                }
+                for (let orga of this.citizen.organizations) {
+                    if (orga.organization.organizationSid === this.selectedSid) {
+                        return true;
+                    }
+                }
+                return false;
+            },
             citizenOrgaInfo() {
+                if (this.citizen === null) {
+                    return null;
+                }
                 for (let orgaInfo of this.citizen.organizations) {
-                    if (orgaInfo.organizationSid === this.selectedSid) {
+                    if (orgaInfo.organization.organizationSid === this.selectedSid) {
                         return orgaInfo;
                     }
                 }
@@ -206,12 +254,22 @@
             orgaFullname() {
                 if (this.organization !== null && this.organization.organizationSid === this.selectedSid && this.organization.name !== null) {
                     return this.organization.name;
-                } else if (this.organizations[this.selectedSid]) {
-                    return this.organizations[this.selectedSid].fullname;
                 }
 
                 return this.selectedSid;
-            }
+            },
+            isAdmin() {
+                if (this.citizen === null) {
+                    return false;
+                }
+                for (let admin of this.orgaFleetAdmins) {
+                    if (admin.id === this.citizen.id) {
+                        return true;
+                    }
+                }
+
+                return false;
+            },
         },
         watch: {
             organization(orga) {
@@ -225,9 +283,15 @@
                 }
             },
             selectedSid() {
+                this.notEnoughRightsMessage = null;
                 this.refreshOrganizationFleet();
+                this.refreshAdmins();
             },
             selectedShipVariants(shipVariants) {
+                if (this.citizen === null) {
+                    // public orga : we don't display the members
+                    return;
+                }
                 for (let ship of shipVariants) {
                     this.loadShipVariantUsers({ ship, page: 1 });
                 }
@@ -245,73 +309,102 @@
                 this.$router.replace({ path: `/organization-fleet/${value}` });
                 this.updateSid(value);
             },
-            refreshOrganization() {
-                axios.get(`/api/organization/${this.sid}`).then(response => {
-                    this.organization = response.data;
+            changeSelectedOrga(orga) {
+                this.menu = MENU_FLEET;
+                this.selectSid(orga.organizationSid);
+            },
+            savePreferences() {
+                this.savingPreferences = true;
+                this.fleetPolicyErrors = false;
+                axios.post(`/api/organization/${this.organization.organizationSid}/save-preferences`, {
+                   publicChoice: this.orgaPublicChoice,
+                }).then(response => {
+                    toastr.success('Changes saved');
                 }).catch(err => {
-                    if (err.response.status === 401) {
-                        // not connected
-                        return;
+                    // this.checkAuth(err.response);
+                    if (err.response.data.errorMessage) {
+                        this.fleetPolicyErrorMessages = err.response.data.errorMessage;
+                    } else {
+                        toastr.error('An error has occurred. Please retry more later.');
                     }
-                    if (err.response.status === 404) {
-                        // not exist
-                        return;
-                    }
+                    this.fleetPolicyErrors = true;
                     console.error(err);
+                }).then(_ => {
+                    this.savingPreferences = false;
                 });
+            },
+            saveOrgaPublicChoice(value) {
+                this.orgaPublicChoice = value;
+                this.savePreferences();
+            },
+            refreshOrganization() {
+                if (this.citizen === null) {
+                    axios.get(`/api/organization/${this.sid}`).then(response => {
+                        this.organization = response.data;
+                        this.orgaPublicChoice = this.organization.publicChoice;
+                    }).catch(err => {
+                        if (err.response.status === 401) {
+                            // not connected
+                            return;
+                        }
+                        if (err.response.status === 404) {
+                            // not exist
+                            return;
+                        }
+                        console.error(err);
+                    });
+                    // axios.get(`/api/orga-stats/${this.sid}`).then(response => {
+                    //     this.orgaStats = response.data;
+                    // }).catch(err => {
+                    //     if (err.response.status === 401) {
+                    //         // not connected
+                    //         return;
+                    //     }
+                    //     if (err.response.status === 404) {
+                    //         // not exist
+                    //         return;
+                    //     }
+                    //     console.error(err);
+                    // });
+                    return;
+                }
+                for (let citizenOrga of this.citizen.organizations) {
+                    if (citizenOrga.organization.organizationSid === this.selectedSid) {
+                        this.organization = citizenOrga.organization;
+                        break;
+                    }
+                }
             },
             refreshProfile() {
                 axios.get('/api/profile/').then(response => {
                     this.citizen = response.data.citizen;
-                }).catch(err => {
-                    if (err.response.status === 401) {
-                        // not connected
-                        return;
-                    }
-                    if (err.response.data.errorMessage) {
-                        toastr.error(err.response.data.errorMessage);
-                    }
-                    console.error(err);
-                });
-
-                axios.get('/api/my-orgas').then(response => {
-                    for (let orga of response.data) {
-                        this.$set(this.organizations, orga.spectrumId.sid, orga);
-                    }
-                }).catch(err => {
-                    if (err.response.status === 401) {
-                        // not connected
-                        return;
-                    }
-                    if (err.response.data.errorMessage) {
-                        toastr.error(err.response.data.errorMessage);
-                    }
-                    console.error(err);
-                });
-            },
-            refreshOrganizationFleet(force) {
-                if (!force && this.refreshedSid === this.sid) {
-                    // not multiple refresh
-                    return;
-                }
-                if (this.refreshedSid !== this.sid) {
+                    this.citizen.organizations.sort((orga1, orga2) => {
+                        if (this.citizen.mainOrga) {
+                            if (this.citizen.mainOrga.id === orga1.id) {
+                                return -1;
+                            } else if (this.citizen.mainOrga.id === orga2.id) {
+                                return 1;
+                            }
+                        }
+                        return orga1.organization.name > orga2.organization.name ? 1 : -1;
+                    });
                     this.refreshOrganization();
-                    this.refreshFiltersOptions();
-                }
-                this.refreshedSid = this.sid;
-                this.shipFamilies = [];
+                }).catch(err => {
+                    if (err.response.status === 401) {
+                        // not connected
+                        return;
+                    }
+                    if (err.response.data.errorMessage) {
+                        toastr.error(err.response.data.errorMessage);
+                    }
+                    console.error(err);
+                });
 
-                this.loadingOrgaFleet = true;
-                axios.get(`/api/fleet/orga-fleets/${this.sid}`, {
-                    params: {
-                        'filters[shipNames]': this.filterShipName,
-                        'filters[citizenIds]': this.filterCitizenId,
-                        'filters[shipSizes]': this.filterShipSize,
-                        'filters[shipStatus]': this.filterShipStatus,
-                    },
-                }).then(response => {
-                    this.selectShipFamily({index: null, shipFamily: null});
-                    this.shipFamilies = response.data;
+                this.refreshAdmins();
+            },
+            refreshAdmins() {
+                axios.get(`/api/fleet/orga-fleets/${this.selectedSid}/admins`).then(response => {
+                    this.orgaFleetAdmins = response.data;
                 }).catch(err => {
                     if (err.response.status === 401) {
                         // not connected
@@ -325,13 +418,60 @@
                         // no citizen created
                         return;
                     }
+                    if (err.response.status === 403 && err.response.data.error.startsWith('not_enough_rights')) {
+                        this.notEnoughRightsMessage = err.response.data.errorMessage;
+                    }
+                    console.error(err);
+                });
+            },
+            refreshOrganizationFleet(force) {
+                if (!force && this.refreshedSid === this.selectedSid) {
+                    // not multiple refresh
+                    return;
+                }
+                if (this.refreshedSid !== this.selectedSid) {
+                    this.refreshOrganization();
+                    this.refreshFiltersOptions();
+                }
+                this.refreshedSid = this.selectedSid;
+                this.shipFamilies = [];
+
+                this.loadingOrgaFleet = true;
+                this.notFoundError = false;
+                axios.get(`/api/fleet/orga-fleets/${this.selectedSid}`, {
+                    params: {
+                        'filters[shipNames]': this.filterShipName,
+                        'filters[citizenIds]': this.filterCitizenId,
+                        'filters[shipSizes]': this.filterShipSize,
+                        'filters[shipStatus]': this.filterShipStatus,
+                    },
+                }).then(response => {
+                    this.selectShipFamily({index: null, shipFamily: null});
+                    this.shipFamilies = response.data;
+                }).catch(err => {
+                    this.notFoundError = true;
+                    if (err.response.status === 401) {
+                        // not connected
+                        return;
+                    }
+                    if (err.response.status === 404) {
+                        // not exist
+                        return;
+                    }
+                    if (err.response.status === 400 && err.response.data.error === 'no_citizen_created') {
+                        // no citizen created
+                        return;
+                    }
+                    if (err.response.status === 403 && err.response.data.error.startsWith('not_enough_rights')) {
+                        this.notEnoughRightsMessage = err.response.data.errorMessage;
+                    }
                     console.error(err);
                 }).then(_ => {
                     this.loadingOrgaFleet = false;
                 });
             },
             refreshFiltersOptions() {
-                axios.get(`/api/organization/${this.sid}/citizens`).then(response => {
+                axios.get(`/api/organization/${this.selectedSid}/citizens`).then(response => {
                     this.filterOptionsCitizens = response.data;
                 }).catch(err => {
                     if (err.response.status === 401) {
@@ -346,9 +486,12 @@
                         // no citizen created
                         return;
                     }
+                    if (err.response.status === 403 && err.response.data.error.startsWith('not_enough_rights')) {
+                        this.notEnoughRightsMessage = err.response.data.errorMessage;
+                    }
                     console.error(err);
                 });
-                axios.get(`/api/organization/${this.sid}/ships`).then(response => {
+                axios.get(`/api/organization/${this.selectedSid}/ships`).then(response => {
                     this.filterOptionsShips = response.data;
                 }).catch(err => {
                     if (err.response.status === 401) {
@@ -362,6 +505,9 @@
                     if (err.response.status === 400 && err.response.data.error === 'no_citizen_created') {
                         // no citizen created
                         return;
+                    }
+                    if (err.response.status === 403 && err.response.data.error.startsWith('not_enough_rights')) {
+                        this.notEnoughRightsMessage = err.response.data.errorMessage;
                     }
                     console.error(err);
                 });
@@ -381,9 +527,6 @@
                     this.actualBreakpoint = 'xl';
                 }
             },
-            hasOrganization(sid) {
-                return this.citizen.organisations.indexOf(sid) !== -1;
-            }
         }
     }
 </script>

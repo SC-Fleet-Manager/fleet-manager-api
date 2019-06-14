@@ -5,6 +5,7 @@ namespace App\Security;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use HWI\Bundle\OAuthBundle\OAuth\Response\PathUserResponse;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthUserProvider as BaseProvider;
 use Ramsey\Uuid\Uuid;
@@ -28,7 +29,7 @@ class OAuthUserProvider extends BaseProvider
         return $this->loadUserByUsername($response->getUsername());
     }
 
-    private function persistOAuthInfos(UserResponseInterface $response): void
+    private function persistOAuthInfos(PathUserResponse $response): void
     {
         $user = $this->userRepository->getByDiscordId($response->getUsername());
         if ($user === null) {
@@ -37,12 +38,13 @@ class OAuthUserProvider extends BaseProvider
 
         if ($user !== null) {
             $user->setDiscordId($response->getUsername());
+            $user->setDiscordTag($response->getData()[$response->getPath('discordtag')] ?? null);
             $user->setUsername($response->getNickname());
             if (!$user->getApiToken()) {
                 $user->setApiToken(User::generateToken());
             }
         } else {
-            $this->registerNewUser($response->getUsername(), $response->getNickname());
+            $this->registerNewUser($response->getUsername(), $response->getData()[$response->getPath('discordtag')] ?? null, $response->getNickname());
         }
         $this->entityManager->flush();
     }
@@ -57,10 +59,11 @@ class OAuthUserProvider extends BaseProvider
         return $user;
     }
 
-    private function registerNewUser(string $discordId, string $username): User
+    private function registerNewUser(string $discordId, ?string $discordTag, string $username): User
     {
         $newUser = new User(Uuid::uuid4());
         $newUser->setDiscordId($discordId);
+        $newUser->setDiscordTag($discordTag);
         $newUser->setUsername($username);
         $newUser->setToken(User::generateToken());
         $newUser->setApiToken(User::generateToken());

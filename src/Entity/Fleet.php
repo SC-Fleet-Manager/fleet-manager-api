@@ -39,6 +39,14 @@ class Fleet
     /**
      * @var \DateTimeImmutable
      *
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     * @Groups({"my-fleet"})
+     */
+    private $refreshDate;
+
+    /**
+     * @var \DateTimeImmutable
+     *
      * @ORM\Column(type="datetime_immutable")
      * @Groups({"my-fleet"})
      */
@@ -48,7 +56,6 @@ class Fleet
      * @var iterable|Ship[]
      *
      * @ORM\OneToMany(targetEntity="App\Entity\Ship", mappedBy="fleet", fetch="EAGER", cascade={"all"})
-     * @ORM\JoinColumn(onDelete="CASCADE")
      * @Groups({"my-fleet", "public-fleet"})
      */
     private $ships;
@@ -71,9 +78,12 @@ class Fleet
         return $this->owner;
     }
 
-    public function setOwner(Citizen $owner): self
+    public function setOwner(?Citizen $owner): self
     {
         $this->owner = $owner;
+        if ($owner !== null) {
+            $owner->addFleet($this);
+        }
 
         return $this;
     }
@@ -102,6 +112,18 @@ class Fleet
         return $this;
     }
 
+    public function getRefreshDate(): ?\DateTimeImmutable
+    {
+        return $this->refreshDate;
+    }
+
+    public function setRefreshDate(?\DateTimeImmutable $refreshDate): self
+    {
+        $this->refreshDate = $refreshDate;
+
+        return $this;
+    }
+
     /**
      * @return Ship[]|iterable
      */
@@ -124,7 +146,7 @@ class Fleet
 
     public function isUploadedDateTooClose(): bool
     {
-        return $this->uploadDate >= new \DateTimeImmutable('-30 minutes');
+        return $this->uploadDate >= new \DateTimeImmutable('-15 minutes');
     }
 
     public function createRawData(): array

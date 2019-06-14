@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\OrganizationRepository")
@@ -11,7 +12,13 @@ use Ramsey\Uuid\UuidInterface;
 class Organization
 {
     public const PUBLIC_CHOICE_PRIVATE = 'private';
+    public const PUBLIC_CHOICE_ADMIN = 'admin';
     public const PUBLIC_CHOICE_PUBLIC = 'public';
+    public const PUBLIC_CHOICES = [
+        self::PUBLIC_CHOICE_PRIVATE,
+        self::PUBLIC_CHOICE_ADMIN,
+        self::PUBLIC_CHOICE_PUBLIC,
+    ];
 
     /**
      * @var UuidInterface
@@ -25,6 +32,7 @@ class Organization
      * @var string
      *
      * @ORM\Column(type="string", length=31, unique=true)
+     * @Groups({"profile", "orga_fleet"})
      */
     private $organizationSid;
 
@@ -32,6 +40,7 @@ class Organization
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"profile", "orga_fleet"})
      */
     private $name;
 
@@ -39,6 +48,7 @@ class Organization
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"profile", "orga_fleet"})
      */
     private $avatarUrl;
 
@@ -104,7 +114,9 @@ class Organization
 
     public function setPublicChoice(string $publicChoice): self
     {
-        $this->publicChoice = $publicChoice;
+        if (in_array($publicChoice, self::PUBLIC_CHOICES, true)) {
+            $this->publicChoice = $publicChoice;
+        }
 
         return $this;
     }

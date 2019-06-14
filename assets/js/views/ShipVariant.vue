@@ -5,14 +5,20 @@
             <img v-show="imgLazyLoaded" :src="shipVariant.shipInfo.mediaThumbUrl" :alt="shipVariant.shipInfo.name + ' ship picture'" class="img-fluid" @load="imgLazyLoaded = true" />
             <div class="ship-family-detail-variant-counter">{{ shipVariant.countTotalShips }}</div>
         </div>
-        <h4>{{ shipVariant.shipInfo.name }} <!--<a href="#" title="Go to pledge"><i class="fa fa-link"></i></a>--></h4>
+        <h4>
+            <a v-once v-if="shipVariant.shipInfo.pledgeUrl" :href="shipVariant.shipInfo.pledgeUrl" target="_blank" title="Go to pledge">{{ shipVariant.shipInfo.name }}</a>
+            <template v-once v-else>{{ shipVariant.shipInfo.name }}</template>
+        </h4>
 <!--        <div class="mb-3"><b-form-input type="text" v-model="search[ship.shipInfo.id]" placeholder="Search citizen"></b-form-input></div>&ndash;&gt;-->
         <div class="ship-family-detail-variant-ownerlist" @scroll="onUsersScroll">
             <div v-for="user in shipVariantUsers">
-                <a v-if="canAccessToHisFleet(user)" :href="'/citizen/'+user[0].citizen.actualHandle.handle" target="_blank">{{ user[0].citizen.actualHandle.handle }}</a>
-                <template v-else>{{ user[0].citizen.actualHandle.handle }}</template>
+                <a :href="'/citizen/'+user[0].citizen.actualHandle.handle" target="_blank">{{ user[0].citizen.actualHandle.handle }}</a>
                 : {{ user.countShips }}
             </div>
+            <i v-if="shipVariantHiddenUsers > 0">
+                <template v-if="shipVariantHiddenUsers == 1">+ {{ shipVariantHiddenUsers }} hidden owner</template>
+                <template v-else>+ {{ shipVariantHiddenUsers }} hidden owners</template>
+            </i>
         </div>
     </div>
 </template>
@@ -29,6 +35,7 @@
         data() {
             return {
                 shipVariantUsers: [],
+                shipVariantHiddenUsers: null,
                 page: 2,
                 atBottom: false,
                 imgLazyLoaded: false
@@ -46,6 +53,7 @@
         watch: {
             shipVariantUsersTrackChanges() {
                 this.shipVariantUsers = this.$store.getters['orga_fleet/shipVariantUser'](this.shipVariant.shipInfo.id);
+                this.shipVariantHiddenUsers = this.$store.state.orga_fleet.shipVariantHiddenUsers[this.shipVariant.shipInfo.id];
             },
         },
         methods: {
@@ -65,19 +73,6 @@
                 } else {
                     this.atBottom = false;
                 }
-            },
-            canAccessToHisFleet(user) {
-                switch (user[0].publicChoice) {
-                    case 'public':
-                        return true;
-                    case 'private':
-                        return false;
-                    case 'orga':
-                        // only if logged + hasOrga(selectedSid)
-                        const citizen = this.$store.getters.citizen;
-                        return citizen !== null && citizen.organisations.indexOf(this.selectedSid) !== -1;
-                }
-                return false;
             }
         }
     };

@@ -9,7 +9,7 @@ class LinkAccount
     /**
      * @var string
      *
-     * @Assert\NotBlank(message="You must enter a Starcitizen handle.")
+     * @Assert\NotBlank(message="You must enter your SC handle.")
      */
     public $handleSC;
 }

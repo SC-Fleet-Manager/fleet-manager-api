@@ -1,7 +1,7 @@
 <template>
     <div class="animated fadeIn">
         <b-row>
-            <b-col col md="6" v-if="showLinkAccount">
+            <b-col col xl="6" v-if="showLinkAccount">
                 <b-card header="Link your RSI Account">
                     <b-form>
                         <b-alert variant="success" show>
@@ -10,7 +10,7 @@
                             For now, the only best and simplest way is to put a <b>special marker</b> on your <b>RSI biography</b>.
                         </b-alert>
                         <b-button v-b-toggle.collapse-step-1 variant="primary" size="lg" v-if="showButtonStep1">Okay, I'm ready to link my account!</b-button>
-                        <b-collapse id="collapse-step-1" class="mt-3" @show="showButtonStep1 = false">
+                        <b-collapse id="collapse-step-1" class="mt-3" @show="showButtonStep1 = false" v-model="showCollapseStep1">
                             <h4>1. Who are you?</h4>
                             <b-form-group>
                                 <p class="">Firstly, let us know your Star Citizen Handle.</p>
@@ -19,7 +19,9 @@
                                     <b-form-input id="form_handle"
                                                   type="text"
                                                   v-model="form.handle"
-                                                  placeholder="Type your SC handle then click on search"></b-form-input>
+                                                  placeholder="Type your SC handle then click on search"
+                                                  @keyup.enter="searchHandle"
+                                    ></b-form-input>
                                     <b-input-group-append>
                                         <b-btn variant="success" @click="searchHandle" :disabled="searchingHandle">
                                             <template v-if="!searchingHandle"><i class="fas fa-search"></i> Search</template>
@@ -36,7 +38,7 @@
                                         <strong>Handle</strong>: <a :href="'https://robertsspaceindustries.com/citizens/'+searchedCitizen.handle.handle" target="_blank">{{ searchedCitizen.handle.handle }}</a><br/>
                                         <strong>Number</strong>: {{ searchedCitizen.numberSC.number }}<br/>
                                         <strong>Main orga</strong>: <span v-html="searchedCitizen.mainOrga ? formatOrganizationList([searchedCitizen.mainOrga]) : ''"></span><br/>
-                                        <strong>All orgas</strong>: <span v-html="formatOrganizationList(searchedCitizen.organisations)"></span><br/>
+                                        <strong>All orgas</strong>: <span v-html="formatOrganizationList(searchedCitizen.organizations)"></span><br/>
                                     </div>
                                 </div>
                             </b-form-group>
@@ -54,7 +56,7 @@
                         </b-collapse>
 
                         <b-button v-b-toggle.collapse-step-2 variant="primary" size="lg" v-if="showButtonStep2">Great, this is my account, let's continue!</b-button>
-                        <b-collapse id="collapse-step-2" class="mt-3" @show="showButtonStep2 = false">
+                        <b-collapse id="collapse-step-2" class="mt-3" @show="showButtonStep2 = false" v-model="showCollapseStep2">
                             <h4>2. Special marker</h4>
                             <p>
                                 Finally, you have to put this following token into your <a href="https://robertsspaceindustries.com/account/profile" target="_blank" style="text-decoration: underline"><b>RSI short bio</b></a>.<br/>
@@ -93,29 +95,40 @@
                     <b-form>
                         <b-button type="button" variant="secondary" :disabled="refreshingProfile" @click="refreshMyRsiProfile" class="mb-3" title="Force to retrieve your public profile from RSI"><i class="fas fa-sync-alt" :class="{'fa-spin': refreshingProfile}"></i>
                             Refresh my RSI Profile</b-button>
-                        <b-form-group label="Personal fleet policy">
-                            <b-form-radio v-model="publicChoice" @change="savePublicChoice" :disabled="savingPreferences" name="public-choice" value="private">Private</b-form-radio>
-                            <b-form-radio v-model="publicChoice" @change="savePublicChoice" :disabled="savingPreferences" name="public-choice" value="orga">Organizations only</b-form-radio>
-                            <b-form-radio v-model="publicChoice" @change="savePublicChoice" :disabled="savingPreferences" name="public-choice" value="public">Public</b-form-radio>
+
+                        <b-form-group label="Personal fleet policy" class="col-4">
+                            <b-form-radio v-model="publicChoice" @change="savePublicChoice" :disabled="savingPreferences" name="public-choice" value="private">Private <i class="fas fa-info-circle" v-b-tooltip.hover title="Only you see your fleet and your name is hidden on your orgas' fleets."></i></b-form-radio>
+                            <b-form-radio v-model="publicChoice" @change="savePublicChoice" :disabled="savingPreferences" name="public-choice" value="orga">Organizations only <i class="fas fa-info-circle" v-b-tooltip.hover title="Allows you to fine-grained set your visibility on each orgas."></i></b-form-radio>
+                            <b-form-radio v-model="publicChoice" @change="savePublicChoice" :disabled="savingPreferences" name="public-choice" value="public">Public <i class="fas fa-info-circle" v-b-tooltip.hover title="Everyone can see your fleet and your name is visible in your orgas' fleets."></i></b-form-radio>
                         </b-form-group>
-                        <!-- TODO uncomment this shit -->
-                        <!--<b-form-group :label="'Organization ' + orga.organizationSid + ' fleet policy'" v-for="orga in manageableOrgas" :key="orga.organizationSid">
-                            <b-form-radio v-model="orgaPublicChoices[orga.organizationSid]" @change="saveOrgaPublicChoice($event, orga)" :disabled="savingPreferences" :name="'orga-public-choice-' + orga.organizationSid" value="private">Private</b-form-radio>
-                            <b-form-radio v-model="orgaPublicChoices[orga.organizationSid]" @change="saveOrgaPublicChoice($event, orga)" :disabled="savingPreferences" :name="'orga-public-choice-' + orga.organizationSid" value="public">Public</b-form-radio>
-                        </b-form-group>-->
-                        <b-form-group label="My fleet link" label-for="my_fleet_link">
-                            <b-input-group>
-                                <b-input-group-prepend>
-                                    <b-btn :variant="fleetLinkCopied ? 'success' : 'outline-success'"
-                                           v-clipboard:copy="myFleetLink"
-                                           v-clipboard:success="onCopyFleetLink">{{ fleetLinkCopied ? 'Copied' : 'Copy' }}</b-btn>
-                                </b-input-group-prepend>
+                        <div v-if="publicChoice === 'orga'" class="mb-3">
+                            <div v-for="orga in citizen.organizations" :key="orga.organization.organizationSid">
+                                <div class="d-inline-block" style="min-width:150px;">{{ orga.organization.name }}</div>
+                                <div class="d-inline-block">
+                                    <b-form-radio class="d-inline-block mr-3" v-model="orgaVisibilityChoices[orga.organization.organizationSid]" @change="saveOrgaVisibilityChoices($event, orga.organization)" :disabled="savingPreferences" :name="'orga-visibility-choice-'+orga.organization.organizationSid" value="private">Private <i class="fas fa-info-circle" v-b-tooltip.hover title="Your fleet is not visible for these orga's members and your name is not visible on this orga's fleet."></i></b-form-radio>
+                                    <b-form-radio class="d-inline-block mr-3" v-model="orgaVisibilityChoices[orga.organization.organizationSid]" @change="saveOrgaVisibilityChoices($event, orga.organization)" :disabled="savingPreferences" :name="'orga-visibility-choice-'+orga.organization.organizationSid" value="admin">Admin only <i class="fas fa-info-circle" v-b-tooltip.hover title="Only the highest ranks (admins) of this orga can see your fleet and your name in this orga's fleet."></i></b-form-radio>
+                                    <b-form-radio class="d-inline-block" v-model="orgaVisibilityChoices[orga.organization.organizationSid]" @change="saveOrgaVisibilityChoices($event, orga.organization)" :disabled="savingPreferences" :name="'orga-visibility-choice-'+orga.organization.organizationSid" value="orga">Orga only <i class="fas fa-info-circle" v-b-tooltip.hover title="You and these orga's members only can see your fleet and your name is visible on this orga's fleet."></i></b-form-radio>
+                                </div>
+                            </div>
+                        </div>
+                        <b-form-group>
+                            <b-input-group prepend="My fleet link">
                                 <b-form-input readonly
                                               id="my_fleet_link"
                                               type="text"
                                               v-model="myFleetLink"></b-form-input>
+                                <b-input-group-append>
+                                    <b-btn :variant="fleetLinkCopied ? 'success' : 'outline-success'"
+                                           v-clipboard:copy="myFleetLink"
+                                           v-clipboard:success="onCopyFleetLink">{{ fleetLinkCopied ? 'Copied' : 'Copy' }}</b-btn>
+                                </b-input-group-append>
                             </b-input-group>
                         </b-form-group>
+                        <b-alert variant="warning" :show="citizen.countRedactedOrganizations > 0">
+                            <h5><i class="fas fa-exclamation-triangle"></i> Redacted orgas</h5>
+                            You have <strong>{{ citizen.countRedactedOrganizations }} redacted organizations</strong><template v-if="citizen.redactedMainOrga"> including your main orga</template>. Therefore, you will not be able to see their fleet.<br/>
+                            To display them, you have to set <strong>"Visible"</strong> in your <a href="https://robertsspaceindustries.com/account/organization" target="_blank">RSI account</a>.
+                        </b-alert>
                     </b-form>
                 </b-card>
             </b-col>
@@ -139,7 +152,7 @@
                 },
                 myFleetLink: null,
                 publicChoice: null,
-                orgaPublicChoices: {},
+                orgaVisibilityChoices: {},
                 manageableOrgas: [],
                 savingPreferences: false,
                 preferencesLoaded: false,
@@ -159,6 +172,8 @@
                 searchedCitizen: null,
                 searchingHandle: false,
                 lastShortBio: null,
+                showCollapseStep1: false,
+                showCollapseStep2: false,
             }
         },
         created() {
@@ -170,15 +185,15 @@
                 this.publicChoice = value;
                 this.savePreferences();
             },
-            saveOrgaPublicChoice(value, orga) {
-                this.$set(this.orgaPublicChoices, orga.organizationSid, value);
+            saveOrgaVisibilityChoices(value, orga) {
+                this.$set(this.orgaVisibilityChoices, orga.organizationSid, value);
                 this.savePreferences();
             },
             savePreferences() {
                 this.savingPreferences = true;
                 axios.post('/api/profile/save-preferences', {
                     publicChoice: this.publicChoice,
-                    orgaPublicChoices: this.orgaPublicChoices,
+                    orgaVisibilityChoices: this.orgaVisibilityChoices,
                 }).then(response => {
                     toastr.success('Changes saved');
                 }).catch(err => {
@@ -204,28 +219,18 @@
                     this.myFleetLink = this.getMyFleetLink();
                     this.publicChoice = response.data.publicChoice;
                     this.updateProfile(this.citizen);
-                    this.refreshManageableOrgas();
+
+                    if (this.citizen) {
+                        for (let orga of this.citizen.organizations) {
+                            this.$set(this.orgaVisibilityChoices, orga.organization.organizationSid, orga.visibility);
+                        }
+                    }
                 }).catch(err => {
                     this.checkAuth(err.response);
                     this.showError = true;
                     if (err.response.data.errorMessage) {
                         this.errorMessage = err.response.data.errorMessage;
                     }
-                    console.error(err);
-                });
-            },
-            refreshManageableOrgas() {
-                if (this.citizen === null) {
-                    return;
-                }
-                axios.get('/api/manageable-organizations').then(response => {
-                    this.manageableOrgas = response.data;
-                    for (let orga of this.manageableOrgas) {
-                        this.$set(this.orgaPublicChoices, orga.organizationSid, orga.publicChoice);
-                    }
-                }).catch(err => {
-                    this.checkAuth(err.response);
-                    toastr.error('Sorry, can\'t retrieve manageable organizations.');
                     console.error(err);
                 });
             },
@@ -257,6 +262,7 @@
 
                 this.searchedCitizen = null;
                 this.showErrorStep1 = false;
+                this.showCollapseStep2 = false;
                 this.searchingHandle = true;
                 axios.get('/api/search-handle', {
                     params: {handle: this.form.handle}
@@ -264,12 +270,15 @@
                     this.searchedCitizen = response.data;
                     this.showButtonStep2 = true;
                 }).catch(err => {
-                    if (err.response.data.error === 'not_found_handle') {
+                    if (err.response.data.error === 'invalid_form') {
+                        this.errorStep1Message = err.response.data.formErrors.join('<br/>');
+                    } else if (err.response.data.error === 'not_found_handle') {
                         this.errorStep1Message = `Sorry, it seems that <a href="https://robertsspaceindustries.com/citizens/${this.form.handle}" target="_blank">SC Handle ${this.form.handle}</a> does not exist. Try to check the typo and search again.`;
                     } else {
                         this.errorStep1Message = `Sorry, an unexpected error has occurred. Please retry.`;
                     }
                     this.showErrorStep1 = true;
+                    this.showButtonStep2 = false;
                     console.error(err);
                 }).then(_ => {
                     this.searchingHandle = false;

@@ -44,6 +44,6 @@ services:
         tags:
             - { name: 'kernel.event_listener', event: 'kernel.controller', method: 'onController' }
 
-    App\Listener\CreateAndUpdateOrganizationListener:
+    App\Listener\UpdateCitizenLastFleetListener:
         tags:
-            - { name: 'kernel.event_listener', event: 'citizen_refresh', method: 'onRefreshCitizen' }
+            - { name: 'doctrine.event_listener', event: 'prePersist', method: 'prePersist' }
