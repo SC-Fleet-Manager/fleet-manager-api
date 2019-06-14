@@ -349,7 +349,7 @@ class SpaControllerTest extends PantherTestCase
         });
 
         $this->client->findElement(WebDriverBy::id('select-orga__BV_toggle_'))->click();
-        $this->client->findElements(WebDriverBy::cssSelector('#select-orga .dropdown-item'))[0]->click();
+        $this->client->findElement(WebDriverBy::xpath('//a[contains(@class, "dropdown-item")][contains(text(), "FallKrom")]'))->click();
         $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
             return strpos($driver->findElement(WebDriverBy::cssSelector('h4 a'))->getText(), 'FallKrom') !== false;
         });
@@ -390,7 +390,7 @@ class SpaControllerTest extends PantherTestCase
         $this->assertContains('Les Gardiens', $this->client->findElement(WebDriverBy::cssSelector('h4 a'))->getText());
         $this->assertCount(0, $this->client->findElements(WebDriverBy::xpath('//button[contains(text(), "Export fleet")]')));
         $this->assertCount(1, $this->client->findElements(WebDriverBy::id('filters_input_ship_name')));
-        $this->assertCount(1, $this->client->findElements(WebDriverBy::id('filters_input_citizen_id')));
+        $this->assertCount(0, $this->client->findElements(WebDriverBy::id('filters_input_citizen_id')));
         $this->assertCount(1, $this->client->findElements(WebDriverBy::id('filters_input_ship_size')));
         $this->assertCount(1, $this->client->findElements(WebDriverBy::id('filters_input_ship_status')));
 
@@ -414,7 +414,7 @@ class SpaControllerTest extends PantherTestCase
         $this->assertContains('Les Gardiens', $this->client->findElement(WebDriverBy::cssSelector('h4 a'))->getText());
         $this->assertCount(0, $this->client->findElements(WebDriverBy::xpath('//button[contains(text(), "Export fleet")]')));
         $this->assertCount(1, $this->client->findElements(WebDriverBy::id('filters_input_ship_name')));
-        $this->assertCount(1, $this->client->findElements(WebDriverBy::id('filters_input_citizen_id')));
+        $this->assertCount(0, $this->client->findElements(WebDriverBy::id('filters_input_citizen_id')));
         $this->assertCount(1, $this->client->findElements(WebDriverBy::id('filters_input_ship_size')));
         $this->assertCount(1, $this->client->findElements(WebDriverBy::id('filters_input_ship_status')));
 
