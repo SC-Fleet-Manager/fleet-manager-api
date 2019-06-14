@@ -12,7 +12,7 @@
                 <b-nav-text v-if="citizen == null && user != null" class="px-3 d-none d-sm-inline-block">Welcome, {{ user.nickname }}</b-nav-text>-->
                 <b-nav-text v-if="user != null" class="px-3 d-none d-sm-inline-block">Welcome, {{ user.nickname }}</b-nav-text>
                 <b-nav-item v-if="user != null" class="px-3" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</b-nav-item>
-                <b-nav-item v-else class="px-3" href="/login"><i class="fas fa-sign-in-alt"></i> Login</b-nav-item>
+                <b-nav-item v-else class="px-3" v-b-modal.modal-login><i class="fas fa-sign-in-alt"></i> Login</b-nav-item>
             </b-navbar-nav>
         </AppHeader>
         <div class="app-body">
@@ -39,6 +39,28 @@
                 <b-nav-text><span class="mr-1">Created by </span><a target="_blank" href="https://github.com/ioni14">Ioni</a></b-nav-text>
             </b-nav>
         </TheFooter>
+
+        <b-modal
+            id="modal-login"
+            ref="modalLogin"
+            title="Connect to Fleet Manager"
+            size="md"
+            centered hide-footer
+            header-bg-variant="dark"
+            header-text-variant="light"
+            body-bg-variant="dark"
+            body-text-variant="light"
+            footer-bg-variant="dark"
+            footer-text-variant="light"
+        >
+            <b-row class="justify-content-center">
+                <b-col>
+                    <b-form class="text-center mt-3 mb-3">
+                        <b-button size="lg" style="background-color: #7289da; color: #fff;" class="px-5" href="/connect/discord"><i class="fab fa-discord"></i> Login with Discord</b-button>
+                    </b-form>
+                </b-col>
+            </b-row>
+        </b-modal>
     </div>
 </template>
 

@@ -41,7 +41,7 @@ class FleetOrganizationGuard
         if (!$this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             return new JsonResponse([
                 'error' => 'not_enough_rights_public',
-                'errorMessage' => sprintf('Sorry, you have not the rights to access to %s fleet page.<br/>If you are in this orga, please login and refresh your RSI profile in <a href="/profile">your profile page</a>.', $orga->getName()),
+                'errorMessage' => sprintf('Sorry, you have not the rights to access to %s fleet page.<br/>If you are in this orga, please login and refresh your RSI profile in your profile page.', $orga->getName()),
             ], 403);
         }
 

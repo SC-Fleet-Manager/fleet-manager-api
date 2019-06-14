@@ -4,7 +4,7 @@ security:
             id: App\Security\OAuthUserProvider
     firewalls:
         dev:
-            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            pattern: ^/(_(profiler|wdt)|build|icons|favicon\.ico|robots\.txt)/
             security: false
         token:
             pattern: ^/api/export$
