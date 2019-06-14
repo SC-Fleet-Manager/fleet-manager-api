@@ -61,6 +61,18 @@ const router = new Router({
                     }
                 },
                 {
+                    path: 'my-fleet',
+                    name: 'My Fleet',
+                    beforeEnter(to, from, next) {
+                        axios.get('/api/profile/').then(response => {
+                            const citizen = response.data.citizen;
+                            next({ path: `/citizen/${citizen.actualHandle.handle}` });
+                        }).catch(err => {
+                            next();
+                        });
+                    },
+                },
+                {
                     path: 'citizen/:userHandle',
                     name: 'User fleet',
                     component: MyFleet,
