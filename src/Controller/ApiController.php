@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Domain\HandleSC;
 use App\Entity\Citizen;
 use App\Entity\Fleet;
+use App\Entity\Organization;
 use App\Entity\User;
 use App\Exception\NotFoundHandleSCException;
 use App\Form\Dto\LinkAccount;
@@ -209,22 +210,17 @@ class ApiController extends AbstractController
      */
     public function numbers(EntityManagerInterface $entityManager): Response
     {
-        /** @var Citizen[] $citizens */
-        $citizens = $entityManager->getRepository(Citizen::class)->findAll();
-
-        $orgas = [];
-        foreach ($citizens as $citizen) {
-            $orgas = array_merge($orgas, $citizen->getOrganizationSids());
-        }
-        $orgas = array_unique($orgas);
-
-        $users = $entityManager->getRepository(User::class)->findAll();
+        $countOrgas = count($entityManager->getRepository(Organization::class)->findAll());
+        $countUsers = count($entityManager->getRepository(User::class)->findAll());
         $countShips = $entityManager->getRepository(Fleet::class)->countTotalShips();
 
-        return $this->json([
-            'organizations' => count($orgas),
-            'users' => count($users),
+        $response = $this->json([
+            'organizations' => $countOrgas,
+            'users' => $countUsers,
             'ships' => $countShips,
         ]);
+        $response->setSharedMaxAge(300);
+
+        return $response;
     }
 }
