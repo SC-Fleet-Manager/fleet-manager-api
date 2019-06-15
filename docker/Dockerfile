@@ -54,18 +54,7 @@ RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS libxml2-dev icu-dev li
     && apk del .build-deps \
     && docker-php-ext-enable --ini-name 05-opcache.ini opcache \
     && docker-php-ext-enable --ini-name 20-redis.ini redis \
-    && rm -fr \
-        /tmp/* \
-        /usr/src \
-        /usr/local/include \
-        /usr/local/php \
-        /usr/local/etc/php/php.ini-* \
-        /usr/local/bin/docker-php* \
-        /usr/local/bin/pear \
-        /usr/local/bin/peardev \
-        /usr/local/bin/pecl \
-        /usr/local/bin/phpize \
-        /usr/local/bin/phpdbg
+    && rm -fr /tmp/*
 
 COPY docker/php/php.prod.ini /usr/local/etc/php/php.ini
 COPY docker/php/entrypoint.sh /usr/local/bin/docker-app-entrypoint
@@ -127,7 +116,8 @@ ARG XDEBUG_VERSION=2.7.2
 RUN set -eux; \
 	apk add --no-cache --virtual .build-deps $PHPIZE_DEPS; \
 	pecl install xdebug-$XDEBUG_VERSION; \
-	apk del .build-deps
+	apk del .build-deps; \
+	rm -fr /tmp/*
 
 RUN apk add --no-cache \
         chromium \
