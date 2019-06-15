@@ -10,7 +10,9 @@ use App\Exception\NotFoundHandleSCException;
 use App\Form\Dto\LinkAccount;
 use App\Form\LinkAccountForm;
 use App\Repository\CitizenOrganizationRepository;
+use App\Repository\CitizenRepository;
 use App\Repository\OrganizationRepository;
+use App\Repository\UserRepository;
 use App\Service\CitizenFleetGenerator;
 use App\Service\CitizenInfosProviderInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -31,18 +33,59 @@ class ApiController extends AbstractController
     private $security;
     private $citizenFleetGenerator;
     private $organizationRepository;
+    private $citizenRepository;
+    private $userRepository;
     private $formFactory;
 
     public function __construct(
         Security $security,
         CitizenFleetGenerator $citizenFleetGenerator,
         OrganizationRepository $organizationRepository,
+        CitizenRepository $citizenRepository,
+        UserRepository $userRepository,
         FormFactoryInterface $formFactory
     ) {
         $this->security = $security;
         $this->citizenFleetGenerator = $citizenFleetGenerator;
         $this->organizationRepository = $organizationRepository;
+        $this->citizenRepository = $citizenRepository;
+        $this->userRepository = $userRepository;
         $this->formFactory = $formFactory;
+    }
+
+    /**
+     * @Route("/citizen/{handle}", name="citizen", methods={"GET"}, options={"expose":true})
+     *
+     * Retrieves profile infos of a citizen.
+     */
+    public function index(string $handle): Response
+    {
+        /** @var Citizen|null $citizen */
+        $citizen = $this->citizenRepository->findOneBy(['actualHandle' => $handle]);
+        if ($citizen === null) {
+            return $this->json([
+                'error' => 'citizen_not_found',
+                'errorMessage' => sprintf('The citizen %s does not exist.', $handle),
+            ], 404);
+        }
+
+        /** @var User|null $user */
+        $user = $this->userRepository->findOneBy(['citizen' => $citizen]);
+        if ($user === null) {
+            return $this->json([
+                'error' => 'user_not_found',
+                'errorMessage' => sprintf('The user of citizen %s does not exist.', $handle),
+            ], 404);
+        }
+
+        if (!$this->isGranted('ACCESS_USER_FLEET', $user)) {
+            return $this->json([
+                'error' => 'no_rights',
+                'errorMessage' => 'You have no rights to see this citizen.',
+            ], 403);
+        }
+
+        return $this->json($citizen, 200, [], ['groups' => 'public_profile']);
     }
 
     /**

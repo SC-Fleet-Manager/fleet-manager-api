@@ -39,7 +39,7 @@ class Citizen
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"profile", "orga_fleet"})
+     * @Groups({"profile", "public_profile", "orga_fleet"})
      */
     private $nickname;
 
@@ -47,7 +47,7 @@ class Citizen
      * @var HandleSC
      *
      * @ORM\Column(type="string", length=255)
-     * @Groups({"profile", "orga_fleet", "orga_fleet_admin"})
+     * @Groups({"profile", "public_profile", "orga_fleet", "orga_fleet_admin"})
      */
     private $actualHandle;
 
@@ -77,7 +77,7 @@ class Citizen
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"profile"})
+     * @Groups({"profile", "public_profile"})
      */
     private $avatarUrl;
 

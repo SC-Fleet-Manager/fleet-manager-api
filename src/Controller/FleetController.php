@@ -67,13 +67,19 @@ class FleetController extends AbstractController
         /** @var Citizen|null $citizen */
         $citizen = $this->citizenRepository->findOneBy(['actualHandle' => $handle]);
         if ($citizen === null) {
-            throw $this->createNotFoundException(sprintf('Citizen %s does not exist.', $handle));
+            return $this->json([
+                'error' => 'citizen_not_found',
+                'errorMessage' => sprintf('The citizen %s does not exist.', $handle),
+            ], 404);
         }
 
         /** @var User|null $user */
         $user = $this->userRepository->findOneBy(['citizen' => $citizen]);
         if ($user === null) {
-            throw $this->createNotFoundException(sprintf('User of citizen %s does not exist.', $handle));
+            return $this->json([
+                'error' => 'user_not_found',
+                'errorMessage' => sprintf('The user of citizen %s does not exist.', $handle),
+            ], 404);
         }
 
         if (!$this->isGranted('ACCESS_USER_FLEET', $user)) {

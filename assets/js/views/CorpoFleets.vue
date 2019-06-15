@@ -375,32 +375,38 @@
                     }
                 }
             },
-            refreshProfile() {
-                axios.get('/api/profile/').then(response => {
-                    this.citizen = response.data.citizen;
-                    this.citizen.organizations.sort((orga1, orga2) => {
-                        if (this.citizen.mainOrga) {
-                            if (this.citizen.mainOrga.id === orga1.id) {
-                                return -1;
-                            } else if (this.citizen.mainOrga.id === orga2.id) {
-                                return 1;
-                            }
+            async refreshProfile() {
+                this.refreshAdmins();
+
+                this.citizen = this.$store.getters.citizen;
+                if (this.citizen === null) {
+                    try {
+                        const response = await axios.get('/api/profile/');
+                        this.$store.commit('updateProfile', response.data.citizen);
+                        this.citizen = response.data.citizen;
+                    } catch (err) {
+                        if (err.response.status === 401) {
+                            // not connected
+                            return;
                         }
-                        return orga1.organization.name > orga2.organization.name ? 1 : -1;
-                    });
-                    this.refreshOrganization();
-                }).catch(err => {
-                    if (err.response.status === 401) {
-                        // not connected
+                        if (err.response.data.errorMessage) {
+                            toastr.error(err.response.data.errorMessage);
+                        }
+                        console.error(err);
                         return;
                     }
-                    if (err.response.data.errorMessage) {
-                        toastr.error(err.response.data.errorMessage);
+                }
+                this.citizen.organizations.sort((orga1, orga2) => {
+                    if (this.citizen.mainOrga) {
+                        if (this.citizen.mainOrga.id === orga1.id) {
+                            return -1;
+                        } else if (this.citizen.mainOrga.id === orga2.id) {
+                            return 1;
+                        }
                     }
-                    console.error(err);
+                    return orga1.organization.name > orga2.organization.name ? 1 : -1;
                 });
-
-                this.refreshAdmins();
+                this.refreshOrganization();
             },
             refreshAdmins() {
                 axios.get(`/api/fleet/orga-fleets/${this.selectedSid}/admins`).then(response => {

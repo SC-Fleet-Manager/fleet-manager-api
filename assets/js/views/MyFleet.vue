@@ -55,21 +55,23 @@
                 errorMessage: '',
             }
         },
-        created() {
-            axios.get('/api/profile/', {
-                params: {}
-            }).then(response => {
-                this.citizen = response.data.citizen;
-                this.isMyProfile = this.citizen.actualHandle.handle === this.userHandle;
-            }).catch(err => {
-                if (err.response.status === 401) {
-                    // not connected
-                    return;
+        async created() {
+            this.citizen = this.$store.getters.citizen;
+            if (this.citizen === null) {
+                try {
+                    const response = await axios.get('/api/profile/');
+                    this.$store.commit('updateProfile', response.data.citizen);
+                    this.citizen = response.data.citizen;
+                } catch (err) {
+                    if (err.response.status === 401) {
+                        // not connected
+                        return;
+                    }
+                    toastr.error('Cannot retrieve your profile.');
                 }
-                toastr.error('Cannot retrieve your profile.');
-            }).then(_ => {
-                this.refreshMyFleet();
-            });
+            }
+            this.isMyProfile = this.citizen !== null && this.citizen.actualHandle.handle === this.userHandle;
+            this.refreshMyFleet();
         },
         filters: {
             date: (value, format) => {
@@ -87,9 +89,7 @@
         },
         methods: {
             refreshMyFleet() {
-                axios.get(this.isMyProfile ? '/api/fleet/my-fleet' : `/api/fleet/user-fleet/${this.userHandle}`, {
-                    params: {}
-                }).then(response => {
+                axios.get(this.isMyProfile ? '/api/fleet/my-fleet' : `/api/fleet/user-fleet/${this.userHandle}`).then(response => {
                     this.ships = [];
                     if (response.data.fleet !== null) {
                         this.ships = response.data.fleet.ships;
