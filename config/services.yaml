@@ -1,6 +1,6 @@
 parameters:
     env(REDIS_HOST): 'localhost'
-    env(REDIS_PORT): 6379
+    env(REDIS_PORT): '6379'
     locale: 'en'
     hwi_oauth.authentication.entry_point.oauth.class: 'App\Security\OAuthEntryPoint'
 
@@ -35,6 +35,10 @@ services:
     App\Service\OrganizationInfosProviderInterface: '@App\Service\ApiOrganizationInfosProvider'
     App\Service\ApiOrganizationInfosProvider:
         arguments: { '$cache': '@rsi.organizations.cache' }
+
+    App\Service\OrganizationMembersInfosProviderInterface: '@App\Service\ApiOrganizationMembersInfosProvider'
+    App\Service\ApiOrganizationMembersInfosProvider:
+        arguments: { '$cache': '@rsi.organizations_members.cache' }
 
     App\Service\CitizenInfosProviderInterface: '@App\Service\ApiCitizenInfosProvider'
     App\Service\ApiCitizenInfosProvider:

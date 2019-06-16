@@ -144,7 +144,7 @@ class ApiController extends AbstractController
 
     /**
      * @Route("/manageable-organizations", name="manageable_organizations", methods={"GET"})
-     * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      */
     public function manageableOrganizations(CitizenOrganizationRepository $citizenOrganizationRepository): Response
     {
