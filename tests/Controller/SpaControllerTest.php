@@ -139,7 +139,7 @@ class SpaControllerTest extends PantherTestCase
         $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
             return count($driver->findElements(WebDriverBy::className('toast-message'))) > 0;
         });
-        $this->assertContains('Please wait 29 minutes before refreshing.', $this->client->findElement(WebDriverBy::cssSelector('.toast-error'))->getText());
+        $this->assertContains('Please wait 9 minutes before refreshing.', $this->client->findElement(WebDriverBy::cssSelector('.toast-error'))->getText());
 
         // update sc handle not exist
         $this->client->request('GET', '/profile');
