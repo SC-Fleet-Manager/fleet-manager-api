@@ -352,7 +352,7 @@ class Citizen
 
     public function canBeRefreshed(): bool
     {
-        return $this->lastRefresh === null || $this->lastRefresh <= new \DateTimeImmutable('-30 minutes');
+        return $this->lastRefresh === null || $this->lastRefresh <= new \DateTimeImmutable('-10 minutes');
     }
 
     public function getTimeLeftBeforeRefreshing(): ?\DateInterval
@@ -361,7 +361,7 @@ class Citizen
             return null;
         }
 
-        return $this->lastRefresh->diff(new \DateTimeImmutable('-30 minutes'));
+        return $this->lastRefresh->diff(new \DateTimeImmutable('-10 minutes'));
     }
 
     public function getOrgaBySid(string $sid): ?CitizenOrganization
