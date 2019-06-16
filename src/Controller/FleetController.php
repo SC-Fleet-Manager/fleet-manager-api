@@ -37,7 +37,7 @@ class FleetController extends AbstractController
 
     /**
      * @Route("/fleet/my-fleet", name="my_fleet", methods={"GET"}, options={"expose":true})
-     * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      */
     public function myFleet(): Response
     {

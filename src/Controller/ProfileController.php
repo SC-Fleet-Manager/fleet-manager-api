@@ -45,7 +45,7 @@ class ProfileController extends AbstractController
 
     /**
      * @Route("/", name="index", methods={"GET"})
-     * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      *
      * Retrieves profile infos : user properties.
      */
@@ -59,7 +59,7 @@ class ProfileController extends AbstractController
 
     /**
      * @Route("/refresh-rsi-profile", name="refresh_rsi_profile", methods={"POST"})
-     * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      */
     public function refreshRsiProfile(): Response
     {
@@ -95,7 +95,7 @@ class ProfileController extends AbstractController
 
     /**
      * @Route("/save-preferences", name="save_preferences", methods={"POST"}, condition="request.getContentType() == 'json'")
-     * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      */
     public function savePreferences(Request $request): Response
     {
@@ -134,7 +134,7 @@ class ProfileController extends AbstractController
 
     /**
      * @Route("/update-handle", name="update_handle", methods={"POST"})
-     * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      *
      * Update the SC Handle of logged User. Compare the current and target Citizen numbers.
      */

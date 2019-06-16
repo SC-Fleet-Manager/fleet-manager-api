@@ -97,12 +97,21 @@
                     </b-row>
                 </b-card>
                 <b-card v-if="menu == 'admin_panel'">
+                    <h4>Admin panel of {{ organization.name }}</h4>
                     <b-alert variant="danger" :show="fleetPolicyErrors" v-html="fleetPolicyErrorMessages"></b-alert>
-                    <b-form-group :label="'Fleet policy of '+organization.name">
-                        <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="private">Members only <i class="fas fa-info-circle" v-b-tooltip.hover title="Only the orga's members can see the orga's fleet."></i></b-form-radio>
-                        <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="admin">Admin only <i class="fas fa-info-circle" v-b-tooltip.hover title="Only the highest ranks (admins) of the orga can see the orga's fleet."></i></b-form-radio>
-                        <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="public">Public <i class="fas fa-info-circle" v-b-tooltip.hover title="Everyone can see the orga's fleet."></i></b-form-radio>
-                    </b-form-group>
+                    <b-row>
+                        <b-col lg="6">
+                            <b-form-group label="Fleet policy">
+                                <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="private">Members only <i class="fas fa-info-circle" v-b-tooltip.hover title="Only the orga's members can see the orga's fleet."></i></b-form-radio>
+                                <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="admin">Admin only <i class="fas fa-info-circle" v-b-tooltip.hover title="Only the highest ranks (admins) of the orga can see the orga's fleet."></i></b-form-radio>
+                                <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="public">Public <i class="fas fa-info-circle" v-b-tooltip.hover title="Everyone can see the orga's fleet."></i></b-form-radio>
+                            </b-form-group>
+                        </b-col>
+                        <b-col lg="6">
+                            <b-alert variant="info" show="true">These following data are a combination between <a :href="'https://robertsspaceindustries.com/orgs/'+selectedSid+'/members'" target="_blank">RSI public data</a> and ours.</b-alert>
+                            <OrgaRegisteredMembers :selectedSid="selectedSid"></OrgaRegisteredMembers>
+                        </b-col>
+                    </b-row>
                 </b-card>
             </b-col>
         </b-row>
@@ -116,6 +125,7 @@
     import ShipFamilyDetail from './ShipFamilyDetail';
     import ShipFamily from './ShipFamily';
     import { createNamespacedHelpers } from 'vuex';
+    import OrgaRegisteredMembers from "./OrgaRegisteredMembers";
 
     const { mapGetters, mapMutations, mapActions } = createNamespacedHelpers('orga_fleet');
     const BREAKPOINTS = {xs: 0, sm: 576, md: 768, lg: 992, xl: 1200};
@@ -138,7 +148,7 @@
     export default {
         name: 'organizations-fleets',
         props: ['sid'],
-        components: {vSelect, ShipFamily, ShipFamilyDetail},
+        components: {OrgaRegisteredMembers, vSelect, ShipFamily, ShipFamilyDetail},
         data() {
             return {
                 menu: MENU_FLEET,

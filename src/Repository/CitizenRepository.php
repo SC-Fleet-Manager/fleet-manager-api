@@ -22,6 +22,17 @@ class CitizenRepository extends ServiceEntityRepository
         parent::__construct($registry, Citizen::class);
     }
 
+    public function findSomeHandlesWithLastFleet(array $handles): array
+    {
+        return $this->createQueryBuilder('c')
+            ->addSelect('fleet')
+            ->leftJoin('c.lastFleet', 'fleet')
+            ->where('LOWER(c.actualHandle) IN (:handles)')
+            ->setParameter('handles', $handles)
+            ->getQuery()
+            ->getResult();
+    }
+
     /**
      * @return Citizen[]
      */
@@ -192,10 +203,10 @@ class CitizenRepository extends ServiceEntityRepository
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
         $stmt->setParameter('sid', mb_strtolower($organizationId->getSid()));
         foreach ($filter->shipNames as $i => $filterShipName) {
-            $stmt->setParameter('shipName_'.$i, $filterShipName);
+            $stmt->setParameter('shipName_' . $i, $filterShipName);
         }
         foreach ($filter->citizenIds as $i => $filterCitizenId) {
-            $stmt->setParameter('citizenId_'.$i, $filterCitizenId);
+            $stmt->setParameter('citizenId_' . $i, $filterCitizenId);
         }
 
         return $stmt->getResult();
@@ -242,10 +253,10 @@ class CitizenRepository extends ServiceEntityRepository
             'shipName' => mb_strtolower($shipName),
         ]);
         foreach ($filter->shipNames as $i => $filterShipName) {
-            $stmt->setParameter('shipName_'.$i, $filterShipName);
+            $stmt->setParameter('shipName_' . $i, $filterShipName);
         }
         foreach ($filter->citizenIds as $i => $filterCitizenId) {
-            $stmt->setParameter('citizenId_'.$i, $filterCitizenId);
+            $stmt->setParameter('citizenId_' . $i, $filterCitizenId);
         }
 
         return $stmt->getScalarResult();
@@ -346,10 +357,10 @@ class CitizenRepository extends ServiceEntityRepository
             $stmt->setParameter('countItems', $itemsPerPage);
         }
         foreach ($filter->shipNames as $i => $filterShipName) {
-            $stmt->setParameter('shipName_'.$i, $filterShipName);
+            $stmt->setParameter('shipName_' . $i, $filterShipName);
         }
         foreach ($filter->citizenIds as $i => $filterCitizenId) {
-            $stmt->setParameter('citizenId_'.$i, $filterCitizenId);
+            $stmt->setParameter('citizenId_' . $i, $filterCitizenId);
         }
 
         return $stmt->getResult();
@@ -431,10 +442,10 @@ class CitizenRepository extends ServiceEntityRepository
             'viewerCitizenId' => $viewerCitizen !== null ? $viewerCitizen->getId()->toString() : null,
         ]);
         foreach ($filter->shipNames as $i => $filterShipName) {
-            $stmt->setParameter('shipName_'.$i, $filterShipName);
+            $stmt->setParameter('shipName_' . $i, $filterShipName);
         }
         foreach ($filter->citizenIds as $i => $filterCitizenId) {
-            $stmt->setParameter('citizenId_'.$i, $filterCitizenId);
+            $stmt->setParameter('citizenId_' . $i, $filterCitizenId);
         }
 
         return $stmt->getSingleScalarResult();
