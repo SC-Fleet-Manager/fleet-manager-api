@@ -14,7 +14,7 @@ class RsiOrgaMemberInfos
     public $rank;
     public $rankName;
 
-    public function __construct(string $handle, string $nickname, string $avatarUrl, int $rank, string $rankName)
+    public function __construct(string $handle, string $nickname, ?string $avatarUrl, int $rank, string $rankName)
     {
         $this->handle = $handle;
         $this->nickname = $nickname;
