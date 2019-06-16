@@ -4,6 +4,10 @@ logout:
 discord_login:
     path: /login/check-discord
 
+spa_sitemap:
+    path: /sitemap.xml
+    controller: App\Controller\SpaController::sitemap
+
 spa_home:
     path: /
     controller: App\Controller\SpaController::home

@@ -24,9 +24,7 @@ class FleetRepository extends ServiceEntityRepository
 
         $sql = <<<EOT
             SELECT count(*) as countShips FROM {$citizenMetadata->getTableName()} c 
-            INNER JOIN {$fleetMetadata->getTableName()} f ON c.id = f.owner_id AND f.id = (
-                SELECT f2.id FROM {$fleetMetadata->getTableName()} f2 WHERE f2.owner_id = f.owner_id ORDER BY f2.version DESC LIMIT 1
-            )
+            INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
             INNER JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id
         EOT;
 

@@ -23,6 +23,21 @@ class CitizenRepository extends ServiceEntityRepository
     }
 
     /**
+     * @return Citizen[]
+     */
+    public function findPublics(): array
+    {
+        return $this->createQueryBuilder('c')
+            ->addSelect('fleet')
+            ->innerJoin('App:User', 'u', 'WITH', 'u.citizen = c.id')
+            ->leftJoin('c.lastFleet', 'fleet')
+            ->where('u.publicChoice = :publicVisibility')
+            ->setParameter('publicVisibility', User::PUBLIC_CHOICE_PUBLIC)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * @return iterable|Citizen[]
      */
     public function getByOrganization(SpectrumIdentification $organizationId): iterable

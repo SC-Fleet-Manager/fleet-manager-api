@@ -39,7 +39,7 @@ class Citizen
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"profile", "orga_fleet"})
+     * @Groups({"profile", "public_profile", "orga_fleet"})
      */
     private $nickname;
 
@@ -47,7 +47,7 @@ class Citizen
      * @var HandleSC
      *
      * @ORM\Column(type="string", length=255)
-     * @Groups({"profile", "orga_fleet", "orga_fleet_admin"})
+     * @Groups({"profile", "public_profile", "orga_fleet", "orga_fleet_admin"})
      */
     private $actualHandle;
 
@@ -77,7 +77,7 @@ class Citizen
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"profile"})
+     * @Groups({"profile", "public_profile"})
      */
     private $avatarUrl;
 
@@ -352,7 +352,7 @@ class Citizen
 
     public function canBeRefreshed(): bool
     {
-        return $this->lastRefresh === null || $this->lastRefresh <= new \DateTimeImmutable('-30 minutes');
+        return $this->lastRefresh === null || $this->lastRefresh <= new \DateTimeImmutable('-10 minutes');
     }
 
     public function getTimeLeftBeforeRefreshing(): ?\DateInterval
@@ -361,7 +361,7 @@ class Citizen
             return null;
         }
 
-        return $this->lastRefresh->diff(new \DateTimeImmutable('-30 minutes'));
+        return $this->lastRefresh->diff(new \DateTimeImmutable('-10 minutes'));
     }
 
     public function getOrgaBySid(string $sid): ?CitizenOrganization

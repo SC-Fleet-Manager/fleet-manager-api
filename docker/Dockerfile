@@ -20,9 +20,12 @@ COPY .env* composer.json composer.lock symfony.lock ./
 ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV COMPOSER_MEMORY_LIMIT -1
 ENV APP_ENV $ENV
-RUN composer global require "hirak/prestissimo:^0.3" --prefer-dist --no-progress --no-suggest --optimize-autoloader --classmap-authoritative --no-interaction
-RUN if [ $ENV = 'prod' ]; then \
+RUN composer global require "hirak/prestissimo:^0.3" --prefer-dist --no-progress --no-suggest --optimize-autoloader --classmap-authoritative --no-interaction; \
+    if [ $ENV = 'prod' ]; then \
         composer install --no-scripts --no-suggest --optimize-autoloader --classmap-authoritative --no-dev --prefer-dist --no-progress --no-interaction; \
+        rm -rf vendor/*/*/docs; \
+        find vendor -name *.md -exec rm -rf {} \; ; \
+        find vendor -name LICENSE -exec rm -rf {} \; ; \
     else \
         composer install --no-scripts --no-suggest --optimize-autoloader --classmap-authoritative --prefer-dist --no-progress --no-interaction; \
     fi
@@ -46,24 +49,26 @@ ARG ENV=prod
 
 RUN apk add --no-cache --virtual .deps icu-libs zlib libintl libzip
 RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS libxml2-dev icu-dev libzip-dev \
-    && docker-php-ext-install intl zip pdo pdo_mysql \
+    && docker-php-ext-install intl zip pdo_mysql \
     && pecl install redis \
     && apk del .build-deps \
     && docker-php-ext-enable --ini-name 05-opcache.ini opcache \
-    && docker-php-ext-enable --ini-name 20-redis.ini redis
+    && docker-php-ext-enable --ini-name 20-redis.ini redis \
+    && rm -fr /tmp/*
 
 COPY docker/php/php.prod.ini /usr/local/etc/php/php.ini
 COPY docker/php/entrypoint.sh /usr/local/bin/docker-app-entrypoint
 RUN chmod +x /usr/local/bin/docker-app-entrypoint
 
 WORKDIR /app
-COPY bin bin
+COPY bin/console bin/
 COPY config config
-COPY public public
+COPY public/index.php public/
 COPY src src
 COPY templates templates
 COPY translations translations
 COPY .env* Makefile composer.json composer.lock ./
+COPY --from=node_deps /app/public/build/entrypoints.json public/build/entrypoints.json
 COPY --from=node_deps /app/public/build/manifest.json public/build/manifest.json
 COPY --from=composer_deps /app/vendor vendor
 
@@ -100,6 +105,8 @@ RUN touch public/index_test.php
 ###############################
 FROM build_php as build_php_dev
 
+COPY public/index_test.php public/
+
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 ENV COMPOSER_MEMORY_LIMIT -1
 ENV COMPOSER_ALLOW_SUPERUSER 1
@@ -109,7 +116,8 @@ ARG XDEBUG_VERSION=2.7.2
 RUN set -eux; \
 	apk add --no-cache --virtual .build-deps $PHPIZE_DEPS; \
 	pecl install xdebug-$XDEBUG_VERSION; \
-	apk del .build-deps
+	apk del .build-deps; \
+	rm -fr /tmp/*
 
 RUN apk add --no-cache \
         chromium \

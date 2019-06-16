@@ -9,7 +9,7 @@ class HandleSC
     /**
      * @var string
      *
-     * @Groups({"profile", "orga_fleet", "orga_fleet_admin"})
+     * @Groups({"profile", "public_profile", "orga_fleet", "orga_fleet_admin"})
      */
     private $handle;
 

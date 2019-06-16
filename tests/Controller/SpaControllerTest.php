@@ -358,6 +358,9 @@ class SpaControllerTest extends PantherTestCase
         $this->assertContains('Peasant', $this->client->findElement(WebDriverBy::cssSelector('p'))->getText());
         $this->assertCount(2, $this->client->findElements(WebDriverBy::cssSelector('.rank-icon-active')));
 
+        $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+            return count($driver->findElements(WebDriverBy::className('card-ship'))) === 6;
+        });
         $cardShips = $this->client->findElements(WebDriverBy::className('card-ship'));
         $this->assertCount(6, $cardShips);
         $this->assertSame('DRAK - Cutlass', $cardShips[0]->findElement(WebDriverBy::className('card-title'))->getText());
@@ -383,7 +386,8 @@ class SpaControllerTest extends PantherTestCase
         $this->login('d92e229e-e743-4583-905a-e02c57eacfe0'); // orga flk
         $this->client->request('GET', '/organization-fleet/gardiens'); // orga public + not my orga
         $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
-            return (int) $driver->executeScript('return document.querySelectorAll(".card-ship").length;') > 0;
+            return (int) $driver->executeScript('return document.querySelectorAll(".card-ship").length;') > 0
+                && !$driver->executeScript('return !!document.getElementById("select-orga");');
         });
         $this->assertCount(6, $this->client->findElements(WebDriverBy::className('card-ship')));
         $this->assertFalse($this->client->executeScript('return !!document.getElementById("select-orga");'), 'There must not be the orga selector.');
