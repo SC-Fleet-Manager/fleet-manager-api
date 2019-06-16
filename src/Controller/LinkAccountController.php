@@ -64,7 +64,7 @@ class LinkAccountController extends AbstractController
 
     /**
      * @Route("/link-account", name="link_account", methods={"POST"})
-     * @IsGranted("IS_AUTHENTICATED_REMEMBERED"))
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      *
      * Link RSI Account (with SC Handle and Bio token) with the actual logged User.
      */

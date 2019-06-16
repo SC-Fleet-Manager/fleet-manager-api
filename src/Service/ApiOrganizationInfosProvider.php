@@ -29,7 +29,7 @@ class ApiOrganizationInfosProvider implements OrganizationInfosProviderInterface
     {
         return $this->cache->get('organization_info_'.$sid->getSid(), function (CacheItem $cacheItem) use ($sid) {
             $cacheItem->tag(['organization_infos']);
-            $cacheItem->expiresAfter(new \DateInterval('P7D'));
+            $cacheItem->expiresAfter(new \DateInterval('P1D'));
 
             return $this->scrap($sid);
         });

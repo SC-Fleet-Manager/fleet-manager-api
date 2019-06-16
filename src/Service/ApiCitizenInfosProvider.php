@@ -67,7 +67,7 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
 
         $avatarUrl = null;
         $avatarCrawler = $profileCrawler->filter('.profile .thumb img');
-        if ($avatarCrawler->count() > 0) {
+        if ($avatarCrawler->count() > 0 && $avatarCrawler->attr('src') !== '') {
             $avatarUrl = self::BASE_URL.$avatarCrawler->attr('src');
         }
 

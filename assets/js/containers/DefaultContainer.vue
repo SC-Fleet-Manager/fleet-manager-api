@@ -33,6 +33,9 @@
                 - <a href="/privacy-policy">Privacy policy</a>
             </div>
             <b-nav class="ml-auto">
+                <b-nav-item link-classes="p-2" target="_blank" href="https://fleet-extension.fallkrom.space/fleet_manager_extension-latest.xpi"><i style="font-size: 1.4rem;" class="fab fa-firefox"></i></b-nav-item>
+                <b-nav-item link-classes="p-2" target="_blank" href="https://chrome.google.com/webstore/detail/fleet-manager-extension/hbbadomkekhkhemjjmhkhgiokjhpobhk"><i style="font-size: 1.4rem;" class="fab fa-chrome"></i></b-nav-item>
+                <b-nav-text class="p-2">–</b-nav-text>
                 <b-nav-item href="https://discord.gg/f6mrA3Y" target="_blank" link-classes="p-2"><i class="fab fa-discord" style="font-size: 1.4rem;"></i></b-nav-item>
                 <b-nav-item href="https://github.com/Ioni14/starcitizen-fleet-manager" target="_blank" link-classes="p-2"><i class="fab fa-github" style="font-size: 1.4rem;"></i></b-nav-item>
                 <b-nav-item href="https://www.patreon.com/ioni" target="_blank" link-classes="p-2"><i class="fab fa-patreon" style="font-size: 1.4rem;"></i></b-nav-item>

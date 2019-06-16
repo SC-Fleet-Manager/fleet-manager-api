@@ -14,8 +14,17 @@ framework:
             rsi.organizations.cache:
                 adapter: cache.adapter.redis
                 tags: true
+            rsi.organizations_members.cache:
+                adapter: cache.adapter.redis
+                tags: true
             rsi.ships.cache:
                 adapter: cache.adapter.redis
+
+    http_client:
+        max_host_connections: 6
+        scoped_clients:
+            rsi.orga_members.client:
+                base_uri: 'https://robertsspaceindustries.com'
 
     php_errors:
         log: true

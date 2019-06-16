@@ -97,12 +97,21 @@
                     </b-row>
                 </b-card>
                 <b-card v-if="menu == 'admin_panel'">
+                    <h4>Admin panel of {{ organization.name }}</h4>
                     <b-alert variant="danger" :show="fleetPolicyErrors" v-html="fleetPolicyErrorMessages"></b-alert>
-                    <b-form-group :label="'Fleet policy of '+organization.name">
-                        <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="private">Members only <i class="fas fa-info-circle" v-b-tooltip.hover title="Only the orga's members can see the orga's fleet."></i></b-form-radio>
-                        <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="admin">Admin only <i class="fas fa-info-circle" v-b-tooltip.hover title="Only the highest ranks (admins) of the orga can see the orga's fleet."></i></b-form-radio>
-                        <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="public">Public <i class="fas fa-info-circle" v-b-tooltip.hover title="Everyone can see the orga's fleet."></i></b-form-radio>
-                    </b-form-group>
+                    <b-row>
+                        <b-col lg="6">
+                            <b-form-group label="Fleet policy">
+                                <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="private">Members only <i class="fas fa-info-circle" v-b-tooltip.hover title="Only the orga's members can see the orga's fleet."></i></b-form-radio>
+                                <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="admin">Admin only <i class="fas fa-info-circle" v-b-tooltip.hover title="Only the highest ranks (admins) of the orga can see the orga's fleet."></i></b-form-radio>
+                                <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="public">Public <i class="fas fa-info-circle" v-b-tooltip.hover title="Everyone can see the orga's fleet."></i></b-form-radio>
+                            </b-form-group>
+                        </b-col>
+                        <b-col lg="6" class="text-right">
+                            <b-button variant="primary" class="mb-3" download :disabled="selectedSid == null || shipFamilies.length == 0" :href="'/api/organization/export-orga-members/'+selectedSid"><i class="fas fa-file-csv"></i> Export <strong>{{ selectedSid != null ? orgaFullname : 'N/A' }}</strong> members (.csv)</b-button>
+                            <OrgaRegisteredMembers :selectedSid="selectedSid"></OrgaRegisteredMembers>
+                        </b-col>
+                    </b-row>
                 </b-card>
             </b-col>
         </b-row>
@@ -116,6 +125,7 @@
     import ShipFamilyDetail from './ShipFamilyDetail';
     import ShipFamily from './ShipFamily';
     import { createNamespacedHelpers } from 'vuex';
+    import OrgaRegisteredMembers from "./OrgaRegisteredMembers";
 
     const { mapGetters, mapMutations, mapActions } = createNamespacedHelpers('orga_fleet');
     const BREAKPOINTS = {xs: 0, sm: 576, md: 768, lg: 992, xl: 1200};
@@ -138,7 +148,7 @@
     export default {
         name: 'organizations-fleets',
         props: ['sid'],
-        components: {vSelect, ShipFamily, ShipFamilyDetail},
+        components: {OrgaRegisteredMembers, vSelect, ShipFamily, ShipFamilyDetail},
         data() {
             return {
                 menu: MENU_FLEET,
@@ -375,32 +385,38 @@
                     }
                 }
             },
-            refreshProfile() {
-                axios.get('/api/profile/').then(response => {
-                    this.citizen = response.data.citizen;
-                    this.citizen.organizations.sort((orga1, orga2) => {
-                        if (this.citizen.mainOrga) {
-                            if (this.citizen.mainOrga.id === orga1.id) {
-                                return -1;
-                            } else if (this.citizen.mainOrga.id === orga2.id) {
-                                return 1;
-                            }
+            async refreshProfile() {
+                this.refreshAdmins();
+
+                this.citizen = this.$store.getters.citizen;
+                if (this.citizen === null) {
+                    try {
+                        const response = await axios.get('/api/profile/');
+                        this.$store.commit('updateProfile', response.data.citizen);
+                        this.citizen = response.data.citizen;
+                    } catch (err) {
+                        if (err.response.status === 401) {
+                            // not connected
+                            return;
                         }
-                        return orga1.organization.name > orga2.organization.name ? 1 : -1;
-                    });
-                    this.refreshOrganization();
-                }).catch(err => {
-                    if (err.response.status === 401) {
-                        // not connected
+                        if (err.response.data.errorMessage) {
+                            toastr.error(err.response.data.errorMessage);
+                        }
+                        console.error(err);
                         return;
                     }
-                    if (err.response.data.errorMessage) {
-                        toastr.error(err.response.data.errorMessage);
+                }
+                this.citizen.organizations.sort((orga1, orga2) => {
+                    if (this.citizen.mainOrga) {
+                        if (this.citizen.mainOrga.id === orga1.id) {
+                            return -1;
+                        } else if (this.citizen.mainOrga.id === orga2.id) {
+                            return 1;
+                        }
                     }
-                    console.error(err);
+                    return orga1.organization.name > orga2.organization.name ? 1 : -1;
                 });
-
-                this.refreshAdmins();
+                this.refreshOrganization();
             },
             refreshAdmins() {
                 axios.get(`/api/fleet/orga-fleets/${this.selectedSid}/admins`).then(response => {

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Domain\SpectrumIdentification;
+use App\Entity\Organization;
 use App\Entity\User;
 use App\Repository\CitizenRepository;
 use App\Service\Dto\ShipFamilyFilter;

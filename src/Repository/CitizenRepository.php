@@ -22,6 +22,32 @@ class CitizenRepository extends ServiceEntityRepository
         parent::__construct($registry, Citizen::class);
     }
 
+    public function findSomeHandlesWithLastFleet(array $handles): array
+    {
+        return $this->createQueryBuilder('c')
+            ->addSelect('fleet')
+            ->leftJoin('c.lastFleet', 'fleet')
+            ->where('LOWER(c.actualHandle) IN (:handles)')
+            ->setParameter('handles', $handles)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return Citizen[]
+     */
+    public function findPublics(): array
+    {
+        return $this->createQueryBuilder('c')
+            ->addSelect('fleet')
+            ->innerJoin('App:User', 'u', 'WITH', 'u.citizen = c.id')
+            ->leftJoin('c.lastFleet', 'fleet')
+            ->where('u.publicChoice = :publicVisibility')
+            ->setParameter('publicVisibility', User::PUBLIC_CHOICE_PUBLIC)
+            ->getQuery()
+            ->getResult();
+    }
+
     /**
      * @return iterable|Citizen[]
      */
@@ -47,19 +73,34 @@ class CitizenRepository extends ServiceEntityRepository
      *
      * @return Citizen[]
      */
-    public function findVisiblesByOrganization(string $organizationId, ?Citizen $viewerCitizen): array
+    public function findVisiblesByOrganization(string $organizationId, ?Citizen $viewerCitizen, bool $withShips = false): array
     {
         $citizenMetadata = $this->_em->getClassMetadata(Citizen::class);
         $citizenOrgaMetadata = $this->_em->getClassMetadata(CitizenOrganization::class);
         $orgaMetadata = $this->_em->getClassMetadata(Organization::class);
         $userMetadata = $this->_em->getClassMetadata(User::class);
+        $fleetMetadata = $this->_em->getClassMetadata(Fleet::class);
+        $shipMetadata = $this->_em->getClassMetadata(Ship::class);
 
         $sql = <<<EOT
             SELECT c.*, c.id AS citizenId
+        EOT;
+        if ($withShips) {
+            $sql .= ', f.*, f.id AS fleetId, s.*, s.id AS shipId ';
+        }
+        $sql .= <<<EOT
             FROM {$orgaMetadata->getTableName()} orga
             INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON orga.id = citizenOrga.organization_id AND orga.organization_sid = :sid
             INNER JOIN {$citizenMetadata->getTableName()} c ON citizenOrga.citizen_id = c.id
             INNER JOIN {$userMetadata->getTableName()} u ON u.citizen_id = c.id
+        EOT;
+        if ($withShips) {
+            $sql .= <<<EOT
+                INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
+                INNER JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id
+            EOT;
+        }
+        $sql .= <<<EOT
             WHERE (
                 u.public_choice = :userPublicChoicePublic
                 OR (u.public_choice = :userPublicChoiceOrga AND (
@@ -86,6 +127,10 @@ class CitizenRepository extends ServiceEntityRepository
 
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata(Citizen::class, 'c', ['id' => 'citizenId']);
+        if ($withShips) {
+            $rsm->addJoinedEntityFromClassMetadata(Fleet::class, 'f', 'c', 'fleets', ['id' => 'fleetId']);
+            $rsm->addJoinedEntityFromClassMetadata(Ship::class, 's', 'f', 'ships', ['id' => 'shipId']);
+        }
 
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
         $stmt->setParameters([

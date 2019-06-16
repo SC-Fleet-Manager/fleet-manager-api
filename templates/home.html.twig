@@ -1,5 +1,10 @@
 {% extends 'base.html.twig' %}
 
+{% block seo_metatags %}
+    {{ parent() }}
+    <meta property="og:url" content="{{ url('spa_home') }}" />
+{% endblock %}
+
 {% block body %}
     <div id="app" data-discord-login-url="{{ hwi_oauth_login_url('discord') }}"></div>
 {% endblock %}
