@@ -10,6 +10,7 @@ use App\Repository\CitizenRepository;
 use App\Repository\OrganizationRepository;
 use App\Repository\ShipRepository;
 use App\Service\Dto\RsiOrgaMemberInfos;
+use App\Service\Exporter\OrganizationFleetExporter;
 use App\Service\FleetOrganizationGuard;
 use App\Service\OrganizationMembersInfosProviderInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -19,6 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * @Route("/api", name="api_organization_")
@@ -46,6 +48,50 @@ class OrganizationController extends AbstractController
         $this->shipRepository = $shipRepository;
         $this->entityManager = $entityManager;
         $this->fleetOrganizationGuard = $fleetOrganizationGuard;
+    }
+
+    /**
+     * @Route("/organization/export-orga-members/{organizationSid}", name="export_orga_members", methods={"GET"})
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
+     */
+    public function exportOrgaMembers(string $organizationSid, OrganizationFleetExporter $orgaFleetExporter, SerializerInterface $serializer): Response
+    {
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $citizen = $user->getCitizen();
+        if ($citizen === null) {
+            return $this->json([
+                'error' => 'no_citizen_created',
+                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
+            ], 400);
+        }
+        /** @var Organization|null $organization */
+        $organization = $this->organizationRepository->findOneBy(['organizationSid' => $organizationSid]);
+        if ($organization === null) {
+            return $this->json([
+                'error' => 'not_found_orga',
+                'errorMessage' => sprintf('The organization "%s" does not exist.', $organizationSid),
+            ], 404);
+        }
+
+        if (!$this->isAdminOf($citizen, $organizationSid)) {
+            return $this->json([
+                'error' => 'not_enough_rights',
+                'errorMessage' => sprintf('You must be an admin of %s to view these stats. Try to refresh your RSI profile in your <a href="/profile">profile page</a>.', $organization->getName()),
+            ], 403);
+        }
+
+        $data = $orgaFleetExporter->exportOrgaMembers($organizationSid);
+
+        $csv = $serializer->serialize($data, 'csv');
+        $filepath = sys_get_temp_dir().'/'.uniqid('', true);
+        file_put_contents($filepath, $csv);
+
+        $file = $this->file($filepath, 'export_'.$organizationSid.'.csv');
+        $file->headers->set('Content-Type', 'application/csv');
+        $file->deleteFileAfterSend();
+
+        return $file;
     }
 
     /**

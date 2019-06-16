@@ -25,19 +25,12 @@ class OrganizationFleetExporter
 
     public function exportOrgaMembers(string $organizationSid): array
     {
-        /** @var User $user */
-        $user = $this->security->getUser();
-        $loggedCitizen = null;
-        if ($user !== null) {
-            $loggedCitizen = $user->getCitizen();
-        }
-
         $memberInfos = $this->organizationMembersInfosProvider->retrieveInfos(new SpectrumIdentification($organizationSid));
         $handles = array_map(static function (RsiOrgaMemberInfos $info) {
             return mb_strtolower($info->handle);
         }, $memberInfos['visibleCitizens']);
         /** @var Citizen[] $citizens */
-        $citizens = $this->citizenRepository->findVisiblesSomeHandlesWithLastFleet($handles, $organizationSid, $loggedCitizen);
+        $citizens = $this->citizenRepository->findSomeHandlesWithLastFleet($handles);
 
         $data = [];
         /** @var RsiOrgaMemberInfos $memberInfo */
