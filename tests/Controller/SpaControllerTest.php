@@ -383,6 +383,7 @@ class SpaControllerTest extends PantherTestCase
         $this->assertContains("Sorry, this organization's fleet does not exist or is private. Try to login to see it.", $this->client->findElement(WebDriverBy::className('alert-danger'))->getText());
 
         // Public + Logged + Not My Orga
+        $this->client->request('GET', '/logout');
         $this->login('d92e229e-e743-4583-905a-e02c57eacfe0'); // orga flk
         $this->client->request('GET', '/organization-fleet/gardiens'); // orga public + not my orga
         $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
@@ -399,6 +400,7 @@ class SpaControllerTest extends PantherTestCase
         $this->assertCount(1, $this->client->findElements(WebDriverBy::id('filters_input_ship_status')));
 
         // Private + Logged + Not My Orga
+        $this->client->request('GET', '/logout');
         $this->login('46380677-9915-4b7c-87ba-418840cb1772'); // orga gardiens
         $this->client->request('GET', '/organization-fleet/flk'); // orga private + not my orga
         $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
@@ -432,6 +434,7 @@ class SpaControllerTest extends PantherTestCase
         $this->assertContains('Sorry, you have not the rights to access to FallKrom fleet page.', $this->client->findElement(WebDriverBy::className('alert-danger'))->getText());
 
         // view admin orga with private + public members
+        $this->client->request('GET', '/logout');
         $this->login('def951eb-14ce-4fd7-8226-3d127e547f62'); // admin of pulsar42 orga
         $this->client->request('GET', '/organization-fleet/pulsar42');
         $this->client->wait(3, 100)->until(static function (WebDriver $driver) {

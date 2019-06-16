@@ -155,6 +155,44 @@ class OrganizationFleetController extends AbstractController
     }
 
     /**
+     * @Route("/export-orga-members/{organization}", name="export_orga_members", methods={"GET"})
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
+     */
+    public function exportOrgaMembers(string $organization): Response
+    {
+        if (null !== $response = $this->fleetOrganizationGuard->checkAccessibleOrganization($organization)) {
+            return $response;
+        }
+
+        // If viewer is not in this orga, he doesn't see the users
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $citizen = $user->getCitizen();
+        if ($citizen === null) {
+            return new JsonResponse([
+                'error' => 'no_citizen_created',
+            ], 400);
+        }
+        if (!$citizen->hasOrganization($organization)) {
+            return new JsonResponse([
+                'error' => 'not_in_orga',
+            ], 404);
+        }
+
+        $data = $this->orgaFleetExporter->exportOrgaMembers($organization);
+
+        $csv = $this->serializer->serialize($data, 'csv');
+        $filepath = sys_get_temp_dir().'/'.uniqid('', true);
+        file_put_contents($filepath, $csv);
+
+        $file = $this->file($filepath, 'export_'.$organization.'.csv');
+        $file->headers->set('Content-Type', 'application/csv');
+        $file->deleteFileAfterSend();
+
+        return $file;
+    }
+
+    /**
      * @Route("/fleet/orga-fleets/{organization}", name="orga_fleets", methods={"GET"}, options={"expose":true})
      */
     public function orgaFleets(Request $request, string $organization, OrganizationFleetHandler $organizationFleetHandler): Response

@@ -38,6 +38,7 @@
                                 <template slot="button-content"><i class="fas fa-cloud-download-alt"></i> Export fleet</template>
                                 <b-dropdown-item download :disabled="selectedSid == null || shipFamilies.length == 0" :href="'/api/create-organization-fleet-file/'+selectedSid" ><i class="fas fa-file-code"></i> Export <strong>{{ selectedSid != null ? orgaFullname : 'N/A' }}</strong> fleet (.json)</b-dropdown-item>
                                 <b-dropdown-item download :disabled="selectedSid == null || shipFamilies.length == 0" :href="'/api/export-orga-fleet/'+selectedSid"><i class="fas fa-file-csv"></i> Export <strong>{{ selectedSid != null ? orgaFullname : 'N/A' }}</strong> fleet (.csv)</b-dropdown-item>
+                                <b-dropdown-item download :disabled="selectedSid == null || shipFamilies.length == 0" :href="'/api/export-orga-members/'+selectedSid"><i class="fas fa-file-csv"></i> Export <strong>{{ selectedSid != null ? orgaFullname : 'N/A' }}</strong> members (.csv)</b-dropdown-item>
                             </b-dropdown>
                             <!--<p><b>{{ orgaStats.countUploadedFleets }}</b> uploaded fleets for <b>{{ orgaStats.totalCitizen }}</b> members</p>-->
                         </b-col>
