@@ -108,7 +108,6 @@
                             </b-form-group>
                         </b-col>
                         <b-col lg="6">
-                            <b-alert variant="info" show="true">These following data are a combination between <a :href="'https://robertsspaceindustries.com/orgs/'+selectedSid+'/members'" target="_blank">RSI public data</a> and ours.</b-alert>
                             <OrgaRegisteredMembers :selectedSid="selectedSid"></OrgaRegisteredMembers>
                         </b-col>
                     </b-row>
