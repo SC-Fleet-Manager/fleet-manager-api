@@ -27,15 +27,6 @@ class CitizenRepository extends ServiceEntityRepository
      */
     public function findPublics(): array
     {
-//        $dql = '
-//            SELECT c FROM App\Entity\Citizen c
-//            INNER JOIN App\Entity\User u WITH u.citizen = c.id
-//            INNER JOIN citizenOrga.organization orga WITH orga.organizationSid = :sid
-//            LEFT JOIN c.fleets f
-//            LEFT JOIN f.ships s
-//        ';
-//        $query = $this->_em->createQuery($dql);
-
         return $this->createQueryBuilder('c')
             ->addSelect('fleet')
             ->innerJoin('App:User', 'u', 'WITH', 'u.citizen = c.id')
