@@ -347,7 +347,7 @@
                 this.savePreferences();
             },
             refreshOrganization() {
-                if (this.citizen === null) {
+                if (this.organization === null) {
                     axios.get(`/api/organization/${this.sid}`).then(response => {
                         this.organization = response.data;
                         this.orgaPublicChoice = this.organization.publicChoice;
@@ -375,12 +375,13 @@
                     //     }
                     //     console.error(err);
                     // });
-                    return;
                 }
-                for (let citizenOrga of this.citizen.organizations) {
-                    if (citizenOrga.organization.organizationSid === this.selectedSid) {
-                        this.organization = citizenOrga.organization;
-                        break;
+                if (this.citizen !== null) {
+                    for (let citizenOrga of this.citizen.organizations) {
+                        if (citizenOrga.organization.organizationSid === this.selectedSid) {
+                            this.organization = citizenOrga.organization;
+                            break;
+                        }
                     }
                 }
             },
