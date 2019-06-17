@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Domain\HandleSC;
 use App\Domain\SpectrumIdentification;
 use App\Entity\Citizen;
 use App\Entity\Organization;
@@ -9,6 +10,8 @@ use App\Entity\User;
 use App\Repository\CitizenRepository;
 use App\Repository\OrganizationRepository;
 use App\Repository\ShipRepository;
+use App\Service\CitizenInfosProviderInterface;
+use App\Service\CitizenRefresher;
 use App\Service\Dto\RsiOrgaMemberInfos;
 use App\Service\Exporter\OrganizationFleetExporter;
 use App\Service\FleetOrganizationGuard;
@@ -95,10 +98,64 @@ class OrganizationController extends AbstractController
     }
 
     /**
+     * @Route("/organization/{organizationSid}/refresh-member/{handle}", name="refresh_member", methods={"POST"})
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
+     */
+    public function refreshMember(string $organizationSid, string $handle, CitizenInfosProviderInterface $citizenInfosProvider, CitizenRefresher $citizenRefresher): Response
+    {
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $citizen = $user->getCitizen();
+        if ($citizen === null) {
+            return $this->json([
+                'error' => 'no_citizen_created',
+                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
+            ], 400);
+        }
+        /** @var Organization|null $organization */
+        $organization = $this->organizationRepository->findOneBy(['organizationSid' => $organizationSid]);
+        if ($organization === null) {
+            return $this->json([
+                'error' => 'not_found_orga',
+                'errorMessage' => sprintf('The organization "%s" does not exist.', $organizationSid),
+            ], 404);
+        }
+
+        if (!$this->isAdminOf($citizen, $organizationSid)) {
+            return $this->json([
+                'error' => 'not_enough_rights',
+                'errorMessage' => sprintf('You must be an admin of %s to view these stats. Try to refresh your RSI profile in your <a href="/profile">profile page</a>.', $organization->getName()),
+            ], 403);
+        }
+
+        /** @var Citizen|null $targetCitizen */
+        $targetCitizen = $this->citizenRepository->findOneBy(['actualHandle' => $handle]);
+        if ($targetCitizen === null) {
+            return $this->json([
+                'error' => 'not_found_citizen',
+                'errorMessage' => sprintf('The citizen "%s" does not exist.', $handle),
+            ], 404);
+        }
+
+        $citizenInfos = $citizenInfosProvider->retrieveInfos(clone $targetCitizen->getActualHandle(), false);
+        if (!$citizenInfos->numberSC->equals($targetCitizen->getNumber())) {
+            return $this->json([
+                'error' => 'bad_citizen',
+                'errorMessage' => sprintf('The SC handle of %s has probably changed. He should update it in its Profile.', $targetCitizen->getActualHandle()->getHandle()),
+            ], 400);
+        }
+
+        $citizenRefresher->refreshCitizen($targetCitizen, $citizenInfos);
+        $this->entityManager->flush();
+
+        return $this->json(null, 204);
+    }
+
+    /**
      * @Route("/organization/{organizationSid}/members-registered", name="members_registered", methods={"GET"})
      * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      */
-    public function membersRegistered(Request $request, string $organizationSid, OrganizationMembersInfosProviderInterface $organizationMembersInfosProvider): Response
+    public function membersRegistered(string $organizationSid, OrganizationMembersInfosProviderInterface $organizationMembersInfosProvider): Response
     {
         // TODO : [optimization] pagination
 //        $page = $request->query->getInt('page', 1);
@@ -196,7 +253,7 @@ class OrganizationController extends AbstractController
                 return 1;
             }
 
-            return $collator->compare($member1['infos']->nickname, $member2['infos']->nickname);
+            return $collator->compare($member1['infos']->handle, $member2['infos']->handle);
         });
 
         return $this->json([
