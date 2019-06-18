@@ -56,22 +56,21 @@
             }
         },
         async created() {
-            this.citizen = this.$store.getters.citizen;
-            if (this.citizen === null) {
-                try {
-                    const response = await axios.get('/api/profile/');
-                    this.$store.commit('updateProfile', response.data.citizen);
-                    this.citizen = response.data.citizen;
-                } catch (err) {
-                    if (err.response.status === 401) {
-                        // not connected
-                        return;
-                    }
-                    toastr.error('Cannot retrieve your profile.');
+            axios.get('/api/profile/', {
+                params: {}
+            }).then(response => {
+                this.citizen = response.data.citizen;
+                this.$store.commit('updateProfile', response.data.citizen);
+                this.isMyProfile = this.citizen.actualHandle.handle === this.userHandle;
+            }).catch(err => {
+                if (err.response.status === 401) {
+                    // not connected
+                    return;
                 }
-            }
-            this.isMyProfile = this.citizen !== null && this.citizen.actualHandle.handle === this.userHandle;
-            this.refreshMyFleet();
+                toastr.error('Cannot retrieve your profile.');
+            }).then(_ => {
+                this.refreshMyFleet();
+            });
         },
         filters: {
             date: (value, format) => {

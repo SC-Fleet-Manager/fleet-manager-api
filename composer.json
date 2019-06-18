@@ -1,8 +1,8 @@
 {
     "name": "ioni14/starcitizen-fleet-manager",
-    "description": "",
+    "description": "Fleet Manager is a web application to manage the Star Citizen players' fleets.",
     "type": "project",
-    "license": "proprietary",
+    "license": "AGPL",
     "require": {
         "php": "^7.3",
         "ext-ctype": "*",
