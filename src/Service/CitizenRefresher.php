@@ -3,7 +3,6 @@
 namespace App\Service;
 
 use App\Domain\CitizenInfos;
-use App\Domain\CitizenOrganizationInfo;
 use App\Domain\SpectrumIdentification;
 use App\Entity\Citizen;
 use App\Entity\CitizenOrganization;
@@ -34,43 +33,57 @@ class CitizenRefresher
         $citizen->setBio($citizenInfos->bio);
         $citizen->setAvatarUrl($citizenInfos->avatarUrl);
         $citizen->setLastRefresh(new \DateTimeImmutable());
-
         $citizen->setRedactedMainOrga($citizenInfos->redactedMainOrga);
         $citizen->setCountRedactedOrganizations($citizenInfos->countRedactedOrganizations);
 
-        foreach ($citizen->getOrganizations() as $orga) {
-            $this->entityManager->remove($orga);
+        // remove left orga
+        foreach ($citizen->getOrganizations() as $organization) {
+            $sid = $organization->getOrganization()->getOrganizationSid();
+            $foundOrgaInfo = null;
+            foreach ($citizenInfos->organizations as $orgaInfo) {
+                if ($orgaInfo->sid->getSid() === $sid) {
+                    $foundOrgaInfo = $orgaInfo;
+                    break;
+                }
+            }
+            if ($foundOrgaInfo === null) {
+                $citizen->removeOrganization($organization);
+                $this->entityManager->remove($organization);
+                continue;
+            }
         }
 
-        $citizen->setMainOrga(null);
-        $citizen->clearOrganizations();
+        // refresh & join new orga
         foreach ($citizenInfos->organizations as $orgaInfo) {
-            $this->refreshOrganization($citizen, $citizenInfos, $orgaInfo);
-        }
-    }
+            $citizenOrga = null;
+            foreach ($citizen->getOrganizations() as $organization) {
+                if ($orgaInfo->sid->getSid() === $organization->getOrganization()->getOrganizationSid()) {
+                    $citizenOrga = $organization;
+                    break;
+                }
+            }
+            if ($citizenOrga === null) {
+                $citizenOrga = new CitizenOrganization(Uuid::uuid4());
+                $citizenOrga->setCitizen($citizen);
+                $this->entityManager->persist($citizenOrga);
+            }
+            $orga = $this->organizationRepository->findOneBy(['organizationSid' => $orgaInfo->sid->getSid()]);
+            if ($orga === null) {
+                $orga = new Organization(Uuid::uuid4());
+                $orga->setOrganizationSid($orgaInfo->sid->getSid());
+                $this->entityManager->persist($orga);
+            }
+            $providerOrgaInfos = $this->organizationInfosProvider->retrieveInfos(new SpectrumIdentification($orgaInfo->sid->getSid()));
+            $orga->setAvatarUrl($providerOrgaInfos->avatarUrl);
+            $orga->setName($providerOrgaInfos->fullname);
+            $citizenOrga->setOrganization($orga);
+            $citizenOrga->setOrganizationSid($orgaInfo->sid->getSid());
+            $citizenOrga->setRank($orgaInfo->rank);
+            $citizenOrga->setRankName($orgaInfo->rankName);
 
-    private function refreshOrganization(Citizen $citizen, CitizenInfos $citizenInfos, CitizenOrganizationInfo $citizenOrgaInfos): void
-    {
-        $citizenOrga = new CitizenOrganization(Uuid::uuid4());
-        $citizenOrga->setCitizen($citizen);
-
-        $orga = $this->organizationRepository->findOneBy(['organizationSid' => $citizenOrgaInfos->sid->getSid()]);
-        if ($orga === null) {
-            $orga = new Organization(Uuid::uuid4());
-            $orga->setOrganizationSid($citizenOrgaInfos->sid->getSid());
-            $this->entityManager->persist($orga);
-        }
-        $providerOrgaInfos = $this->organizationInfosProvider->retrieveInfos(new SpectrumIdentification($citizenOrgaInfos->sid->getSid()));
-        $orga->setAvatarUrl($providerOrgaInfos->avatarUrl);
-        $orga->setName($providerOrgaInfos->fullname);
-
-        $citizenOrga->setOrganization($orga);
-        $citizenOrga->setOrganizationSid($citizenOrgaInfos->sid->getSid());
-        $citizenOrga->setRank($citizenOrgaInfos->rank);
-        $citizenOrga->setRankName($citizenOrgaInfos->rankName);
-        $citizen->addOrganization($citizenOrga);
-        if ($citizenInfos->mainOrga === $citizenOrgaInfos) {
-            $citizen->setMainOrga($citizenOrga);
+            if ($citizenInfos->mainOrga === $orgaInfo) {
+                $citizen->setMainOrga($citizenOrga);
+            }
         }
     }
 }

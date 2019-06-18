@@ -106,9 +106,10 @@
                                 <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="admin">Admin only <i class="fas fa-info-circle" v-b-tooltip.hover title="Only the highest ranks (admins) of the orga can see the orga's fleet."></i></b-form-radio>
                                 <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="public">Public <i class="fas fa-info-circle" v-b-tooltip.hover title="Everyone can see the orga's fleet."></i></b-form-radio>
                             </b-form-group>
+<!--                            <b-button variant="secondary">Refresh your members</b-button> TODO : add async workers -->
                         </b-col>
-                        <b-col lg="6" class="text-right">
-                            <b-button variant="primary" class="mb-3" download :disabled="selectedSid == null || shipFamilies.length == 0" :href="'/api/organization/export-orga-members/'+selectedSid"><i class="fas fa-file-csv"></i> Export <strong>{{ selectedSid != null ? orgaFullname : 'N/A' }}</strong> members (.csv)</b-button>
+                        <b-col lg="6" >
+                            <div class="text-right"><b-button variant="primary" class="mb-3" download :disabled="selectedSid == null" :href="'/api/organization/export-orga-members/'+selectedSid"><i class="fas fa-file-csv"></i> Export <strong>{{ selectedSid != null ? orgaFullname : 'N/A' }}</strong> members (.csv)</b-button></div>
                             <OrgaRegisteredMembers :selectedSid="selectedSid"></OrgaRegisteredMembers>
                         </b-col>
                     </b-row>
@@ -129,8 +130,6 @@
 
     const { mapGetters, mapMutations, mapActions } = createNamespacedHelpers('orga_fleet');
     const BREAKPOINTS = {xs: 0, sm: 576, md: 768, lg: 992, xl: 1200};
-    const MENU_FLEET = 'fleet';
-    const MENU_ADMIN_PANEL = 'admin_panel';
 
     /*
      * PUBLIC
@@ -151,7 +150,7 @@
         components: {OrgaRegisteredMembers, vSelect, ShipFamily, ShipFamilyDetail},
         data() {
             return {
-                menu: MENU_FLEET,
+                menu: 'fleet',
                 organization: null,
                 orgaStats: {},
                 orgaPublicChoice: null,
@@ -320,7 +319,7 @@
                 this.updateSid(value);
             },
             changeSelectedOrga(orga) {
-                this.menu = MENU_FLEET;
+                this.menu = 'fleet';
                 this.selectSid(orga.organizationSid);
             },
             savePreferences() {
@@ -348,7 +347,7 @@
                 this.savePreferences();
             },
             refreshOrganization() {
-                if (this.citizen === null) {
+                if (this.organization === null) {
                     axios.get(`/api/organization/${this.sid}`).then(response => {
                         this.organization = response.data;
                         this.orgaPublicChoice = this.organization.publicChoice;
@@ -376,12 +375,13 @@
                     //     }
                     //     console.error(err);
                     // });
-                    return;
                 }
-                for (let citizenOrga of this.citizen.organizations) {
-                    if (citizenOrga.organization.organizationSid === this.selectedSid) {
-                        this.organization = citizenOrga.organization;
-                        break;
+                if (this.citizen !== null) {
+                    for (let citizenOrga of this.citizen.organizations) {
+                        if (citizenOrga.organization.organizationSid === this.selectedSid) {
+                            this.organization = citizenOrga.organization;
+                            break;
+                        }
                     }
                 }
             },

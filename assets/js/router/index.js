@@ -163,7 +163,7 @@ const router = new Router({
                         titleTag: async (to) => {
                             try {
                                 const citizen = await getCitizen(to.params.userHandle);
-                                return `${citizen.nickname} Fleet - Fleet Manager`;
+                                return `${citizen.actualHandle.handle} Fleet - Fleet Manager`;
                             } catch (err) {}
                             return `Unknown citizen fleet - Fleet Manager`;
                         },
@@ -173,7 +173,7 @@ const router = new Router({
                                 content: async (to) => {
                                     try {
                                         const citizen = await getCitizen(to.params.userHandle);
-                                        return `The Star Citizen fleet of ${citizen.nickname}.`;
+                                        return `The Star Citizen fleet of ${citizen.actualHandle.handle}.`;
                                     } catch (err) {}
                                     return '';
                                 },
@@ -183,7 +183,7 @@ const router = new Router({
                                 content: async (to) => {
                                     try {
                                         const citizen = await getCitizen(to.params.userHandle);
-                                        return `The Star Citizen fleet of ${citizen.nickname}.`;
+                                        return `The Star Citizen fleet of ${citizen.actualHandle.handle}.`;
                                     } catch (err) {}
                                     return '';
                                 },

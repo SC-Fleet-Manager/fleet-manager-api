@@ -8,9 +8,10 @@
         </b-nav>
         <b-card style="max-height: 500px; overflow-y: auto;">
             <p class="mb-1 d-flex align-items-center align-content-center" v-for="member in filteredMembers" :key="member.infos.handle">
+                <b-button :disabled="refreshingProfile[member.infos.handle]" @click="refreshProfile(member.infos.handle)" class="mr-2" :class="{'invisible': member.status == 'not_registered'}" variant="secondary" size="sm" :title="'Force refresh '+member.infos.handle"><i class="fas fa-sync-alt" :class="{'fa-spin': refreshingProfile[member.infos.handle]}"></i></b-button>
                 <span class="registered-member-rank-icon mr-2"><i class="fas fa-star"></i><span class="registered-member-rank">{{ member.infos.rank }}</span></span>
                 <b-badge class="mr-2" style="width: 6rem;" :variant="getBadgeVariant(member.status)">{{ formatStatus(member.status) }}</b-badge>
-                {{ member.infos.nickname }}
+                {{ member.infos.handle }}
                 <template v-if="member.lastFleetUploadDate"><b-badge class="ml-2">last update the {{ formatDate(member.lastFleetUploadDate) }}</b-badge></template>
             </p>
             <p v-if="hiddenMembers > 0 && activeTab == 'all_members'" class="mb-1"><i>+ {{ hiddenMembers }} hidden members</i></p>
@@ -20,6 +21,7 @@
 
 <script>
     import axios from 'axios';
+    import toastr from 'toastr';
     import moment from 'moment-timezone';
 
     export default {
@@ -31,11 +33,12 @@
                 activeTab: 'all_members',
                 members: [],
                 hiddenMembers: null,
-                totalMembers: null,
-                countFleetUploadedMembers: null,
-                countRegisteredMembers: null,
-                countNotRegisteredMembers: null,
+                totalMembers: 0,
+                countFleetUploadedMembers: 0,
+                countRegisteredMembers: 0,
+                countNotRegisteredMembers: 0,
                 // page: 1,
+                refreshingProfile: {},
             }
         },
         created() {
@@ -95,6 +98,19 @@
             },
         },
         methods: {
+            refreshProfile(handle) {
+                this.$set(this.refreshingProfile, handle, true);
+                axios.post(`/api/organization/${this.selectedSid}/refresh-member/${handle}`).then(response => {
+                    toastr.success(`The RSI public profile of ${handle} has been successfully refreshed.`);
+                }).catch(err => {
+                    if (err.response.data.errorMessage) {
+                        toastr.error(err.response.data.errorMessage);
+                    }
+                    console.error(err);
+                }).then(_ => {
+                    this.$set(this.refreshingProfile, handle, false);
+                });
+            },
             formatStatus(status) {
                 switch (status) {
                     case 'not_registered':

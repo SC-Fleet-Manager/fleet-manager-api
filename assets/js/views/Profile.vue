@@ -303,8 +303,6 @@
                     this.refreshProfile();
                     toastr.success('Your RSI account has been successfully linked! You can remove the token from your bio.');
                     this.submitDisabled = false;
-                    this.showLinkAccount = false;
-                    this.showUpdateHandle = true;
                 }).catch(async err => {
                     this.submitDisabled = false;
                     if (err.response.data.error === 'invalid_form') {
