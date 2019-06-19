@@ -6,5 +6,5 @@ use App\Domain\SpectrumIdentification;
 
 interface OrganizationMembersInfosProviderInterface
 {
-    public function retrieveInfos(SpectrumIdentification $sid): array;
+    public function retrieveInfos(SpectrumIdentification $sid, bool $cache = true): array;
 }

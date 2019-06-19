@@ -12,7 +12,10 @@
 
                 <div class="collapse navbar-collapse text-white">
                     <div class="ml-auto d-flex">
-                        <ul class="navbar-nav">
+                        <ul class="navbar-nav align-items-center">
+                            <li class="nav-item">
+                                <a href="https://blog.fleet-manager.space" target="_blank" class="nav-link text-white">Blog</a>
+                            </li>
                             <li class="nav-item">
                                 <a href="https://github.com/Ioni14/starcitizen-fleet-manager" target="_blank" class="nav-link text-white"><i class="fab fa-github fa-2x"></i></a>
                             </li>
@@ -224,9 +227,10 @@
                         <a class="navbar-brand" href="/"><img src="../img/logo.png" height="45" alt="Fleet Manager Logo"></a>
                         <a href="/privacy-policy">Privacy policy</a>
                     </div>
-                    <div class="col-6 text-right">
+                    <div class="col-6 d-flex align-items-center">
+                        <a href="https://blog.fleet-manager.space" target="_blank" class="mr-3 ml-auto">Blog</a>
                         <a href="https://github.com/Ioni14/starcitizen-fleet-manager" target="_blank" class="mr-3"><i class="fab fa-github fa-2x"></i></a>
-                        <a href="https://discord.gg/5EyFpVP" target="_blank"><i class="fab fa-discord fa-2x"></i></a>
+                        <a href="https://discord.gg/5EyFpVP" target="_blank" class=""><i class="fab fa-discord fa-2x"></i></a>
                     </div>
                 </div>
             </div>

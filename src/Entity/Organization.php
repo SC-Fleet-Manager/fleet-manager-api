@@ -59,6 +59,13 @@ class Organization
      */
     private $publicChoice;
 
+    /**
+     * @var \DateTimeInterface
+     *
+     * @ORM\Column(type="datetimetz_immutable", nullable=true)
+     */
+    private $lastRefresh;
+
     public function __construct(?UuidInterface $id = null)
     {
         $this->id = $id;
@@ -119,5 +126,31 @@ class Organization
         }
 
         return $this;
+    }
+
+    public function getLastRefresh(): ?\DateTimeInterface
+    {
+        return $this->lastRefresh;
+    }
+
+    public function setLastRefresh(?\DateTimeInterface $lastRefresh): self
+    {
+        $this->lastRefresh = $lastRefresh;
+
+        return $this;
+    }
+
+    public function canBeRefreshed(): bool
+    {
+        return $this->lastRefresh === null || $this->lastRefresh <= new \DateTimeImmutable('-15 minutes');
+    }
+
+    public function getTimeLeftBeforeRefreshing(): ?\DateInterval
+    {
+        if ($this->lastRefresh === null) {
+            return null;
+        }
+
+        return $this->lastRefresh->diff(new \DateTimeImmutable('-15 minutes'));
     }
 }
