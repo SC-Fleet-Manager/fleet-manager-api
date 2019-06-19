@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Domain\HandleSC;
 use App\Domain\SpectrumIdentification;
 use App\Entity\Citizen;
 use App\Entity\Organization;
@@ -152,16 +151,11 @@ class OrganizationController extends AbstractController
     }
 
     /**
-     * @Route("/organization/{organizationSid}/members-registered", name="members_registered", methods={"GET"})
+     * @Route("/organization/{organizationSid}/refresh-orga", name="refresh_orga", methods={"POST"})
      * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      */
-    public function membersRegistered(string $organizationSid, OrganizationMembersInfosProviderInterface $organizationMembersInfosProvider): Response
+    public function refreshOrga(string $organizationSid, OrganizationMembersInfosProviderInterface $organizationMembersInfosProvider): Response
     {
-        // TODO : [optimization] pagination
-//        $page = $request->query->getInt('page', 1);
-//        $page = $page >= 1 ? $page : 1;
-//        $itemsPerPage = 50;
-
         /** @var User $user */
         $user = $this->security->getUser();
         $citizen = $user->getCitizen();
@@ -187,7 +181,22 @@ class OrganizationController extends AbstractController
             ], 403);
         }
 
-        $memberInfos = $organizationMembersInfosProvider->retrieveInfos(new SpectrumIdentification($organizationSid));
+        if (!$organization->canBeRefreshed()) {
+            return $this->json([
+                'error' => 'too_many_refresh',
+                'errorMessage' => sprintf('Sorry, you have to wait %s minutes before refreshing.', $organization->getTimeLeftBeforeRefreshing()->format('%i')),
+            ], 400);
+        }
+
+        $memberInfos = $organizationMembersInfosProvider->retrieveInfos(new SpectrumIdentification($organizationSid), false);
+        $organization->setLastRefresh(new \DateTimeImmutable());
+        $this->entityManager->flush();
+
+        return $this->json($this->prepareResponseMembersList($memberInfos));
+    }
+
+    private function prepareResponseMembersList(array $memberInfos): array
+    {
         $countVisibleCitizens = count($memberInfos['visibleCitizens']);
         // pagination
 //        $memberInfos['visibleCitizens'] = array_splice($memberInfos['visibleCitizens'], ($page - 1) * $itemsPerPage, $itemsPerPage);
@@ -256,13 +265,54 @@ class OrganizationController extends AbstractController
             return $collator->compare($member1['infos']->handle, $member2['infos']->handle);
         });
 
-        return $this->json([
+        return [
 //            'page' => $page,
 //            'totalPage' => ceil($countVisibleCitizens / $itemsPerPage),
             'totalItems' => $countVisibleCitizens,
             'members' => $members,
             'countHiddenMembers' => $memberInfos['countHiddenCitizens'],
-        ]);
+        ];
+    }
+
+    /**
+     * @Route("/organization/{organizationSid}/members-registered", name="members_registered", methods={"GET"})
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
+     */
+    public function membersRegistered(string $organizationSid, OrganizationMembersInfosProviderInterface $organizationMembersInfosProvider): Response
+    {
+        // TODO : [optimization] pagination
+//        $page = $request->query->getInt('page', 1);
+//        $page = $page >= 1 ? $page : 1;
+//        $itemsPerPage = 50;
+
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $citizen = $user->getCitizen();
+        if ($citizen === null) {
+            return $this->json([
+                'error' => 'no_citizen_created',
+                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
+            ], 400);
+        }
+        /** @var Organization|null $organization */
+        $organization = $this->organizationRepository->findOneBy(['organizationSid' => $organizationSid]);
+        if ($organization === null) {
+            return $this->json([
+                'error' => 'not_found_orga',
+                'errorMessage' => sprintf('The organization "%s" does not exist.', $organizationSid),
+            ], 404);
+        }
+
+        if (!$this->isAdminOf($citizen, $organizationSid)) {
+            return $this->json([
+                'error' => 'not_enough_rights',
+                'errorMessage' => sprintf('You must be an admin of %s to view these stats. Try to refresh your RSI profile in your <a href="/profile">profile page</a>.', $organization->getName()),
+            ], 403);
+        }
+
+        $memberInfos = $organizationMembersInfosProvider->retrieveInfos(new SpectrumIdentification($organizationSid));
+
+        return $this->json($this->prepareResponseMembersList($memberInfos));
     }
 
     private function isAdminOf(Citizen $citizen, string $organizationSid): bool

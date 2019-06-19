@@ -45,23 +45,7 @@
             axios.get(`/api/organization/${this.selectedSid}/members-registered`, {
                 // params: {page: this.page},
             }).then(response => {
-                this.hiddenMembers = response.data.countHiddenMembers;
-                this.totalMembers = response.data.totalItems;
-                this.members = response.data.members;
-                for (let member of this.members) {
-                    switch (member.status) {
-                        case 'not_registered':
-                            ++this.countNotRegisteredMembers; break;
-                        case 'registered':
-                            ++this.countRegisteredMembers; break;
-                        case 'fleet_uploaded':
-                            ++this.countFleetUploadedMembers; break;
-                    }
-                }
-                // for (let member of response.data.members) {
-                //     this.members.push(member);
-                // }
-                // ++this.page;
+                this.refreshMemberList(response.data);
             }).catch(err => {
                 console.error(err);
             });
@@ -98,6 +82,28 @@
             },
         },
         methods: {
+            refreshMemberList(memberListData) {
+                this.hiddenMembers = memberListData.countHiddenMembers;
+                this.totalMembers = memberListData.totalItems;
+                this.members = memberListData.members;
+                this.countNotRegisteredMembers = 0;
+                this.countRegisteredMembers = 0;
+                this.countFleetUploadedMembers = 0;
+                for (let member of this.members) {
+                    switch (member.status) {
+                        case 'not_registered':
+                            ++this.countNotRegisteredMembers; break;
+                        case 'registered':
+                            ++this.countRegisteredMembers; break;
+                        case 'fleet_uploaded':
+                            ++this.countFleetUploadedMembers; break;
+                    }
+                }
+                // for (let member of memberListData.members) {
+                //     this.members.push(member);
+                // }
+                // ++this.page;
+            },
             refreshProfile(handle) {
                 this.$set(this.refreshingProfile, handle, true);
                 axios.post(`/api/organization/${this.selectedSid}/refresh-member/${handle}`).then(response => {
