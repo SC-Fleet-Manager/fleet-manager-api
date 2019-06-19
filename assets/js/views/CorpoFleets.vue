@@ -106,11 +106,17 @@
                                 <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="admin">Admin only <i class="fas fa-info-circle" v-b-tooltip.hover title="Only the highest ranks (admins) of the orga can see the orga's fleet."></i></b-form-radio>
                                 <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="public">Public <i class="fas fa-info-circle" v-b-tooltip.hover title="Everyone can see the orga's fleet."></i></b-form-radio>
                             </b-form-group>
-<!--                            <b-button variant="secondary">Refresh your members</b-button> TODO : add async workers -->
                         </b-col>
                         <b-col lg="6" >
-                            <div class="text-right"><b-button variant="primary" class="mb-3" download :disabled="selectedSid == null" :href="'/api/organization/export-orga-members/'+selectedSid"><i class="fas fa-file-csv"></i> Export <strong>{{ selectedSid != null ? orgaFullname : 'N/A' }}</strong> members (.csv)</b-button></div>
-                            <OrgaRegisteredMembers :selectedSid="selectedSid"></OrgaRegisteredMembers>
+                            <b-row>
+                                <b-col class="mb-2" md="6" lg="12" xl="6">
+                                    <b-button :disabled="refreshingMemberList" @click="refreshMemberList" variant="secondary"><i class="fas fa-sync-alt" :class="{'fa-spin': refreshingMemberList}"></i> Refresh the members list</b-button>
+                                </b-col>
+                                <b-col md="6" lg="12" xl="6">
+                                    <div class="text-right"><b-button variant="primary" class="mb-3" download :disabled="selectedSid == null" :href="'/api/organization/export-orga-members/'+selectedSid"><i class="fas fa-file-csv"></i> Export <strong>{{ selectedSid != null ? orgaFullname : 'N/A' }}</strong> members (.csv)</b-button></div>
+                                </b-col>
+                            </b-row>
+                            <OrgaRegisteredMembers :selectedSid="selectedSid" ref="orgaRegisteredMembers"></OrgaRegisteredMembers>
                         </b-col>
                     </b-row>
                 </b-card>
@@ -180,6 +186,7 @@
                     {'id': 'ready', 'label': 'Flight ready'},
                     {'id': 'not_ready', 'label': 'In concept'},
                 ],
+                refreshingMemberList: false,
             };
         },
         created() {
@@ -526,6 +533,21 @@
                         this.notEnoughRightsMessage = err.response.data.errorMessage;
                     }
                     console.error(err);
+                });
+            },
+            refreshMemberList() {
+                this.refreshingMemberList = true;
+                axios.post(`/api/organization/${this.organization.organizationSid}/refresh-orga`).then(response => {
+                    this.$refs.orgaRegisteredMembers.refreshMemberList(response.data);
+                }).catch(err => {
+                    if (err.response.data.errorMessage) {
+                        toastr.error(err.response.data.errorMessage);
+                    } else {
+                        toastr.error('An error has occurred. Please retry more later.');
+                    }
+                    console.error(err);
+                }).then(_ => {
+                    this.refreshingMemberList = false;
                 });
             },
             refreshBreakpoint() {

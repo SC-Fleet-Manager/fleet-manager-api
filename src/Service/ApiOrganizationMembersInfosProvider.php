@@ -32,14 +32,14 @@ class ApiOrganizationMembersInfosProvider implements OrganizationMembersInfosPro
     /**
      * @return array ['visibleCitizens' => <RsiOrgaMemberInfos>, 'countHiddenCitizens' => <int>]
      */
-    public function retrieveInfos(SpectrumIdentification $sid): array
+    public function retrieveInfos(SpectrumIdentification $sid, bool $cache = true): array
     {
         return $this->cache->get('organization_members_infos_'.$sid->getSid(), function (CacheItem $cacheItem) use ($sid) {
             $cacheItem->tag(['organization_members_infos']);
             $cacheItem->expiresAfter(new \DateInterval('P1D'));
 
             return $this->scrap($sid);
-        });
+        }, $cache ? null : INF);
     }
 
     private function scrap(SpectrumIdentification $sid): ?array
