@@ -26,7 +26,7 @@ class OrganizationFleetExporter
     public function exportOrgaMembers(string $organizationSid): array
     {
         $memberInfos = $this->organizationMembersInfosProvider->retrieveInfos(new SpectrumIdentification($organizationSid));
-        if ($memberInfos['error'] === 'orga_too_big') {
+        if (isset($memberInfos['error']) && $memberInfos['error'] === 'orga_too_big') {
             throw new \LogicException('This orga is too big.');
         }
 

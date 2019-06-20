@@ -196,7 +196,7 @@ class OrganizationController extends AbstractController
         }
 
         $memberInfos = $organizationMembersInfosProvider->retrieveInfos(new SpectrumIdentification($organizationSid), false);
-        if ($memberInfos['error'] === 'orga_too_big') {
+        if (isset($memberInfos['error']) && $memberInfos['error'] === 'orga_too_big') {
             return $this->json([
                 'error' => 'orga_too_big',
                 'errorMessage' => 'Sorry, your orga is too big to retrieve the members list right now. We\'re currently searching a solution for this issue.',
@@ -324,7 +324,7 @@ class OrganizationController extends AbstractController
         }
 
         $memberInfos = $organizationMembersInfosProvider->retrieveInfos(new SpectrumIdentification($organizationSid));
-        if ($memberInfos['error'] === 'orga_too_big') {
+        if (isset($memberInfos['error']) && $memberInfos['error'] === 'orga_too_big') {
             return $this->json([
                 'error' => 'orga_too_big',
                 'errorMessage' => 'Sorry, your orga is too big to retrieve the members list right now. We\'re currently searching a solution for this issue.',
