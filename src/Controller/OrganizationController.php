@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Domain\SpectrumIdentification;
 use App\Entity\Citizen;
 use App\Entity\Organization;
+use App\Entity\OrganizationChange;
 use App\Entity\User;
 use App\Repository\CitizenRepository;
 use App\Repository\OrganizationRepository;
@@ -53,6 +54,42 @@ class OrganizationController extends AbstractController
     }
 
     /**
+     * @Route("/organization/{organizationSid}/changes", name="changes", methods={"GET"})
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
+     */
+    public function changes(string $organizationSid): Response
+    {
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $citizen = $user->getCitizen();
+        if ($citizen === null) {
+            return $this->json([
+                'error' => 'no_citizen_created',
+                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
+            ], 400);
+        }
+        /** @var Organization|null $organization */
+        $organization = $this->organizationRepository->findOneBy(['organizationSid' => $organizationSid]);
+        if ($organization === null) {
+            return $this->json([
+                'error' => 'not_found_orga',
+                'errorMessage' => sprintf('The organization "%s" does not exist.', $organizationSid),
+            ], 404);
+        }
+
+        if (!$this->isAdminOf($citizen, $organizationSid)) {
+            return $this->json([
+                'error' => 'not_enough_rights',
+                'errorMessage' => sprintf('You must be an admin of %s to view these stats. Try to refresh your RSI profile in your <a href="/profile">profile page</a>.', $organization->getName()),
+            ], 403);
+        }
+
+        $changes = $this->entityManager->getRepository(OrganizationChange::class)->findBy(['organization' => $organization], ['createdAt' => 'DESC'], 50);
+
+        return $this->json($changes, 200, [], ['groups' => 'orga_fleet_admin']);
+    }
+
+    /**
      * @Route("/organization/export-orga-members/{organizationSid}", name="export_orga_members", methods={"GET"})
      * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      */
@@ -83,7 +120,14 @@ class OrganizationController extends AbstractController
             ], 403);
         }
 
-        $data = $orgaFleetExporter->exportOrgaMembers($organizationSid);
+        try {
+            $data = $orgaFleetExporter->exportOrgaMembers($organizationSid);
+        } catch (\LogicException $e) {
+            return $this->json([
+                'error' => 'orga_too_big',
+                'errorMessage' => 'Sorry, your orga is too big to retrieve the members list right now. We\'re currently searching a solution for this issue.',
+            ], 400);
+        }
 
         $csv = $serializer->serialize($data, 'csv');
         $filepath = sys_get_temp_dir().'/'.uniqid('', true);
@@ -189,6 +233,12 @@ class OrganizationController extends AbstractController
         }
 
         $memberInfos = $organizationMembersInfosProvider->retrieveInfos(new SpectrumIdentification($organizationSid), false);
+        if (isset($memberInfos['error']) && $memberInfos['error'] === 'orga_too_big') {
+            return $this->json([
+                'error' => 'orga_too_big',
+                'errorMessage' => 'Sorry, your orga is too big to retrieve the members list right now. We\'re currently searching a solution for this issue.',
+            ], 400);
+        }
         $organization->setLastRefresh(new \DateTimeImmutable());
         $this->entityManager->flush();
 
@@ -311,6 +361,12 @@ class OrganizationController extends AbstractController
         }
 
         $memberInfos = $organizationMembersInfosProvider->retrieveInfos(new SpectrumIdentification($organizationSid));
+        if (isset($memberInfos['error']) && $memberInfos['error'] === 'orga_too_big') {
+            return $this->json([
+                'error' => 'orga_too_big',
+                'errorMessage' => 'Sorry, your orga is too big to retrieve the members list right now. We\'re currently searching a solution for this issue.',
+            ], 400);
+        }
 
         return $this->json($this->prepareResponseMembersList($memberInfos));
     }

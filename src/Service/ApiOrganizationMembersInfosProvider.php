@@ -52,6 +52,12 @@ class ApiOrganizationMembersInfosProvider implements OrganizationMembersInfosPro
         preg_match('~^(?P<count>\d+)~', $countCrawler->text(), $matches);
         $totalMembers = (int) $matches['count'];
 
+        if ($totalMembers > 128) {
+            return [
+                'error' => 'orga_too_big',
+            ];
+        }
+
         /** @var ResponseInterface[] $responses */
         $responses = [];
         for ($page = 1, $totalPages = ceil($totalMembers / 32); $page <= $totalPages; ++$page) {

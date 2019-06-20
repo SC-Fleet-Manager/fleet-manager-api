@@ -106,6 +106,7 @@
                                 <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="admin">Admin only <i class="fas fa-info-circle" v-b-tooltip.hover title="Only the highest ranks (admins) of the orga can see the orga's fleet."></i></b-form-radio>
                                 <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="public">Public <i class="fas fa-info-circle" v-b-tooltip.hover title="Everyone can see the orga's fleet."></i></b-form-radio>
                             </b-form-group>
+                            <OrganizationChanges :selectedSid="selectedSid"></OrganizationChanges>
                         </b-col>
                         <b-col lg="6" >
                             <b-row>
@@ -133,6 +134,7 @@
     import ShipFamily from './ShipFamily';
     import { createNamespacedHelpers } from 'vuex';
     import OrgaRegisteredMembers from "./OrgaRegisteredMembers";
+    import OrganizationChanges from "./OrganizationChanges";
 
     const { mapGetters, mapMutations, mapActions } = createNamespacedHelpers('orga_fleet');
     const BREAKPOINTS = {xs: 0, sm: 576, md: 768, lg: 992, xl: 1200};
@@ -153,7 +155,7 @@
     export default {
         name: 'organizations-fleets',
         props: ['sid'],
-        components: {OrgaRegisteredMembers, vSelect, ShipFamily, ShipFamilyDetail},
+        components: {OrgaRegisteredMembers, OrganizationChanges, vSelect, ShipFamily, ShipFamilyDetail},
         data() {
             return {
                 menu: 'fleet',
@@ -538,6 +540,7 @@
             refreshMemberList() {
                 this.refreshingMemberList = true;
                 axios.post(`/api/organization/${this.organization.organizationSid}/refresh-orga`).then(response => {
+                    toastr.success('The members list has been refresh.');
                     this.$refs.orgaRegisteredMembers.refreshMemberList(response.data);
                 }).catch(err => {
                     if (err.response.data.errorMessage) {

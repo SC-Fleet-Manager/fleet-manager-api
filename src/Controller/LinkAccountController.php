@@ -170,14 +170,15 @@ class LinkAccountController extends AbstractController
             }
         }
 
+        $user->setCitizen($citizen);
         $citizen
             ->setNumber(clone $citizenInfos->numberSC)
             ->setActualHandle(clone $citizenInfos->handle);
-        $this->citizenRefresher->refreshCitizen($citizen, $citizenInfos);
         if ($isNew) {
             $this->entityManager->persist($citizen);
+            $this->entityManager->flush();
         }
-        $user->setCitizen($citizen);
+        $this->citizenRefresher->refreshCitizen($citizen, $citizenInfos);
 
         $this->profileLinkAccountLogger->info('Set citizen to user.',
             ['citizenId' => $citizen->getId(), 'citizenHandle' => $citizen->getActualHandle()->getHandle(), 'infos' => $citizenInfos, 'userId' => $user->getId(), 'username' => $user->getNickname()]);
