@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -32,7 +33,7 @@ class Organization
      * @var string
      *
      * @ORM\Column(type="string", length=31, unique=true)
-     * @Groups({"profile", "orga_fleet"})
+     * @Groups({"profile", "orga_fleet", "orga_fleet_admin"})
      */
     private $organizationSid;
 
@@ -40,7 +41,7 @@ class Organization
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"profile", "orga_fleet"})
+     * @Groups({"profile", "orga_fleet", "orga_fleet_admin"})
      */
     private $name;
 
@@ -66,11 +67,19 @@ class Organization
      */
     private $lastRefresh;
 
+    /**
+     * @var OrganizationChange[]
+     *
+     * @ORM\OneToMany(targetEntity="OrganizationChange", mappedBy="organization")
+     */
+    private $changes;
+
     public function __construct(?UuidInterface $id = null)
     {
         $this->id = $id;
         $this->organizationSid = '';
         $this->publicChoice = self::PUBLIC_CHOICE_PRIVATE;
+        $this->changes = new ArrayCollection();
     }
 
     public function getId(): ?UuidInterface

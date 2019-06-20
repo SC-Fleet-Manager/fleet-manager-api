@@ -272,7 +272,7 @@ class Citizen
     public function getOrganizationSids(): array
     {
         return $this->organizations->map(static function (CitizenOrganization $citizenOrganization): string {
-            return $citizenOrganization->getOrganizationSid();
+            return $citizenOrganization->getOrganization()->getOrganizationSid();
         })->toArray();
     }
 
