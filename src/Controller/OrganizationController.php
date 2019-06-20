@@ -83,7 +83,14 @@ class OrganizationController extends AbstractController
             ], 403);
         }
 
-        $data = $orgaFleetExporter->exportOrgaMembers($organizationSid);
+        try {
+            $data = $orgaFleetExporter->exportOrgaMembers($organizationSid);
+        } catch (\LogicException $e) {
+            return $this->json([
+                'error' => 'orga_too_big',
+                'errorMessage' => 'Sorry, your orga is too big to retrieve the members list right now. We\'re currently searching a solution for this issue.',
+            ], 400);
+        }
 
         $csv = $serializer->serialize($data, 'csv');
         $filepath = sys_get_temp_dir().'/'.uniqid('', true);
@@ -189,6 +196,12 @@ class OrganizationController extends AbstractController
         }
 
         $memberInfos = $organizationMembersInfosProvider->retrieveInfos(new SpectrumIdentification($organizationSid), false);
+        if ($memberInfos['error'] === 'orga_too_big') {
+            return $this->json([
+                'error' => 'orga_too_big',
+                'errorMessage' => 'Sorry, your orga is too big to retrieve the members list right now. We\'re currently searching a solution for this issue.',
+            ], 400);
+        }
         $organization->setLastRefresh(new \DateTimeImmutable());
         $this->entityManager->flush();
 
@@ -311,6 +324,12 @@ class OrganizationController extends AbstractController
         }
 
         $memberInfos = $organizationMembersInfosProvider->retrieveInfos(new SpectrumIdentification($organizationSid));
+        if ($memberInfos['error'] === 'orga_too_big') {
+            return $this->json([
+                'error' => 'orga_too_big',
+                'errorMessage' => 'Sorry, your orga is too big to retrieve the members list right now. We\'re currently searching a solution for this issue.',
+            ], 400);
+        }
 
         return $this->json($this->prepareResponseMembersList($memberInfos));
     }
