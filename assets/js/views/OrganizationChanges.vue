@@ -7,11 +7,14 @@
                     {{ formatDate(change.createdAt) }}
                     <b-badge style="width: 6rem;" :variant="getVariantChangeType(change)">{{ getTitleChangeType(change) }}</b-badge>
                     <span v-if="change.type == 'upload_fleet'">
-                        {{ change.author.actualHandle.handle }} :
+                        <b>{{ change.author.actualHandle.handle }}</b> :
                         <template v-for="(ship, index) in change.payload">{{ ship.count > 0 ? '+'+ship.count : ship.count }} {{ ship.ship }}<template v-if="index < change.payload.length - 1">, </template></template>
                     </span>
                     <span v-if="change.type == 'join_orga' || change.type == 'leave_orga'">
-                        {{ change.author.actualHandle.handle }}
+                        <b>{{ change.author.actualHandle.handle }}</b>
+                    </span>
+                    <span v-if="change.type == 'update_privacy_policy'">
+                        <b>{{ change.author.actualHandle.handle }}</b> has changed orga's policy from <b>{{ formatOrgaPolicy(change.payload.oldValue) }}</b> to <b>{{ formatOrgaPolicy(change.payload.newValue) }}</b>
                     </span>
                 </p>
             </div>
@@ -72,6 +75,17 @@
                         return 'Updated settings';
                 }
                 return 'Unknown';
+            },
+            formatOrgaPolicy(policy) {
+                switch (policy) {
+                    case 'public':
+                        return 'Public';
+                    case 'private':
+                        return 'Members only';
+                    case 'admin':
+                        return 'Admin only';
+                }
+                return 'Unkown';
             },
             formatDate(date) {
                 return moment(date).format('LLL');

@@ -7,6 +7,7 @@ use App\Entity\Citizen;
 use App\Entity\Organization;
 use App\Entity\OrganizationChange;
 use App\Entity\User;
+use App\Event\OrganizationPolicyChangedEvent;
 use App\Repository\CitizenRepository;
 use App\Repository\OrganizationRepository;
 use App\Repository\ShipRepository;
@@ -19,6 +20,7 @@ use App\Service\OrganizationMembersInfosProviderInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -36,6 +38,7 @@ class OrganizationController extends AbstractController
     private $shipRepository;
     private $entityManager;
     private $fleetOrganizationGuard;
+    private $eventDispatcher;
 
     public function __construct(
         Security $security,
@@ -43,7 +46,8 @@ class OrganizationController extends AbstractController
         OrganizationRepository $organizationRepository,
         ShipRepository $shipRepository,
         EntityManagerInterface $entityManager,
-        FleetOrganizationGuard $fleetOrganizationGuard
+        FleetOrganizationGuard $fleetOrganizationGuard,
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->security = $security;
         $this->citizenRepository = $citizenRepository;
@@ -51,6 +55,7 @@ class OrganizationController extends AbstractController
         $this->shipRepository = $shipRepository;
         $this->entityManager = $entityManager;
         $this->fleetOrganizationGuard = $fleetOrganizationGuard;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -423,8 +428,16 @@ class OrganizationController extends AbstractController
             ], 400);
         }
 
+        $oldPublicChoice = $organization->getPublicChoice();
+
         $organization->setPublicChoice($content['publicChoice']);
         $this->entityManager->flush();
+
+        if ($organization->getPublicChoice() !== $oldPublicChoice) {
+            $this->eventDispatcher->dispatch(new OrganizationPolicyChangedEvent(
+                $citizen, $organization, $oldPublicChoice, $organization->getPublicChoice()
+            ));
+        }
 
         return $this->json(null, 204);
     }
