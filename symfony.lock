@@ -131,6 +131,9 @@
             "ref": "71822522faf7ed2792d86b7f94ce73443358ccb9"
         }
     },
+    "http-interop/http-factory-guzzle": {
+        "version": "1.0.0"
+    },
     "hwi/oauth-bundle": {
         "version": "0.6",
         "recipe": {
@@ -308,6 +311,9 @@
     "symfony/cache": {
         "version": "v4.1.6"
     },
+    "symfony/cache-contracts": {
+        "version": "v1.1.5"
+    },
     "symfony/config": {
         "version": "v4.1.6"
     },
@@ -319,6 +325,9 @@
             "version": "3.3",
             "ref": "e3868d2f4a5104f19f844fe551099a00c6562527"
         }
+    },
+    "symfony/contracts": {
+        "version": "v1.1.0"
     },
     "symfony/css-selector": {
         "version": "v4.1.9"
@@ -353,6 +362,9 @@
     "symfony/event-dispatcher": {
         "version": "v4.1.6"
     },
+    "symfony/event-dispatcher-contracts": {
+        "version": "v1.1.5"
+    },
     "symfony/expression-language": {
         "version": "v4.2.8"
     },
@@ -385,6 +397,9 @@
     },
     "symfony/http-client": {
         "version": "v4.3.1"
+    },
+    "symfony/http-client-contracts": {
+        "version": "v1.1.5"
     },
     "symfony/http-foundation": {
         "version": "v4.1.6"
@@ -493,6 +508,9 @@
     },
     "symfony/serializer-pack": {
         "version": "v1.0.1"
+    },
+    "symfony/service-contracts": {
+        "version": "v1.1.5"
     },
     "symfony/stopwatch": {
         "version": "v4.1.6"
