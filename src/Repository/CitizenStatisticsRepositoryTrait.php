@@ -79,4 +79,22 @@ trait CitizenStatisticsRepositoryTrait
 
         return $query->getSingleResult();
     }
+
+    public function statShipsPerCitizenByOrga(SpectrumIdentification $sid): array
+    {
+        $dql = '
+            SELECT c, COUNT(ship.id) as countShips FROM App\Entity\Citizen c
+            INNER JOIN c.organizations citizenOrga
+            INNER JOIN citizenOrga.organization orga WITH orga.organizationSid = :sid
+            INNER JOIN c.lastFleet fleet
+            LEFT JOIN fleet.ships ship
+            GROUP BY c.id
+        ';
+        $query = $this->_em->createQuery($dql);
+        $query->setParameter('sid', mb_strtolower($sid->getSid()));
+        $query->useResultCache(true);
+        $query->setResultCacheLifetime(300);
+
+        return $query->getResult();
+    }
 }

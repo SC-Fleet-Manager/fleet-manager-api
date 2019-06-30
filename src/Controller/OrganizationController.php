@@ -522,18 +522,30 @@ class OrganizationController extends AbstractController
 
         // Citizen with most Ships
         $citizenMostShips = $this->citizenRepository->statCitizenWithMostShipsByOrga(new SpectrumIdentification($organizationSid));
-        dump($citizenMostShips);
+        $maxCountShips = $citizenMostShips['maxShip'];
 
-        /*
-            Column bars of number of owned ships per citizens : x Number of Ships y number of citizens.
-         */
+        // Column bars of number of owned ships per citizens : x Number of Ships y number of citizens.
+        $shipsPerCitizen = $this->citizenRepository->statShipsPerCitizenByOrga(new SpectrumIdentification($organizationSid));
+        $chartXAxis = range(1, $maxCountShips > 10 ? $maxCountShips : 10); // 1 to <max ships by citizen>
+        $chartYAxis = array_fill(0, $maxCountShips > 10 ? $maxCountShips : 10, 0); // how many citizen have X ships
+        foreach ($shipsPerCitizen as $citizenShips) {
+            $countShips = (int) $citizenShips['countShips'];
+            if ($countShips <= 0) {
+                continue;
+            }
+            ++$chartYAxis[$countShips - 1];
+        }
 
         return $this->json([
             'countCitizens' => $countCitizens,
             'averageShipsPerCitizen' => $averageShipsPerCitizen,
             'citizenMostShips' => [
                 'citizen' => $citizenMostShips[0],
-                'countShips' => $citizenMostShips['maxShip'],
+                'countShips' => $maxCountShips,
+            ],
+            'chartShipsPerCitizen' => [
+                'xAxis' => $chartXAxis,
+                'yAxis' => $chartYAxis,
             ],
         ], 200, [], ['groups' => 'orga_fleet']);
     }

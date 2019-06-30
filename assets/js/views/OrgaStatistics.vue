@@ -52,7 +52,7 @@
                         </b-card>
                     </b-col>
                 </b-row>
-                Column bars of number of owned ships per citizens : x Number of Ships y number of citizens.
+                <ShipPerCitizenBar ref="shipPerCitizenBar" style="height: 300px;"/>
             </b-card>
         </b-col>
     </b-row>
@@ -61,10 +61,12 @@
 <script>
     import axios from 'axios';
     import toastr from 'toastr';
+    import ShipPerCitizenBar from '../charts/ShipPerCitizenBar';
 
     export default {
         name: 'OrgaStatistics',
         props: ['selectedSid'],
+        components: {ShipPerCitizenBar},
         data() {
             return {
                 // stats ships
@@ -85,6 +87,10 @@
                     this.countCitizens = response.data.countCitizens;
                     this.averageShipsPerCitizen = Math.round(response.data.averageShipsPerCitizen * 10) / 10;
                     this.citizenMostShips = response.data.citizenMostShips;
+                    this.$refs.shipPerCitizenBar.setData({
+                        xAxis: response.data.chartShipsPerCitizen.xAxis,
+                        yAxis: response.data.chartShipsPerCitizen.yAxis,
+                    })
                 }).catch(err => {
                     if (err.response.status === 401) {
                         // not connected
