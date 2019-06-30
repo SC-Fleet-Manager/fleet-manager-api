@@ -12,11 +12,19 @@
                             </b-card-body>
                         </b-card>
                     </b-col>
+                    <b-col cols="12" sm="6" lg="6">
+                        <b-card :no-body="true">
+                            <b-card-body class="p-0 clearfix">
+                                <i class="fas fa-calendar-check bg-warning p-4 font-2xl mr-3 float-left"></i>
+                                <div class="h5 text-primary mb-0 pt-3">{{ countFlightReady }} / {{ countInConcept }}</div>
+                                <div class="text-muted text-uppercase font-weight-bold font-xs">Flight ready / In concept</div>
+                            </b-card-body>
+                        </b-card>
+                    </b-col>
                 </b-row>
 
                 Total needed minimum / Maximum crew : xxx min crew - yyy max crew
                 Total SCU capacity : xxx Total SCU
-                Number of Flyable vs in concept ships
 
                 Pie Charts of ship size repartition : Number of Size 1 / 2 / 3 / 4 / 5 / 6
             </b-card>
@@ -71,6 +79,8 @@
             return {
                 // stats ships
                 totalShips: 0,
+                countFlightReady: 0,
+                countInConcept: 0,
                 // stats citizens
                 countCitizens: 0,
                 averageShipsPerCitizen: 0,
@@ -113,6 +123,8 @@
                     console.log(response.data);
 
                     this.totalShips = response.data.countShips;
+                    this.countFlightReady = response.data.countFlightReady;
+                    this.countInConcept = response.data.countInConcept;
                 }).catch(err => {
                     if (err.response.status === 401) {
                         // not connected

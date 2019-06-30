@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Domain\ShipInfo;
 use App\Domain\SpectrumIdentification;
 use App\Entity\Citizen;
 use App\Entity\Organization;
@@ -17,6 +18,7 @@ use App\Service\Dto\RsiOrgaMemberInfos;
 use App\Service\Exporter\OrganizationFleetExporter;
 use App\Service\FleetOrganizationGuard;
 use App\Service\OrganizationMembersInfosProviderInterface;
+use App\Service\ShipInfosProviderInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -39,6 +41,7 @@ class OrganizationController extends AbstractController
     private $entityManager;
     private $fleetOrganizationGuard;
     private $eventDispatcher;
+    private $shipInfosProvider;
 
     public function __construct(
         Security $security,
@@ -47,7 +50,8 @@ class OrganizationController extends AbstractController
         ShipRepository $shipRepository,
         EntityManagerInterface $entityManager,
         FleetOrganizationGuard $fleetOrganizationGuard,
-        EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher,
+        ShipInfosProviderInterface $shipInfosProvider
     ) {
         $this->security = $security;
         $this->citizenRepository = $citizenRepository;
@@ -56,6 +60,7 @@ class OrganizationController extends AbstractController
         $this->entityManager = $entityManager;
         $this->fleetOrganizationGuard = $fleetOrganizationGuard;
         $this->eventDispatcher = $eventDispatcher;
+        $this->shipInfosProvider = $shipInfosProvider;
     }
 
     /**
@@ -562,15 +567,34 @@ class OrganizationController extends AbstractController
         // How many ships in the orga
         $totalShips = $this->organizationRepository->statTotalShipsByOrga(new SpectrumIdentification($organizationSid));
 
+        // Number of Flyable vs in concept ships
+        $orgaShips = $this->organizationRepository->statShipsByOrga(new SpectrumIdentification($organizationSid));
+        $countFlightReady = 0;
+        $countInConcept = 0;
+        foreach ($orgaShips as $orgaShip) {
+            $shipName = $this->shipInfosProvider->transformHangarToProvider($orgaShip->getName());
+            $shipInfo = $this->shipInfosProvider->getShipByName($shipName);
+            if ($shipInfo === null) {
+                continue;
+            }
+            if ($shipInfo->productionStatus === ShipInfo::FLIGHT_READY) {
+                ++$countFlightReady;
+            } else {
+                ++$countInConcept;
+            }
+        }
+
+
         /*
             Total needed minimum / Maximum crew : xxx min crew - yyy max crew
             Total SCU capacity : xxx Total SCU
-            Number of Flyable vs in concept ships
 
             Pie Charts of ship size repartition : Number of Size 1 / 2 / 3 / 4 / 5 / 6
          */
         return $this->json([
             'countShips' => $totalShips,
+            'countFlightReady' => $countFlightReady,
+            'countInConcept' => $countInConcept,
         ], 200, [], ['groups' => 'orga_fleet']);
     }
 }
