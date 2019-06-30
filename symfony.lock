@@ -131,9 +131,6 @@
             "ref": "71822522faf7ed2792d86b7f94ce73443358ccb9"
         }
     },
-    "http-interop/http-factory-guzzle": {
-        "version": "1.0.0"
-    },
     "hwi/oauth-bundle": {
         "version": "0.6",
         "recipe": {
