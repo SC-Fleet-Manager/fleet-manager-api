@@ -17,6 +17,8 @@ use Doctrine\ORM\Query\ResultSetMappingBuilder;
 
 class CitizenRepository extends ServiceEntityRepository
 {
+    use CitizenStatisticsRepositoryTrait;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Citizen::class);

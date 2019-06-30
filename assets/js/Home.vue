@@ -14,13 +14,13 @@
                     <div class="ml-auto d-flex">
                         <ul class="navbar-nav align-items-center">
                             <li class="nav-item">
-                                <a href="https://blog.fleet-manager.space" target="_blank" class="nav-link text-white">Blog</a>
+                                <a href="https://blog.fleet-manager.space" target="_blank" class="nav-link text-white" title="Blog"><i class="fas fa-blog fa-2x"></i></a>
                             </li>
                             <li class="nav-item">
-                                <a href="https://github.com/Ioni14/starcitizen-fleet-manager" target="_blank" class="nav-link text-white"><i class="fab fa-github fa-2x"></i></a>
+                                <a href="https://github.com/Ioni14/starcitizen-fleet-manager" target="_blank" class="nav-link text-white"  title="Github"><i class="fab fa-github fa-2x"></i></a>
                             </li>
                             <li class="nav-item">
-                                <a href="https://discord.gg/5EyFpVP" target="_blank" class="nav-link text-white"><i class="fab fa-discord fa-2x"></i></a>
+                                <a href="https://discord.gg/5EyFpVP" target="_blank" class="nav-link text-white" title="Discord"><i class="fab fa-discord fa-2x"></i></a>
                             </li>
                             <li class="nav-item ml-2" v-if="userStated" v-once>
                                 <button v-if="this.user === null" v-once v-b-modal.modal-login class="nav-link btn btn-primary text-white" type="button"><i class="fas fa-door-open"></i> Login<!-- / Register--></button>
@@ -228,9 +228,9 @@
                         <a href="/privacy-policy">Privacy policy</a>
                     </div>
                     <div class="col-6 d-flex align-items-center">
-                        <a href="https://blog.fleet-manager.space" target="_blank" class="mr-3 ml-auto">Blog</a>
-                        <a href="https://github.com/Ioni14/starcitizen-fleet-manager" target="_blank" class="mr-3"><i class="fab fa-github fa-2x"></i></a>
-                        <a href="https://discord.gg/5EyFpVP" target="_blank" class=""><i class="fab fa-discord fa-2x"></i></a>
+                        <a href="https://blog.fleet-manager.space" target="_blank" class="mr-3 ml-auto" title="Blog"><i class="fas fa-blog fa-2x"></i></a>
+                        <a href="https://github.com/Ioni14/starcitizen-fleet-manager" target="_blank" class="mr-3" title="Github"><i class="fab fa-github fa-2x"></i></a>
+                        <a href="https://discord.gg/5EyFpVP" target="_blank" title="Discord"><i class="fab fa-discord fa-2x"></i></a>
                     </div>
                 </div>
             </div>

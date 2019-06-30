@@ -19,7 +19,7 @@ class OrganizationChange
     public const TYPE_UPDATE_PRIVACY_POLICY = 'update_privacy_policy';
     /** When someone has updated his fleet and there is a diff */
     public const TYPE_UPLOAD_FLEET = 'upload_fleet';
-    /** When someone has joined the orga. i.e. when the citizen refreshing has added this orga. */
+    /** When someone has joined the orga. i.e. when the refreshed citizen has added this orga. */
     public const TYPE_JOIN_ORGA = 'join_orga';
     /** When someone has leaved the orga */
     public const TYPE_LEAVE_ORGA = 'leave_orga';

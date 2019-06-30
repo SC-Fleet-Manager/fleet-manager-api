@@ -2,11 +2,13 @@
 
 namespace App\Controller;
 
+use App\Domain\ShipInfo;
 use App\Domain\SpectrumIdentification;
 use App\Entity\Citizen;
 use App\Entity\Organization;
 use App\Entity\OrganizationChange;
 use App\Entity\User;
+use App\Event\OrganizationPolicyChangedEvent;
 use App\Repository\CitizenRepository;
 use App\Repository\OrganizationRepository;
 use App\Repository\ShipRepository;
@@ -16,9 +18,11 @@ use App\Service\Dto\RsiOrgaMemberInfos;
 use App\Service\Exporter\OrganizationFleetExporter;
 use App\Service\FleetOrganizationGuard;
 use App\Service\OrganizationMembersInfosProviderInterface;
+use App\Service\ShipInfosProviderInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -36,6 +40,8 @@ class OrganizationController extends AbstractController
     private $shipRepository;
     private $entityManager;
     private $fleetOrganizationGuard;
+    private $eventDispatcher;
+    private $shipInfosProvider;
 
     public function __construct(
         Security $security,
@@ -43,7 +49,9 @@ class OrganizationController extends AbstractController
         OrganizationRepository $organizationRepository,
         ShipRepository $shipRepository,
         EntityManagerInterface $entityManager,
-        FleetOrganizationGuard $fleetOrganizationGuard
+        FleetOrganizationGuard $fleetOrganizationGuard,
+        EventDispatcherInterface $eventDispatcher,
+        ShipInfosProviderInterface $shipInfosProvider
     ) {
         $this->security = $security;
         $this->citizenRepository = $citizenRepository;
@@ -51,6 +59,8 @@ class OrganizationController extends AbstractController
         $this->shipRepository = $shipRepository;
         $this->entityManager = $entityManager;
         $this->fleetOrganizationGuard = $fleetOrganizationGuard;
+        $this->eventDispatcher = $eventDispatcher;
+        $this->shipInfosProvider = $shipInfosProvider;
     }
 
     /**
@@ -423,8 +433,16 @@ class OrganizationController extends AbstractController
             ], 400);
         }
 
+        $oldPublicChoice = $organization->getPublicChoice();
+
         $organization->setPublicChoice($content['publicChoice']);
         $this->entityManager->flush();
+
+        if ($organization->getPublicChoice() !== $oldPublicChoice) {
+            $this->eventDispatcher->dispatch(new OrganizationPolicyChangedEvent(
+                $citizen, $organization, $oldPublicChoice, $organization->getPublicChoice()
+            ));
+        }
 
         return $this->json(null, 204);
     }
@@ -490,5 +508,113 @@ class OrganizationController extends AbstractController
         }, $ships);
 
         return $this->json($res);
+    }
+
+    /**
+     * @Route("/organization/{organizationSid}/stats/citizens", name="stats_citizens", methods={"GET"})
+     */
+    public function statsCitizens(string $organizationSid): Response
+    {
+        if (null !== $response = $this->fleetOrganizationGuard->checkAccessibleOrganization($organizationSid)) {
+            return $response;
+        }
+
+        // How many Citizens in Orga
+        $countCitizens = $this->citizenRepository->statCountCitizensByOrga(new SpectrumIdentification($organizationSid));
+
+        // Average Ships per Citizens
+        $averageShipsPerCitizen = $this->citizenRepository->statAverageShipsPerCitizenByOrga(new SpectrumIdentification($organizationSid));
+
+        // Citizen with most Ships
+        $citizenMostShips = $this->citizenRepository->statCitizenWithMostShipsByOrga(new SpectrumIdentification($organizationSid));
+        $maxCountShips = $citizenMostShips['maxShip'];
+
+        // Column bars of number of owned ships per citizens : x Number of Ships y number of citizens.
+        $shipsPerCitizen = $this->citizenRepository->statShipsPerCitizenByOrga(new SpectrumIdentification($organizationSid));
+        $chartXAxis = range(1, $maxCountShips > 10 ? $maxCountShips : 10); // 1 to <max ships by citizen>
+        $chartYAxis = array_fill(0, $maxCountShips > 10 ? $maxCountShips : 10, 0); // how many citizen have X ships
+        foreach ($shipsPerCitizen as $citizenShips) {
+            $countShips = (int) $citizenShips['countShips'];
+            if ($countShips <= 0) {
+                continue;
+            }
+            ++$chartYAxis[$countShips - 1];
+        }
+
+        return $this->json([
+            'countCitizens' => $countCitizens,
+            'averageShipsPerCitizen' => $averageShipsPerCitizen,
+            'citizenMostShips' => [
+                'citizen' => $citizenMostShips[0],
+                'countShips' => $maxCountShips,
+            ],
+            'chartShipsPerCitizen' => [
+                'xAxis' => $chartXAxis,
+                'yAxis' => $chartYAxis,
+            ],
+        ], 200, [], ['groups' => 'orga_fleet']);
+    }
+
+    /**
+     * @Route("/organization/{organizationSid}/stats/ships", name="stats_ships", methods={"GET"})
+     */
+    public function statsShips(string $organizationSid): Response
+    {
+        if (null !== $response = $this->fleetOrganizationGuard->checkAccessibleOrganization($organizationSid)) {
+            return $response;
+        }
+
+        // How many ships in the orga
+        $totalShips = $this->organizationRepository->statTotalShipsByOrga(new SpectrumIdentification($organizationSid));
+
+        // Number of Flyable vs in concept ships
+        // Total needed minimum / Maximum crew : xxx min crew - yyy max crew
+        // Total SCU capacity : xxx Total SCU
+        // Charts of ship size repartition
+        $orgaShips = $this->organizationRepository->statShipsByOrga(new SpectrumIdentification($organizationSid));
+        $countFlightReady = 0;
+        $countInConcept = 0;
+        $minCrew = 0;
+        $maxCrew = 0;
+        $cargoCapacity = 0;
+        $chartShipSizes = [
+            ShipInfo::SIZE_VEHICLE => 0,
+            ShipInfo::SIZE_SNUB => 0,
+            ShipInfo::SIZE_SMALL => 0,
+            ShipInfo::SIZE_MEDIUM => 0,
+            ShipInfo::SIZE_LARGE => 0,
+            ShipInfo::SIZE_CAPITAL => 0,
+        ];
+        foreach ($orgaShips as $orgaShip) {
+            $shipName = $this->shipInfosProvider->transformHangarToProvider($orgaShip->getName());
+            $shipInfo = $this->shipInfosProvider->getShipByName($shipName);
+            if ($shipInfo === null) {
+                continue;
+            }
+            if ($shipInfo->productionStatus === ShipInfo::FLIGHT_READY) {
+                ++$countFlightReady;
+            } else {
+                ++$countInConcept;
+            }
+            $minCrew += $shipInfo->minCrew;
+            $maxCrew += $shipInfo->maxCrew;
+            $cargoCapacity += $shipInfo->cargoCapacity;
+            if (in_array($shipInfo->size, ShipInfo::SIZES, true)) {
+                ++$chartShipSizes[$shipInfo->size];
+            }
+        }
+
+        return $this->json([
+            'countShips' => $totalShips,
+            'countFlightReady' => $countFlightReady,
+            'countInConcept' => $countInConcept,
+            'minCrew' => $minCrew,
+            'maxCrew' => $maxCrew,
+            'cargoCapacity' => $cargoCapacity,
+            'chartShipSizes' => [
+                'xAxis' => array_keys($chartShipSizes),
+                'yAxis' => array_values($chartShipSizes),
+            ],
+        ]);
     }
 }

@@ -6,6 +6,7 @@ use App\Entity\Organization;
 use App\Entity\OrganizationChange;
 use App\Event\CitizenFleetUpdatedEvent;
 use App\Event\CitizenRefreshedEvent;
+use App\Event\OrganizationPolicyChangedEvent;
 use App\Repository\OrganizationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
@@ -27,6 +28,7 @@ class CreateOrganizationChangeSubscriber implements EventSubscriberInterface
         return [
             CitizenFleetUpdatedEvent::class => 'onCitizenFleetUpdated',
             CitizenRefreshedEvent::class => 'onCitizenRefreshed',
+            OrganizationPolicyChangedEvent::class => 'onOrganizationPolicyChangedEvent',
         ];
     }
 
@@ -151,6 +153,20 @@ class CreateOrganizationChangeSubscriber implements EventSubscriberInterface
             }
         }
 
+        $this->entityManager->flush();
+    }
+
+    public function onOrganizationPolicyChangedEvent(OrganizationPolicyChangedEvent $event): void
+    {
+        $change = new OrganizationChange(Uuid::uuid4());
+        $change->setType(OrganizationChange::TYPE_UPDATE_PRIVACY_POLICY);
+        $change->setOrganization($event->getOrganization());
+        $change->setAuthor($event->getAuthor());
+        $change->setPayload([
+            'oldValue' => $event->getOldPolicy(),
+            'newValue' => $event->getNewPolicy(),
+        ]);
+        $this->entityManager->persist($change);
         $this->entityManager->flush();
     }
 }

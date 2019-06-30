@@ -1,5 +1,5 @@
 <template>
-    <div class="">
+    <div>
         <b-nav tabs fill>
             <b-nav-item :active="activeTab == 'all_members'" @click="activeTab = 'all_members'">All members ({{ totalMembers + hiddenMembers }})</b-nav-item>
             <b-nav-item :active="activeTab == 'members_fleet_uploaded'" @click="activeTab = 'members_fleet_uploaded'">Members fleet uploaded ({{ countFleetUploadedMembers }})</b-nav-item>
@@ -47,6 +47,11 @@
             }).then(response => {
                 this.refreshMemberList(response.data);
             }).catch(err => {
+                if (err.response.data.errorMessage) {
+                    toastr.error(err.response.data.errorMessage);
+                } else {
+                    toastr.error('An error has occurred. Please retry more later.');
+                }
                 console.error(err);
             });
         },
@@ -107,6 +112,7 @@
             refreshProfile(handle) {
                 this.$set(this.refreshingProfile, handle, true);
                 axios.post(`/api/organization/${this.selectedSid}/refresh-member/${handle}`).then(response => {
+                    this.$emit('profileRefreshed', handle);
                     toastr.success(`The RSI public profile of ${handle} has been successfully refreshed.`);
                 }).catch(err => {
                     if (err.response.data.errorMessage) {
