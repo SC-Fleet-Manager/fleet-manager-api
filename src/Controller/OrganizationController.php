@@ -504,4 +504,37 @@ class OrganizationController extends AbstractController
 
         return $this->json($res);
     }
+
+    /**
+     * @Route("/organization/{organizationSid}/stats/citizens", name="stats_citizens", methods={"GET"})
+     */
+    public function statsCitizens(string $organizationSid): Response
+    {
+        if (null !== $response = $this->fleetOrganizationGuard->checkAccessibleOrganization($organizationSid)) {
+            return $response;
+        }
+
+        // How many Citizens in Orga
+        $countCitizens = $this->citizenRepository->statCountCitizensByOrga(new SpectrumIdentification($organizationSid));
+
+        // Average Ships per Citizens
+        $averageShipsPerCitizen = $this->citizenRepository->statAverageShipsPerCitizenByOrga(new SpectrumIdentification($organizationSid));
+
+        // Citizen with most Ships
+        $citizenMostShips = $this->citizenRepository->statCitizenWithMostShips(new SpectrumIdentification($organizationSid));
+        dump($citizenMostShips);
+
+        /*
+            Column bars of number of owned ships per citizens : x Number of Ships y number of citizens.
+         */
+
+        return $this->json([
+            'countCitizens' => $countCitizens,
+            'averageShipsPerCitizen' => $averageShipsPerCitizen,
+            'citizenMostShips' => [
+                'citizen' => $citizenMostShips[0],
+                'countShips' => $citizenMostShips['maxShip'],
+            ],
+        ], 200, [], ['groups' => 'orga_fleet']);
+    }
 }

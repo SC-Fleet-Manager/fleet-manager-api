@@ -1,5 +1,5 @@
 <template>
-    <div class="">
+    <div>
         <b-nav tabs fill>
             <b-nav-item :active="activeTab == 'all_members'" @click="activeTab = 'all_members'">All members ({{ totalMembers + hiddenMembers }})</b-nav-item>
             <b-nav-item :active="activeTab == 'members_fleet_uploaded'" @click="activeTab = 'members_fleet_uploaded'">Members fleet uploaded ({{ countFleetUploadedMembers }})</b-nav-item>
@@ -47,6 +47,11 @@
             }).then(response => {
                 this.refreshMemberList(response.data);
             }).catch(err => {
+                if (err.response.data.errorMessage) {
+                    toastr.error(err.response.data.errorMessage);
+                } else {
+                    toastr.error('An error has occurred. Please retry more later.');
+                }
                 console.error(err);
             });
         },

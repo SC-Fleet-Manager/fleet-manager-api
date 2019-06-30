@@ -5,11 +5,8 @@
                 <nav class="mb-3 navbar navbar-light bg-light" v-if="citizen != null && citizenOrgaInfo != null">
                     <ul class="nav">
                         <b-dropdown
-                            v-if="citizen.organizations.length >= 2 || citizen.countRedactedOrganizations > 0"
                             id="select-orga"
                             class="js-select-orga nav-item"
-                            split
-                            :split-variant="menu == 'fleet' ? 'primary' : 'outline-primary'"
                             :text="organization.name ? organization.name : 'No selected orga'"
                             variant="outline-primary"
                             @click="menu = 'fleet'"
@@ -17,8 +14,11 @@
                             <b-dropdown-item :active="organization.organizationSid == citizenOrga.organization.organizationSid" v-for="citizenOrga in citizen.organizations" :key="citizenOrga.organization.organizationSid" @click="changeSelectedOrga(citizenOrga.organization)">{{ citizenOrga.organization.name }}</b-dropdown-item>
                             <b-dropdown-item v-if="citizen.countRedactedOrganizations > 0" disabled>+{{ citizen.countRedactedOrganizations }} redacted organizations</b-dropdown-item>
                         </b-dropdown>
-                        <b-button v-else id="select-orga" class="js-select-orga nav-item" :variant="menu == 'fleet' ? 'primary' : 'outline-primary'" @click="menu = 'fleet'">{{ organization.name ? organization.name : 'No selected orga' }}</b-button>
-                        <b-button v-if="isAdmin" class="nav-item ml-3" :variant="menu == 'admin_panel' ? 'primary' : 'outline-primary'" @click="menu = 'admin_panel'">Admin panel</b-button>
+                        <b-button-group class="ml-3">
+                            <b-button class="nav-item" :variant="menu == 'fleet' ? 'primary' : 'outline-primary'" @click="menu = 'fleet'">Fleet</b-button>
+                            <b-button class="nav-item" :variant="menu == 'stats' ? 'primary' : 'outline-primary'" @click="menu = 'stats'">Statistics</b-button>
+                            <b-button v-if="isAdmin" class="nav-item" :variant="menu == 'admin_panel' ? 'primary' : 'outline-primary'" @click="menu = 'admin_panel'">Admin panel</b-button>
+                        </b-button-group>
                     </ul>
                 </nav>
                 <b-card v-if="menu == 'fleet'" class="js-organizations-fleets">
@@ -96,6 +96,10 @@
                         </template>
                     </b-row>
                 </b-card>
+                <b-card v-if="menu == 'stats'">
+                    <h4>Statistics of {{ organization.name }}</h4>
+                    <OrgaStatistics :selectedSid="selectedSid"/>
+                </b-card>
                 <b-card v-if="menu == 'admin_panel'">
                     <h4>Admin panel of {{ organization.name }}</h4>
                     <b-alert variant="danger" :show="fleetPolicyErrors" v-html="fleetPolicyErrorMessages"></b-alert>
@@ -106,7 +110,7 @@
                                 <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="admin">Admin only <i class="fas fa-info-circle" v-b-tooltip.hover title="Only the highest ranks (admins) of the orga can see the orga's fleet."></i></b-form-radio>
                                 <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="public">Public <i class="fas fa-info-circle" v-b-tooltip.hover title="Everyone can see the orga's fleet."></i></b-form-radio>
                             </b-form-group>
-                            <OrganizationChanges :selectedSid="selectedSid"></OrganizationChanges>
+                            <OrganizationChanges :selectedSid="selectedSid"/>
                         </b-col>
                         <b-col lg="6" >
                             <b-row>
@@ -117,7 +121,7 @@
                                     <div class="text-right"><b-button variant="primary" class="mb-3" download :disabled="selectedSid == null" :href="'/api/organization/export-orga-members/'+selectedSid"><i class="fas fa-file-csv"></i> Export <strong>{{ selectedSid != null ? orgaFullname : 'N/A' }}</strong> members (.csv)</b-button></div>
                                 </b-col>
                             </b-row>
-                            <OrgaRegisteredMembers :selectedSid="selectedSid" ref="orgaRegisteredMembers"></OrgaRegisteredMembers>
+                            <OrgaRegisteredMembers :selectedSid="selectedSid" ref="orgaRegisteredMembers"/>
                         </b-col>
                     </b-row>
                 </b-card>
@@ -132,9 +136,10 @@
     import vSelect from 'vue-select';
     import ShipFamilyDetail from './ShipFamilyDetail';
     import ShipFamily from './ShipFamily';
-    import { createNamespacedHelpers } from 'vuex';
+    import {createNamespacedHelpers} from 'vuex';
     import OrgaRegisteredMembers from "./OrgaRegisteredMembers";
     import OrganizationChanges from "./OrganizationChanges";
+    import OrgaStatistics from "./OrgaStatistics";
 
     const { mapGetters, mapMutations, mapActions } = createNamespacedHelpers('orga_fleet');
     const BREAKPOINTS = {xs: 0, sm: 576, md: 768, lg: 992, xl: 1200};
@@ -155,7 +160,7 @@
     export default {
         name: 'organizations-fleets',
         props: ['sid'],
-        components: {OrgaRegisteredMembers, OrganizationChanges, vSelect, ShipFamily, ShipFamilyDetail},
+        components: {OrgaStatistics, OrgaRegisteredMembers, OrganizationChanges, vSelect, ShipFamily, ShipFamilyDetail},
         data() {
             return {
                 menu: 'fleet',
