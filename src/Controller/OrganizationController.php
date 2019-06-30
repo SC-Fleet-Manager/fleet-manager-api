@@ -568,9 +568,14 @@ class OrganizationController extends AbstractController
         $totalShips = $this->organizationRepository->statTotalShipsByOrga(new SpectrumIdentification($organizationSid));
 
         // Number of Flyable vs in concept ships
+        // Total needed minimum / Maximum crew : xxx min crew - yyy max crew
+        // Total SCU capacity : xxx Total SCU
         $orgaShips = $this->organizationRepository->statShipsByOrga(new SpectrumIdentification($organizationSid));
         $countFlightReady = 0;
         $countInConcept = 0;
+        $minCrew = 0;
+        $maxCrew = 0;
+        $cargoCapacity = 0;
         foreach ($orgaShips as $orgaShip) {
             $shipName = $this->shipInfosProvider->transformHangarToProvider($orgaShip->getName());
             $shipInfo = $this->shipInfosProvider->getShipByName($shipName);
@@ -582,19 +587,22 @@ class OrganizationController extends AbstractController
             } else {
                 ++$countInConcept;
             }
+            $minCrew += $shipInfo->minCrew;
+            $maxCrew += $shipInfo->maxCrew;
+            $cargoCapacity += $shipInfo->cargoCapacity;
+            dump($shipInfo->cargoCapacity);
         }
 
-
         /*
-            Total needed minimum / Maximum crew : xxx min crew - yyy max crew
-            Total SCU capacity : xxx Total SCU
-
             Pie Charts of ship size repartition : Number of Size 1 / 2 / 3 / 4 / 5 / 6
          */
         return $this->json([
             'countShips' => $totalShips,
             'countFlightReady' => $countFlightReady,
             'countInConcept' => $countInConcept,
+            'minCrew' => $minCrew,
+            'maxCrew' => $maxCrew,
+            'cargoCapacity' => $cargoCapacity,
         ], 200, [], ['groups' => 'orga_fleet']);
     }
 }

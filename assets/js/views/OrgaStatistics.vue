@@ -21,9 +21,26 @@
                             </b-card-body>
                         </b-card>
                     </b-col>
+                    <b-col cols="12" sm="6" lg="6">
+                        <b-card :no-body="true">
+                            <b-card-body class="p-0 clearfix">
+                                <i class="fas fa-user-friends bg-danger p-4 font-2xl mr-3 float-left"></i>
+                                <div class="h5 text-primary mb-0 pt-3">{{ minCrew }} / {{ maxCrew }}</div>
+                                <div class="text-muted text-uppercase font-weight-bold font-xs">Min crew / Max crew</div>
+                            </b-card-body>
+                        </b-card>
+                    </b-col>
+                    <b-col cols="12" sm="6" lg="6">
+                        <b-card :no-body="true">
+                            <b-card-body class="p-0 clearfix">
+                                <i class="fas fa-boxes bg-primary p-4 font-2xl mr-3 float-left"></i>
+                                <div class="h5 text-primary mb-0 pt-3">{{ cargoCapacity }}</div>
+                                <div class="text-muted text-uppercase font-weight-bold font-xs">Cargo capacity (SCU)</div>
+                            </b-card-body>
+                        </b-card>
+                    </b-col>
                 </b-row>
 
-                Total needed minimum / Maximum crew : xxx min crew - yyy max crew
                 Total SCU capacity : xxx Total SCU
 
                 Pie Charts of ship size repartition : Number of Size 1 / 2 / 3 / 4 / 5 / 6
@@ -81,6 +98,9 @@
                 totalShips: 0,
                 countFlightReady: 0,
                 countInConcept: 0,
+                minCrew: 0,
+                maxCrew: 0,
+                cargoCapacity: 0,
                 // stats citizens
                 countCitizens: 0,
                 averageShipsPerCitizen: 0,
@@ -125,6 +145,9 @@
                     this.totalShips = response.data.countShips;
                     this.countFlightReady = response.data.countFlightReady;
                     this.countInConcept = response.data.countInConcept;
+                    this.minCrew = response.data.minCrew;
+                    this.maxCrew = response.data.maxCrew;
+                    this.cargoCapacity = response.data.cargoCapacity;
                 }).catch(err => {
                     if (err.response.status === 401) {
                         // not connected

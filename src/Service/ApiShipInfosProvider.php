@@ -72,6 +72,7 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
             $shipInfo->maxCrew = (int) $shipData['max_crew'];
             $shipInfo->name = $shipData['name'];
             $shipInfo->size = $shipData['size'];
+            $shipInfo->cargoCapacity = (int) $shipData['cargocapacity'];
             $shipInfo->pledgeUrl = self::BASE_URL.$shipData['url'];
             $shipInfo->manufacturerName = $shipData['manufacturer']['name'];
             $shipInfo->manufacturerCode = $shipData['manufacturer']['code'];

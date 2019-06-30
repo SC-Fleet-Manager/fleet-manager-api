@@ -58,6 +58,13 @@ class ShipInfo
     public $size;
 
     /**
+     * @var int
+     *
+     * @Groups({"my-fleet", "public-fleet"})
+     */
+    public $cargoCapacity;
+
+    /**
      * @var string
      *
      * @Groups({"my-fleet", "public-fleet"})
