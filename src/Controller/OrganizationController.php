@@ -521,7 +521,7 @@ class OrganizationController extends AbstractController
         $averageShipsPerCitizen = $this->citizenRepository->statAverageShipsPerCitizenByOrga(new SpectrumIdentification($organizationSid));
 
         // Citizen with most Ships
-        $citizenMostShips = $this->citizenRepository->statCitizenWithMostShips(new SpectrumIdentification($organizationSid));
+        $citizenMostShips = $this->citizenRepository->statCitizenWithMostShipsByOrga(new SpectrumIdentification($organizationSid));
         dump($citizenMostShips);
 
         /*
@@ -535,6 +535,30 @@ class OrganizationController extends AbstractController
                 'citizen' => $citizenMostShips[0],
                 'countShips' => $citizenMostShips['maxShip'],
             ],
+        ], 200, [], ['groups' => 'orga_fleet']);
+    }
+
+    /**
+     * @Route("/organization/{organizationSid}/stats/ships", name="stats_ships", methods={"GET"})
+     */
+    public function statsShips(string $organizationSid): Response
+    {
+        if (null !== $response = $this->fleetOrganizationGuard->checkAccessibleOrganization($organizationSid)) {
+            return $response;
+        }
+
+        // How many ships in the orga
+        $totalShips = $this->organizationRepository->statTotalShipsByOrga(new SpectrumIdentification($organizationSid));
+
+        /*
+            Total needed minimum / Maximum crew : xxx min crew - yyy max crew
+            Total SCU capacity : xxx Total SCU
+            Number of Flyable vs in concept ships
+
+            Pie Charts of ship size repartition : Number of Size 1 / 2 / 3 / 4 / 5 / 6
+         */
+        return $this->json([
+            'countShips' => $totalShips,
         ], 200, [], ['groups' => 'orga_fleet']);
     }
 }

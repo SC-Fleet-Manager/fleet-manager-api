@@ -11,11 +11,11 @@ use App\Entity\Ship;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query\ResultSetMapping;
 
+/**
+ * @property EntityManager $_em
+ */
 trait CitizenStatisticsRepositoryTrait
 {
-    /** @var EntityManager */
-    protected $_em;
-
     public function statCountCitizensByOrga(SpectrumIdentification $sid): ?int
     {
         $dql = '
@@ -60,7 +60,7 @@ trait CitizenStatisticsRepositoryTrait
         return $stmt->getSingleScalarResult();
     }
 
-    public function statCitizenWithMostShips(SpectrumIdentification $sid): array
+    public function statCitizenWithMostShipsByOrga(SpectrumIdentification $sid): array
     {
         $dql = '
             SELECT c, COUNT(ship.id) as maxShip FROM App\Entity\Citizen c

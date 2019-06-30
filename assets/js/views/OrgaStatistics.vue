@@ -1,25 +1,57 @@
 <template>
     <b-row>
-        <b-col lg="6">
+        <b-col xl="6">
             <b-card header="Ships">
+                <b-row>
+                    <b-col cols="12" sm="6" lg="6">
+                        <b-card :no-body="true">
+                            <b-card-body class="p-0 clearfix">
+                                <i class="fas fa-space-shuttle bg-info p-4 font-2xl mr-3 float-left"></i>
+                                <div class="h5 text-primary mb-0 pt-3">{{ totalShips }}</div>
+                                <div class="text-muted text-uppercase font-weight-bold font-xs">Total ships</div>
+                            </b-card-body>
+                        </b-card>
+                    </b-col>
+                </b-row>
 
-                How many total ships : xxx Ships
                 Total needed minimum / Maximum crew : xxx min crew - yyy max crew
                 Total SCU capacity : xxx Total SCU
-                Pie Charts of ship size repartition : Number of Size 1 / 2 / 3 / 4 / 5 / 6
                 Number of Flyable vs in concept ships
+
+                Pie Charts of ship size repartition : Number of Size 1 / 2 / 3 / 4 / 5 / 6
             </b-card>
         </b-col>
-        <b-col lg="6">
+        <b-col xl="6">
             <b-card header="Citizens">
-                <dl class="row">
-                    <dt class="col-sm-4">Registered citizens</dt>
-                    <dd class="col-sm-8">{{ countCitizens }}</dd>
-                    <dt class="col-sm-4">Average ships per citizen</dt>
-                    <dd class="col-sm-8">{{ averageShipsPerCitizen }}</dd>
-                    <dt class="col-sm-4">Citizen with most ships</dt>
-                    <dd class="col-sm-8" v-if="citizenMostShips.citizen != null">{{ citizenMostShips.citizen.actualHandle.handle }} ({{ citizenMostShips.countShips }})</dd>
-                </dl>
+                <b-row>
+                    <b-col cols="12" sm="6" lg="6">
+                        <b-card :no-body="true">
+                            <b-card-body class="p-0 clearfix">
+                                <i class="fas fa-users bg-info p-4 font-2xl mr-3 float-left"></i>
+                                <div class="h5 text-primary mb-0 pt-3">{{ countCitizens }}</div>
+                                <div class="text-muted text-uppercase font-weight-bold font-xs">Registered citizens</div>
+                            </b-card-body>
+                        </b-card>
+                    </b-col>
+                    <b-col cols="12" sm="6" lg="6">
+                        <b-card :no-body="true">
+                            <b-card-body class="p-0 clearfix">
+                                <i class="fas fa-space-shuttle bg-warning p-4 font-2xl mr-3 float-left"></i>
+                                <div class="h5 text-primary mb-0 pt-3">{{ averageShipsPerCitizen }}</div>
+                                <div class="text-muted text-uppercase font-weight-bold font-xs">Average ships per citizen</div>
+                            </b-card-body>
+                        </b-card>
+                    </b-col>
+                    <b-col cols="12" sm="12" lg="12">
+                        <b-card :no-body="true">
+                            <b-card-body class="p-0 clearfix">
+                                <i class="fas fa-medal bg-danger p-4 font-2xl mr-3 float-left"></i>
+                                <div class="h5 text-primary mb-0 pt-3" v-if="citizenMostShips.citizen != null">{{ citizenMostShips.citizen.actualHandle.handle }} ({{ citizenMostShips.countShips }})</div>
+                                <div class="text-muted text-uppercase font-weight-bold font-xs">Citizen with most ships</div>
+                            </b-card-body>
+                        </b-card>
+                    </b-col>
+                </b-row>
                 Column bars of number of owned ships per citizens : x Number of Ships y number of citizens.
             </b-card>
         </b-col>
@@ -35,6 +67,9 @@
         props: ['selectedSid'],
         data() {
             return {
+                // stats ships
+                totalShips: 0,
+                // stats citizens
                 countCitizens: 0,
                 averageShipsPerCitizen: 0,
                 citizenMostShips: {citizen: null, countShips: 0},
@@ -42,6 +77,7 @@
         },
         created() {
             this.findCitizenStatistics();
+            this.findShipsStatistics();
         },
         methods: {
             findCitizenStatistics() {
@@ -62,6 +98,28 @@
                         toastr.error(err.response.data.errorMessage);
                     } else {
                         toastr.error('An error has occurred when retrieving citizen stats. Please retry more later.');
+                    }
+                    console.error(err);
+                });
+            },
+            findShipsStatistics() {
+                axios.get(`/api/organization/${this.selectedSid}/stats/ships`).then(response => {
+                    console.log(response.data);
+
+                    this.totalShips = response.data.countShips;
+                }).catch(err => {
+                    if (err.response.status === 401) {
+                        // not connected
+                        return;
+                    }
+                    if (err.response.status === 404) {
+                        // not exist
+                        return;
+                    }
+                    if (err.response.data.errorMessage) {
+                        toastr.error(err.response.data.errorMessage);
+                    } else {
+                        toastr.error('An error has occurred when retrieving ships stats. Please retry more later.');
                     }
                     console.error(err);
                 });
