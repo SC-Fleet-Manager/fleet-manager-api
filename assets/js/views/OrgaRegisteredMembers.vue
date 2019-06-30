@@ -112,6 +112,7 @@
             refreshProfile(handle) {
                 this.$set(this.refreshingProfile, handle, true);
                 axios.post(`/api/organization/${this.selectedSid}/refresh-member/${handle}`).then(response => {
+                    this.$emit('profileRefreshed', handle);
                     toastr.success(`The RSI public profile of ${handle} has been successfully refreshed.`);
                 }).catch(err => {
                     if (err.response.data.errorMessage) {

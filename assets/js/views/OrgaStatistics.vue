@@ -40,10 +40,7 @@
                         </b-card>
                     </b-col>
                 </b-row>
-
-                Total SCU capacity : xxx Total SCU
-
-                Pie Charts of ship size repartition : Number of Size 1 / 2 / 3 / 4 / 5 / 6
+                <ShipSizeDoughnut ref="shipSizeDoughnut" style="height: 350px;"/>
             </b-card>
         </b-col>
         <b-col xl="6">
@@ -77,7 +74,7 @@
                         </b-card>
                     </b-col>
                 </b-row>
-                <ShipPerCitizenBar ref="shipPerCitizenBar" style="height: 300px;"/>
+                <ShipPerCitizenBar ref="shipPerCitizenBar" style="height: 350px;"/>
             </b-card>
         </b-col>
     </b-row>
@@ -87,11 +84,12 @@
     import axios from 'axios';
     import toastr from 'toastr';
     import ShipPerCitizenBar from '../charts/ShipPerCitizenBar';
+    import ShipSizeDoughnut from '../charts/ShipSizeDoughnut';
 
     export default {
         name: 'OrgaStatistics',
         props: ['selectedSid'],
-        components: {ShipPerCitizenBar},
+        components: {ShipPerCitizenBar, ShipSizeDoughnut},
         data() {
             return {
                 // stats ships
@@ -140,14 +138,16 @@
             },
             findShipsStatistics() {
                 axios.get(`/api/organization/${this.selectedSid}/stats/ships`).then(response => {
-                    console.log(response.data);
-
                     this.totalShips = response.data.countShips;
                     this.countFlightReady = response.data.countFlightReady;
                     this.countInConcept = response.data.countInConcept;
                     this.minCrew = response.data.minCrew;
                     this.maxCrew = response.data.maxCrew;
                     this.cargoCapacity = response.data.cargoCapacity;
+                    this.$refs.shipSizeDoughnut.setData({
+                        xAxis: response.data.chartShipSizes.xAxis,
+                        yAxis: response.data.chartShipSizes.yAxis,
+                    });
                 }).catch(err => {
                     if (err.response.status === 401) {
                         // not connected

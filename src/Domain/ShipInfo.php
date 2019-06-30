@@ -15,6 +15,14 @@ class ShipInfo
     public const SIZE_MEDIUM = 'medium';
     public const SIZE_LARGE = 'large';
     public const SIZE_CAPITAL = 'capital';
+    public const SIZES = [
+        self::SIZE_VEHICLE,
+        self::SIZE_SNUB,
+        self::SIZE_SMALL,
+        self::SIZE_MEDIUM,
+        self::SIZE_LARGE,
+        self::SIZE_CAPITAL,
+    ];
 
     /**
      * @var string
@@ -51,7 +59,7 @@ class ShipInfo
     public $name;
 
     /**
-     * @var string
+     * @var string self::SIZES
      *
      * @Groups({"my-fleet", "public-fleet"})
      */
