@@ -70,7 +70,7 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
             $shipInfo->productionStatus = $shipData['production_status'] === 'flight-ready' ? ShipInfo::FLIGHT_READY : ShipInfo::NOT_READY;
             $shipInfo->minCrew = (int) $shipData['min_crew'];
             $shipInfo->maxCrew = (int) $shipData['max_crew'];
-            $shipInfo->name = $shipData['name'];
+            $shipInfo->name = trim($shipData['name']);
             $shipInfo->size = $shipData['size'];
             $shipInfo->cargoCapacity = (int) $shipData['cargocapacity'];
             $shipInfo->pledgeUrl = self::BASE_URL.$shipData['url'];
@@ -116,6 +116,40 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
         $shipInfo->mediaThumbUrl = self::BASE_URL.'/media/5rg8z7erquf0wr/store_small/Buggy.jpg';
         $shipInfos[$shipInfo->id] = $shipInfo;
 
+        // add F8C Lightning Civilian
+        $shipInfo = new ShipInfo();
+        $shipInfo->id = '1001';
+        $shipInfo->productionStatus = ShipInfo::NOT_READY;
+        $shipInfo->minCrew = 1;
+        $shipInfo->maxCrew = 1;
+        $shipInfo->name = 'F8C Lightning Civilian';
+        $shipInfo->size = ShipInfo::SIZE_MEDIUM;
+        $shipInfo->pledgeUrl = 'https://starcitizen.tools/F8C_Lightning';
+        $shipInfo->manufacturerName = 'Anvil Aerospace';
+        $shipInfo->manufacturerCode = 'ANVL'; // id=3
+        $shipInfo->chassisId = '1001';
+        $shipInfo->chassisName = static::transformChassisIdToFamilyName($shipInfo->chassisId);
+        $shipInfo->mediaUrl = 'https://starcitizen.tools/images/8/87/F8C_concierge.jpg';
+        $shipInfo->mediaThumbUrl = 'https://starcitizen.tools/images/8/87/F8C_concierge.jpg';
+        $shipInfos[$shipInfo->id] = $shipInfo;
+
+        // add Mustang Omega : AMD Edition
+        $shipInfo = new ShipInfo();
+        $shipInfo->id = '1070';
+        $shipInfo->productionStatus = ShipInfo::FLIGHT_READY;
+        $shipInfo->minCrew = 1;
+        $shipInfo->maxCrew = 1;
+        $shipInfo->name = 'Mustang Omega : AMD Edition';
+        $shipInfo->size = ShipInfo::SIZE_SMALL;
+        $shipInfo->pledgeUrl = 'https://robertsspaceindustries.com/pledge/ships/mustang/Mustang-Omega';
+        $shipInfo->manufacturerName = 'Consolidated Outland';
+        $shipInfo->manufacturerCode = 'CNOU'; // id=22
+        $shipInfo->chassisId = '16';
+        $shipInfo->chassisName = static::transformChassisIdToFamilyName($shipInfo->chassisId);
+        $shipInfo->mediaUrl = self::BASE_URL.'/media/gmru9y7ynd1bbr/source/Omega-Front.jpg';
+        $shipInfo->mediaThumbUrl = self::BASE_URL.'/media/gmru9y7ynd1bbr/store_small/Omega-Front.jpg';
+        $shipInfos[$shipInfo->id] = $shipInfo;
+
         return $shipInfos;
     }
 
@@ -138,6 +172,7 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
 
     public function getShipByName(string $name): ?ShipInfo
     {
+        $name = trim($name);
         $ships = $this->getAllShips();
         /** @var ShipInfo $ship */
         foreach ($ships as $ship) {
@@ -152,78 +187,152 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
     public static function transformChassisIdToFamilyName(string $chassisId): string
     {
         switch ($chassisId) {
-            case '0': return 'Greycat';
-            case '1': return 'Aurora';
-            case '2': return '300';
-            case '3': return 'Hornet';
-            case '4': return 'Constellation';
-            case '5': return 'Freelancer';
-            case '6': return 'Cutlass';
-            case '7': return 'Avenger';
-            case '8': return 'Gladiator';
-            case '9': return 'M50';
-            case '10': return 'Starfarer';
-            case '11': return 'Caterpillar';
-            case '12': return 'Retaliator';
-            case '13': return 'Scythe';
-            case '14': return 'Idris';
-            case '15': return 'Merlin';
-            case '16': return 'Mustang';
-            case '17': return 'Redeemer';
-            case '18': return 'Gladius';
-            case '19': return 'Khartu';
-            case '20': return 'Merchantman';
-            case '21': return '890 Jump';
-            case '22': return 'Carrack';
-            case '23': return 'Herald';
-            case '24': return 'Hull';
-            case '25': return 'Orion';
-            case '26': return 'Reclaimer';
-            case '28': return 'Javelin';
-            case '30': return 'Vanguard';
-            case '31': return 'Reliant';
-            case '32': return 'Starliner';
-            case '33': return 'Glaive';
-            case '34': return 'Endeavor';
-            case '35': return 'Sabre';
-            case '37': return 'Crucible';
-            case '38': return 'P72 Archimedes';
-            case '39': return 'Blade';
-            case '40': return 'Prospector';
-            case '41': return 'Buccaneer';
-            case '42': return 'Dragonfly';
-            case '43': return 'MPUV';
-            case '44': return 'Terrapin';
-            case '45': return 'Polaris';
-            case '46': return 'Prowler';
-            case '47': return '85X';
-            case '48': return 'Razor';
-            case '49': return 'Hurricane';
-            case '50': return 'Defender';
-            case '51': return 'Eclipse';
-            case '52': return 'Nox';
-            case '53': return 'Cyclone';
-            case '54': return 'Ursa';
-            case '55': return '600i';
-            case '56': return 'X1';
-            case '57': return 'Pioneer';
-            case '58': return 'Hawk';
-            case '59': return 'Hammerhead';
-            case '60': return 'Planetary Beacon'; // NOT A SHIP ! Oo
-            case '61': return 'Nova';
-            case '62': return 'Vulcan';
-            case '63': return '100';
-            case '64': return 'Starlifter';
-            case '65': return 'Vulture';
-            case '66': return 'Apollo';
-            case '67': return 'Mercury Star Runner';
-            case '68': return 'Valkyrie';
-            case '69': return 'Kraken';
-            case '70': return 'Arrow';
-            case '71': return "San'tok.yāi";
-            case '72': return 'SRV';
-            case '73': return 'Corsair';
-            case '74': return 'Ranger';
+            case '0':
+                return 'Greycat';
+            case '1':
+                return 'Aurora';
+            case '2':
+                return '300';
+            case '3':
+                return 'Hornet';
+            case '4':
+                return 'Constellation';
+            case '5':
+                return 'Freelancer';
+            case '6':
+                return 'Cutlass';
+            case '7':
+                return 'Avenger';
+            case '8':
+                return 'Gladiator';
+            case '9':
+                return 'M50';
+            case '10':
+                return 'Starfarer';
+            case '11':
+                return 'Caterpillar';
+            case '12':
+                return 'Retaliator';
+            case '13':
+                return 'Scythe';
+            case '14':
+                return 'Idris';
+            case '15':
+                return 'Merlin';
+            case '16':
+                return 'Mustang';
+            case '17':
+                return 'Redeemer';
+            case '18':
+                return 'Gladius';
+            case '19':
+                return 'Khartu';
+            case '20':
+                return 'Merchantman';
+            case '21':
+                return '890 Jump';
+            case '22':
+                return 'Carrack';
+            case '23':
+                return 'Herald';
+            case '24':
+                return 'Hull';
+            case '25':
+                return 'Orion';
+            case '26':
+                return 'Reclaimer';
+            case '28':
+                return 'Javelin';
+            case '30':
+                return 'Vanguard';
+            case '31':
+                return 'Reliant';
+            case '32':
+                return 'Starliner';
+            case '33':
+                return 'Glaive';
+            case '34':
+                return 'Endeavor';
+            case '35':
+                return 'Sabre';
+            case '37':
+                return 'Crucible';
+            case '38':
+                return 'P72 Archimedes';
+            case '39':
+                return 'Blade';
+            case '40':
+                return 'Prospector';
+            case '41':
+                return 'Buccaneer';
+            case '42':
+                return 'Dragonfly';
+            case '43':
+                return 'MPUV';
+            case '44':
+                return 'Terrapin';
+            case '45':
+                return 'Polaris';
+            case '46':
+                return 'Prowler';
+            case '47':
+                return '85X';
+            case '48':
+                return 'Razor';
+            case '49':
+                return 'Hurricane';
+            case '50':
+                return 'Defender';
+            case '51':
+                return 'Eclipse';
+            case '52':
+                return 'Nox';
+            case '53':
+                return 'Cyclone';
+            case '54':
+                return 'Ursa';
+            case '55':
+                return '600i';
+            case '56':
+                return 'X1';
+            case '57':
+                return 'Pioneer';
+            case '58':
+                return 'Hawk';
+            case '59':
+                return 'Hammerhead';
+            case '60':
+                return 'Planetary Beacon'; // NOT A SHIP ! Oo
+            case '61':
+                return 'Nova';
+            case '62':
+                return 'Vulcan';
+            case '63':
+                return '100';
+            case '64':
+                return 'Starlifter';
+            case '65':
+                return 'Vulture';
+            case '66':
+                return 'Apollo';
+            case '67':
+                return 'Mercury Star Runner';
+            case '68':
+                return 'Valkyrie';
+            case '69':
+                return 'Kraken';
+            case '70':
+                return 'Arrow';
+            case '71':
+                return "San'tok.yāi";
+            case '72':
+                return 'SRV';
+            case '73':
+                return 'Corsair';
+            case '74':
+                return 'Ranger';
+            case '1001':
+                return 'F8C';
         }
 
         return 'Unknown chassis';
@@ -266,6 +375,7 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
             '890 JUMP' => '890 Jump',
             'Aopoa San\'tok.yāi' => 'San\'tok.yāi',
             'Argo SRV' => 'SRV',
+            'Consolidated Outland Pioneer' => 'Pioneer',
             'Crusader Mercury Star Runner' => 'Mercury Star Runner',
             'Cyclone RC' => 'Cyclone-RC',
             'Cyclone RN' => 'Cyclone-RN',
@@ -280,6 +390,7 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
             'Hornet F7C-R Tracker' => 'F7C-R Hornet Tracker',
             'Hornet F7C-M Hornet' => 'F7C-M Hornet Hornet',
             'Idris-P Frigate' => 'Idris-P',
+            'Idris-M Frigate' => 'Idris-M',
             'Khartu-al' => 'Khartu-Al',
             'Mustang Omega  => AMD Edition' => 'Mustang Omega',
             'Nova Tank' => 'Nova',
@@ -289,6 +400,7 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
             'Reliant Mako - News Van' => 'Reliant Mako',
             'Reliant Sen - Researcher' => 'Reliant Sen',
             'Reliant Tana - Skirmisher' => 'Reliant Tana',
+            'Rover' => 'Ursa Rover',
             'Valkyrie ' => 'Valkyrie',
             'Valkyrie Liberator Edition ' => 'Valkyrie Liberator Edition',
             'X1' => 'X1 Base',

@@ -585,7 +585,11 @@ class OrganizationController extends AbstractController
             ShipInfo::SIZE_LARGE => 0,
             ShipInfo::SIZE_CAPITAL => 0,
         ];
+
         foreach ($orgaShips as $orgaShip) {
+            if ($orgaShip === null) {
+                continue;
+            }
             $shipName = $this->shipInfosProvider->transformHangarToProvider($orgaShip->getName());
             $shipInfo = $this->shipInfosProvider->getShipByName($shipName);
             if ($shipInfo === null) {
