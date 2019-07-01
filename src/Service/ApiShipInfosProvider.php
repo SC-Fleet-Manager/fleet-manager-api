@@ -400,7 +400,6 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
             'Reliant Mako - News Van' => 'Reliant Mako',
             'Reliant Sen - Researcher' => 'Reliant Sen',
             'Reliant Tana - Skirmisher' => 'Reliant Tana',
-            'Rover' => 'Ursa Rover',
             'Valkyrie' => 'Valkyrie',
             'Valkyrie Liberator Edition' => 'Valkyrie Liberator Edition',
             'X1' => 'X1 Base',
