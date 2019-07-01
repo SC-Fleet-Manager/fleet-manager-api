@@ -42,16 +42,26 @@ class ApiOrganizationMembersInfosProvider implements OrganizationMembersInfosPro
         }, $cache ? null : INF);
     }
 
+    public function getTotalMembers(SpectrumIdentification $sid, bool $cache = true): int
+    {
+        return $this->cache->get('organization_members_count_'.$sid->getSid(), function (CacheItem $cacheItem) use ($sid) {
+            $cacheItem->tag(['organization_members_count']);
+            $cacheItem->expiresAfter(new \DateInterval('P1D'));
+
+            $crawler = $this->client->request('GET', self::BASE_URL.'/orgs/'.$sid.'/members');
+            $countCrawler = $crawler->filter('#organization .logo .count');
+            if ($countCrawler->count() === 0) {
+                throw new \LogicException('No data to scrap.');
+            }
+            preg_match('~^(?P<count>\d+)~', $countCrawler->text(), $matches);
+
+            return (int) $matches['count'];
+        }, $cache ? null : INF);
+    }
+
     private function scrap(SpectrumIdentification $sid): ?array
     {
-        $crawler = $this->client->request('GET', self::BASE_URL.'/orgs/'.$sid.'/members');
-        $countCrawler = $crawler->filter('#organization .logo .count');
-        if ($countCrawler->count() === 0) {
-            throw new \LogicException('No data to scrap.');
-        }
-        preg_match('~^(?P<count>\d+)~', $countCrawler->text(), $matches);
-        $totalMembers = (int) $matches['count'];
-
+        $totalMembers = $this->getTotalMembers($sid, false);
         if ($totalMembers > 128) {
             return [
                 'error' => 'orga_too_big',

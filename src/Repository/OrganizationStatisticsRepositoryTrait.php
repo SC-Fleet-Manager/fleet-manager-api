@@ -18,7 +18,7 @@ trait OrganizationStatisticsRepositoryTrait
             INNER JOIN App\Entity\CitizenOrganization citizenOrga WITH citizenOrga.organization = orga.id AND orga.organizationSid = :sid
             INNER JOIN citizenOrga.citizen citizen
             INNER JOIN citizen.lastFleet fleet
-            LEFT JOIN fleet.ships ship
+            INNER JOIN fleet.ships ship
         ';
         $query = $this->_em->createQuery($dql);
         $query->setParameter('sid', mb_strtolower($sid->getSid()));

@@ -112,14 +112,14 @@
                     console.error(err);
                 });
             },
-            onUploadSuccess(ev) {
+            onUploadSuccess() {
                 this.refreshMyFleet();
                 this.$refs.modalUploadFleet.hide();
             },
             getShipInfo(shipName) {
                 for (let i in this.shipInfos) {
                     let shipInfo = this.shipInfos[i];
-                    if (shipInfo.name === shipName) {
+                    if (shipInfo.name.toLowerCase().trim() === shipName.toLowerCase().trim()) {
                         return shipInfo;
                     }
                 }
@@ -147,6 +147,7 @@
                     case '890 JUMP': return '890 Jump';
                     case 'Aopoa San\'tok.yāi': return 'San\'tok.yāi';
                     case 'Argo SRV': return 'SRV';
+                    case 'Consolidated Outland Pioneer': return 'Pioneer';
                     case 'Crusader Mercury Star Runner': return 'Mercury Star Runner';
                     case 'Cyclone RC': return 'Cyclone-RC';
                     case 'Cyclone RN': return 'Cyclone-RN';
@@ -161,6 +162,7 @@
                     case 'Hornet F7C-R Tracker': return 'F7C-R Hornet Tracker';
                     case 'Hornet F7C-M Hornet': return 'F7C-M Hornet Hornet';
                     case 'Idris-P Frigate': return 'Idris-P';
+                    case 'Idris-M Frigate': return 'Idris-M';
                     case 'Khartu-al': return 'Khartu-Al';
                     case 'Mustang Omega : AMD Edition': return 'Mustang Omega';
                     case 'Nova Tank': return 'Nova';

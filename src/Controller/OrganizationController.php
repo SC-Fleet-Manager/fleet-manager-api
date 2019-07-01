@@ -513,7 +513,7 @@ class OrganizationController extends AbstractController
     /**
      * @Route("/organization/{organizationSid}/stats/citizens", name="stats_citizens", methods={"GET"})
      */
-    public function statsCitizens(string $organizationSid): Response
+    public function statsCitizens(string $organizationSid, OrganizationMembersInfosProviderInterface $organizationMembersInfosProvider): Response
     {
         if (null !== $response = $this->fleetOrganizationGuard->checkAccessibleOrganization($organizationSid)) {
             return $response;
@@ -541,8 +541,11 @@ class OrganizationController extends AbstractController
             ++$chartYAxis[$countShips - 1];
         }
 
+        $totalMembers = $organizationMembersInfosProvider->getTotalMembers(new SpectrumIdentification($organizationSid));
+
         return $this->json([
             'countCitizens' => $countCitizens,
+            'totalMembers' => $totalMembers,
             'averageShipsPerCitizen' => $averageShipsPerCitizen,
             'citizenMostShips' => [
                 'citizen' => $citizenMostShips[0],
@@ -585,7 +588,11 @@ class OrganizationController extends AbstractController
             ShipInfo::SIZE_LARGE => 0,
             ShipInfo::SIZE_CAPITAL => 0,
         ];
+
         foreach ($orgaShips as $orgaShip) {
+            if ($orgaShip === null) {
+                continue;
+            }
             $shipName = $this->shipInfosProvider->transformHangarToProvider($orgaShip->getName());
             $shipInfo = $this->shipInfosProvider->getShipByName($shipName);
             if ($shipInfo === null) {
