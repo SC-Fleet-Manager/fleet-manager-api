@@ -340,7 +340,7 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
 
     public function shipNamesAreEquals(string $hangarName, string $providerName): bool
     {
-        return $this->transformHangarToProvider($hangarName) === $providerName;
+        return $this->transformHangarToProvider(trim($hangarName)) === $providerName;
     }
 
     public function transformProviderToHangar(string $providerName): string
@@ -355,6 +355,7 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
 
     public function transformHangarToProvider(string $hangarName): string
     {
+        $hangarName = trim($hangarName);
         $map = static::mapHangarToProvider();
         if (\array_key_exists($hangarName, $map)) {
             return $map[$hangarName];
@@ -392,7 +393,6 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
             'Idris-P Frigate' => 'Idris-P',
             'Idris-M Frigate' => 'Idris-M',
             'Khartu-al' => 'Khartu-Al',
-            'Mustang Omega  => AMD Edition' => 'Mustang Omega',
             'Nova Tank' => 'Nova',
             'P-52 Merlin' => 'P52 Merlin',
             'P-72 Archimedes' => 'P72 Archimedes',
@@ -400,9 +400,8 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
             'Reliant Mako - News Van' => 'Reliant Mako',
             'Reliant Sen - Researcher' => 'Reliant Sen',
             'Reliant Tana - Skirmisher' => 'Reliant Tana',
-            'Rover' => 'Ursa Rover',
-            'Valkyrie ' => 'Valkyrie',
-            'Valkyrie Liberator Edition ' => 'Valkyrie Liberator Edition',
+            'Valkyrie' => 'Valkyrie',
+            'Valkyrie Liberator Edition' => 'Valkyrie Liberator Edition',
             'X1' => 'X1 Base',
             'X1 - FORCE' => 'X1 Force',
             'X1 - VELOCITY' => 'X1 Velocity',
