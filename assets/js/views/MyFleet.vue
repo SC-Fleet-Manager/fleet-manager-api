@@ -164,7 +164,6 @@
                     case 'Idris-P Frigate': return 'Idris-P';
                     case 'Idris-M Frigate': return 'Idris-M';
                     case 'Khartu-al': return 'Khartu-Al';
-                    case 'Mustang Omega : AMD Edition': return 'Mustang Omega';
                     case 'Nova Tank': return 'Nova';
                     case 'P-52 Merlin': return 'P52 Merlin';
                     case 'P-72 Archimedes': return 'P72 Archimedes';

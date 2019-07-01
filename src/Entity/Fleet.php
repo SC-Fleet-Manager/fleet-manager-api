@@ -55,7 +55,7 @@ class Fleet
     /**
      * @var iterable|Ship[]
      *
-     * @ORM\OneToMany(targetEntity="App\Entity\Ship", mappedBy="fleet", fetch="EAGER", cascade={"all"})
+     * @ORM\OneToMany(targetEntity="App\Entity\Ship", mappedBy="fleet", cascade={"all"})
      * @Groups({"my-fleet", "public-fleet"})
      */
     private $ships;
