@@ -50,8 +50,8 @@
                         <b-card :no-body="true">
                             <b-card-body class="p-0 clearfix">
                                 <i class="fas fa-users bg-info p-4 font-2xl mr-3 float-left"></i>
-                                <div class="h5 text-primary mb-0 pt-3">{{ countCitizens }}</div>
-                                <div class="text-muted text-uppercase font-weight-bold font-xs">Registered citizens</div>
+                                <div class="h5 text-primary mb-0 pt-3">{{ countCitizens }} / {{ totalMembers }}</div>
+                                <div class="text-muted text-uppercase font-weight-bold font-xs">Registered / Total</div>
                             </b-card-body>
                         </b-card>
                     </b-col>
@@ -101,6 +101,7 @@
                 cargoCapacity: 0,
                 // stats citizens
                 countCitizens: 0,
+                totalMembers: 0,
                 averageShipsPerCitizen: 0,
                 citizenMostShips: {citizen: null, countShips: 0},
             };
@@ -113,6 +114,7 @@
             findCitizenStatistics() {
                 axios.get(`/api/organization/${this.selectedSid}/stats/citizens`).then(response => {
                     this.countCitizens = response.data.countCitizens;
+                    this.totalMembers = response.data.totalMembers;
                     this.averageShipsPerCitizen = Math.round(response.data.averageShipsPerCitizen * 10) / 10;
                     this.citizenMostShips = response.data.citizenMostShips;
                     this.$refs.shipPerCitizenBar.setData({
