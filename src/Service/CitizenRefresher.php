@@ -7,28 +7,48 @@ use App\Domain\SpectrumIdentification;
 use App\Entity\Citizen;
 use App\Entity\CitizenOrganization;
 use App\Entity\Organization;
+use App\Event\CitizenRefreshedEvent;
 use App\Repository\OrganizationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class CitizenRefresher
 {
     private $entityManager;
     private $organizationRepository;
     private $organizationInfosProvider;
+    private $eventDispatcher;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         OrganizationRepository $organizationRepository,
-        OrganizationInfosProviderInterface $organizationInfosProvider
+        OrganizationInfosProviderInterface $organizationInfosProvider,
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->entityManager = $entityManager;
         $this->organizationRepository = $organizationRepository;
         $this->organizationInfosProvider = $organizationInfosProvider;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     public function refreshCitizen(Citizen $citizen, CitizenInfos $citizenInfos): void
     {
+        foreach ($citizenInfos->organizations as $orgaInfo) {
+            $orga = $this->organizationRepository->findOneBy(['organizationSid' => $orgaInfo->sid->getSid()]);
+            if ($orga === null) {
+                $orga = new Organization(Uuid::uuid4());
+                $orga->setOrganizationSid($orgaInfo->sid->getSid());
+                $this->entityManager->persist($orga);
+            }
+            $providerOrgaInfos = $this->organizationInfosProvider->retrieveInfos(new SpectrumIdentification($orgaInfo->sid->getSid()));
+            $orga->setAvatarUrl($providerOrgaInfos->avatarUrl);
+            $orga->setName($providerOrgaInfos->fullname);
+        }
+        $this->entityManager->flush();
+
+        $this->eventDispatcher->dispatch(new CitizenRefreshedEvent($citizen, $citizenInfos));
+
         $citizen->setNickname($citizenInfos->nickname);
         $citizen->setBio($citizenInfos->bio);
         $citizen->setAvatarUrl($citizenInfos->avatarUrl);
@@ -68,14 +88,6 @@ class CitizenRefresher
                 $this->entityManager->persist($citizenOrga);
             }
             $orga = $this->organizationRepository->findOneBy(['organizationSid' => $orgaInfo->sid->getSid()]);
-            if ($orga === null) {
-                $orga = new Organization(Uuid::uuid4());
-                $orga->setOrganizationSid($orgaInfo->sid->getSid());
-                $this->entityManager->persist($orga);
-            }
-            $providerOrgaInfos = $this->organizationInfosProvider->retrieveInfos(new SpectrumIdentification($orgaInfo->sid->getSid()));
-            $orga->setAvatarUrl($providerOrgaInfos->avatarUrl);
-            $orga->setName($providerOrgaInfos->fullname);
             $citizenOrga->setOrganization($orga);
             $citizenOrga->setOrganizationSid($orgaInfo->sid->getSid());
             $citizenOrga->setRank($orgaInfo->rank);

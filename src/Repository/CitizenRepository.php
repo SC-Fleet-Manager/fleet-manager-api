@@ -17,6 +17,8 @@ use Doctrine\ORM\Query\ResultSetMappingBuilder;
 
 class CitizenRepository extends ServiceEntityRepository
 {
+    use CitizenStatisticsRepositoryTrait;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Citizen::class);
@@ -193,10 +195,9 @@ class CitizenRepository extends ServiceEntityRepository
         $sql = <<<EOT
             SELECT *, c.id as citizenId, f.id AS fleetId, s.id AS shipId FROM {$citizenMetadata->getTableName()} c 
             INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON citizenOrga.citizen_id = c.id
-            INNER JOIN {$orgaMetadata->getTableName()} orga ON orga.id = citizenOrga.organization_id
+            INNER JOIN {$orgaMetadata->getTableName()} orga ON orga.id = citizenOrga.organization_id AND orga.organization_sid = :sid
             INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
             INNER JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id
-            WHERE orga.organization_sid = :sid 
         EOT;
         // filtering
         if (count($filter->shipNames) > 0) {
@@ -242,10 +243,9 @@ class CitizenRepository extends ServiceEntityRepository
         $sql = <<<EOT
             SELECT count(DISTINCT c.id) as countOwners, count(*) as countOwned FROM {$citizenMetadata->getTableName()} c 
             INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON citizenOrga.citizen_id = c.id
-            INNER JOIN {$orgaMetadata->getTableName()} orga ON orga.id = citizenOrga.organization_id
+            INNER JOIN {$orgaMetadata->getTableName()} orga ON orga.id = citizenOrga.organization_id AND orga.organization_sid = :sid
             INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
             INNER JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id and LOWER(s.name) = :shipName 
-            WHERE orga.organization_sid = :sid 
         EOT;
         // filtering
         if (count($filter->shipNames) > 0) {

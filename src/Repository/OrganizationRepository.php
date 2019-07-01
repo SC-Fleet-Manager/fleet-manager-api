@@ -8,6 +8,8 @@ use Doctrine\Common\Persistence\ManagerRegistry;
 
 class OrganizationRepository extends ServiceEntityRepository
 {
+    use OrganizationStatisticsRepositoryTrait;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Organization::class);

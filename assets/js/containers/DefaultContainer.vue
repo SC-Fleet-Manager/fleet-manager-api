@@ -27,6 +27,7 @@
         <TheFooter class="font-lg">
             <div>
                 <a href="/">Fleet Manager</a>
+                <a href="https://blog.fleet-manager.space/tag/change-logs/" target="_blank">{{ lastVersion }}</a>
                 <span class="ml-1">&copy; 2018 - {{ actualYear }}</span>
                 - <a href="/privacy-policy">Privacy policy</a>
             </div>
@@ -92,6 +93,7 @@
                 actualYear: (new Date()).getFullYear(),
                 user: null,
                 citizen: null,
+                lastVersion: null,
             }
         },
         created() {
@@ -108,6 +110,8 @@
                     this.citizen = newValue;
                 }
             );
+
+            this.findLastVersion();
         },
         computed: {
             name() {
@@ -151,6 +155,11 @@
         },
         methods: {
             ...mapMutations(['updateProfile']),
+            findLastVersion() {
+                axios.get('https://api.github.com/repos/Ioni14/starcitizen-fleet-manager/tags').then(response => {
+                    this.lastVersion = response.data[0].name;
+                });
+            }
         }
     };
 </script>

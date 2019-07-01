@@ -6,26 +6,31 @@ use App\Domain\Money;
 use App\Entity\Citizen;
 use App\Entity\Fleet;
 use App\Entity\Ship;
+use App\Event\CitizenFleetUpdatedEvent;
 use App\Exception\BadCitizenException;
 use App\Exception\FleetUploadedTooCloseException;
 use App\Exception\InvalidFleetDataException;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class FleetUploadHandler
 {
     private $entityManager;
     private $citizenInfosProvider;
     private $citizenRefresher;
+    private $eventDispatcher;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         CitizenInfosProviderInterface $citizenInfosProvider,
-        CitizenRefresher $citizenRefresher
+        CitizenRefresher $citizenRefresher,
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->entityManager = $entityManager;
         $this->citizenInfosProvider = $citizenInfosProvider;
         $this->citizenRefresher = $citizenRefresher;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     public function handle(Citizen $citizen, array $fleetData): void
@@ -50,15 +55,20 @@ class FleetUploadHandler
 
         $fleet = $this->createNewFleet($fleetData, $lastVersion);
 
-        if ($lastVersion === null || $this->hasDiff($fleet, $lastVersion)) {
-            $fleet->setOwner($citizen);
-            $fleet->setRefreshDate(new \DateTimeImmutable());
-            $this->entityManager->persist($fleet);
-        } else {
+        // no diff : refresh the last version
+        if ($lastVersion !== null && !$this->hasDiff($fleet, $lastVersion)) {
             $lastVersion->setRefreshDate(new \DateTimeImmutable());
+            $this->entityManager->flush();
+
+            return;
         }
 
+        $fleet->setOwner($citizen);
+        $fleet->setRefreshDate(new \DateTimeImmutable());
+        $this->entityManager->persist($fleet);
         $this->entityManager->flush();
+
+        $this->eventDispatcher->dispatch(new CitizenFleetUpdatedEvent($citizen, $fleet, $lastVersion));
     }
 
     private function hasDiff(Fleet $newFleet, Fleet $lastFleet): bool
