@@ -60,7 +60,7 @@ trait CitizenStatisticsRepositoryTrait
         return $stmt->getSingleScalarResult();
     }
 
-    public function statCitizenWithMostShipsByOrga(SpectrumIdentification $sid): array
+    public function statCitizenWithMostShipsByOrga(SpectrumIdentification $sid): ?array
     {
         $dql = '
             SELECT c, COUNT(ship.id) as maxShip FROM App\Entity\Citizen c
@@ -77,7 +77,7 @@ trait CitizenStatisticsRepositoryTrait
         $query->setResultCacheLifetime(300);
         $query->setMaxResults(1);
 
-        return $query->getSingleResult();
+        return $query->getOneOrNullResult();
     }
 
     public function statShipsPerCitizenByOrga(SpectrumIdentification $sid): array

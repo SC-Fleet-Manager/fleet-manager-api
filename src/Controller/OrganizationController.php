@@ -527,7 +527,7 @@ class OrganizationController extends AbstractController
 
         // Citizen with most Ships
         $citizenMostShips = $this->citizenRepository->statCitizenWithMostShipsByOrga(new SpectrumIdentification($organizationSid));
-        $maxCountShips = $citizenMostShips['maxShip'];
+        $maxCountShips = $citizenMostShips !== null ? $citizenMostShips['maxShip'] : 0;
 
         // Column bars of number of owned ships per citizens : x Number of Ships y number of citizens.
         $shipsPerCitizen = $this->citizenRepository->statShipsPerCitizenByOrga(new SpectrumIdentification($organizationSid));
@@ -548,7 +548,7 @@ class OrganizationController extends AbstractController
             'totalMembers' => $totalMembers,
             'averageShipsPerCitizen' => $averageShipsPerCitizen,
             'citizenMostShips' => [
-                'citizen' => $citizenMostShips[0],
+                'citizen' => $citizenMostShips[0] ?? null,
                 'countShips' => $maxCountShips,
             ],
             'chartShipsPerCitizen' => [
