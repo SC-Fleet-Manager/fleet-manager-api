@@ -10,7 +10,7 @@ class FleetUpload
     /**
      * @var UploadedFile
      *
-     * @Assert\NotBlank(message="You must upload a fleet file.")
+     * @Assert\NotBlank(message="You must choose a JSON fleet file.")
      * @Assert\File(maxSize="5m")
      */
     public $fleetFile;
