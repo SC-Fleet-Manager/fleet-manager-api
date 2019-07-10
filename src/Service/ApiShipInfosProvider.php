@@ -16,6 +16,8 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
     private $client;
     private $logger;
     private $cache;
+    /** @var iterable */
+    private $ships;
 
     public function __construct(LoggerInterface $logger, CacheInterface $cache)
     {
@@ -29,11 +31,15 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
      */
     public function getAllShips(): iterable
     {
-        return $this->cache->get('ship_matrix', function (CacheItem $cacheItem) {
-            $cacheItem->expiresAfter(new \DateInterval('P3D'));
+        if (!$this->ships) {
+            $this->ships = $this->cache->get('ship_matrix', function (CacheItem $cacheItem) {
+                $cacheItem->expiresAfter(new \DateInterval('P3D'));
 
-            return $this->scrap();
-        });
+                return $this->scrap();
+            });
+        }
+
+        return $this->ships;
     }
 
     private function scrap(): array

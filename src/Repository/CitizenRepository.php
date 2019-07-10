@@ -158,7 +158,7 @@ class CitizenRepository extends ServiceEntityRepository
         $orgaMetadata = $this->_em->getClassMetadata(Organization::class);
 
         $sql = <<<EOT
-            SELECT c.*, c.id AS citizenId
+            SELECT c.*, c.id AS citizenId, co.*, co.id AS citizenOrgaId, co.organization_sid AS coOrgaId, o.*, o.id AS orgaId, o.avatar_url AS orgaAvatarUrl, o.last_refresh as orgaLastRefresh
             FROM {$orgaMetadata->getTableName()} o
             INNER JOIN {$citizenOrgaMetadata->getTableName()} co ON co.organization_id = o.id AND o.organization_sid = :sid
             INNER JOIN {$citizenMetadata->getTableName()} c ON c.id = co.citizen_id
@@ -171,6 +171,8 @@ class CitizenRepository extends ServiceEntityRepository
 
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata(Citizen::class, 'c', ['id' => 'citizenId']);
+        $rsm->addJoinedEntityFromClassMetadata(CitizenOrganization::class, 'co', 'c', 'organizations', ['id' => 'citizenOrgaId', 'organization_sid' => 'coOrgaId']);
+        $rsm->addJoinedEntityFromClassMetadata(Organization::class, 'o', 'co', 'organization', ['id' => 'orgaId', 'avatar_url' => 'orgaAvatarUrl', 'last_refresh' => 'orgaLastRefresh']);
 
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
         $stmt->setParameters([
@@ -297,8 +299,7 @@ class CitizenRepository extends ServiceEntityRepository
 
         $sql = <<<EOT
             SELECT u.*, u.id AS userId, 
-                   c.*, c.id AS citizenId, 
-                   citizenOrga.*, citizenOrga.citizen_id AS citizenOrgaCitizenId, citizenOrga.id AS citizenOrgaId, 
+                   c.*, c.id AS citizenId,
                    COUNT(s.id) as countShips
             FROM {$orgaMetadata->getTableName()} orga
             INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON orga.id = citizenOrga.organization_id AND orga.organization_sid = :sid
@@ -357,7 +358,6 @@ class CitizenRepository extends ServiceEntityRepository
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata(User::class, 'u', ['id' => 'userId']);
         $rsm->addJoinedEntityFromClassMetadata(Citizen::class, 'c', 'u', 'citizen', ['id' => 'citizenId']);
-        $rsm->addJoinedEntityFromClassMetadata(CitizenOrganization::class, 'citizenOrga', 'c', 'organizations', ['id' => 'citizenOrgaId', 'citizen_id' => 'citizenOrgaCitizenId']);
         $rsm->addScalarResult('countShips', 'countShips');
 
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
