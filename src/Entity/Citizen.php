@@ -299,7 +299,9 @@ class Citizen
         if ($orga->getCitizen() !== $this) {
             $orga->setCitizen($this);
         }
-        $this->organizations->add($orga);
+        if (!$this->organizations->contains($orga)) {
+            $this->organizations->add($orga);
+        }
 
         return $this;
     }

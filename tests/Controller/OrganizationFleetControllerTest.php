@@ -461,38 +461,6 @@ class OrganizationFleetControllerTest extends WebTestCase
                             'actualHandle' => [
                                 'handle' => 'ihaveships',
                             ],
-                            'organizations' => [
-                                [
-                                    'id' => 'a193b472-501d-4b97-8dbc-c4076618f347',
-                                    'organization' => [
-                                        'organizationSid' => 'flk',
-                                        'name' => 'FallKrom',
-                                        'avatarUrl' => null,
-                                    ],
-                                    'rank' => 2,
-                                    'rankName' => 'Peasant',
-                                ],
-                                [
-                                    'id' => 'fa91e3a0-4930-43de-b202-9d5972681031',
-                                    'organization' => [
-                                        'organizationSid' => 'gardiens',
-                                        'name' => 'Les Gardiens',
-                                        'avatarUrl' => null,
-                                    ],
-                                    'rank' => 4,
-                                    'rankName' => 'Lord',
-                                ],
-                            ],
-                            'mainOrga' => [
-                                'id' => 'fa91e3a0-4930-43de-b202-9d5972681031',
-                                'organization' => [
-                                    'organizationSid' => 'gardiens',
-                                    'name' => 'Les Gardiens',
-                                    'avatarUrl' => null,
-                                ],
-                                'rank' => 4,
-                                'rankName' => 'Lord',
-                            ],
                             'countRedactedOrganizations' => 0,
                             'redactedMainOrga' => false,
                         ],
@@ -507,28 +475,6 @@ class OrganizationFleetControllerTest extends WebTestCase
                             'id' => '7275c744-6a69-43c2-9ebf-1491a104d5e7',
                             'nickname' => 'Ioni14',
                             'actualHandle' => ['handle' => 'ionni'],
-                            'organizations' => [
-                                [
-                                    'id' => '41ade55e-6d32-419c-9e48-169fd6c61f34',
-                                    'organization' => [
-                                        'organizationSid' => 'flk',
-                                        'name' => 'FallKrom',
-                                        'avatarUrl' => null,
-                                    ],
-                                    'rank' => 1,
-                                    'rankName' => 'Citoyen',
-                                ],
-                            ],
-                            'mainOrga' => [
-                                'id' => '41ade55e-6d32-419c-9e48-169fd6c61f34',
-                                'organization' => [
-                                    'organizationSid' => 'flk',
-                                    'name' => 'FallKrom',
-                                    'avatarUrl' => null,
-                                ],
-                                'rank' => 1,
-                                'rankName' => 'Citoyen',
-                            ],
                             'countRedactedOrganizations' => 0,
                             'redactedMainOrga' => false,
                         ],
@@ -612,28 +558,6 @@ class OrganizationFleetControllerTest extends WebTestCase
                             'id' => '165d226f-9ce4-4da3-a86e-e9e3fbb9c586',
                             'nickname' => 'Member2 de Pulsar42',
                             'actualHandle' => ['handle' => 'pulsar42_member2'],
-                            'organizations' => [
-                                [
-                                    'id' => '1ff7c240-bad0-453b-a94c-6bef25363753',
-                                    'organization' => [
-                                        'organizationSid' => 'pulsar42',
-                                        'name' => 'Pulsar42',
-                                        'avatarUrl' => null,
-                                    ],
-                                    'rank' => 2,
-                                    'rankName' => 'Member2',
-                                ],
-                            ],
-                            'mainOrga' => [
-                                'id' => '1ff7c240-bad0-453b-a94c-6bef25363753',
-                                'organization' => [
-                                    'organizationSid' => 'pulsar42',
-                                    'name' => 'Pulsar42',
-                                    'avatarUrl' => null,
-                                ],
-                                'rank' => 2,
-                                'rankName' => 'Member2',
-                            ],
                             'countRedactedOrganizations' => 0,
                             'redactedMainOrga' => false,
                         ],
