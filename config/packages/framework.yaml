@@ -1,3 +1,6 @@
+parameters:
+    env(APP_SECRET): ''
+
 framework:
     secret: '%env(APP_SECRET)%'
     session:
@@ -5,7 +8,7 @@ framework:
         cookie_secure: 'auto'
     cache:
         app: cache.adapter.redis
-        default_redis_provider: 'redis://%env(REDIS_HOST)%:%env(REDIS_PORT)%'
+        default_redis_provider: 'redis://%env(REDIS_PASSWORD)%@%env(REDIS_HOST)%:%env(REDIS_PORT)%'
 
         pools:
             rsi.citizens.cache:

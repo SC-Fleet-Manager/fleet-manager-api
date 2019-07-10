@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fm-spa
+data:
+  trusted_proxies: '127.0.0.0/8,172.16.0.0/12,192.168.0.0/16'
+  trusted_hosts: '^(.+\.)?fleet-manager\.space'
+
+  discord_id: ''
+
+  redis_host: 'fm-app-caching'
+  redis_port: '6379'
+
+  mailer_url: 'smtp://fm-smtp:25'
+  sentry_dsn: ''

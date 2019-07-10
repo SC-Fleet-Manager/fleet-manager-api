@@ -1,4 +1,3 @@
-########################################
 FROM php:7.3-fpm-alpine as composer_deps
 
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
@@ -28,7 +27,8 @@ RUN composer global require "hirak/prestissimo:^0.3" --prefer-dist --no-progress
         find vendor -name LICENSE -exec rm -rf {} \; ; \
     else \
         composer install --no-scripts --no-suggest --optimize-autoloader --classmap-authoritative --prefer-dist --no-progress --no-interaction; \
-    fi
+    fi; \
+    composer dump-env prod
 
 ################################
 FROM node:10-alpine as node_deps
@@ -46,6 +46,7 @@ FROM php:7.3-fpm-alpine as build_php
 
 # prod|dev
 ARG ENV=prod
+ARG DUMP_ENV=0
 
 RUN apk add --no-cache --virtual .deps icu-libs zlib libintl libzip
 RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS libxml2-dev icu-dev libzip-dev \
@@ -71,8 +72,10 @@ COPY .env* Makefile composer.json composer.lock ./
 COPY --from=node_deps /app/public/build/entrypoints.json public/build/entrypoints.json
 COPY --from=node_deps /app/public/build/manifest.json public/build/manifest.json
 COPY --from=composer_deps /app/vendor vendor
+COPY --from=composer_deps /app/.env.local.php .env.local.php
 
-RUN chown www-data .env*; \
+RUN if [ ${DUMP_ENV} == 0 ]; then echo "<?php return ['APP_ENV'=>'${ENV}'];" > .env.local.php; fi; \
+    chown www-data .env*; \
     sed -i "s/^APP_ENV=.*$/APP_ENV=${ENV}/" .env; \
     if [ -e .env.local ]; then sed -i "s/^APP_ENV=.*$/APP_ENV=${ENV}/" .env.local; fi
 RUN mkdir -p public/bundles && bin/console assets:install \

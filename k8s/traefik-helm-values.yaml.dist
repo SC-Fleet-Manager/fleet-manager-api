@@ -1,0 +1,14 @@
+serviceType: LoadBalancer
+dashboard:
+  enabled: true
+  domain: my.traefik.com
+  ingress:
+    annotations:
+      kubernetes.io/ingress.class: traefik
+rbac:
+  enabled: false
+fmApp:
+  enabled: true
+  domain: fleet-manager.space
+  serviceName: fm-spa
+  servicePort: http

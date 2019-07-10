@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fm-spa
+data:
+  trusted_proxies: '127.0.0.0/8,172.16.0.0/12,192.168.0.0/16'
+  trusted_hosts: '^fleet-manager\.minikube'
+
+  discord_id: '511171742409162752'
+
+  redis_host: 'fm-redis-master'
+  redis_port: '6379'
+
+  mailer_url: 'smtp://fm-smtp:25'
+  sentry_dsn: 'https://95a9daa383ec49b680569c160a699d67@sentry.io/1457623'
+
+#REDIS CHART
+#NOTES:
+#  ** Please be patient while the chart is being deployed **
+#Redis can be accessed via port 6379 on the following DNS name from within your cluster:
+#
+#    fm-redis-master.dev.svc.cluster.local
+#
+#
+#To get your password run:
+#
+#    export REDIS_PASSWORD=$(kubectl get secret --namespace dev fm-redis -o jsonpath="{.data.redis-password}" | base64 --decode)
+#
+#To connect to your Redis server:
+#
+#1. Run a Redis pod that you can use as a client:
+#
+#    kubectl run --namespace dev fm-redis-client --rm --tty -i --restart='Never' \
+#    --env REDIS_PASSWORD=$REDIS_PASSWORD \--labels="redis-client=true" \
+#    --image docker.io/bitnami/redis:5.0.5-debian-9-r36 -- bash
+#
+#2. Connect using the Redis CLI:
+#    redis-cli -h fm-redis-master -a $REDIS_PASSWORD
+#
+#
+#Note: Since NetworkPolicy is enabled, only pods with label
+#    fm-redis-client=true"
+#    will be able to connect to redis.
