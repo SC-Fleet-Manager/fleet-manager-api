@@ -337,6 +337,8 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
                 return 'Corsair';
             case '74':
                 return 'Ranger';
+            case '75':
+                return 'Ballista';
             case '1001':
                 return 'F8C';
         }
