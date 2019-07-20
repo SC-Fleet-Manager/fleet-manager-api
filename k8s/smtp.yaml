@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: fm-smtp
+spec:
+  selector:
+    matchLabels:
+      service: smtp
+  template:
+    metadata:
+      labels:
+        service: smtp
+    spec:
+      containers:
+        - name: smtp
+          image: namshi/smtp
+          ports:
+            - name: smtp
+              containerPort: 25
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fm-smtp
+spec:
+  selector:
+    service: smtp
+  ports:
+    - name: smtp
+      port: 25
+      targetPort: 25

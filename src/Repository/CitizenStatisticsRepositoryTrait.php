@@ -63,12 +63,12 @@ trait CitizenStatisticsRepositoryTrait
     public function statCitizenWithMostShipsByOrga(SpectrumIdentification $sid): ?array
     {
         $dql = '
-            SELECT c, COUNT(ship.id) as maxShip FROM App\Entity\Citizen c
+            SELECT c, citizenOrga, orga, COUNT(ship.id) as maxShip FROM App\Entity\Citizen c
             INNER JOIN c.organizations citizenOrga
             INNER JOIN citizenOrga.organization orga WITH orga.organizationSid = :sid
             INNER JOIN c.lastFleet fleet
             INNER JOIN fleet.ships ship
-            GROUP BY c.id
+            GROUP BY c.id, citizenOrga.id
             ORDER BY maxShip DESC
         ';
         $query = $this->_em->createQuery($dql);
@@ -83,12 +83,14 @@ trait CitizenStatisticsRepositoryTrait
     public function statShipsPerCitizenByOrga(SpectrumIdentification $sid): array
     {
         $dql = '
-            SELECT c, COUNT(ship.id) as countShips FROM App\Entity\Citizen c
+            SELECT c, citizenOrga, mainCitizenOrga, mainOrga, orga, COUNT(ship.id) as countShips FROM App\Entity\Citizen c
             INNER JOIN c.organizations citizenOrga
             INNER JOIN citizenOrga.organization orga WITH orga.organizationSid = :sid
             INNER JOIN c.lastFleet fleet
             LEFT JOIN fleet.ships ship
-            GROUP BY c.id
+            LEFT JOIN c.mainOrga mainCitizenOrga
+            LEFT JOIN mainCitizenOrga.organization mainOrga
+            GROUP BY c.id, citizenOrga.id
         ';
         $query = $this->_em->createQuery($dql);
         $query->setParameter('sid', mb_strtolower($sid->getSid()));

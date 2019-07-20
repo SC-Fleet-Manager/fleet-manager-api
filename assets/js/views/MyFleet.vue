@@ -145,6 +145,9 @@
                     case '600i Exploration Module': return '600i Explorer';
                     case '600i Touring Module': return '600i Touring';
                     case '890 JUMP': return '890 Jump';
+                    case 'Ballista': return 'Anvil Ballista';
+                    case 'Ballista Snowblind': return 'Anvil Ballista Snowblind';
+                    case 'Ballista Dunestalker': return 'Anvil Ballista Dunestalker';
                     case 'Aopoa San\'tok.yāi': return 'San\'tok.yāi';
                     case 'Argo SRV': return 'SRV';
                     case 'Consolidated Outland Pioneer': return 'Pioneer';

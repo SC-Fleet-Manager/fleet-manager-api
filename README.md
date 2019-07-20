@@ -1,6 +1,12 @@
 # Star Citizen Fleet Manager #
 
-## Installation ##
+## Installation for development ##
+
+**Requirements**
+
+- git
+- docker
+- docker-compose
 
 **Clone repository**
 
@@ -9,45 +15,38 @@ git clone https://github.com/Ioni14/starcitizen-fleet-manager.git
 cd starcitizen-fleet-manager
 ```
 
-**Create local .env file**
+**Customize environment variables**
 
 ```
-cp .env.dist .env
+echo "APP_ENV=dev" > .env.local
 ```
 
-**(Optional but recommended) configure .env**
+You can add your Discord OAuth2 config via `DISCORD_ID` and `DISCORD_SECRET`:
 
-* `APP_SECRET` a long random value
-* `TRUSTED_PROXIES` the ip / range ip of your potential proxies
+1. Create an app on https://discordapp.com/developers/applications/
+2. Generate a client secret
+3. Add your domain in OAuth2 redirects uri
 
-**(Optional but recommended) override docker-compose.yml**
+**Customize docker-compose.override.yml**
 
-* Configure for example the port mapping.
+    cp docker-compose.override.yml.dist docker-compose.override.yml
 
-### For development purposes ###
+Customize the ports according to your needs, configure your dev reverse-proxy, etc.
 
-**Override the docker-compose stack**
-* `cp docker-compose.override.yml.dist docker-compose.override.yml`
-* Configure your `docker-compose.override.yml`
-
-**Update .env**
-
-* `APP_ENV=dev`
-
-**Launch the stack**
+**Launch the stack (build & up containers)**
 
 ```
-docker-compose up -d --build
+make up
 ```
 
-**Apply DB migrations**
+**Prepare the database (create db & apply migrations)**
 ```
-docker-compose exec -u $(id -u):$(id -g) php bin/console d:m:m -n
+make db-reset
 ```
 
-**Install dependencies**
+**Install dependencies (yarn install)**
 ```
-make yarn c=install
+make yi
 ```
 
 **Compile & Watch assets**
@@ -55,7 +54,7 @@ make yarn c=install
 make yarn c=watch
 ```
 
-**Launch tests**
+**Launch all tests**
 ```
-make do_tests
+make tests
 ```

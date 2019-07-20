@@ -74,6 +74,7 @@ class CitizenRefresher
         }
 
         // refresh & join new orga
+        $citizen->setMainOrga(null);
         foreach ($citizenInfos->organizations as $orgaInfo) {
             $citizenOrga = null;
             foreach ($citizen->getOrganizations() as $organization) {

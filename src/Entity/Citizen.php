@@ -92,7 +92,7 @@ class Citizen
      * @var iterable|CitizenOrganization[]
      *
      * @ORM\OneToMany(targetEntity="CitizenOrganization", mappedBy="citizen", cascade={"all"}, orphanRemoval=true)
-     * @Groups({"profile", "orga_fleet"})
+     * @Groups({"profile"})
      */
     private $organizations;
 
@@ -299,7 +299,9 @@ class Citizen
         if ($orga->getCitizen() !== $this) {
             $orga->setCitizen($this);
         }
-        $this->organizations->add($orga);
+        if (!$this->organizations->contains($orga)) {
+            $this->organizations->add($orga);
+        }
 
         return $this;
     }

@@ -8,7 +8,7 @@ services:
             target: build_php_dev
             dockerfile: ./docker/Dockerfile
         volumes:
-            - ./:/app
+            - .:/app
         environment:
             # Docker for mac : try remote_host=host.docker.internal instead of remote_connect_back
 #            XDEBUG_CONFIG: >-
@@ -18,7 +18,7 @@ services:
 #                idekey=PHPSTORM
     apache:
         volumes:
-            - ./public:/app/public
+            - .:/app
         ports:
             - 127.0.0.1:8000:80
     apache-test:
@@ -28,9 +28,9 @@ services:
             dockerfile: ./docker/Dockerfile
         hostname: apache_test
         volumes:
-            - ./public:/app/public
+            - .:/app
         environment:
-            - PHP_HANDLER_HOST=php:9000
+            PHP_HANDLER_HOST: php:9000
     mysql:
 #        tmpfs: /var/lib/mysql
         volumes:

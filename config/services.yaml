@@ -1,6 +1,7 @@
 parameters:
     env(REDIS_HOST): 'localhost'
     env(REDIS_PORT): '6379'
+    env(REDIS_PASSWORD): ''
     locale: 'en'
     hwi_oauth.authentication.entry_point.oauth.class: 'App\Security\OAuthEntryPoint'
 
@@ -20,6 +21,7 @@ services:
         class: Redis
         calls:
             - [connect, ['%env(REDIS_HOST)%', '%env(REDIS_PORT)%']]
+            - [auth, ['%env(REDIS_PASSWORD)%']]
 
     Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler:
         arguments: ['@redis']

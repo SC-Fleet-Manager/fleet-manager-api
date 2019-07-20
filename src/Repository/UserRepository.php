@@ -18,7 +18,11 @@ class UserRepository extends ServiceEntityRepository
         /** @var User $userEntity */
         $userEntity = $this->createQueryBuilder('u')
             ->addSelect('c')
+            ->addSelect('co')
+            ->addSelect('o')
             ->leftJoin('u.citizen', 'c')
+            ->leftJoin('c.organizations', 'co')
+            ->leftJoin('co.organization', 'o')
             ->where('u.username = :username')
             ->setParameter('username', $username)
             ->getQuery()
@@ -32,7 +36,11 @@ class UserRepository extends ServiceEntityRepository
         /** @var User $userEntity */
         $userEntity = $this->createQueryBuilder('u')
             ->addSelect('c')
+            ->addSelect('co')
+            ->addSelect('o')
             ->leftJoin('u.citizen', 'c')
+            ->leftJoin('c.organizations', 'co')
+            ->leftJoin('co.organization', 'o')
             ->where('u.discordId = :id')
             ->setParameter('id', $id)
             ->getQuery()

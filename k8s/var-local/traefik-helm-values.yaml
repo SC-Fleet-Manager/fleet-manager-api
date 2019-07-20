@@ -1,0 +1,19 @@
+serviceType: NodePort
+dashboard:
+  enabled: true
+  domain: traefik-ui.minikube
+  auth:
+    basic:
+      traefik: $apr1$O54hJrKR$XQiU2AZ8/7cuq8g.B/h8y/
+  ingress:
+    annotations:
+      kubernetes.io/ingress.class: traefik
+rbac:
+  enabled: true
+kubernetes:
+  ingressClass: traefik
+fmApp:
+  enabled: true
+  domain: fleet-manager.minikube
+  serviceName: fm-spa
+  servicePort: http

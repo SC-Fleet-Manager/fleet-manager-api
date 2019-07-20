@@ -1,0 +1,111 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fm-spa
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: 'fm-spa'
+      version: 'v1.3.0d'
+  template:
+    metadata:
+      name: fm-spa
+      labels:
+        app: 'fm-spa'
+        version: 'v1.3.0d'
+        fm-redis-client: 'true'
+    spec:
+      serviceAccountName: gcr-fleet-manager
+      containers:
+        - name: apache
+          image: 'eu.gcr.io/sc-fleet-manager/apache:v1.3.0d'
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 80
+          env:
+            - name: PHP_HANDLER_HOST
+              # TODO : change for UNIX socket
+              value: localhost:9000
+          livenessProbe:
+            httpGet:
+              path: /robots.txt
+              port: http
+            initialDelaySeconds: 5
+          readinessProbe:
+            periodSeconds: 1
+            httpGet:
+              path: /robots.txt
+              port: http
+            initialDelaySeconds: 5
+          resources:
+            requests:
+              cpu: 20m
+              memory: 10Mi
+        - name: php
+          image: 'eu.gcr.io/sc-fleet-manager/php:v1.3.0d'
+          imagePullPolicy: Always
+          ports:
+            - name: fcgi
+              containerPort: 9000
+          env:
+            - name: APP_SECRET
+              valueFrom:
+                secretKeyRef: { name: fm-spa, key: app_secret }
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef: { name: fm-spa, key: redis_password }
+            - name: DISCORD_SECRET
+              valueFrom:
+                secretKeyRef: { name: fm-spa, key: discord_secret }
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef: { name: fm-spa, key: database_url }
+            - name: TRUSTED_PROXIES
+              valueFrom:
+                configMapKeyRef: { name: fm-spa, key: trusted_proxies }
+            - name: TRUSTED_HOSTS
+              valueFrom:
+                configMapKeyRef: { name: fm-spa, key: trusted_hosts }
+            - name: DISCORD_ID
+              valueFrom:
+                configMapKeyRef: { name: fm-spa, key: discord_id }
+            - name: MAILER_URL
+              valueFrom:
+                configMapKeyRef: { name: fm-spa, key: mailer_url }
+            - name: SENTRY_DSN
+              valueFrom:
+                configMapKeyRef: { name: fm-spa, key: sentry_dsn }
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef: { name: fm-spa, key: redis_host }
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef: { name: fm-spa, key: redis_port }
+          livenessProbe:
+            tcpSocket:
+              port: fcgi
+            initialDelaySeconds: 5
+          readinessProbe:
+            periodSeconds: 1
+            tcpSocket:
+              port: fcgi
+            initialDelaySeconds: 5
+          resources:
+            requests:
+              cpu: 20m
+              memory: 200Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fm-spa
+spec:
+  selector:
+    app: 'fm-spa'
+    version: 'v1.3.0d'
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80

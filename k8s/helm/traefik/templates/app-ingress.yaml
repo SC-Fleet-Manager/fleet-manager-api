@@ -1,0 +1,25 @@
+{{- if .Values.fmApp.enabled }}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ template "traefik.fullname" . }}-app
+  labels:
+    app: {{ template "traefik.name" . }}
+    chart: {{ template "traefik.chart" . }}
+    release: {{ .Release.Name | quote }}
+    heritage: {{ .Release.Service | quote }}
+  annotations:
+    kubernetes.io/ingress.class: traefik
+{{/*    traefik.backend.loadbalancer.sticky: "false"*/}}
+{{/*    traefik.ingress.kubernetes.io/service-weights: |*/}}
+{{/*      {{ .Values.fmApp.serviceName }}: 100%*/}}
+spec:
+  rules:
+    - host: {{ .Values.fmApp.domain }}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: {{ .Values.fmApp.serviceName }}
+              servicePort: {{ .Values.fmApp.servicePort }}
+  {{- end }}

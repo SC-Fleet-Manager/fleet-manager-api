@@ -97,6 +97,9 @@ class CitizenOrganization
     public function setCitizen(?Citizen $citizen): self
     {
         $this->citizen = $citizen;
+        if ($citizen !== null) {
+            $citizen->addOrganization($this);
+        }
 
         return $this;
     }
