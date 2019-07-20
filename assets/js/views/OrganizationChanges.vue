@@ -7,11 +7,14 @@
                     {{ formatDate(change.createdAt) }}
                     <b-badge style="width: 6rem;" :variant="getVariantChangeType(change)">{{ getTitleChangeType(change) }}</b-badge>
                     <span v-if="change.type == 'upload_fleet'">
-                        <i v-if="change.author === null">Hidden citizen</i><b v-else>{{ change.author.actualHandle.handle }}</b> :
-                        <template v-for="(ship, index) in change.payload">{{ ship.count > 0 ? '+'+ship.count : ship.count }} {{ ship.ship }}<template v-if="index < change.payload.length - 1">, </template></template>
+                        <b>{{ change.author.actualHandle.handle }}</b> :
+                        <i v-if="change.payloadPrivate">hidden</i>
+                        <template v-else>
+                            <template v-for="(ship, index) in change.payload">{{ ship.count > 0 ? '+'+ship.count : ship.count }} {{ ship.ship }}<template v-if="index < change.payload.length - 1">, </template></template>
+                        </template>
                     </span>
                     <span v-if="change.type == 'join_orga' || change.type == 'leave_orga'">
-                        <i v-if="change.author === null">Hidden citizen</i><b v-else>{{ change.author.actualHandle.handle }}</b>
+                        <b>{{ change.author.actualHandle.handle }}</b>
                     </span>
                     <span v-if="change.type == 'update_privacy_policy'">
                         <b>{{ change.author.actualHandle.handle }}</b> has changed orga's policy from <b>{{ formatOrgaPolicy(change.payload.oldValue) }}</b> to <b>{{ formatOrgaPolicy(change.payload.newValue) }}</b>

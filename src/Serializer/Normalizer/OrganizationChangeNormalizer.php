@@ -54,11 +54,11 @@ class OrganizationChangeNormalizer implements NormalizerInterface
         /** @var User $user */
         $user = $this->userRepository->findOneBy(['citizen' => $citizenOrga->getCitizen()]);
 
-        if (in_array($orgaChange->getType(), [OrganizationChange::TYPE_UPLOAD_FLEET, OrganizationChange::TYPE_JOIN_ORGA, OrganizationChange::TYPE_LEAVE_ORGA], true)
+        if ($orgaChange->getType() === OrganizationChange::TYPE_UPLOAD_FLEET
             && ($citizenOrga->getVisibility() === CitizenOrganization::VISIBILITY_PRIVATE || $user->getPublicChoice() === User::PUBLIC_CHOICE_PRIVATE)) {
-            // visibility private = anonymize author
-            $data['author'] = null;
-            $data['authorIsPrivate'] = true;
+            // visibility private = anonymize content
+            $data['payload'] = [];
+            $data['payloadPrivate'] = true;
         }
 
         return $data;
