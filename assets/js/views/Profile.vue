@@ -211,7 +211,7 @@
                 this.fleetLinkCopied = true;
             },
             refreshProfile() {
-                axios.get('/api/profile/').then(response => {
+                axios.get('/api/profile').then(response => {
                     this.citizen = response.data.citizen;
                     this.showLinkAccount = !this.citizen;
                     this.showUpdateHandle = !!this.citizen;
@@ -264,7 +264,7 @@
                 this.showErrorStep1 = false;
                 this.showCollapseStep2 = false;
                 this.searchingHandle = true;
-                axios.get('/api/search-handle', {
+                axios.get('/api/profile/search-handle', {
                     params: {handle: this.form.handle}
                 }).then(response => {
                     this.searchedCitizen = response.data;
@@ -306,7 +306,7 @@
                 }).catch(async err => {
                     this.submitDisabled = false;
                     if (err.response.data.error === 'invalid_form') {
-                        const response = await axios.get('/api/search-handle', {
+                        const response = await axios.get('/api/profile/search-handle', {
                             params: {handle: this.form.handle}
                         });
                         if (response.data) {

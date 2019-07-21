@@ -4,18 +4,19 @@ logout:
 discord_login:
     path: /login/check-discord
 
-spa_sitemap:
-    path: /sitemap.xml
-    controller: App\Controller\SpaController::sitemap
-
 spa_home:
     path: /
-    controller: App\Controller\SpaController::home
+    controller: Symfony\Bundle\FrameworkBundle\Controller\TemplateController
+    methods: GET
+    defaults:
+        template: home.html.twig
 
 spa:
     path: /{spaPath}
-    controller: App\Controller\SpaController::index
+    controller: Symfony\Bundle\FrameworkBundle\Controller\TemplateController
+    methods: GET
     defaults:
         spaPath: '/'
+        template: base.html.twig
     requirements:
         spaPath: '.+'

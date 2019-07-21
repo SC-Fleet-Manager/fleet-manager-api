@@ -72,7 +72,7 @@ class ApiControllerTest extends WebTestCase
         $citizenInfosProvider = static::$container->get(CitizenInfosProviderInterface::class);
         $citizenInfosProvider->setCitizen($citizen);
 
-        $this->client->xmlHttpRequest('GET', '/api/search-handle', [
+        $this->client->xmlHttpRequest('GET', '/api/profile/search-handle', [
             'handle' => 'foobar',
         ], [], [
             'CONTENT_TYPE' => 'application/json',
@@ -99,7 +99,7 @@ class ApiControllerTest extends WebTestCase
         $citizenInfosProvider = static::$container->get(CitizenInfosProviderInterface::class);
         $citizenInfosProvider->setCitizen(null);
 
-        $this->client->xmlHttpRequest('GET', '/api/search-handle', [
+        $this->client->xmlHttpRequest('GET', '/api/profile/search-handle', [
             'handle' => 'not_exist',
         ], [], [
             'CONTENT_TYPE' => 'application/json',
@@ -116,7 +116,7 @@ class ApiControllerTest extends WebTestCase
      */
     public function testSearchHandleNoParam(): void
     {
-        $this->client->xmlHttpRequest('GET', '/api/search-handle', [], [], [
+        $this->client->xmlHttpRequest('GET', '/api/profile/search-handle', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
 
@@ -159,79 +159,6 @@ class ApiControllerTest extends WebTestCase
         $this->assertSame(404, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('orga_not_exist', $json['error']);
-    }
-
-    /**
-     * @group functional
-     * @group api
-     */
-    public function testManageableOrganizations(): void
-    {
-        $highRankUser = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ashuvidz']);
-        $this->logIn($highRankUser);
-        $this->client->xmlHttpRequest('GET', '/api/manageable-organizations', [], [], [
-            'CONTENT_TYPE' => 'application/json',
-        ]);
-
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertArraySubset([
-            [
-                'id' => '80db0703-dd43-49a0-93d3-89947b9ab321',
-                'organizationSid' => 'flk',
-                'name' => 'FallKrom',
-                'avatarUrl' => null,
-                'publicChoice' => 'private',
-            ],
-        ], $json);
-    }
-
-    /**
-     * @group functional
-     * @group api
-     */
-    public function testManageableOrganizationsLowRank(): void
-    {
-        $this->logIn($this->user);
-        $this->client->xmlHttpRequest('GET', '/api/manageable-organizations', [], [], [
-            'CONTENT_TYPE' => 'application/json',
-        ]);
-
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEmpty($json);
-    }
-
-    /**
-     * @group functional
-     * @group api
-     */
-    public function testManageableOrganizationsNoCitizen(): void
-    {
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'NoCitizen']);
-        $this->logIn($user);
-        $this->client->xmlHttpRequest('GET', '/api/manageable-organizations', [], [], [
-            'CONTENT_TYPE' => 'application/json',
-        ]);
-
-        $this->assertSame(400, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame('no_citizen_created', $json['error']);
-    }
-
-    /**
-     * @group functional
-     * @group api
-     */
-    public function testManageableOrganizationsNotAuth(): void
-    {
-        $this->client->xmlHttpRequest('GET', '/api/manageable-organizations', [], [], [
-            'CONTENT_TYPE' => 'application/json',
-        ]);
-
-        $this->assertSame(401, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame('no_auth', $json['error']);
     }
 
     /**

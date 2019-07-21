@@ -110,6 +110,7 @@ class SpaControllerTest extends PantherTestCase
 
         // change personal fleet policy
         $this->client->request('GET', '/profile');
+        $this->client->refreshCrawler();
         $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
             return count($driver->findElements(WebDriverBy::className('js-update-sc-handle'))) > 0;
         });
@@ -121,6 +122,7 @@ class SpaControllerTest extends PantherTestCase
 
         // refresh my RSI profile
         $this->client->request('GET', '/profile');
+        $this->client->refreshCrawler();
         $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
             return count($driver->findElements(WebDriverBy::className('js-update-sc-handle'))) > 0;
         });
@@ -132,6 +134,7 @@ class SpaControllerTest extends PantherTestCase
 
         // refresh my RSI profile too soon
         $this->client->request('GET', '/profile');
+        $this->client->refreshCrawler();
         $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
             return count($driver->findElements(WebDriverBy::className('js-update-sc-handle'))) > 0;
         });
@@ -143,6 +146,7 @@ class SpaControllerTest extends PantherTestCase
 
         // update sc handle not exist
         $this->client->request('GET', '/profile');
+        $this->client->refreshCrawler();
         $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
             return count($driver->findElements(WebDriverBy::className('js-update-sc-handle'))) > 0;
         });
@@ -155,6 +159,7 @@ class SpaControllerTest extends PantherTestCase
 
         // update sc handle not same number
         $this->client->request('GET', '/profile');
+        $this->client->refreshCrawler();
         $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
             return count($driver->findElements(WebDriverBy::className('js-update-sc-handle'))) > 0;
         });
@@ -167,6 +172,7 @@ class SpaControllerTest extends PantherTestCase
 
         // update sc handle success
         $this->client->request('GET', '/profile');
+        $this->client->refreshCrawler();
         $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
             return count($driver->findElements(WebDriverBy::className('js-update-sc-handle'))) > 0;
         });
@@ -180,6 +186,7 @@ class SpaControllerTest extends PantherTestCase
         // Link RSI Account
         $this->login('2a288e5d-f83f-4b0d-9275-3351b8cb3848');
         $this->client->request('GET', '/profile');
+        $this->client->refreshCrawler();
         $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
             return strpos($driver->findElement(WebDriverBy::className('card-header'))->getText(), 'Link your RSI Account') !== false;
         });

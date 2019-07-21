@@ -1,0 +1,24 @@
+orga_fleet_fleets_admins:
+    path: /api/fleet/orga-fleets/{organizationSid}/admins
+    controller: App\Controller\Organization\Fleet\FleetsAdminsController
+    methods: GET
+
+orga_fleet_fleet_users:
+    path: /api/fleet/orga-fleets/{organizationSid}/users/{providerShipName}
+    controller: App\Controller\Organization\Fleet\FleetUsersController
+    methods: GET
+
+orga_fleet_hidden_users:
+    path: /api/fleet/orga-fleets/{organizationSid}/hidden-users/{providerShipName}
+    controller: App\Controller\Organization\Fleet\FleetHiddenUsersController
+    methods: GET
+
+orga_fleet_fleet_family:
+    path: /api/fleet/orga-fleets/{organizationSid}/{chassisId}
+    controller: App\Controller\Organization\Fleet\FleetFamilyController
+    methods: GET
+
+orga_fleet_fleets:
+    path: /api/fleet/orga-fleets/{organizationSid}
+    controller: App\Controller\Organization\Fleet\FleetsController
+    methods: GET

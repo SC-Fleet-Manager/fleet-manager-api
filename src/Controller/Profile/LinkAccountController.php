@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Profile;
 
 use App\Domain\CitizenInfos;
 use App\Domain\HandleSC;
@@ -9,14 +9,11 @@ use App\Entity\User;
 use App\Exception\NotFoundHandleSCException;
 use App\Form\Dto\LinkAccount;
 use App\Form\LinkAccountForm;
-use App\Repository\CitizenRepository;
-use App\Repository\UserRepository;
 use App\Service\CitizenInfosProviderInterface;
 use App\Service\CitizenRefresher;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Symfony\Bridge\Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,51 +22,47 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Serializer\SerializerInterface;
 
-/**
- * @Route("/api/profile", name="link_account_profile_")
- */
 class LinkAccountController extends AbstractController
 {
-    private $profileLinkAccountLogger;
-    private $citizenInfosProvider;
+    private $formFactory;
+    private $security;
+    private $serializer;
+    private $entityManager;
     private $citizenRepository;
     private $userRepository;
-    private $security;
-    private $formFactory;
-    private $entityManager;
-    private $serializer;
     private $citizenRefresher;
+    private $citizenInfosProvider;
+    private $profileLinkAccountLogger;
 
     public function __construct(
-        Logger $profileLinkAccountLogger,
-        CitizenInfosProviderInterface $citizenInfosProvider,
-        CitizenRepository $citizenRepository,
-        EntityManagerInterface $entityManager,
-        UserRepository $userRepository,
-        Security $security,
         FormFactoryInterface $formFactory,
+        Security $security,
         SerializerInterface $serializer,
-        CitizenRefresher $citizenRefresher
+        EntityManagerInterface $entityManager,
+        CitizenRefresher $citizenRefresher,
+        CitizenInfosProviderInterface $citizenInfosProvider,
+        LoggerInterface $profileLinkAccountLogger
     ) {
-        $this->profileLinkAccountLogger = $profileLinkAccountLogger;
-        $this->citizenInfosProvider = $citizenInfosProvider;
-        $this->citizenRepository = $citizenRepository;
-        $this->userRepository = $userRepository;
-        $this->security = $security;
         $this->formFactory = $formFactory;
-        $this->entityManager = $entityManager;
+        $this->security = $security;
         $this->serializer = $serializer;
+        $this->entityManager = $entityManager;
+        $this->citizenRepository = $entityManager->getRepository(Citizen::class);
+        $this->userRepository = $entityManager->getRepository(User::class);
         $this->citizenRefresher = $citizenRefresher;
+        $this->citizenInfosProvider = $citizenInfosProvider;
+        $this->profileLinkAccountLogger = $profileLinkAccountLogger;
     }
 
     /**
-     * @Route("/link-account", name="link_account", methods={"POST"})
-     * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
-     *
      * Link RSI Account (with SC Handle and Bio token) with the actual logged User.
+     *
+     * @Route("/api/profile/link-account", name="profile_link_account", methods={"POST"})
      */
-    public function linkAccount(Request $request): Response
+    public function __invoke(Request $request): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
+
         $linkAccount = new LinkAccount();
         $form = $this->formFactory->createNamedBuilder('', LinkAccountForm::class, $linkAccount)->getForm();
         $form->handleRequest($request);

@@ -97,7 +97,7 @@
             }
         },
         created() {
-            axios.get('/api/profile/').then(response => {
+            axios.get('/api/profile').then(response => {
                 this.user = response.data;
                 this.citizen = this.user.citizen;
                 this.updateProfile(this.citizen);

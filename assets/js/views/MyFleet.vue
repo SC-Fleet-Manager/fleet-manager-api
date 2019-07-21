@@ -56,7 +56,7 @@
             }
         },
         async created() {
-            axios.get('/api/profile/', {
+            axios.get('/api/profile', {
                 params: {}
             }).then(response => {
                 this.citizen = response.data.citizen;

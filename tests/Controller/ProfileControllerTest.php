@@ -27,7 +27,7 @@ class ProfileControllerTest extends WebTestCase
     public function testIndex(): void
     {
         $this->logIn($this->user);
-        $this->client->xmlHttpRequest('GET', '/api/profile/', [], [], [
+        $this->client->xmlHttpRequest('GET', '/api/profile', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
 
@@ -83,7 +83,7 @@ class ProfileControllerTest extends WebTestCase
      */
     public function testIndexNotAuth(): void
     {
-        $this->client->xmlHttpRequest('GET', '/api/profile/', [], [], [
+        $this->client->xmlHttpRequest('GET', '/api/profile', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
 

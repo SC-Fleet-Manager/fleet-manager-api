@@ -381,19 +381,6 @@
                         }
                         console.error(err);
                     });
-                    // axios.get(`/api/orga-stats/${this.sid}`).then(response => {
-                    //     this.orgaStats = response.data;
-                    // }).catch(err => {
-                    //     if (err.response.status === 401) {
-                    //         // not connected
-                    //         return;
-                    //     }
-                    //     if (err.response.status === 404) {
-                    //         // not exist
-                    //         return;
-                    //     }
-                    //     console.error(err);
-                    // });
                 }
                 if (this.citizen !== null) {
                     for (let citizenOrga of this.citizen.organizations) {
@@ -410,7 +397,7 @@
                 this.citizen = this.$store.getters.citizen;
                 if (this.citizen === null) {
                     try {
-                        const response = await axios.get('/api/profile/');
+                        const response = await axios.get('/api/profile');
                         this.$store.commit('updateProfile', response.data.citizen);
                         this.citizen = response.data.citizen;
                     } catch (err) {

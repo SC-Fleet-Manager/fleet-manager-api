@@ -1,68 +1,36 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\MyFleet;
 
 use App\Entity\Citizen;
 use App\Entity\User;
 use App\Repository\CitizenRepository;
 use App\Repository\UserRepository;
 use App\Service\ShipInfosProviderInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Security;
 
-/**
- * @Route("/api", name="fleet_")
- */
-class FleetController extends AbstractController
+class UserFleetController extends AbstractController
 {
-    private $security;
     private $citizenRepository;
     private $userRepository;
     private $shipInfosProvider;
 
     public function __construct(
-        Security $security,
         CitizenRepository $citizenRepository,
         UserRepository $userRepository,
         ShipInfosProviderInterface $shipInfosProvider
     ) {
-        $this->security = $security;
         $this->citizenRepository = $citizenRepository;
         $this->userRepository = $userRepository;
         $this->shipInfosProvider = $shipInfosProvider;
     }
 
     /**
-     * @Route("/fleet/my-fleet", name="my_fleet", methods={"GET"}, options={"expose":true})
-     * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
+     * @Route("/api/fleet/user-fleet/{handle}", name="my_fleet_user_fleet", methods={"GET"})
      */
-    public function myFleet(): Response
-    {
-        /** @var User $user */
-        $user = $this->security->getUser();
-        $citizen = $user->getCitizen();
-        if ($citizen === null) {
-            return $this->json([
-                'error' => 'no_citizen_created',
-                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
-            ], 400);
-        }
-        $fleet = $citizen->getLastFleet();
-        $shipInfos = $this->shipInfosProvider->getAllShips();
-
-        return $this->json([
-            'fleet' => $fleet,
-            'shipInfos' => $shipInfos,
-        ], 200, [], ['groups' => ['my-fleet']]);
-    }
-
-    /**
-     * @Route("/fleet/user-fleet/{handle}", name="user_fleet", methods={"GET"}, options={"expose":true})
-     */
-    public function userFleet(string $handle): Response
+    public function __invoke(string $handle): Response
     {
         /** @var Citizen|null $citizen */
         $citizen = $this->citizenRepository->findOneBy(['actualHandle' => $handle]);
