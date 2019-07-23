@@ -4,7 +4,7 @@
             <b-card header="Ships">
                 <b-row>
                     <b-col cols="12" sm="6" lg="6">
-                        <b-card :no-body="true">
+                        <b-card :no-body="true" id="orga-stats-total-ships">
                             <b-card-body class="p-0 clearfix">
                                 <i class="fas fa-space-shuttle bg-info p-4 font-2xl mr-3 float-left"></i>
                                 <div class="h5 text-primary mb-0 pt-3">{{ totalShips }}</div>
@@ -13,7 +13,7 @@
                         </b-card>
                     </b-col>
                     <b-col cols="12" sm="6" lg="6">
-                        <b-card :no-body="true">
+                        <b-card :no-body="true" id="orga-stats-ships-status">
                             <b-card-body class="p-0 clearfix">
                                 <i class="fas fa-calendar-check bg-warning p-4 font-2xl mr-3 float-left"></i>
                                 <div class="h5 text-primary mb-0 pt-3">{{ countFlightReady }} / {{ countInConcept }}</div>
@@ -22,7 +22,7 @@
                         </b-card>
                     </b-col>
                     <b-col cols="12" sm="6" lg="6">
-                        <b-card :no-body="true">
+                        <b-card :no-body="true" id="orga-stats-crew">
                             <b-card-body class="p-0 clearfix">
                                 <i class="fas fa-user-friends bg-danger p-4 font-2xl mr-3 float-left"></i>
                                 <div class="h5 text-primary mb-0 pt-3">{{ minCrew }} / {{ maxCrew }}</div>
@@ -31,7 +31,7 @@
                         </b-card>
                     </b-col>
                     <b-col cols="12" sm="6" lg="6">
-                        <b-card :no-body="true">
+                        <b-card :no-body="true" id="orga-stats-cargo-capacity">
                             <b-card-body class="p-0 clearfix">
                                 <i class="fas fa-boxes bg-primary p-4 font-2xl mr-3 float-left"></i>
                                 <div class="h5 text-primary mb-0 pt-3">{{ cargoCapacity }}</div>
@@ -47,7 +47,7 @@
             <b-card header="Citizens">
                 <b-row>
                     <b-col cols="12" sm="6" lg="6">
-                        <b-card :no-body="true">
+                        <b-card :no-body="true" id="orga-stats-registered-total">
                             <b-card-body class="p-0 clearfix">
                                 <i class="fas fa-users bg-info p-4 font-2xl mr-3 float-left"></i>
                                 <div class="h5 text-primary mb-0 pt-3">{{ countCitizens }} / {{ totalMembers }}</div>
@@ -56,7 +56,7 @@
                         </b-card>
                     </b-col>
                     <b-col cols="12" sm="6" lg="6">
-                        <b-card :no-body="true">
+                        <b-card :no-body="true" id="orga-stats-average-ships">
                             <b-card-body class="p-0 clearfix">
                                 <i class="fas fa-space-shuttle bg-warning p-4 font-2xl mr-3 float-left"></i>
                                 <div class="h5 text-primary mb-0 pt-3">{{ averageShipsPerCitizen }}</div>
@@ -65,7 +65,7 @@
                         </b-card>
                     </b-col>
                     <b-col cols="12" sm="12" lg="12">
-                        <b-card :no-body="true">
+                        <b-card :no-body="true" id="orga-stats-ships-most-ships-citizen">
                             <b-card-body class="p-0 clearfix">
                                 <i class="fas fa-medal bg-danger p-4 font-2xl mr-3 float-left"></i>
                                 <div class="h5 text-primary mb-0 pt-3">

@@ -55,6 +55,11 @@ class FakeCitizenInfosProvider implements CitizenInfosProviderInterface
         $this->citizen = $citizen;
     }
 
+    public function setKnownCitizens(array $knownCitizens): void
+    {
+        $this->knownCitizens = $knownCitizens;
+    }
+
     public function retrieveInfos(HandleSC $handleSC, bool $caching = true): CitizenInfos
     {
         if (in_array($handleSC->getHandle(), self::BLACKLIST_HANDLES, true)) {

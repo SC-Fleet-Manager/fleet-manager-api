@@ -355,6 +355,29 @@ class SpaControllerTest extends PantherTestCase
             return !$driver->findElement(WebDriverBy::className('ship-family-detail-variants-wrapper'))->isDisplayed();
         });
 
+        // Statistics Panel
+        $this->client->findElement(WebDriverBy::xpath('//button[contains(text(), "Statistics")]'))->click();
+        $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+            return strpos($driver->findElement(WebDriverBy::cssSelector('h4'))->getText(), 'Statistics of Les Gardiens') !== false;
+        });
+
+        $this->assertSame('7', $this->client->findElement(WebDriverBy::cssSelector('#orga-stats-total-ships .text-primary'))->getText());
+        $this->assertSame('TOTAL SHIPS', $this->client->findElement(WebDriverBy::cssSelector('#orga-stats-total-ships .text-muted'))->getText());
+        $this->assertSame('5 / 2', $this->client->findElement(WebDriverBy::cssSelector('#orga-stats-ships-status .text-primary'))->getText());
+        $this->assertSame('FLIGHT READY / IN CONCEPT', $this->client->findElement(WebDriverBy::cssSelector('#orga-stats-ships-status .text-muted'))->getText());
+        $this->assertSame('13 / 18', $this->client->findElement(WebDriverBy::cssSelector('#orga-stats-crew .text-primary'))->getText());
+        $this->assertSame('MIN CREW / MAX CREW', $this->client->findElement(WebDriverBy::cssSelector('#orga-stats-crew .text-muted'))->getText());
+        $this->assertSame('0', $this->client->findElement(WebDriverBy::cssSelector('#orga-stats-cargo-capacity .text-primary'))->getText());
+        $this->assertSame('CARGO CAPACITY (SCU)', $this->client->findElement(WebDriverBy::cssSelector('#orga-stats-cargo-capacity .text-muted'))->getText());
+
+        $this->assertSame('2 / 5', $this->client->findElement(WebDriverBy::cssSelector('#orga-stats-registered-total .text-primary'))->getText());
+        $this->assertSame('REGISTERED / TOTAL', $this->client->findElement(WebDriverBy::cssSelector('#orga-stats-registered-total .text-muted'))->getText());
+        $this->assertSame('3.5', $this->client->findElement(WebDriverBy::cssSelector('#orga-stats-average-ships .text-primary'))->getText());
+        $this->assertSame('AVERAGE SHIPS PER CITIZEN', $this->client->findElement(WebDriverBy::cssSelector('#orga-stats-average-ships .text-muted'))->getText());
+        $this->assertSame('ihaveships (6)', $this->client->findElement(WebDriverBy::cssSelector('#orga-stats-ships-most-ships-citizen .text-primary'))->getText());
+        $this->assertSame('CITIZEN WITH MOST SHIPS', $this->client->findElement(WebDriverBy::cssSelector('#orga-stats-ships-most-ships-citizen .text-muted'))->getText());
+
+        // Orga Selector
         $this->client->findElement(WebDriverBy::id('select-orga__BV_toggle_'))->click();
         $this->client->findElement(WebDriverBy::xpath('//a[contains(@class, "dropdown-item")][contains(text(), "FallKrom")]'))->click();
         $this->client->wait(3, 100)->until(static function (WebDriver $driver) {

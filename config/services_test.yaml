@@ -6,6 +6,7 @@ services:
 
     App\Service\CitizenInfosProviderInterface: '@App\Service\FakeCitizenInfosProvider'
     App\Service\ShipInfosProviderInterface: '@App\Service\FakeShipInfosProvider'
+    App\Service\OrganizationMembersInfosProviderInterface: '@App\Service\FakeOrganizationMembersInfosProvider'
 
     App\Tests\Controller\ConnectController:
         tags: ['controller.service_arguments']

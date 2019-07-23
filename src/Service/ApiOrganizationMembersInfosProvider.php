@@ -30,7 +30,7 @@ class ApiOrganizationMembersInfosProvider implements OrganizationMembersInfosPro
     }
 
     /**
-     * @return array ['visibleCitizens' => <RsiOrgaMemberInfos>, 'countHiddenCitizens' => <int>]
+     * @return array ['visibleCitizens' => <RsiOrgaMemberInfos[]>, 'countHiddenCitizens' => <int>]
      */
     public function retrieveInfos(SpectrumIdentification $sid, bool $cache = true): array
     {
