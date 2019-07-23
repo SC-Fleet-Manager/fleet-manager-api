@@ -4,9 +4,10 @@ services:
         autoconfigure: true
         public: false
 
-    App\Service\CitizenInfosProviderInterface: '@App\Service\FakeCitizenInfosProvider'
-    App\Service\ShipInfosProviderInterface: '@App\Service\FakeShipInfosProvider'
-    App\Service\OrganizationMembersInfosProviderInterface: '@App\Service\FakeOrganizationMembersInfosProvider'
+    App\Service\Citizen\InfosProvider\CitizenInfosProviderInterface: '@App\Service\Citizen\InfosProvider\FakeCitizenInfosProvider'
+    App\Service\Ship\InfosProvider\ShipInfosProviderInterface: '@App\Service\Ship\InfosProvider\FakeShipInfosProvider'
+    App\Service\Organization\MembersInfosProvider\OrganizationMembersInfosProviderInterface: '@App\Service\Organization\MembersInfosProvider\FakeOrganizationMembersInfosProvider'
+    App\Service\Organization\InfosProvider\OrganizationInfosProviderInterface: '@App\Service\Organization\InfosProvider\FakeOrganizationInfosProvider'
 
     App\Tests\Controller\ConnectController:
         tags: ['controller.service_arguments']

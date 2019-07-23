@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Organization\InfosProvider;
 
 use App\Domain\OrganizationInfos;
 use App\Domain\SpectrumIdentification;

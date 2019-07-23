@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Citizen\Fleet;
 
 use App\Domain\Money;
 use App\Entity\Citizen;
@@ -10,6 +10,8 @@ use App\Event\CitizenFleetUpdatedEvent;
 use App\Exception\BadCitizenException;
 use App\Exception\FleetUploadedTooCloseException;
 use App\Exception\InvalidFleetDataException;
+use App\Service\Citizen\CitizenRefresher;
+use App\Service\Citizen\InfosProvider\CitizenInfosProviderInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;

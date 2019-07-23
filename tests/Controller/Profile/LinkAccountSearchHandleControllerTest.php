@@ -6,7 +6,7 @@ use App\Domain\CitizenNumber;
 use App\Domain\HandleSC;
 use App\Entity\Citizen;
 use App\Entity\CitizenOrganization;
-use App\Service\CitizenInfosProviderInterface;
+use App\Service\Citizen\InfosProvider\CitizenInfosProviderInterface;
 use App\Tests\WebTestCase;
 
 class LinkAccountSearchHandleControllerTest extends WebTestCase

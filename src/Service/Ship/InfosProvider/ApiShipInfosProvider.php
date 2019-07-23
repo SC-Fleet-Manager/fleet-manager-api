@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Ship\InfosProvider;
 
 use App\Domain\ShipInfo;
 use GuzzleHttp\Client;

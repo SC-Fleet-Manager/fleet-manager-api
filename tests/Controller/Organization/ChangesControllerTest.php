@@ -4,7 +4,7 @@ namespace App\Tests\Controller\Organization;
 
 use App\Entity\Citizen;
 use App\Entity\User;
-use App\Service\CitizenInfosProviderInterface;
+use App\Service\Citizen\InfosProvider\CitizenInfosProviderInterface;
 use App\Tests\WebTestCase;
 
 class ChangesControllerTest extends WebTestCase

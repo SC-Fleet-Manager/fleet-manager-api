@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Organization\Fleet;
 
 use App\Entity\Organization;
 use App\Entity\User;

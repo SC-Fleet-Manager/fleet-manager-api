@@ -4,7 +4,7 @@ namespace App\Controller\Organization;
 
 use App\Domain\SpectrumIdentification;
 use App\Repository\ShipRepository;
-use App\Service\FleetOrganizationGuard;
+use App\Service\Organization\Fleet\FleetOrganizationGuard;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;

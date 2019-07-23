@@ -7,7 +7,7 @@ use App\Entity\Organization;
 use App\Entity\User;
 use App\Repository\OrganizationRepository;
 use App\Service\Organization\OrganizationMembersUtil;
-use App\Service\OrganizationMembersInfosProviderInterface;
+use App\Service\Organization\MembersInfosProvider\OrganizationMembersInfosProviderInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;

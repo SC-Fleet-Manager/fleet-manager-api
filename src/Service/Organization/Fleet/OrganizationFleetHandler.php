@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Organization\Fleet;
 
 use App\Domain\SpectrumIdentification;
 use App\Entity\Citizen;
 use App\Service\Dto\ShipFamilyFilter;
+use App\Service\Ship\InfosProvider\ShipInfosProviderInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 

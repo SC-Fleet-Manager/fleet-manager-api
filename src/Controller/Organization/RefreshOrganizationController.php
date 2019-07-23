@@ -5,8 +5,8 @@ namespace App\Controller\Organization;
 use App\Domain\SpectrumIdentification;
 use App\Entity\Organization;
 use App\Entity\User;
+use App\Service\Organization\MembersInfosProvider\OrganizationMembersInfosProviderInterface;
 use App\Service\Organization\OrganizationMembersUtil;
-use App\Service\OrganizationMembersInfosProviderInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,7 +26,8 @@ class RefreshOrganizationController extends AbstractController
         OrganizationMembersInfosProviderInterface $organizationMembersInfosProvider,
         OrganizationMembersUtil $organizationMembersUtil,
         EntityManagerInterface $entityManager
-    ) {
+    )
+    {
         $this->security = $security;
         $this->organizationMembersInfosProvider = $organizationMembersInfosProvider;
         $this->organizationMembersUtil = $organizationMembersUtil;

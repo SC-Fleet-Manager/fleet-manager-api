@@ -34,20 +34,20 @@ services:
         calls:
             - [setRedis, ['@redis']]
 
-    App\Service\ShipInfosProviderInterface: '@App\Service\ApiShipInfosProvider'
-    App\Service\ApiShipInfosProvider:
+    App\Service\Ship\InfosProvider\ShipInfosProviderInterface: '@App\Service\Ship\InfosProvider\ApiShipInfosProvider'
+    App\Service\Ship\InfosProvider\ApiShipInfosProvider:
         arguments: { '$cache': '@rsi.ships.cache' }
 
-    App\Service\OrganizationInfosProviderInterface: '@App\Service\ApiOrganizationInfosProvider'
-    App\Service\ApiOrganizationInfosProvider:
+    App\Service\Organization\InfosProvider\OrganizationInfosProviderInterface: '@App\Service\Organization\InfosProvider\ApiOrganizationInfosProvider'
+    App\Service\Organization\InfosProvider\ApiOrganizationInfosProvider:
         arguments: { '$cache': '@rsi.organizations.cache' }
 
-    App\Service\OrganizationMembersInfosProviderInterface: '@App\Service\ApiOrganizationMembersInfosProvider'
-    App\Service\ApiOrganizationMembersInfosProvider:
+    App\Service\Organization\MembersInfosProvider\OrganizationMembersInfosProviderInterface: '@App\Service\Organization\MembersInfosProvider\ApiOrganizationMembersInfosProvider'
+    App\Service\Organization\MembersInfosProvider\ApiOrganizationMembersInfosProvider:
         arguments: { '$cache': '@rsi.organizations_members.cache' }
 
-    App\Service\CitizenInfosProviderInterface: '@App\Service\ApiCitizenInfosProvider'
-    App\Service\ApiCitizenInfosProvider:
+    App\Service\Citizen\InfosProvider\CitizenInfosProviderInterface: '@App\Service\Citizen\InfosProvider\ApiCitizenInfosProvider'
+    App\Service\Citizen\InfosProvider\ApiCitizenInfosProvider:
         arguments: { '$cache': '@rsi.citizens.cache' }
 
     App\Listener\TrackConnectionListener:

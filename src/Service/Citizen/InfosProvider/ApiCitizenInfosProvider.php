@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Citizen\InfosProvider;
 
 use App\Domain\CitizenInfos;
 use App\Domain\CitizenNumber;

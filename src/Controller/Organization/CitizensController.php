@@ -5,7 +5,7 @@ namespace App\Controller\Organization;
 use App\Entity\Citizen;
 use App\Entity\User;
 use App\Repository\CitizenRepository;
-use App\Service\FleetOrganizationGuard;
+use App\Service\Organization\Fleet\FleetOrganizationGuard;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;

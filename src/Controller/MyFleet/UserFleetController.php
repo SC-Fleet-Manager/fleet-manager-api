@@ -6,7 +6,7 @@ use App\Entity\Citizen;
 use App\Entity\User;
 use App\Repository\CitizenRepository;
 use App\Repository\UserRepository;
-use App\Service\ShipInfosProviderInterface;
+use App\Service\Ship\InfosProvider\ShipInfosProviderInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Citizen\Fleet;
 
 use App\Domain\CitizenNumber;
 use App\Entity\Citizen;

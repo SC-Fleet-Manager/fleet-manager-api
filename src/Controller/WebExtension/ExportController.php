@@ -7,7 +7,7 @@ use App\Exception\BadCitizenException;
 use App\Exception\FleetUploadedTooCloseException;
 use App\Exception\InvalidFleetDataException;
 use App\Exception\NotFoundHandleSCException;
-use App\Service\FleetUploadHandler;
+use App\Service\Citizen\Fleet\FleetUploadHandler;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;

@@ -3,7 +3,7 @@
 namespace App\Controller\MyFleet;
 
 use App\Entity\User;
-use App\Service\CitizenFleetGenerator;
+use App\Service\Citizen\Fleet\CitizenFleetGenerator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;

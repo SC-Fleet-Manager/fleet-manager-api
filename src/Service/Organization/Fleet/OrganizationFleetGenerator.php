@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Organization\Fleet;
 
 use App\Domain\SpectrumIdentification;
 use App\Repository\CitizenRepository;

@@ -4,7 +4,7 @@ namespace App\Tests\Controller\MyFleet;
 
 use App\Entity\Fleet;
 use App\Entity\User;
-use App\Service\CitizenInfosProviderInterface;
+use App\Service\Citizen\InfosProvider\CitizenInfosProviderInterface;
 use App\Tests\WebTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 

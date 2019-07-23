@@ -4,7 +4,7 @@ namespace App\Tests\Controller\WebExtension;
 
 use App\Entity\Fleet;
 use App\Entity\User;
-use App\Service\CitizenInfosProviderInterface;
+use App\Service\Citizen\InfosProvider\CitizenInfosProviderInterface;
 use App\Tests\WebTestCase;
 
 class ExportControllerTest extends WebTestCase

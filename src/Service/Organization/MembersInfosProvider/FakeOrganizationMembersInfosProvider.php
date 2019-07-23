@@ -1,16 +1,9 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Organization\MembersInfosProvider;
 
 use App\Domain\SpectrumIdentification;
 use App\Service\Dto\RsiOrgaMemberInfos;
-use Goutte\Client as GoutteClient;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\Cache\CacheItem;
-use Symfony\Component\DomCrawler\Crawler;
-use Symfony\Contracts\Cache\CacheInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class FakeOrganizationMembersInfosProvider implements OrganizationMembersInfosProviderInterface
 {

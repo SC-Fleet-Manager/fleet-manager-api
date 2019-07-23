@@ -6,7 +6,7 @@ use App\Domain\HandleSC;
 use App\Exception\NotFoundHandleSCException;
 use App\Form\Dto\LinkAccount;
 use App\Form\LinkAccountForm;
-use App\Service\CitizenInfosProviderInterface;
+use App\Service\Citizen\InfosProvider\CitizenInfosProviderInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

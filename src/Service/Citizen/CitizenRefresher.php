@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Citizen;
 
 use App\Domain\CitizenInfos;
 use App\Domain\SpectrumIdentification;
@@ -9,6 +9,7 @@ use App\Entity\CitizenOrganization;
 use App\Entity\Organization;
 use App\Event\CitizenRefreshedEvent;
 use App\Repository\OrganizationRepository;
+use App\Service\Organization\InfosProvider\OrganizationInfosProviderInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;

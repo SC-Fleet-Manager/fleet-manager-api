@@ -4,7 +4,7 @@ namespace App\Controller\Organization\Fleet;
 
 use App\Entity\User;
 use App\Repository\CitizenRepository;
-use App\Service\FleetOrganizationGuard;
+use App\Service\Organization\Fleet\FleetOrganizationGuard;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;

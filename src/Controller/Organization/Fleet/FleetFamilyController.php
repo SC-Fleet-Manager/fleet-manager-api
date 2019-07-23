@@ -3,9 +3,9 @@
 namespace App\Controller\Organization\Fleet;
 
 use App\Repository\CitizenRepository;
-use App\Service\FleetOrganizationGuard;
+use App\Service\Organization\Fleet\FleetOrganizationGuard;
 use App\Service\Organization\ShipFamilyFilterFactory;
-use App\Service\ShipInfosProviderInterface;
+use App\Service\Ship\InfosProvider\ShipInfosProviderInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

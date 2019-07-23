@@ -4,8 +4,8 @@ namespace App\Controller\Organization\Fleet;
 
 use App\Domain\SpectrumIdentification;
 use App\Entity\User;
-use App\Service\FleetOrganizationGuard;
-use App\Service\OrganizationFleetGenerator;
+use App\Service\Organization\Fleet\FleetOrganizationGuard;
+use App\Service\Organization\Fleet\OrganizationFleetGenerator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;

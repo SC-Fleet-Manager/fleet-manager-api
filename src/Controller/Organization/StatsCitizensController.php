@@ -4,8 +4,8 @@ namespace App\Controller\Organization;
 
 use App\Domain\SpectrumIdentification;
 use App\Repository\CitizenRepository;
-use App\Service\FleetOrganizationGuard;
-use App\Service\OrganizationMembersInfosProviderInterface;
+use App\Service\Organization\Fleet\FleetOrganizationGuard;
+use App\Service\Organization\MembersInfosProvider\OrganizationMembersInfosProviderInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;

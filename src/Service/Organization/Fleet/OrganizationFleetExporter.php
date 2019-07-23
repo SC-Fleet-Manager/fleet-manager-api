@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Service\Exporter;
+namespace App\Service\Organization\Fleet;
 
 use App\Domain\SpectrumIdentification;
 use App\Entity\Citizen;
 use App\Entity\User;
 use App\Repository\CitizenRepository;
 use App\Service\Dto\RsiOrgaMemberInfos;
-use App\Service\OrganizationMembersInfosProviderInterface;
+use App\Service\Organization\MembersInfosProvider\OrganizationMembersInfosProviderInterface;
 use Symfony\Component\Security\Core\Security;
 
 class OrganizationFleetExporter

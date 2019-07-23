@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Organization\MembersInfosProvider;
 
 use App\Domain\SpectrumIdentification;
 use App\Service\Dto\RsiOrgaMemberInfos;

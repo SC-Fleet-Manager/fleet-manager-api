@@ -3,7 +3,7 @@
 namespace App\Controller\MyFleet;
 
 use App\Entity\User;
-use App\Service\ShipInfosProviderInterface;
+use App\Service\Ship\InfosProvider\ShipInfosProviderInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;

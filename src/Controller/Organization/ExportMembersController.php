@@ -6,7 +6,7 @@ use App\Domain\SpectrumIdentification;
 use App\Entity\Organization;
 use App\Entity\User;
 use App\Repository\OrganizationRepository;
-use App\Service\Exporter\OrganizationFleetExporter;
+use App\Service\Organization\Fleet\OrganizationFleetExporter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;

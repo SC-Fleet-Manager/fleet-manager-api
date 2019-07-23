@@ -3,8 +3,8 @@
 namespace App\Controller\Profile;
 
 use App\Entity\User;
-use App\Service\CitizenInfosProviderInterface;
-use App\Service\CitizenRefresher;
+use App\Service\Citizen\InfosProvider\CitizenInfosProviderInterface;
+use App\Service\Citizen\CitizenRefresher;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
