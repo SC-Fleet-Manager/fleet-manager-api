@@ -44,7 +44,15 @@ class User implements UserInterface
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255, unique=false)
+     * @ORM\Column(type="string", length=127, nullable=true)
+     * @Groups({"must_not_be_exposed"})
+     */
+    private $password;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, unique=false, nullable=true)
      */
     private $discordId;
 
@@ -82,7 +90,7 @@ class User implements UserInterface
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=15, options={"default":"private"})
+     * @ORM\Column(type="string", length=15, options={"default":User::PUBLIC_CHOICE_PRIVATE})
      * @Groups({"profile", "orga_fleet"})
      */
     private $publicChoice;
@@ -121,7 +129,14 @@ class User implements UserInterface
 
     public function getPassword(): ?string
     {
-        return null;
+        return $this->password;
+    }
+
+    public function setPassword(?string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
     }
 
     public function getSalt(): ?string

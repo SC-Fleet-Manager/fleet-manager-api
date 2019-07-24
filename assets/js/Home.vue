@@ -250,10 +250,73 @@
             footer-text-variant="light"
         >
             <b-row class="justify-content-center">
-                <b-col>
+                <b-col style="padding-left:5rem;padding-right:5rem;">
                     <b-form class="text-center mt-3 mb-3">
-                        <b-button size="lg" style="background-color: #7289da; color: #fff;" class="px-5" :href="discordLoginUrl"><i class="fab fa-discord"></i> Login with Discord</b-button>
+                        <b-button size="lg" block style="background-color: #7289da; color: #fff;" class="px-5" :href="discordLoginUrl"><i class="fab fa-discord"></i> Login with Discord</b-button>
                     </b-form>
+                    <div class="text-center mt-5 mb-3">
+                        <b-alert :show="registrationFormSuccessMessage" variant="success">{{ registrationFormSuccessMessage }}</b-alert>
+                        <b-collapse id="collapse-login-form" accordion="login-form" visible>
+                            <b-form @submit="onSubmitLoginForm">
+                                <b-alert :show="false" variant="danger">ERRORS</b-alert>
+                                <b-form-group label-for="input-email">
+                                    <b-form-input
+                                            type="email"
+                                            id="input-email"
+                                            v-model="loginForm.email"
+                                            required
+                                            placeholder="Email"
+                                    ></b-form-input>
+                                </b-form-group>
+                                <b-form-group label-for="input-password">
+                                    <b-form-input
+                                            type="password"
+                                            id="input-password"
+                                            v-model="loginForm.password"
+                                            required
+                                            placeholder="Password"
+                                    ></b-form-input>
+                                </b-form-group>
+                                <b-button type="submit" size="lg" block variant="primary" class="px-5"><i class="fas fa-unlock-alt"></i> Login</b-button>
+                                <p class="mt-2 mb-0" style="cursor: pointer" v-b-toggle.collapse-registration-form>I'm not registered yet.</p>
+                            </b-form>
+                        </b-collapse>
+                        <b-collapse id="collapse-registration-form" accordion="login-form">
+                            <b-form @submit="onSubmitRegistrationForm">
+                                <b-alert :show="registrationFormErrorsGlobal" variant="danger">
+                                    {{ registrationFormErrorsGlobal }}
+                                </b-alert>
+                                <b-form-group :invalid-feedback="registrationFormErrorsViolations.email" :state="registrationFormErrorsViolations.email === null ? null : 'invalid'">
+                                    <b-form-input
+                                            type="email"
+                                            id="input-registration-email"
+                                            v-model="registrationForm.email"
+                                            :state="registrationFormErrorsViolations.email === null ? null : 'invalid'"
+                                            required
+                                            placeholder="Email"
+                                    ></b-form-input>
+                                </b-form-group>
+                                <b-form-group :invalid-feedback="registrationFormErrorsViolations.password" :state="registrationFormErrorsViolations.password === null ? null : 'invalid'">
+                                    <b-input-group>
+                                        <b-form-input
+                                                :type="registrationFormPasswordVisible ? 'text' : 'password'"
+                                                id="input-registration-password"
+                                                v-model="registrationForm.password"
+                                                :state="registrationFormErrorsViolations.password === null ? null : 'invalid'"
+                                                required
+                                                placeholder="Password"
+                                        ></b-form-input>
+                                        <b-input-group-append>
+                                            <b-button variant="info" v-b-tooltip.hover :title="registrationFormPasswordVisible ? 'Hide password' : 'Show password'" @click="registrationFormPasswordVisible = !registrationFormPasswordVisible"><i :class="{'fas fa-eye': registrationFormPasswordVisible, 'fas fa-eye-slash': !registrationFormPasswordVisible}"></i></b-button>
+                                        </b-input-group-append>
+                                    </b-input-group>
+                                </b-form-group>
+                                <b-button type="submit" size="lg" block variant="primary" class="px-5"><i class="fas fa-id-card"></i> Register</b-button>
+                                <p class="mt-2 mb-0" style="cursor: pointer" v-b-toggle.collapse-login-form>I'm already registered.</p>
+                            </b-form>
+                        </b-collapse>
+                    </div>
+
                 </b-col>
             </b-row>
         </b-modal>
@@ -276,6 +339,14 @@ export default {
             canCountStatistics: false,
             user: null,
             userStated: false,
+            loginForm: {email: null, password: null},
+            registrationForm: {email: null, password: null},
+            loginFormShow: true,
+            registrationFormShow: false,
+            registrationFormSuccessMessage: null,
+            registrationFormPasswordVisible: false,
+            registrationFormErrorsGlobal: null,
+            registrationFormErrorsViolations: {email: null, password: null},
         };
     },
     created() {
@@ -350,7 +421,61 @@ export default {
                 percent = (midY - windowTopY) / (windowBottomY - windowTopY);
             }
             return percent;
-        }
+        },
+        onSubmitLoginForm(ev) {
+            ev.preventDefault();
+
+            this.showError = false;
+            this.errorMessage = 'An error has been occurred. Please try again in a moment.';
+            this.submitDisabled = true;
+            axios({
+                method: 'POST',
+                url: '/api/login/check-form-login',
+                data: {
+                    _username: this.loginForm.email,
+                    _password: this.loginForm.password,
+                },
+            }).then(response => {
+                // this.submitDisabled = false;
+                // toastr.success('Your fleet has been successfully updated!');
+            }).catch(err => {
+                // this.checkAuth(err.response);
+                // this.submitDisabled = false;
+                // this.showError = true;
+                // if (err.response.data.errorMessage) {
+                //     this.errorMessage = err.response.data.errorMessage;
+                // } else if (err.response.data.error === 'invalid_form') {
+                //     this.errorMessage = err.response.data.formErrors.join("\n");
+                // }
+            });
+        },
+        onSubmitRegistrationForm(ev) {
+            ev.preventDefault();
+
+            this.registrationFormSuccessMessage = null;
+            this.registrationFormErrorsGlobal = null;
+            this.registrationFormErrorsViolations = {email: null, password: null};
+            axios({
+                method: 'POST',
+                url: '/api/register',
+                data: {
+                    email: this.registrationForm.email,
+                    password: this.registrationForm.password,
+                },
+            }).then(response => {
+                this.$root.$emit('bv::toggle::collapse', 'collapse-login-form');
+                this.registrationFormSuccessMessage = 'Well done! An email has been sent to you to confirm your registration.';
+            }).catch(err => {
+                if (err.response.data.formErrors) {
+                    for (let violation of err.response.data.formErrors.violations) {
+                        this.$set(this.registrationFormErrorsViolations, violation.propertyPath, violation.title);
+                    }
+                    console.log(this.registrationFormErrorsViolations);
+                } else {
+                    this.registrationFormErrorsGlobal = 'An unexpected error has been occurred. Please try again in a moment.';
+                }
+            });
+        },
     }
 }
 </script>

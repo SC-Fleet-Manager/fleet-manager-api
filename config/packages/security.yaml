@@ -1,4 +1,7 @@
 security:
+    encoders:
+        App\Entity\User:
+            algorithm: sodium
     providers:
         oauth_user_provider:
             id: App\Security\OAuthUserProvider
@@ -18,6 +21,9 @@ security:
                 lifetime: 604800 # 1 week
                 path: /
                 always_remember_me: true
+            form_login:
+                login_path: /login
+                check_path: /api/login/check-form-login
             oauth:
                 resource_owners:
                     discord: /login/check-discord
