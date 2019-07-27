@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {% if error is defined %}
+        {% if error == 'not_exist' %}
+            <div class="alert alert-danger">Sorry, this confirmation does not exist. Please check the web address in your email message.</div>
+        {% elseif error == 'already_confirmed' %}
+            <div class="alert alert-danger">Sorry, you have already confirmed your registration. Feel free to <a href="/">login</a> to the Fleet Manager.</div>
+        {% else %}
+            <div class="alert alert-danger">Sorry, an unexpected error has occurred. Please retry in a moment.</div>
+        {% endif %}
+    {% else %}
+        <div class="alert alert-success">Congrats! You are now confirmed on Fleet Manager. You can now <a href="/">login</a> to the Fleet Manager.</div>
+    {% endif %}
+{% endblock %}
+
+{% block javascripts %}{% endblock %}

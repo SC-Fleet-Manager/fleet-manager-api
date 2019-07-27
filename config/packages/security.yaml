@@ -1,7 +1,9 @@
 security:
     encoders:
         App\Entity\User:
-            algorithm: sodium
+            algorithm: argon2i
+            memory_cost:  16384 # 16 MiB
+            time_cost:    3
     providers:
         oauth_user_provider:
             id: App\Security\OAuthUserProvider

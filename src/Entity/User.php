@@ -45,6 +45,28 @@ class User implements UserInterface
      * @var string
      *
      * @ORM\Column(type="string", length=127, nullable=true)
+     */
+    private $email;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean", options={"default":false})
+     */
+    private $emailConfirmed;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"profile", "me:read"})
+     */
+    private $nickname;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=127, nullable=true)
      * @Groups({"must_not_be_exposed"})
      */
     private $password;
@@ -80,6 +102,13 @@ class User implements UserInterface
     private $apiToken;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=64, options={"fixed":true}, nullable=true)
+     */
+    private $registrationConfirmationToken;
+
+    /**
      * @var Citizen
      *
      * @ORM\OneToOne(targetEntity="App\Entity\Citizen", cascade={"persist"})
@@ -113,6 +142,7 @@ class User implements UserInterface
     public function __construct(?UuidInterface $id = null)
     {
         $this->id = $id;
+        $this->emailConfirmed = false;
         $this->publicChoice = self::PUBLIC_CHOICE_ORGANIZATION;
         $this->createdAt = new \DateTimeImmutable();
     }
@@ -125,6 +155,18 @@ class User implements UserInterface
     public function getRoles(): array
     {
         return ['ROLE_USER'];
+    }
+
+    public function getUsername(): string
+    {
+        return $this->username;
+    }
+
+    public function setUsername(string $username): self
+    {
+        $this->username = $username;
+
+        return $this;
     }
 
     public function getPassword(): ?string
@@ -144,28 +186,44 @@ class User implements UserInterface
         return null;
     }
 
-    /**
-     * @Groups({"profile", "me:read"})
-     */
     public function getNickname(): ?string
     {
-        return $this->username;
+        return $this->nickname;
     }
 
-    public function getUsername(): ?string
+    public function setNickname(string $nickname): self
     {
-        return $this->discordId;
+        $this->nickname = $nickname;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(?string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function isEmailConfirmed(): bool
+    {
+        return $this->emailConfirmed;
+    }
+
+    public function setEmailConfirmed(bool $emailConfirmed): self
+    {
+        $this->emailConfirmed = $emailConfirmed;
+
+        return $this;
     }
 
     public function eraseCredentials(): void
     {
-    }
-
-    public function setUsername(string $username): self
-    {
-        $this->username = $username;
-
-        return $this;
     }
 
     public function getDiscordId(): ?string
@@ -212,6 +270,18 @@ class User implements UserInterface
     public function setApiToken(string $apiToken): self
     {
         $this->apiToken = $apiToken;
+
+        return $this;
+    }
+
+    public function getRegistrationConfirmationToken(): ?string
+    {
+        return $this->registrationConfirmationToken;
+    }
+
+    public function setRegistrationConfirmationToken(?string $registrationConfirmationToken): self
+    {
+        $this->registrationConfirmationToken = $registrationConfirmationToken;
 
         return $this;
     }

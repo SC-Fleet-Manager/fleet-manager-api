@@ -32,14 +32,12 @@ class OAuthUserProvider extends BaseProvider
     private function persistOAuthInfos(PathUserResponse $response): void
     {
         $user = $this->userRepository->getByDiscordId($response->getUsername());
-        if ($user === null) {
-            $user = $this->userRepository->getByUsername($response->getNickname());
-        }
 
         if ($user !== null) {
             $user->setDiscordId($response->getUsername());
             $user->setDiscordTag($response->getData()[$response->getPath('discordtag')] ?? null);
             $user->setUsername($response->getNickname());
+            $user->setNickname($response->getNickname());
             if (!$user->getApiToken()) {
                 $user->setApiToken(User::generateToken());
             }
@@ -65,6 +63,7 @@ class OAuthUserProvider extends BaseProvider
         $newUser->setDiscordId($discordId);
         $newUser->setDiscordTag($discordTag);
         $newUser->setUsername($username);
+        $newUser->setNickname($username);
         $newUser->setToken(User::generateToken());
         $newUser->setApiToken(User::generateToken());
 

@@ -12,6 +12,7 @@ services:
         public: false
         bind:
             $profileLinkAccountLogger: '@monolog.logger.profile_link_account'
+            $registrationFromAddress: 'noreply@fleet-manager.space'
 
     App\:
         resource: '../src/*'

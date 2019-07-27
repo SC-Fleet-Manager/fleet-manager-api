@@ -48,9 +48,9 @@ FROM php:7.3-fpm-alpine as build_php
 ARG ENV=prod
 ARG DUMP_ENV=0
 
-RUN apk add --no-cache --virtual .deps icu-libs zlib libintl libzip
-RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS libxml2-dev icu-dev libzip-dev \
-    && docker-php-ext-install intl zip pdo_mysql \
+RUN apk add --no-cache --virtual .deps icu-libs zlib libintl libzip libxml2 libxslt
+RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS icu-dev libzip-dev libxml2-dev libxslt-dev \
+    && docker-php-ext-install intl zip pdo_mysql xml xsl \
     && pecl install redis \
     && apk del .build-deps \
     && docker-php-ext-enable --ini-name 05-opcache.ini opcache \
@@ -62,6 +62,9 @@ COPY docker/php/entrypoint.sh /usr/local/bin/docker-app-entrypoint
 RUN chmod +x /usr/local/bin/docker-app-entrypoint
 
 WORKDIR /app
+COPY assets/css assets/css
+COPY assets/fonts assets/fonts
+COPY assets/img assets/img
 COPY bin/console bin/
 COPY config config
 COPY public/index.php public/
@@ -78,9 +81,9 @@ RUN if [ ${DUMP_ENV} == 0 ]; then echo "<?php return ['APP_ENV'=>'${ENV}'];" > .
     chown www-data .env*; \
     sed -i "s/^APP_ENV=.*$/APP_ENV=${ENV}/" .env; \
     if [ -e .env.local ]; then sed -i "s/^APP_ENV=.*$/APP_ENV=${ENV}/" .env.local; fi
-RUN mkdir -p public/bundles && bin/console assets:install \
+RUN mkdir -p public/bundles && bin/console assets:install -v \
     && rm -fr var/cache/* \
-    && bin/console cache:warmup \
+    && bin/console cache:warmup -v \
     && mkdir -p var/log && chown -R www-data var/log
 
 ENV BUILD_ENV prod

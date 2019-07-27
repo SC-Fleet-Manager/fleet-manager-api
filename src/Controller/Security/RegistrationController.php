@@ -4,11 +4,13 @@ namespace App\Controller\Security;
 
 use App\Entity\User;
 use App\Form\Dto\Registration;
+use App\Message\Registration\SendRegistrationConfirmationMail;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -20,13 +22,20 @@ class RegistrationController extends AbstractController
     private $entityManager;
     private $passwordEncoder;
     private $serializer;
+    private $bus;
 
-    public function __construct(ValidatorInterface $validator, EntityManagerInterface $entityManager, UserPasswordEncoderInterface $passwordEncoder, SerializerInterface $serializer)
-    {
+    public function __construct(
+        ValidatorInterface $validator,
+        EntityManagerInterface $entityManager,
+        UserPasswordEncoderInterface $passwordEncoder,
+        SerializerInterface $serializer,
+        MessageBusInterface $bus
+    ) {
         $this->validator = $validator;
         $this->entityManager = $entityManager;
         $this->passwordEncoder = $passwordEncoder;
         $this->serializer = $serializer;
+        $this->bus = $bus;
     }
 
     /**
@@ -34,6 +43,7 @@ class RegistrationController extends AbstractController
      */
     public function __invoke(Request $request): Response
     {
+        /** @var Registration $registration */
         $registration = $this->serializer->deserialize($request->getContent(), Registration::class, $request->getContentType());
         $errors = $this->validator->validate($registration);
 
@@ -44,16 +54,18 @@ class RegistrationController extends AbstractController
             ], 400);
         }
 
-        $newUser = new User(Uuid::uuid4());
-        $newUser->setUsername($registration->email);
-        $newUser->setToken(User::generateToken());
-        $newUser->setApiToken(User::generateToken());
+        $newUser = (new User(Uuid::uuid4()))
+            ->setUsername($registration->email)
+            ->setEmail($registration->email)
+            ->setToken(User::generateToken())
+            ->setApiToken(User::generateToken())
+            ->setRegistrationConfirmationToken(User::generateToken());
         $newUser->setPassword($this->passwordEncoder->encodePassword($newUser, $registration->password));
-        unset($registration);
+        unset($registration); // prevent leak password
         $this->entityManager->persist($newUser);
         $this->entityManager->flush();
 
-        // TODO : send mail for confirmation email
+        $this->bus->dispatch(new SendRegistrationConfirmationMail($newUser->getId()));
 
         return $this->json(null, 204);
     }
