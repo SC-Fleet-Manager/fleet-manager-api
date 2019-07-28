@@ -31,7 +31,7 @@ class ProfileControllerTest extends WebTestCase
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArraySubset([
             'id' => 'd92e229e-e743-4583-905a-e02c57eacfe0',
-            'username' => '123456789001',
+            'username' => 'Ioni',
             'token' => '4682bc58961264de31d38bf6af18cfe717ab2ba59f34b906668b4d7c0ca65b33',
             'citizen' => [
                 'id' => '7275c744-6a69-43c2-9ebf-1491a104d5e7',

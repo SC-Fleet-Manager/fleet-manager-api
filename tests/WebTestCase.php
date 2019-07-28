@@ -52,4 +52,9 @@ class WebTestCase extends BaseWebTestCase
         $this->client->getCookieJar()->flushExpiredCookies();
         $this->client->getCookieJar()->set(new Cookie($session->getName(), $session->getId()));
     }
+
+    protected function debugHtml(): void
+    {
+        file_put_contents(__DIR__.'/../var/debug.html', $this->client->getResponse()->getContent());
+    }
 }

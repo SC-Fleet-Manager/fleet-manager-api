@@ -78,7 +78,7 @@ class LinkAccountController extends AbstractController
         $user = $this->security->getUser();
 
         $this->profileLinkAccountLogger->info('Link account submitted.',
-            ['handleSC' => $linkAccount->handleSC, 'userId' => $user->getId(), 'username' => $user->getNickname()]);
+            ['handleSC' => $linkAccount->handleSC, 'userId' => $user->getId(), 'nickname' => $user->getNickname()]);
 
         if (!$form->isValid()) {
             $formErrors = $form->getErrors(true);
@@ -88,7 +88,7 @@ class LinkAccountController extends AbstractController
             }
 
             $this->profileLinkAccountLogger->error('Invalid form.',
-                ['errors' => $errors, 'userId' => $user->getId(), 'username' => $user->getNickname()]);
+                ['errors' => $errors, 'userId' => $user->getId(), 'nickname' => $user->getNickname()]);
 
             return $this->json([
                 'error' => 'invalid_form',
@@ -100,11 +100,11 @@ class LinkAccountController extends AbstractController
             $citizenInfos = $this->citizenInfosProvider->retrieveInfos(new HandleSC($linkAccount->handleSC), false);
 
             $this->profileLinkAccountLogger->info('Retrieve citizens infos.',
-                ['infos' => $this->serializer->serialize($citizenInfos, 'json'), 'handleSC' => $linkAccount->handleSC, 'userId' => $user->getId(), 'username' => $user->getNickname()]);
+                ['infos' => $this->serializer->serialize($citizenInfos, 'json'), 'handleSC' => $linkAccount->handleSC, 'userId' => $user->getId(), 'nickname' => $user->getNickname()]);
 
             if (!$this->isTokenValid($user, $citizenInfos)) {
                 $this->profileLinkAccountLogger->error('Token not valid.',
-                    ['infos' => $this->serializer->serialize($citizenInfos, 'json'), 'handleSC' => $linkAccount->handleSC, 'userId' => $user->getId(), 'username' => $user->getNickname(), 'userToken' => $user->getToken()]);
+                    ['infos' => $this->serializer->serialize($citizenInfos, 'json'), 'handleSC' => $linkAccount->handleSC, 'userId' => $user->getId(), 'nickname' => $user->getNickname(), 'userToken' => $user->getToken()]);
 
                 return $this->json([
                     'error' => 'invalid_form',
@@ -114,7 +114,7 @@ class LinkAccountController extends AbstractController
             $this->attachCitizenToUser($user, $citizenInfos);
         } catch (NotFoundHandleSCException $e) {
             $this->profileLinkAccountLogger->error('Citizen infos not found.',
-                ['exception' => $e, 'handleSC' => $linkAccount->handleSC, 'userId' => $user->getId(), 'username' => $user->getNickname()]);
+                ['exception' => $e, 'handleSC' => $linkAccount->handleSC, 'userId' => $user->getId(), 'nickname' => $user->getNickname()]);
 
             return $this->json([
                 'error' => 'not_found_handle',
@@ -123,7 +123,7 @@ class LinkAccountController extends AbstractController
         }
 
         $this->profileLinkAccountLogger->info('Link success.',
-            ['handleSC' => $linkAccount->handleSC, 'userId' => $user->getId(), 'username' => $user->getNickname()]);
+            ['handleSC' => $linkAccount->handleSC, 'userId' => $user->getId(), 'nickname' => $user->getNickname()]);
 
         return $this->json(null, 204);
     }
@@ -136,11 +136,11 @@ class LinkAccountController extends AbstractController
         $isNew = $citizen === null;
         if ($isNew) {
             $this->profileLinkAccountLogger->info('New citizen.',
-                ['infos' => $citizenInfos, 'userId' => $user->getId(), 'username' => $user->getNickname()]);
+                ['infos' => $citizenInfos, 'userId' => $user->getId(), 'nickname' => $user->getNickname()]);
             $citizen = new Citizen(Uuid::uuid4());
         } else {
             $this->profileLinkAccountLogger->warning('Existing citizen.',
-                ['citizenId' => $citizen->getId(), 'citizenHandle' => $citizen->getActualHandle()->getHandle(), 'infos' => $citizenInfos, 'userId' => $user->getId(), 'username' => $user->getNickname()]);
+                ['citizenId' => $citizen->getId(), 'citizenHandle' => $citizen->getActualHandle()->getHandle(), 'infos' => $citizenInfos, 'userId' => $user->getId(), 'nickname' => $user->getNickname()]);
 
             /** @var User|null $userWithThatCitizen */
             $userWithThatCitizen = $this->userRepository->findOneBy(['citizen' => $citizen]);
@@ -151,7 +151,7 @@ class LinkAccountController extends AbstractController
                     'citizenHandle' => $citizen->getActualHandle(),
                     'infos' => $citizenInfos,
                     'userId' => $user->getId(),
-                    'username' => $user->getNickname(),
+                    'nickname' => $user->getNickname(),
                     'oldUserId' => $userWithThatCitizen->getId(),
                     'oldUserNickname' => $userWithThatCitizen->getNickname(),
                 ]);
@@ -159,7 +159,7 @@ class LinkAccountController extends AbstractController
                 $this->entityManager->flush();
             } else {
                 $this->profileLinkAccountLogger->warning('No actual user that has this citizen found.',
-                    ['citizenId' => $citizen->getId(), 'citizenHandle' => $citizen->getActualHandle()->getHandle(), 'infos' => $citizenInfos, 'userId' => $user->getId(), 'username' => $user->getNickname()]);
+                    ['citizenId' => $citizen->getId(), 'citizenHandle' => $citizen->getActualHandle()->getHandle(), 'infos' => $citizenInfos, 'userId' => $user->getId(), 'nickname' => $user->getNickname()]);
             }
         }
 
@@ -174,7 +174,7 @@ class LinkAccountController extends AbstractController
         $this->citizenRefresher->refreshCitizen($citizen, $citizenInfos);
 
         $this->profileLinkAccountLogger->info('Set citizen to user.',
-            ['citizenId' => $citizen->getId(), 'citizenHandle' => $citizen->getActualHandle()->getHandle(), 'infos' => $citizenInfos, 'userId' => $user->getId(), 'username' => $user->getNickname()]);
+            ['citizenId' => $citizen->getId(), 'citizenHandle' => $citizen->getActualHandle()->getHandle(), 'infos' => $citizenInfos, 'userId' => $user->getId(), 'nickname' => $user->getNickname()]);
 
         $this->entityManager->flush();
     }

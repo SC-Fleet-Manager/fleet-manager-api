@@ -11,7 +11,7 @@ class Registration
      *
      * @Assert\NotBlank(message="Please enter your email.")
      * @Assert\Email()
-     * @App\Validator\Constraints\UniqueField(entityClass="App\Entity\User", field="username", message="This username is taken. Please choose another.");
+     * @App\Validator\Constraints\UniqueField(entityClass="App\Entity\User", field="email", message="This email is already taken. Please choose another.");
      */
     public $email;
 

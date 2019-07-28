@@ -39,6 +39,8 @@ class FleetUsersControllerTest extends WebTestCase
     /**
      * @group functional
      * @group organization_fleet
+     *
+     * @group toto
      */
     public function testOrgaFleetsUsersPrivateAuth(): void
     {
@@ -46,6 +48,9 @@ class FleetUsersControllerTest extends WebTestCase
         $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/flk/users/Cutlass%20Black', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
+
+        $this->debugHtml();
+
 
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);

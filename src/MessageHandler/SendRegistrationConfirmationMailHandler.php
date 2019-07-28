@@ -33,7 +33,7 @@ class SendRegistrationConfirmationMailHandler implements MessageHandlerInterface
 
         $email = (new TemplatedEmail())
             ->from(new NamedAddress($this->registrationFromAddress, 'Fleet Manager'))
-            ->to($user->getUsername())
+            ->to($user->getEmail())
             ->subject('Fleet Manager : Registration confirmation')
             ->textTemplate('emails/registration_confirmation.txt.twig')
             ->htmlTemplate('emails/registration_confirmation.html.twig')
