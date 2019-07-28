@@ -258,7 +258,7 @@
                         <b-alert :show="registrationFormSuccessMessage" variant="success">{{ registrationFormSuccessMessage }}</b-alert>
                         <b-collapse id="collapse-login-form" accordion="login-form" visible>
                             <b-form @submit="onSubmitLoginForm">
-                                <b-alert :show="false" variant="danger">ERRORS</b-alert>
+                                <b-alert :show="loginFormErrorsGlobal" variant="danger">{{ loginFormErrorsGlobal }}</b-alert>
                                 <b-form-group label-for="input-email">
                                     <b-form-input
                                             type="email"
@@ -283,9 +283,7 @@
                         </b-collapse>
                         <b-collapse id="collapse-registration-form" accordion="login-form">
                             <b-form @submit="onSubmitRegistrationForm">
-                                <b-alert :show="registrationFormErrorsGlobal" variant="danger">
-                                    {{ registrationFormErrorsGlobal }}
-                                </b-alert>
+                                <b-alert :show="registrationFormErrorsGlobal" variant="danger">{{ registrationFormErrorsGlobal }}</b-alert>
                                 <b-form-group :invalid-feedback="registrationFormErrorsViolations.email" :state="registrationFormErrorsViolations.email === null ? null : 'invalid'">
                                     <b-form-input
                                             type="email"
@@ -325,6 +323,7 @@
 
 <script>
 import axios from 'axios';
+import qs from 'qs';
 import AnimatedNumber from 'animated-number-vue';
 
 export default {
@@ -342,6 +341,7 @@ export default {
             loginForm: {email: null, password: null},
             registrationForm: {email: null, password: null},
             loginFormShow: true,
+            loginFormErrorsGlobal: null,
             registrationFormShow: false,
             registrationFormSuccessMessage: null,
             registrationFormPasswordVisible: false,
@@ -425,28 +425,28 @@ export default {
         onSubmitLoginForm(ev) {
             ev.preventDefault();
 
-            this.showError = false;
-            this.errorMessage = 'An error has been occurred. Please try again in a moment.';
-            this.submitDisabled = true;
+            this.registrationFormSuccessMessage = null;
+            this.registrationFormErrorsGlobal = null;
+            this.registrationFormErrorsViolations = {email: null, password: null};
+            this.loginFormErrorsGlobal = null;
             axios({
                 method: 'POST',
                 url: '/api/login/check-form-login',
-                data: {
-                    _username: this.loginForm.email,
-                    _password: this.loginForm.password,
+                data: qs.stringify({
+                    '_username': this.loginForm.email,
+                    '_password': this.loginForm.password,
+                }),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
                 },
             }).then(response => {
-                // this.submitDisabled = false;
-                // toastr.success('Your fleet has been successfully updated!');
+                window.location = response.data.redirectTo;
             }).catch(err => {
-                // this.checkAuth(err.response);
-                // this.submitDisabled = false;
-                // this.showError = true;
-                // if (err.response.data.errorMessage) {
-                //     this.errorMessage = err.response.data.errorMessage;
-                // } else if (err.response.data.error === 'invalid_form') {
-                //     this.errorMessage = err.response.data.formErrors.join("\n");
-                // }
+                if (err.response.data.errorMessage) {
+                    this.loginFormErrorsGlobal = err.response.data.errorMessage;
+                } else {
+                    this.loginFormErrorsGlobal = 'An unexpected error has been occurred. Please try again in a moment.';
+                }
             });
         },
         onSubmitRegistrationForm(ev) {
@@ -455,6 +455,7 @@ export default {
             this.registrationFormSuccessMessage = null;
             this.registrationFormErrorsGlobal = null;
             this.registrationFormErrorsViolations = {email: null, password: null};
+            this.loginFormErrorsGlobal = null;
             axios({
                 method: 'POST',
                 url: '/api/register',
@@ -470,7 +471,6 @@ export default {
                     for (let violation of err.response.data.formErrors.violations) {
                         this.$set(this.registrationFormErrorsViolations, violation.propertyPath, violation.title);
                     }
-                    console.log(this.registrationFormErrorsViolations);
                 } else {
                     this.registrationFormErrorsGlobal = 'An unexpected error has been occurred. Please try again in a moment.';
                 }

@@ -45,6 +45,7 @@ class User implements UserInterface
      * @var string
      *
      * @ORM\Column(type="string", length=127, nullable=true)
+     * @Groups({"profile"})
      */
     private $email;
 

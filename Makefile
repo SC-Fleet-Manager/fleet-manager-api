@@ -20,13 +20,15 @@ help:
 ##
 ##Utilities
 ##---------------------------------------------------------------------------
-.PHONY: yarn yi yu composer ci cu console cc
+.PHONY: yarn yi yu watch composer ci cu console cc
 yarn: 									## launch an ephemeral node container for executing yarn with arbitrary args c="<args>"
 	$(EXEC_YARN) $(c)
 yi:										## yarn install
 	$(EXEC_YARN) install
 yu:										## yarn upgrade
 	$(EXEC_YARN) upgrade
+watch:									## yarn watch
+	$(EXEC_YARN) watch
 composer: 								## exec PHP composer with arbitrary args c="<args>"
 	$(EXEC_COMPOSER) $(c)
 ci:										## composer install
