@@ -11,7 +11,6 @@ class FormLoginFailureHandler implements AuthenticationFailureHandlerInterface
 {
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
-        dump($exception);
         return new JsonResponse([
             'error' => $exception->getMessageKey(),
             'errorMessage' => $exception->getMessage(),

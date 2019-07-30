@@ -124,3 +124,15 @@ App\Entity\User:
         publicChoice: 'orga'
         createdAt: '<(new \DateTimeImmutable("2019-04-12 11:22:33"))>'
         lastConnectedAt: '<(new \DateTimeImmutable("2019-04-13 22:33:44"))>'
+    user_alreadyconfirmed@example.com:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("c869de61-1a88-4aaa-a2f9-9b4b116afe85"))>']
+        username: 'alreadyconfirmed@example.com'
+        email: 'alreadyconfirmed@example.com'
+        emailConfirmed: true
+        password: '123456'
+        token: 'tqDuFvNbbtxdPYvuYxSAIZMsRMGMT1wq4RTQ0a81I3FhsagIRcw1gyQGoccKymcL'
+        apiToken: '02ufKIp1d7DmnkJ0XZBSCHxxSNgnEB1Kii1jldA1X56OVmRcWLiJDKVx8XD0oTrW'
+        registrationConfirmationToken: 'ImDM9wv50tfoM9hfJAick4MmAvXpPaGadyqWC5nDUx2UVgGIq8vkNnu36HeoSm39'
+        publicChoice: 'orga'
+        createdAt: '<(new \DateTimeImmutable("2019-04-13 11:22:33"))>'
+        lastConnectedAt: '<(new \DateTimeImmutable("2019-04-14 22:33:44"))>'
