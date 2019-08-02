@@ -256,6 +256,7 @@
                     </b-form>
                     <div class="text-center mt-5 mb-3">
                         <b-alert :show="registrationFormSuccessMessage" variant="success">{{ registrationFormSuccessMessage }}</b-alert>
+                        <b-alert :show="lostPasswordFormSuccessMessage" variant="success">{{ lostPasswordFormSuccessMessage }}</b-alert>
                         <b-collapse id="collapse-login-form" accordion="login-form" visible>
                             <b-form @submit="onSubmitLoginForm">
                                 <b-alert :show="loginFormErrorsGlobal" variant="danger">{{ loginFormErrorsGlobal }}</b-alert>
@@ -276,6 +277,7 @@
                                             required
                                             placeholder="Password"
                                     ></b-form-input>
+                                    <p class="mt-2 mb-0" style="cursor: pointer" v-b-toggle.collapse-lost-password-form>I lost my password.</p>
                                 </b-form-group>
                                 <b-button type="submit" size="lg" block variant="primary" class="px-5"><i class="fas fa-unlock-alt"></i> Login</b-button>
                                 <p class="mt-2 mb-0" style="cursor: pointer" v-b-toggle.collapse-registration-form>I'm not registered yet.</p>
@@ -313,8 +315,24 @@
                                 <p class="mt-2 mb-0" style="cursor: pointer" v-b-toggle.collapse-login-form>I'm already registered.</p>
                             </b-form>
                         </b-collapse>
+                        <b-collapse id="collapse-lost-password-form" accordion="login-form">
+                            <b-form @submit="onSubmitLostPasswordForm">
+                                <b-alert :show="lostPasswordFormErrorsGlobal" variant="danger">{{ lostPasswordFormErrorsGlobal }}</b-alert>
+                                <b-form-group :invalid-feedback="lostPasswordFormErrorsViolations.email" :state="lostPasswordFormErrorsViolations.email === null ? null : 'invalid'">
+                                    <b-form-input
+                                            type="email"
+                                            id="input-lost-password-email"
+                                            v-model="lostPasswordForm.email"
+                                            :state="lostPasswordFormErrorsViolations.email === null ? null : 'invalid'"
+                                            required
+                                            placeholder="Email"
+                                    ></b-form-input>
+                                </b-form-group>
+                                <b-button type="submit" size="lg" block variant="primary" class="px-5"><i class="fas fa-envelope"></i> Send me a new password</b-button>
+                                <p class="mt-2 mb-0" style="cursor: pointer" v-b-toggle.collapse-login-form>I remember my password.</p>
+                            </b-form>
+                        </b-collapse>
                     </div>
-
                 </b-col>
             </b-row>
         </b-modal>
@@ -340,6 +358,7 @@ export default {
             userStated: false,
             loginForm: {email: null, password: null},
             registrationForm: {email: null, password: null},
+            lostPasswordForm: {email: null},
             loginFormShow: true,
             loginFormErrorsGlobal: null,
             registrationFormShow: false,
@@ -347,6 +366,9 @@ export default {
             registrationFormPasswordVisible: false,
             registrationFormErrorsGlobal: null,
             registrationFormErrorsViolations: {email: null, password: null},
+            lostPasswordFormSuccessMessage: null,
+            lostPasswordFormErrorsGlobal: null,
+            lostPasswordFormErrorsViolations: {email: null},
         };
     },
     created() {
@@ -425,6 +447,9 @@ export default {
         onSubmitLoginForm(ev) {
             ev.preventDefault();
 
+            this.lostPasswordFormSuccessMessage = null;
+            this.lostPasswordFormErrorsGlobal = null;
+            this.lostPasswordFormErrorsViolations = {email: null};
             this.registrationFormSuccessMessage = null;
             this.registrationFormErrorsGlobal = null;
             this.registrationFormErrorsViolations = {email: null, password: null};
@@ -452,6 +477,9 @@ export default {
         onSubmitRegistrationForm(ev) {
             ev.preventDefault();
 
+            this.lostPasswordFormSuccessMessage = null;
+            this.lostPasswordFormErrorsGlobal = null;
+            this.lostPasswordFormErrorsViolations = {email: null};
             this.registrationFormSuccessMessage = null;
             this.registrationFormErrorsGlobal = null;
             this.registrationFormErrorsViolations = {email: null, password: null};
@@ -473,6 +501,35 @@ export default {
                     }
                 } else {
                     this.registrationFormErrorsGlobal = 'An unexpected error has been occurred. Please try again in a moment.';
+                }
+            });
+        },
+        onSubmitLostPasswordForm(ev) {
+            ev.preventDefault();
+
+            this.lostPasswordFormSuccessMessage = null;
+            this.lostPasswordFormErrorsGlobal = null;
+            this.lostPasswordFormErrorsViolations = {email: null};
+            this.registrationFormSuccessMessage = null;
+            this.registrationFormErrorsGlobal = null;
+            this.registrationFormErrorsViolations = {email: null, password: null};
+            this.loginFormErrorsGlobal = null;
+            axios({
+                method: 'POST',
+                url: '/api/lost-password',
+                data: {
+                    email: this.lostPasswordForm.email,
+                },
+            }).then(response => {
+                this.$root.$emit('bv::toggle::collapse', 'collapse-login-form');
+                this.lostPasswordFormSuccessMessage = 'If we recognize this email, we will send to you the instructions to create a new password.';
+            }).catch(err => {
+                if (err.response.data.formErrors) {
+                    for (let violation of err.response.data.formErrors.violations) {
+                        this.$set(this.lostPasswordFormErrorsViolations, violation.propertyPath, violation.title);
+                    }
+                } else {
+                    this.lostPasswordFormErrorsGlobal = 'An unexpected error has been occurred. Please try again in a moment.';
                 }
             });
         },

@@ -75,6 +75,20 @@ class User implements UserInterface
     /**
      * @var string
      *
+     * @ORM\Column(type="string", length=64, options={"fixed":true}, nullable=true)
+     */
+    private $lostPasswordToken;
+
+    /**
+     * @var \DateTimeImmutable
+     *
+     * @ORM\Column(type="datetimetz_immutable", nullable=true)
+     */
+    private $lostPasswordRequestedAt;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(type="string", length=255, unique=false, nullable=true)
      */
     private $discordId;
@@ -180,6 +194,35 @@ class User implements UserInterface
         $this->password = $password;
 
         return $this;
+    }
+
+    public function getLostPasswordToken(): ?string
+    {
+        return $this->lostPasswordToken;
+    }
+
+    public function setLostPasswordToken(?string $lostPasswordToken): self
+    {
+        $this->lostPasswordToken = $lostPasswordToken;
+
+        return $this;
+    }
+
+    public function getLostPasswordRequestedAt(): ?\DateTimeImmutable
+    {
+        return $this->lostPasswordRequestedAt;
+    }
+
+    public function setLostPasswordRequestedAt(?\DateTimeImmutable $lostPasswordRequestedAt): self
+    {
+        $this->lostPasswordRequestedAt = $lostPasswordRequestedAt;
+
+        return $this;
+    }
+
+    public function canBeLostPasswordRequested(): bool
+    {
+        return $this->lostPasswordRequestedAt === null || $this->lostPasswordRequestedAt <= new \DateTimeImmutable('-1 minute');
     }
 
     public function getSalt(): ?string

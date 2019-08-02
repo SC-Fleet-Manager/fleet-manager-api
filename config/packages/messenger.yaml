@@ -6,3 +6,4 @@ framework:
 
         routing:
              'App\Message\Registration\SendRegistrationConfirmationMail': sync
+             'App\Message\Registration\SendLostPasswordRequestMail': sync

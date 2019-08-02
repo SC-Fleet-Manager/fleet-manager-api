@@ -8,7 +8,7 @@ ARG ENV=prod
 RUN if [ $ENV != 'prod' ]; then apk add --no-cache --virtual .deps zlib libzip; fi
 RUN if [ $ENV != 'prod' ]; then \
         apk add --no-cache --virtual .build-deps $PHPIZE_DEPS libzip-dev \
-        && docker-php-ext-install zip \
+        && docker-php-ext-install zip xsl \
         && apk del .build-deps; \
     fi
 
@@ -21,7 +21,7 @@ ENV COMPOSER_MEMORY_LIMIT -1
 ENV APP_ENV $ENV
 RUN composer global require "hirak/prestissimo:^0.3" --prefer-dist --no-progress --no-suggest --optimize-autoloader --classmap-authoritative --no-interaction; \
     if [ $ENV = 'prod' ]; then \
-        composer install --no-scripts --no-suggest --optimize-autoloader --classmap-authoritative --no-dev --prefer-dist --no-progress --no-interaction; \
+        composer install --no-scripts --no-suggest --ignore-platform-reqs --optimize-autoloader --classmap-authoritative --no-dev --prefer-dist --no-progress --no-interaction; \
         rm -rf vendor/*/*/docs; \
         find vendor -name *.md -exec rm -rf {} \; ; \
         find vendor -name LICENSE -exec rm -rf {} \; ; \
