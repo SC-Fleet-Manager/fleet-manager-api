@@ -225,6 +225,11 @@ class User implements UserInterface
         return $this->lostPasswordRequestedAt === null || $this->lostPasswordRequestedAt <= new \DateTimeImmutable('-1 minute');
     }
 
+    public function isLostPasswordRequestExpired(): bool
+    {
+        return $this->lostPasswordRequestedAt === null || $this->lostPasswordRequestedAt <= new \DateTimeImmutable('-15 minutes');
+    }
+
     public function getSalt(): ?string
     {
         return null;

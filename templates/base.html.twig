@@ -30,6 +30,8 @@
         <meta name="msapplication-TileImage" content="{{ asset('icons/ms-icon-144x144.png') }}">
         <meta name="theme-color" content="#ffffff">
 
+        {% block metas %}{% endblock %}
+
         {% block stylesheets %}
             <link rel="stylesheet" href="{{ preload(asset('build/main.css')) }}">
         {% endblock %}

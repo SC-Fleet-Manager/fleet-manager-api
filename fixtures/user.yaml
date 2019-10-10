@@ -136,3 +136,29 @@ App\Entity\User:
         publicChoice: 'orga'
         createdAt: '<(new \DateTimeImmutable("2019-04-13 11:22:33"))>'
         lastConnectedAt: '<(new \DateTimeImmutable("2019-04-14 22:33:44"))>'
+    user_lostpasswordrequested@example.com:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("d477c5bd-4b1d-4a51-adf0-091ce599f408"))>']
+        username: 'lostpasswordrequested@example.com'
+        email: 'lostpasswordrequested@example.com'
+        emailConfirmed: true
+        password: '123456'
+        token: 'rpYkHkxIF9KoOZzpDqv80PSj8kM2nznnGIk5eMBw5ZcRVWbRTd7cZZxXJcVnl3eE'
+        apiToken: 'T7noH2JSCGBKHA2thglKXYv2iEGiAzuduIyX8NqfgnouUfnh3xyN3AHGmRIpJ6Jk'
+        registrationConfirmationToken: 'Sqnnw52G435CZmaS0VetnDeQVnHwOZDaektu3O3M748bd0T07KnwK8us0AbGLifb'
+        lostPasswordRequestedAt: '<(new \DateTimeImmutable("-5 minutes"))>'
+        lostPasswordToken: '4kTh4QvvKm6LtHcnJ0Oj6dzfXvgirQKt8LHrIu5JqlOWl1AMfl8S3KS6waUiQFFA'
+        createdAt: '<(new \DateTimeImmutable("2019-04-14 11:22:33"))>'
+        lastConnectedAt: '<(new \DateTimeImmutable("2019-04-15 22:33:44"))>'
+    user_lostpasswordexpired@example.com:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("f27a6609-57cc-4e98-b762-2d929d046afe"))>']
+        username: 'lostpasswordexpired@example.com'
+        email: 'lostpasswordexpired@example.com'
+        emailConfirmed: true
+        password: '123456'
+        token: 'dcVDG9bfxVoIdtmZLX0RdXsbL8bwORPAYgpZtpvusyGyRoaolFxXeCegtSGLQ9uc'
+        apiToken: 'x2MNKh4ZupiTT0URTgCfUyVFm0CnRlomGyShb2m8xVoodbsSQh0JbIBvEZ1cJa1Q'
+        registrationConfirmationToken: 'qvtEBYssXPVuwsuLC9VcJltEFtuuyXJjrjRdhniCcxnxC4GZ667M26sAAwb9yudC'
+        lostPasswordRequestedAt: '<(new \DateTimeImmutable("-20 minutes"))>'
+        lostPasswordToken: '2X9FV6J4l8itnDZHSLYDUFDorK9uDeWQski6YmqwzGPTcaONoMdV7Rc0xwLiQKHB'
+        createdAt: '<(new \DateTimeImmutable("2019-04-15 11:22:33"))>'
+        lastConnectedAt: '<(new \DateTimeImmutable("2019-04-16 22:33:44"))>'

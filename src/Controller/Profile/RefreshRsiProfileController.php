@@ -53,7 +53,7 @@ class RefreshRsiProfileController extends AbstractController
             ], 400);
         }
 
-        $citizenInfos = $this->citizenInfosProvider->retrieveInfos(clone $citizen->getActualHandle());
+        $citizenInfos = $this->citizenInfosProvider->retrieveInfos(clone $citizen->getActualHandle(), false);
         if (!$citizenInfos->numberSC->equals($citizen->getNumber())) {
             return $this->json([
                 'error' => 'bad_citizen',

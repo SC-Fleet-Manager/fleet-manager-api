@@ -286,23 +286,23 @@
                         <b-collapse id="collapse-registration-form" accordion="login-form">
                             <b-form @submit="onSubmitRegistrationForm">
                                 <b-alert :show="registrationFormErrorsGlobal" variant="danger">{{ registrationFormErrorsGlobal }}</b-alert>
-                                <b-form-group :invalid-feedback="registrationFormErrorsViolations.email" :state="registrationFormErrorsViolations.email === null ? null : 'invalid'">
+                                <b-form-group :invalid-feedback="registrationFormErrorsViolations.email" :state="registrationFormErrorsViolations.email === null ? null : false">
                                     <b-form-input
                                             type="email"
                                             id="input-registration-email"
                                             v-model="registrationForm.email"
-                                            :state="registrationFormErrorsViolations.email === null ? null : 'invalid'"
+                                            :state="registrationFormErrorsViolations.email === null ? null : false"
                                             required
                                             placeholder="Email"
                                     ></b-form-input>
                                 </b-form-group>
-                                <b-form-group :invalid-feedback="registrationFormErrorsViolations.password" :state="registrationFormErrorsViolations.password === null ? null : 'invalid'">
+                                <b-form-group :invalid-feedback="registrationFormErrorsViolations.password" :state="registrationFormErrorsViolations.password === null ? null : false">
                                     <b-input-group>
                                         <b-form-input
                                                 :type="registrationFormPasswordVisible ? 'text' : 'password'"
                                                 id="input-registration-password"
                                                 v-model="registrationForm.password"
-                                                :state="registrationFormErrorsViolations.password === null ? null : 'invalid'"
+                                                :state="registrationFormErrorsViolations.password === null ? null : false"
                                                 required
                                                 placeholder="Password"
                                         ></b-form-input>
@@ -318,12 +318,12 @@
                         <b-collapse id="collapse-lost-password-form" accordion="login-form">
                             <b-form @submit="onSubmitLostPasswordForm">
                                 <b-alert :show="lostPasswordFormErrorsGlobal" variant="danger">{{ lostPasswordFormErrorsGlobal }}</b-alert>
-                                <b-form-group :invalid-feedback="lostPasswordFormErrorsViolations.email" :state="lostPasswordFormErrorsViolations.email === null ? null : 'invalid'">
+                                <b-form-group :invalid-feedback="lostPasswordFormErrorsViolations.email" :state="lostPasswordFormErrorsViolations.email === null ? null : false">
                                     <b-form-input
                                             type="email"
                                             id="input-lost-password-email"
                                             v-model="lostPasswordForm.email"
-                                            :state="lostPasswordFormErrorsViolations.email === null ? null : 'invalid'"
+                                            :state="lostPasswordFormErrorsViolations.email === null ? null : false"
                                             required
                                             placeholder="Email"
                                     ></b-form-input>

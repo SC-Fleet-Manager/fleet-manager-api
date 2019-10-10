@@ -20,7 +20,7 @@ class HomeNumbersControllerTest extends WebTestCase
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArraySubset([
             'organizations' => 3,
-            'users' => 12,
+            'users' => 14,
             'ships' => 10,
         ], $json);
     }

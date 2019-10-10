@@ -27,7 +27,7 @@ class OrganizationFleetGenerator
             $orgaFleetData[] = $fleet->createRawData();
         }
         $orgaFleetData = array_merge(...$orgaFleetData);
-        $jsonFleet = \json_encode($orgaFleetData);
+        $jsonFleet = json_encode($orgaFleetData);
         $file = new \SplFileObject(sys_get_temp_dir().'/'.uniqid('', true), 'w');
         $file->fwrite($jsonFleet);
 

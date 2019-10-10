@@ -29,7 +29,7 @@ class CitizenFleetGenerator
             $fleetData = $fleet->createRawData();
         }
 
-        $jsonFleet = \json_encode($fleetData);
+        $jsonFleet = json_encode($fleetData);
         $file = new \SplFileObject(sys_get_temp_dir().'/'.uniqid('', true), 'w');
         $file->fwrite($jsonFleet);
 
