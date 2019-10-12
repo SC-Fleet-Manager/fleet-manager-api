@@ -1,12 +1,14 @@
 version: '3.4'
 volumes:
-    db: ~
+    #    db: ~
+    redis_db: ~
 services:
     php:
         build:
-            context: .
             target: build_php_dev
-            dockerfile: ./docker/Dockerfile
+            args:
+                ENV: 'dev'
+                DUMP_ENV: 1
         volumes:
             - .:/app
         environment:
@@ -32,9 +34,10 @@ services:
         environment:
             PHP_HANDLER_HOST: php:9000
     mysql:
-#        tmpfs: /var/lib/mysql
-        volumes:
-            - db:/var/lib/mysql
+        tmpfs: /var/lib/mysql
+#        volumes:
+#            - db:/var/lib/mysql
+#            - ./docker/mysql/config-file.cnf:/etc/mysql/conf.d/config-file.cnf
         ports:
             - 127.0.0.1:3306:3306
     smtp:
@@ -42,6 +45,12 @@ services:
         ports:
             - 127.0.0.1:1080:1080 # web-ui
     redis-commander:
+        image: rediscommander/redis-commander:latest
+        hostname: redis-commander
+        environment:
+            REDIS_HOST: redis
+            REDIS_PORT: 6379
+            REDIS_PASSWORD: ${REDIS_PASSWORD}
         ports:
             - 127.0.0.1:8081:8081
     selenium-hub:

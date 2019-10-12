@@ -5,9 +5,9 @@ COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 # prod|dev
 ARG ENV=prod
 
-RUN if [ $ENV != 'prod' ]; then apk add --no-cache --virtual .deps zlib libzip; fi
+RUN if [ $ENV != 'prod' ]; then apk add --no-cache --virtual .deps zlib libzip libxslt; fi
 RUN if [ $ENV != 'prod' ]; then \
-        apk add --no-cache --virtual .build-deps $PHPIZE_DEPS libzip-dev \
+        apk add --no-cache --virtual .build-deps $PHPIZE_DEPS libzip-dev libxslt-dev \
         && docker-php-ext-install zip xsl \
         && apk del .build-deps; \
     fi
@@ -28,7 +28,7 @@ RUN composer global require "hirak/prestissimo:^0.3" --prefer-dist --no-progress
     else \
         composer install --no-scripts --no-suggest --optimize-autoloader --classmap-authoritative --prefer-dist --no-progress --no-interaction; \
     fi; \
-    composer dump-env prod
+    composer dump-env $ENV
 
 ################################
 FROM node:10-alpine as node_deps
