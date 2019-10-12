@@ -341,6 +341,8 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
                 return 'Ballista';
             case '76':
                 return 'Nautilus';
+            case '77':
+                return 'Mantis';
             case '1001':
                 return 'F8C';
         }
