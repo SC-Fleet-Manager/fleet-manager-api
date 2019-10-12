@@ -25,6 +25,7 @@ class UserRepository extends ServiceEntityRepository
             ->leftJoin('co.organization', 'o')
             ->where('u.username = :username')
             ->setParameter('username', $username)
+            ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
 
