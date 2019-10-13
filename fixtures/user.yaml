@@ -6,6 +6,9 @@ App\Entity\User:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("d92e229e-e743-4583-905a-e02c57eacfe0"))>']
         username: 'Ioni'
         nickname: 'Ioni'
+        email: 'ioni@example.com'
+        emailConfirmed: true
+        password: '123456'
         discordId: '123456789001'
         token: '4682bc58961264de31d38bf6af18cfe717ab2ba59f34b906668b4d7c0ca65b33'
         apiToken: 'e41818d1d9d1568faefdf3f11274718a73e09a871cc4cc2bd176da0339414b8e'

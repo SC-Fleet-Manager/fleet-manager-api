@@ -183,6 +183,20 @@ class SpaControllerTest extends PantherTestCase
         });
         $this->assertContains('Your new SC Handle has been successfully updated!', $this->client->findElement(WebDriverBy::cssSelector('.toast-success'))->getText());
 
+        // change password success
+        $this->client->request('GET', '/profile');
+        $this->client->refreshCrawler();
+        $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+            return count($driver->findElements(WebDriverBy::className('js-security'))) > 0;
+        });
+        $this->client->findElement(WebDriverBy::cssSelector('input#input-registration-old-password'))->sendKeys('123456');
+        $this->client->findElement(WebDriverBy::cssSelector('input#input-registration-password'))->sendKeys('456789');
+        $this->client->findElement(WebDriverBy::xpath('//button[contains(text(), "Change my password")]'))->click();
+        $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+            return count($driver->findElements(WebDriverBy::className('toast-message'))) > 0;
+        });
+        $this->assertContains('Your password has been successfully updated!', $this->client->findElement(WebDriverBy::cssSelector('.toast-success'))->getText());
+
         // Link RSI Account
         $this->login('2a288e5d-f83f-4b0d-9275-3351b8cb3848');
         $this->client->request('GET', '/profile');

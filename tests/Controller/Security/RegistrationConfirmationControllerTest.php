@@ -18,7 +18,7 @@ class RegistrationConfirmationControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $this->assertContains('Congrats! You are now confirmed on Fleet Manager. You can now login to the Fleet Manager.', $crawler->filter('.alert-success')->text());
+        $this->assertContains('Congrats! You are now confirmed on Fleet Manager. You will be redirected to the homepage in 5 seconds.', $crawler->filter('.alert-success')->text());
     }
 
     /**

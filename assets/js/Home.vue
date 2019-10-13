@@ -470,7 +470,7 @@ export default {
                 if (err.response.data.errorMessage) {
                     this.loginFormErrorsGlobal = err.response.data.errorMessage;
                 } else {
-                    this.loginFormErrorsGlobal = 'An unexpected error has been occurred. Please try again in a moment.';
+                    this.loginFormErrorsGlobal = 'An unexpected error has occurred. Please try again in a moment.';
                 }
             });
         },
@@ -500,7 +500,7 @@ export default {
                         this.$set(this.registrationFormErrorsViolations, violation.propertyPath, violation.title);
                     }
                 } else {
-                    this.registrationFormErrorsGlobal = 'An unexpected error has been occurred. Please try again in a moment.';
+                    this.registrationFormErrorsGlobal = 'An unexpected error has occurred. Please try again in a moment.';
                 }
             });
         },
@@ -529,7 +529,7 @@ export default {
                         this.$set(this.lostPasswordFormErrorsViolations, violation.propertyPath, violation.title);
                     }
                 } else {
-                    this.lostPasswordFormErrorsGlobal = 'An unexpected error has been occurred. Please try again in a moment.';
+                    this.lostPasswordFormErrorsGlobal = 'An unexpected error has occurred. Please try again in a moment.';
                 }
             });
         },

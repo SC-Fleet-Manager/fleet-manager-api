@@ -133,6 +133,11 @@
                 </b-card>
             </b-col>
         </b-row>
+        <b-row>
+            <b-col col md="6" v-if="showUpdateHandle">
+                <Security :user="user"></Security>
+            </b-col>
+        </b-row>
     </div>
 </template>
 
@@ -140,16 +145,19 @@
     import axios from 'axios';
     import toastr from 'toastr';
     import UpdateScHandle from "./UpdateSCHandle";
+    import Security from "./Security";
     import { mapMutations } from 'vuex';
 
     export default {
         name: 'profile',
-        components: {UpdateScHandle},
+        components: {Security, UpdateScHandle},
         data() {
             return {
                 form: {
                     handle: null,
                 },
+                user: null,
+                citizen: null,
                 myFleetLink: null,
                 publicChoice: null,
                 orgaVisibilityChoices: {},
@@ -212,12 +220,13 @@
             },
             refreshProfile() {
                 axios.get('/api/profile').then(response => {
-                    this.citizen = response.data.citizen;
+                    this.user = response.data;
+                    this.citizen = this.user.citizen;
                     this.showLinkAccount = !this.citizen;
                     this.showUpdateHandle = !!this.citizen;
-                    this.userToken = response.data.token;
+                    this.userToken = this.user.token;
                     this.myFleetLink = this.getMyFleetLink();
-                    this.publicChoice = response.data.publicChoice;
+                    this.publicChoice = this.user.publicChoice;
                     this.updateProfile(this.citizen);
 
                     if (this.citizen) {
@@ -297,7 +306,7 @@
 
                 this.lastShortBio = null;
                 this.showError = false;
-                this.errorMessage = 'An error has been occurred. Please try again in a moment.';
+                this.errorMessage = 'An error has occurred. Please try again in a moment.';
                 this.submitDisabled = true;
                 axios.post('/api/profile/link-account', form).then(response => {
                     this.refreshProfile();
