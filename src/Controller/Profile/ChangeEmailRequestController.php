@@ -3,42 +3,44 @@
 namespace App\Controller\Profile;
 
 use App\Entity\User;
-use App\Form\Dto\ChangePassword;
+use App\Form\Dto\ChangeEmail;
+use App\Message\Profile\SendChangeEmailRequestMail;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class ChangePasswordController extends AbstractController
+class ChangeEmailRequestController extends AbstractController
 {
     private $security;
     private $entityManager;
-    private $passwordEncoder;
     private $serializer;
     private $validator;
+    private $bus;
 
     public function __construct(
         Security $security,
         EntityManagerInterface $entityManager,
-        UserPasswordEncoderInterface $passwordEncoder,
         SerializerInterface $serializer,
-        ValidatorInterface $validator
-    ) {
+        ValidatorInterface $validator,
+        MessageBusInterface $bus
+    )
+    {
         $this->security = $security;
         $this->entityManager = $entityManager;
-        $this->passwordEncoder = $passwordEncoder;
         $this->serializer = $serializer;
         $this->validator = $validator;
+        $this->bus = $bus;
     }
 
     /**
-     * @Route("/api/profile/change-password", name="profile_change_password", methods={"POST"})
+     * @Route("/api/profile/change-email-request", name="profile_change_email_request", methods={"POST"})
      */
     public function __invoke(Request $request): Response
     {
@@ -53,13 +55,13 @@ class ChangePasswordController extends AbstractController
             ], 400);
         }
 
-        /** @var ChangePassword $changePassword */
-        $changePassword = $this->serializer->denormalize($request->request->all(), ChangePassword::class);
-        $errors = $this->validator->validate($changePassword);
+        /** @var ChangeEmail $changeEmail */
+        $changeEmail = $this->serializer->denormalize($request->request->all(), ChangeEmail::class);
+        $errors = $this->validator->validate($changeEmail);
 
         // TODO : extract in a Constraint
-        if (!$this->passwordEncoder->isPasswordValid($user, $changePassword->oldPassword)) {
-            $errors->add(new ConstraintViolation('Your actual password is wrong.', null, [], null, 'oldPassword', null));
+        if ($user->getEmail() === $changeEmail->newEmail) {
+            $errors->add(new ConstraintViolation('This is your actual email address. Please choose another.', null, [], null, 'newEmail', null));
         }
 
         if ($errors->count() > 0) {
@@ -69,10 +71,11 @@ class ChangePasswordController extends AbstractController
             ], 400);
         }
 
-        $user->setPassword($this->passwordEncoder->encodePassword($user, $changePassword->newPassword));
-        $user->setUpdatedAt(new \DateTimeImmutable());
-        unset($changePassword);
+        $user->setRegistrationConfirmationToken(User::generateToken());
+        $user->setPendingEmail($changeEmail->newEmail);
         $this->entityManager->flush();
+
+        $this->bus->dispatch(new SendChangeEmailRequestMail($user->getId()));
 
         return $this->json(null, 204);
     }

@@ -64,7 +64,7 @@
                             </p>
                             <b-alert variant="danger" :show="showError" v-html="errorMessage"></b-alert>
                             <div v-if="lastShortBio != null">
-                                <strong>Your actual bio:</strong>
+                                <strong>Your current bio:</strong>
                                 <p style="max-height: 150px; overflow-y: auto;">{{ lastShortBio }}</p>
                             </div>
                             <b-form-group>
@@ -134,7 +134,7 @@
             </b-col>
         </b-row>
         <b-row>
-            <b-col col md="6" v-if="showUpdateHandle">
+            <b-col col md="6" v-if="user != null">
                 <Security :user="user"></Security>
             </b-col>
         </b-row>

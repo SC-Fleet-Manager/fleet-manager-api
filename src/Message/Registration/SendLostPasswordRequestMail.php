@@ -6,7 +6,6 @@ use Ramsey\Uuid\UuidInterface;
 
 class SendLostPasswordRequestMail
 {
-    /** @var UuidInterface */
     private $userId;
 
     public function __construct(UuidInterface $userId)

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Message\Registration;
+namespace App\Message\Profile;
 
 use Ramsey\Uuid\UuidInterface;
 
-class SendRegistrationConfirmationMail
+class SendChangeEmailRequestMail
 {
     private $userId;
 

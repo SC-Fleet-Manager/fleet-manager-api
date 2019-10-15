@@ -189,8 +189,8 @@ class SpaControllerTest extends PantherTestCase
         $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
             return count($driver->findElements(WebDriverBy::className('js-security'))) > 0;
         });
-        $this->client->findElement(WebDriverBy::cssSelector('input#input-registration-old-password'))->sendKeys('123456');
-        $this->client->findElement(WebDriverBy::cssSelector('input#input-registration-password'))->sendKeys('456789');
+        $this->client->findElement(WebDriverBy::cssSelector('input#input-changep-password-old-password'))->sendKeys('123456');
+        $this->client->findElement(WebDriverBy::cssSelector('input#input-changep-password-password'))->sendKeys('456789');
         $this->client->findElement(WebDriverBy::xpath('//button[contains(text(), "Change my password")]'))->click();
         $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
             return count($driver->findElements(WebDriverBy::className('toast-message'))) > 0;

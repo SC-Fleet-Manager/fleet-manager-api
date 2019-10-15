@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block metas %}
+    {% if error is not defined %}
+        <meta http-equiv="refresh" content="5;URL=/">
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        {% if error is defined %}
+            {% if error == 'not_exist' %}
+                <div class="alert alert-danger">Sorry, this confirmation does not exist. Please check the web address in your email message.</div>
+            {% elseif error == 'user_not_confirmed' %}
+                <div class="alert alert-danger">Sorry, you must confirm your email first. Please check your email inbox.</div>
+            {% else %}
+                <div class="alert alert-danger">Sorry, an unexpected error has occurred. Please retry in a moment.</div>
+            {% endif %}
+        {% else %}
+            <div class="alert alert-success">Success! Your new email address has been set correctly. You will be redirected to the homepage in <span id="cooldown">5</span> seconds.</div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {% if error is not defined %}
+        <script>
+            let cooldown = 5000;
+            setInterval(() => {
+                document.querySelector('#cooldown').textContent = (cooldown / 1000.0).toFixed(0);
+                cooldown -= 100;
+            }, 100);
+        </script>
+    {% endif %}
+{% endblock %}

@@ -50,6 +50,15 @@ class User implements UserInterface
     private $email;
 
     /**
+     * When a new email is requested.
+     *
+     * @var string
+     *
+     * @ORM\Column(type="string", length=127, nullable=true)
+     */
+    private $pendingEmail;
+
+    /**
      * @var bool
      *
      * @ORM\Column(type="boolean", options={"default":false})
@@ -101,6 +110,8 @@ class User implements UserInterface
     private $discordTag;
 
     /**
+     * For RSI account linking.
+     *
      * @var string
      *
      * @ORM\Column(type="string", length=64, options={"fixed":true})
@@ -109,6 +120,8 @@ class User implements UserInterface
     private $token;
 
     /**
+     * For discussing with FM Webextension.
+     *
      * @var string
      *
      * @ORM\Column(type="string", length=64, options={"fixed":true})
@@ -117,6 +130,8 @@ class User implements UserInterface
     private $apiToken;
 
     /**
+     * For registration and change email.
+     *
      * @var string
      *
      * @ORM\Column(type="string", length=64, options={"fixed":true}, nullable=true)
@@ -146,6 +161,14 @@ class User implements UserInterface
      * @Groups({"profile", "me:read"})
      */
     private $createdAt;
+
+    /**
+     * @var \DateTimeImmutable
+     *
+     * @ORM\Column(type="datetimetz_immutable", nullable=true)
+     * @Groups({"profile", "me:read"})
+     */
+    private $updatedAt;
 
     /**
      * @var \DateTimeImmutable
@@ -255,6 +278,18 @@ class User implements UserInterface
     public function setEmail(?string $email): self
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    public function getPendingEmail(): ?string
+    {
+        return $this->pendingEmail;
+    }
+
+    public function setPendingEmail(?string $pendingEmail): self
+    {
+        $this->pendingEmail = $pendingEmail;
 
         return $this;
     }
@@ -369,6 +404,18 @@ class User implements UserInterface
     public function setCreatedAt(\DateTimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
