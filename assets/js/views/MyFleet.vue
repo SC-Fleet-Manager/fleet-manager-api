@@ -145,17 +145,18 @@
                     case '600i Exploration Module': return '600i Explorer';
                     case '600i Touring Module': return '600i Touring';
                     case '890 JUMP': return '890 Jump';
+                    case 'Aopoa San\'tok.yāi': return 'San\'tok.yāi';
+                    case 'Argo SRV': return 'SRV';
                     case 'Ballista': return 'Anvil Ballista';
                     case 'Ballista Snowblind': return 'Anvil Ballista Snowblind';
                     case 'Ballista Dunestalker': return 'Anvil Ballista Dunestalker';
-                    case 'Aopoa San\'tok.yāi': return 'San\'tok.yāi';
-                    case 'Argo SRV': return 'SRV';
                     case 'Consolidated Outland Pioneer': return 'Pioneer';
                     case 'Crusader Mercury Star Runner': return 'Mercury Star Runner';
                     case 'Cyclone RC': return 'Cyclone-RC';
                     case 'Cyclone RN': return 'Cyclone-RN';
                     case 'Cyclone-TR': return 'Cyclone-TR'; // yes, same
                     case 'Cyclone AA': return 'Cyclone-AA';
+                    case 'Defender': return 'Banu Defender';
                     case 'Hercules Starlifter C2': return 'C2 Hercules';
                     case 'Hercules Starlifter M2': return 'M2 Hercules';
                     case 'Hercules Starlifter A2': return 'A2 Hercules';
