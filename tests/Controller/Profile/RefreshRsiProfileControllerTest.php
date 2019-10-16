@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Controller\MyFleet;
+namespace App\Tests\Controller\Profile;
 
 use App\Entity\User;
 use App\Tests\WebTestCase;

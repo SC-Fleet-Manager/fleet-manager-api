@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Controller\WebExtension;
+namespace App\Tests\Controller\Security;
 
 use App\Entity\User;
 use App\Message\Registration\SendLostPasswordRequestMail;

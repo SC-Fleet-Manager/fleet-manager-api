@@ -8,7 +8,7 @@
                 <b-input-group prependHtml="<i class='fa fa-envelope'></i>">
                     <b-form-input
                             type="email"
-                            id="input-changep-email-new-email"
+                            id="input-change-email-new-email"
                             v-model="form.newEmail"
                             :state="formViolations.newEmail === null ? null : false"
                             placeholder="Your new email"

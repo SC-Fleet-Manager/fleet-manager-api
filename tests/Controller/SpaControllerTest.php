@@ -103,6 +103,9 @@ class SpaControllerTest extends PantherTestCase
     /**
      * @group end2end
      * @group spa
+     *
+     *
+     * @group toto
      */
     public function testProfile(): void
     {
@@ -189,13 +192,26 @@ class SpaControllerTest extends PantherTestCase
         $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
             return count($driver->findElements(WebDriverBy::className('js-security'))) > 0;
         });
-        $this->client->findElement(WebDriverBy::cssSelector('input#input-changep-password-old-password'))->sendKeys('123456');
-        $this->client->findElement(WebDriverBy::cssSelector('input#input-changep-password-password'))->sendKeys('456789');
+        $this->client->findElement(WebDriverBy::cssSelector('input#input-change-password-old-password'))->sendKeys('123456');
+        $this->client->findElement(WebDriverBy::cssSelector('input#input-change-password-password'))->sendKeys('456789');
         $this->client->findElement(WebDriverBy::xpath('//button[contains(text(), "Change my password")]'))->click();
         $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
             return count($driver->findElements(WebDriverBy::className('toast-message'))) > 0;
         });
         $this->assertContains('Your password has been successfully updated!', $this->client->findElement(WebDriverBy::cssSelector('.toast-success'))->getText());
+
+        // change email success
+        $this->client->request('GET', '/profile');
+        $this->client->refreshCrawler();
+        $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+            return count($driver->findElements(WebDriverBy::className('js-security'))) > 0;
+        });
+        $this->client->findElement(WebDriverBy::cssSelector('input#input-change-email-new-email'))->sendKeys('new-email@example.com');
+        $this->client->findElement(WebDriverBy::xpath('//button[contains(text(), "Change my email")]'))->click();
+        $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+            return count($driver->findElements(WebDriverBy::className('alert'))) > 0;
+        });
+        $this->assertContains('An email has been sent to you to confirm your new email address.', $this->client->findElement(WebDriverBy::cssSelector('.alert-success'))->getText());
 
         // Link RSI Account
         $this->login('2a288e5d-f83f-4b0d-9275-3351b8cb3848');

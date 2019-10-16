@@ -165,3 +165,14 @@ App\Entity\User:
         lostPasswordToken: '2X9FV6J4l8itnDZHSLYDUFDorK9uDeWQski6YmqwzGPTcaONoMdV7Rc0xwLiQKHB'
         createdAt: '<(new \DateTimeImmutable("2019-04-15 11:22:33"))>'
         lastConnectedAt: '<(new \DateTimeImmutable("2019-04-16 22:33:44"))>'
+    user_changepasswordrequested@example.com:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("013b7f07-142c-495e-8efc-2f9d21c50ee3"))>']
+        username: 'changepasswordrequested@example.com'
+        email: 'changepasswordrequested@example.com'
+        emailConfirmed: true
+        password: '123456'
+        token: '72qtKzel5CUS69CoXR9TG2fGXqIyzuSbkXvtLwZcufKOdGMknnF7p66KXazjYmms'
+        apiToken: 'HOfCC5AoMht80L4r6uEVIAfibwOv4Y0s7TdeDCS29V9TYUirMQDY4tLaEEOISmMM'
+        registrationConfirmationToken: 'T9lNOh0FHR6Qdy94R7bTwrcqmYycuB8TM6tzUlwQZquxBIDGo29ERQ9jcD9LANPV'
+        createdAt: '<(new \DateTimeImmutable("2019-04-14 11:22:33"))>'
+        lastConnectedAt: '<(new \DateTimeImmutable("2019-04-15 22:33:44"))>'

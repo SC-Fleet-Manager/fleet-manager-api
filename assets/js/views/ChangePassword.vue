@@ -7,7 +7,7 @@
                 <b-input-group prependHtml="<i class='fa fa-key'></i>">
                     <b-form-input
                             type="password"
-                            id="input-changep-password-old-password"
+                            id="input-change-password-old-password"
                             v-model="changePasswordForm.oldPassword"
                             :state="changePasswordFormViolations.oldPassword === null ? null : false"
                             placeholder="Your current password"
@@ -18,7 +18,7 @@
                 <b-input-group prependHtml="<i class='fa fa-key'></i>">
                     <b-form-input
                             :type="visiblePassword ? 'text' : 'password'"
-                            id="input-changep-password-password"
+                            id="input-change-password-password"
                             v-model="changePasswordForm.newPassword"
                             :state="changePasswordFormViolations.newPassword === null ? null : false"
                             placeholder="The new password"

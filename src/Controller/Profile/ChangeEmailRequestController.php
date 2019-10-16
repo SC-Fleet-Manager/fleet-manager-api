@@ -30,8 +30,7 @@ class ChangeEmailRequestController extends AbstractController
         SerializerInterface $serializer,
         ValidatorInterface $validator,
         MessageBusInterface $bus
-    )
-    {
+    ) {
         $this->security = $security;
         $this->entityManager = $entityManager;
         $this->serializer = $serializer;
