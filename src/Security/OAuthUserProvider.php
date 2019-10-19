@@ -4,6 +4,7 @@ namespace App\Security;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\Security\Exception\AlreadyLinkedDiscordException;
 use Doctrine\ORM\EntityManagerInterface;
 use HWI\Bundle\OAuthBundle\Connect\AccountConnectorInterface;
 use HWI\Bundle\OAuthBundle\OAuth\Response\PathUserResponse;
@@ -31,24 +32,50 @@ class OAuthUserProvider extends BaseProvider implements AccountConnectorInterfac
             throw new UnsupportedUserException(sprintf('Expected an instance of %s, but got "%s".', User::class, get_class($user)));
         }
 
-        dump($user, $response);
-
         /** @var PathUserResponse $response */
         $userAlreadyLinked = $this->userRepository->getByDiscordId($response->getUsername());
-        if ($userAlreadyLinked !== null && $userAlreadyLinked->getId() !== $user->getId()) {
-            // an other user is linked with this Discord
-            // TODO listen HWIOAuthEvents::CONNECT_CONFIRMED or HWIOAuthEvents::CONNECT_COMPLETED
-            return;
-        }
 
-        $user->setDiscordId($response->getUsername());
-        $user->setDiscordTag($response->getData()[$response->getPath('discordtag')] ?? null);
-        $user->setUsername($response->getNickname());
-        $user->setNickname($response->getNickname());
-        if (!$user->getApiToken()) {
-            $user->setApiToken(User::generateToken());
+        $this->entityManager->beginTransaction();
+        try {
+            if ($userAlreadyLinked !== null && $userAlreadyLinked->getId() !== $user->getId()) {
+                if ($user->getCitizen() !== null && $userAlreadyLinked->getCitizen() !== null) {
+                    // citizen conflict
+
+                    $user->setPendingDiscordId($response->getUsername());
+                    $this->entityManager->flush();
+                    $this->entityManager->getConnection()->commit();
+
+                    throw new AlreadyLinkedDiscordException($user, $userAlreadyLinked);
+                }
+
+                $newCitizen = $user->getCitizen();
+                if ($userAlreadyLinked->getCitizen() !== null) {
+                    $newCitizen = $userAlreadyLinked->getCitizen();
+                    $userAlreadyLinked->setCitizen(null);
+                }
+                if ($userAlreadyLinked->getCreatedAt() < $user->getCreatedAt()) {
+                    $user->setCreatedAt(clone $userAlreadyLinked->getCreatedAt());
+                }
+                $this->entityManager->remove($userAlreadyLinked);
+                $this->entityManager->flush();
+                $user->setCitizen($newCitizen);
+            }
+
+            $user->setDiscordId($response->getUsername());
+            $user->setDiscordTag($response->getData()[$response->getPath('discordtag')] ?? null);
+            $user->setUsername($response->getNickname());
+            $user->setNickname($response->getNickname());
+            if (!$user->getApiToken()) {
+                $user->setApiToken(User::generateToken());
+            }
+            $this->entityManager->flush();
+            $this->entityManager->getConnection()->commit();
+        } catch (AlreadyLinkedDiscordException $e) {
+            throw $e;
+        } catch (\Exception $e) {
+            $this->entityManager->getConnection()->rollBack();
+            throw $e;
         }
-        $this->entityManager->flush();
     }
 
     public function loadUserByOAuthUserResponse(UserResponseInterface $response)

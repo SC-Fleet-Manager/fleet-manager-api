@@ -53,7 +53,7 @@ class Citizen
     /**
      * @var iterable|Fleet[]
      *
-     * @ORM\OneToMany(targetEntity="Fleet", mappedBy="owner")
+     * @ORM\OneToMany(targetEntity="Fleet", mappedBy="owner", cascade={"all"}, orphanRemoval=true)
      */
     private $fleets;
 
@@ -61,6 +61,7 @@ class Citizen
      * @var Fleet
      *
      * @ORM\OneToOne(targetEntity="Fleet")
+     * @ORM\JoinColumn(onDelete="SET NULL")
      */
     private $lastFleet;
 
@@ -109,6 +110,7 @@ class Citizen
      * @var CitizenOrganization
      *
      * @ORM\OneToOne(targetEntity="CitizenOrganization", fetch="EAGER", cascade={"all"})
+     * @ORM\JoinColumn(onDelete="SET NULL")
      * @Groups({"profile", "orga_fleet"})
      */
     private $mainOrga;

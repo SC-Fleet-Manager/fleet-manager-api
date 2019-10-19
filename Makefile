@@ -40,6 +40,8 @@ console:								## exec SF console with arbitrary args c="<args>"
 cc:										## clear and rebuild the cache
 	$(EXEC_CONSOLE) cache:clear --no-warmup
 	$(EXEC_CONSOLE) cache:warmup
+server-dump:							## launch the dump server for test env
+	$(EXEC_CONSOLE) server:dump -e test
 
 ##
 ##Setups

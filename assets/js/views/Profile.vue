@@ -207,7 +207,7 @@
                 }).catch(err => {
                     this.checkAuth(err.response);
                     console.error(err);
-                    toastr.error('An error has occurred. Please retry more later.');
+                    toastr.error('An error has occurred. Please try again later.');
                 }).then(_ => {
                     this.savingPreferences = false;
                 });
@@ -284,7 +284,7 @@
                     } else if (err.response.data.error === 'not_found_handle') {
                         this.errorStep1Message = `Sorry, it seems that <a href="https://robertsspaceindustries.com/citizens/${this.form.handle}" target="_blank">SC Handle ${this.form.handle}</a> does not exist. Try to check the typo and search again.`;
                     } else {
-                        this.errorStep1Message = `Sorry, an unexpected error has occurred. Please retry.`;
+                        this.errorStep1Message = `Sorry, an unexpected error has occurred. Please try again later.`;
                     }
                     this.showErrorStep1 = true;
                     this.showButtonStep2 = false;

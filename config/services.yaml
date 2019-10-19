@@ -58,3 +58,7 @@ services:
     App\Listener\UpdateCitizenLastFleetListener:
         tags:
             - { name: 'doctrine.event_listener', event: 'prePersist', method: 'prePersist' }
+
+    App\Security\Listener\AlreadyLinkedDiscordListener:
+        tags:
+            - { name: 'kernel.event_listener', event: 'kernel.exception', method: 'onException' }

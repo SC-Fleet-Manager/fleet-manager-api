@@ -353,7 +353,7 @@
                     if (err.response.data.errorMessage) {
                         this.fleetPolicyErrorMessages = err.response.data.errorMessage;
                     } else {
-                        toastr.error('An error has occurred. Please retry more later.');
+                        toastr.error('An error has occurred. Please try again later.');
                     }
                     this.fleetPolicyErrors = true;
                     console.error(err);
@@ -543,7 +543,7 @@
                     if (err.response.data.errorMessage) {
                         toastr.error(err.response.data.errorMessage);
                     } else {
-                        toastr.error('An error has occurred. Please retry more later.');
+                        toastr.error('An error has occurred. Please try again later.');
                     }
                     console.error(err);
                 }).then(_ => {

@@ -10,7 +10,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\Table(indexes={
- *     @ORM\Index(name="discord_idx", columns={"discord_id"})
+ *     @ORM\Index(name="discord_idx", columns={"discord_id"}),
+ *     @ORM\Index(name="username_idx", columns={"username"}),
+ *     @ORM\Index(name="email_idx", columns={"email"})
  * })
  */
 class User implements UserInterface
@@ -106,6 +108,13 @@ class User implements UserInterface
     /**
      * @var string
      *
+     * @ORM\Column(type="string", length=255, unique=false, nullable=true)
+     */
+    private $pendingDiscordId;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(type="string", length=15, nullable=true)
      */
     private $discordTag;
@@ -143,6 +152,7 @@ class User implements UserInterface
      * @var Citizen
      *
      * @ORM\OneToOne(targetEntity="App\Entity\Citizen", cascade={"persist"})
+     * @ORM\JoinColumn(onDelete="SET NULL")
      * @Groups({"profile", "orga_fleet"})
      */
     private $citizen;
@@ -316,9 +326,21 @@ class User implements UserInterface
         return $this->discordId;
     }
 
-    public function setDiscordId(string $discordId): self
+    public function setDiscordId(?string $discordId): self
     {
         $this->discordId = $discordId;
+
+        return $this;
+    }
+
+    public function getPendingDiscordId(): ?string
+    {
+        return $this->pendingDiscordId;
+    }
+
+    public function setPendingDiscordId(?string $pendingDiscordId): self
+    {
+        $this->pendingDiscordId = $pendingDiscordId;
 
         return $this;
     }

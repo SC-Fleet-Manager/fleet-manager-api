@@ -136,7 +136,7 @@
                     if (err.response.data.errorMessage) {
                         toastr.error(err.response.data.errorMessage);
                     } else {
-                        toastr.error('An error has occurred when retrieving citizen stats. Please retry more later.');
+                        toastr.error('An error has occurred when retrieving citizen stats. Please try again later.');
                     }
                     console.error(err);
                 });
@@ -165,7 +165,7 @@
                     if (err.response.data.errorMessage) {
                         toastr.error(err.response.data.errorMessage);
                     } else {
-                        toastr.error('An error has occurred when retrieving ships stats. Please retry more later.');
+                        toastr.error('An error has occurred when retrieving ships stats. Please try again later.');
                     }
                     console.error(err);
                 });

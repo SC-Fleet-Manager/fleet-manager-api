@@ -2,5 +2,9 @@ connect_login:
     path: /connect/{service}
     controller: App\Tests\Controller\ConnectController::login
 
+connect_service:
+    path: /connect/service/{service}
+    controller: App\Tests\Controller\ConnectController::connectService
+
 hwi_oauth_routing:
     resource: ../prod/hwi_oauth_routing.yaml
