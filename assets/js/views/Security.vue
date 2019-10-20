@@ -96,6 +96,8 @@
                 }).then(response => {
                     this.submitDisabled = false;
                     this.form = {choiceResolveConflict: null};
+                    this.conflict = null; // hide the warning form
+                    this.$emit('accountLinked');
                     toastr.success('Your Discord account is successfully linked!');
                 }).catch(err => {
                     this.submitDisabled = false;

@@ -135,7 +135,7 @@
         </b-row>
         <b-row>
             <b-col col md="6" v-if="user != null">
-                <Security :user="user"></Security>
+                <Security :user="user" @accountLinked="onAccountLinked"></Security>
             </b-col>
         </b-row>
     </div>
@@ -217,6 +217,9 @@
             },
             onCopyFleetLink() {
                 this.fleetLinkCopied = true;
+            },
+            onAccountLinked() {
+                this.refreshProfile();
             },
             refreshProfile() {
                 axios.get('/api/profile').then(response => {

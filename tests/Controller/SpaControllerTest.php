@@ -2,6 +2,8 @@
 
 namespace App\Tests\Controller;
 
+use Facebook\WebDriver\Chrome\ChromeOptions;
+use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\WebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Hautelook\AliceBundle\PhpUnit\ReloadDatabaseTrait;
@@ -16,7 +18,9 @@ class SpaControllerTest extends PantherTestCase
 
     public function setUp(): void
     {
-        $this->client = Client::createSeleniumClient('http://selenium-hub:4444/wd/hub', null, 'http://apache-test');
+        $this->client = Client::createSeleniumClient('http://selenium-hub:4444/wd/hub', new DesiredCapabilities([
+            ChromeOptions::CAPABILITY => (new ChromeOptions())->addArguments(['start-maximized']),
+        ]), 'http://apache-test');
         static::bootKernel();
     }
 
@@ -103,9 +107,6 @@ class SpaControllerTest extends PantherTestCase
     /**
      * @group end2end
      * @group spa
-     *
-     *
-     * @group toto
      */
     public function testProfile(): void
     {
@@ -213,8 +214,26 @@ class SpaControllerTest extends PantherTestCase
         });
         $this->assertContains('An email has been sent to you to confirm your new email address.', $this->client->findElement(WebDriverBy::cssSelector('.alert-success'))->getText());
 
+        // Link Discord
+        $this->login('77ea3d73-a786-4f0f-83dd-36a37265f952'); // linksocialnetworks-with-citizen@example.com
+        $this->client->request('GET', '/connect/service/discord?discordId=123456789002&discordTag=0002&nickname=Ashuvidz'); // click on "Link my Discord"
+        $this->client->refreshCrawler();
+        $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+            return count($driver->findElements(WebDriverBy::cssSelector('.js-security .alert-warning form'))) > 0;
+        });
+        $labels = $this->client->findElements(WebDriverBy::cssSelector('.js-security label'));
+        $this->assertContains('ashuvidz (VyrtualSynthese)', $labels[1]->getText());
+        $this->assertContains('link_social_networks (Link social networks)', $labels[0]->getText());
+        $this->client->findElement(WebDriverBy::xpath('//label[contains(text(), "ashuvidz (VyrtualSynthese)")]'))->click();
+        $this->client->findElement(WebDriverBy::xpath('//button[contains(text(), "Link my Discord account and use the selected Citizen.")]'))->click();
+        $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+            return count($driver->findElements(WebDriverBy::className('toast-message'))) > 0;
+        });
+        $this->assertContains('Your Discord account is successfully linked!', $this->client->findElement(WebDriverBy::cssSelector('.toast-success'))->getText());
+        $this->assertCount(0, $this->client->findElements(WebDriverBy::cssSelector('.js-security .alert-warning')));
+
         // Link RSI Account
-        $this->login('2a288e5d-f83f-4b0d-9275-3351b8cb3848');
+        $this->login('2a288e5d-f83f-4b0d-9275-3351b8cb3848'); // NoCitizen
         $this->client->request('GET', '/profile');
         $this->client->refreshCrawler();
         $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
@@ -320,7 +339,8 @@ class SpaControllerTest extends PantherTestCase
         $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
             return strpos($driver->findElement(WebDriverBy::cssSelector('.ship-family-detail-variant h4'))->getText(), 'Aurora MR') !== false;
         });
-        $detail = $this->client->findElement(WebDriverBy::id('ship-family-detail-3'));
+
+        $detail = $this->client->findElement(WebDriverBy::id('ship-family-detail-5'));
         $variants = $detail->findElements(WebDriverBy::className('ship-family-detail-variant'));
         $this->assertCount(1, $variants);
         $this->assertSame('Aurora MR', $variants[0]->findElement(WebDriverBy::cssSelector('h4'))->getText());
