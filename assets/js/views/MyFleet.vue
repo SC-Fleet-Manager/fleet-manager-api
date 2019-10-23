@@ -162,9 +162,6 @@
                     case 'Hercules Starlifter A2': return 'A2 Hercules';
                     case 'Hornet F7C': return 'F7C Hornet';
                     case 'Hornet F7C-M Heartseeker': return 'F7C-M Super Hornet Heartseeker';
-                    case 'Hornet F7C-S Ghost': return 'F7C-S Hornet Ghost';
-                    case 'Hornet F7C-R Tracker': return 'F7C-R Hornet Tracker';
-                    case 'Hornet F7C-M Hornet': return 'F7C-M Hornet Hornet';
                     case 'Idris-P Frigate': return 'Idris-P';
                     case 'Idris-M Frigate': return 'Idris-M';
                     case 'Khartu-al': return 'Khartu-Al';
