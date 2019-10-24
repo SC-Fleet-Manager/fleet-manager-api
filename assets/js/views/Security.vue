@@ -1,14 +1,15 @@
 <template>
-    <b-card header="Security" class="js-security" v-if="isEmailRegistered">
+    <b-card header="Security" class="js-security" >
         <b-row>
-            <b-col cols="6">
+            <b-col col xl="6" lg="12" v-if="isEmailRegistered">
                 <ChangeEmail :user="user"></ChangeEmail>
             </b-col>
-            <b-col cols="6">
+            <b-col col xl="6" lg="12" v-if="isEmailRegistered">
                 <ChangePassword :user="user"></ChangePassword>
             </b-col>
-            <b-col cols="6">
-                <h5 class="mb-3">Social networks</h5>
+            <b-col col xl="6" lg="12">
+                <h5 class="mb-3">My Sign-Ins</h5>
+
                 <b-alert variant="danger" :show="errorMessage != null" v-html="errorMessage"></b-alert>
                 <b-alert variant="warning" :show="conflict != null" v-if="conflict != null">
                     <p>Your Discord account is already linked to another user.<br/>
@@ -21,10 +22,19 @@
                         <b-button type="submit" :disabled="submitDisabled" variant="primary">Link my Discord account and use the selected Citizen.</b-button>
                     </b-form>
                 </b-alert>
-                <template v-if="isDiscordLinked">
-                    <b-button size="lg" disabled style="background-color: #7289da; color: #fff;" class="px-5" href="/connect/discord"><i class="fab fa-discord"></i> Link my Discord</b-button> <i class="fas fa-check text-success font-3xl d-inline-block align-middle align-content-center"></i>
+                <div class="mb-3">
+                    <b-button v-if="isDiscordLinked" size="lg" block disabled style="background-color: #7289da; color: #fff;" class="px-5" href="/connect/discord"><i class="fab fa-discord"></i> Discord linked <i class="fas fa-check"></i></b-button>
+                    <b-button v-else size="lg" style="background-color: #7289da; color: #fff;" class="px-5" href="/connect/discord"><i class="fab fa-discord"></i> Link my Discord</b-button>
+                </div>
+
+                <b-alert variant="success" :show="linkEmailPasswordSuccessMessage != null" v-html="linkEmailPasswordSuccessMessage"></b-alert>
+                <template v-if="!isEmailRegistered">
+                    <b-collapse id="collapse-link-email-password" accordion="login-form" v-model="linkEmailPasswordCollapsed" visible>
+                        <LinkEmailPassword class="mb-3" @success="onLinkEmailPasswordSuccess"></LinkEmailPassword>
+                    </b-collapse>
+                    <b-button v-if="!linkEmailPasswordCollapsed" size="lg" block variant="primary" v-b-toggle.collapse-link-email-password><i class="fas fa-key"></i> Link with email/password</b-button>
                 </template>
-                <b-button v-if="!isDiscordLinked" size="lg" style="background-color: #7289da; color: #fff;" class="px-5" href="/connect/discord"><i class="fab fa-discord"></i> Link my Discord</b-button>
+                <b-button v-else size="lg" block variant="primary" disabled><i class="fas fa-key"></i> Email/password Linked <i class="fas fa-check"></i></b-button>
             </b-col>
         </b-row>
     </b-card>
@@ -35,10 +45,11 @@
     import toastr from 'toastr';
     import ChangePassword from "./ChangePassword";
     import ChangeEmail from "./ChangeEmail";
+    import LinkEmailPassword from "./LinkEmailPassword";
 
     export default {
         name: 'security',
-        components: {ChangeEmail, ChangePassword},
+        components: {LinkEmailPassword, ChangeEmail, ChangePassword},
         data() {
             return {
                 linkDiscordWarning: null,
@@ -47,6 +58,8 @@
                 submitDisabled: false,
                 form: {choiceResolveConflict: null},
                 formViolations: {choiceResolveConflict: null},
+                linkEmailPasswordCollapsed: false,
+                linkEmailPasswordSuccessMessage: null,
             };
         },
         props: ['user'],
@@ -73,13 +86,18 @@
         },
         computed: {
             isEmailRegistered() {
-                return this.user.email != null;
+                return this.user.email != null && this.user.emailConfirmed;
             },
             isDiscordLinked() {
                 return this.user.discordId != null;
             },
         },
         methods: {
+            onLinkEmailPasswordSuccess() {
+                this.linkEmailPasswordCollapsed = false;
+                this.linkEmailPasswordSuccessMessage = 'Your email/password has been successfully linked. A confirmation email has been sent to you, check your inbox.';
+                this.$emit('accountLinked');
+            },
             onSubmit(ev) {
                 ev.preventDefault();
 

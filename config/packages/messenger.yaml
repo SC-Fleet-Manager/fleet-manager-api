@@ -8,3 +8,4 @@ framework:
              'App\Message\Registration\SendRegistrationConfirmationMail': sync
              'App\Message\Registration\SendLostPasswordRequestMail': sync
              'App\Message\Profile\SendChangeEmailRequestMail': sync
+             'App\Message\Profile\SendLinkEmailPasswordConfirmationMail': sync

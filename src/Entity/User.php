@@ -64,6 +64,7 @@ class User implements UserInterface
      * @var bool
      *
      * @ORM\Column(type="boolean", options={"default":false})
+     * @Groups({"profile"})
      */
     private $emailConfirmed;
 

@@ -113,6 +113,15 @@ class OAuthUserProvider extends BaseProvider implements AccountConnectorInterfac
         return $user;
     }
 
+    public function refreshUser(UserInterface $user)
+    {
+        if (!$this->supportsClass(get_class($user))) {
+            throw new UnsupportedUserException(sprintf('Unsupported user class "%s"', get_class($user)));
+        }
+
+        return $this->loadUserByUsername($user->getDiscordId());
+    }
+
     private function registerNewUser(string $discordId, ?string $discordTag, string $username): User
     {
         $newUser = new User(Uuid::uuid4());
