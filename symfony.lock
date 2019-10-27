@@ -146,6 +146,9 @@
     "jean85/pretty-package-versions": {
         "version": "1.2"
     },
+    "lorenzo/pinky": {
+        "version": "1.0.3"
+    },
     "monolog/monolog": {
         "version": "1.23.0"
     },
@@ -410,6 +413,30 @@
     "symfony/intl": {
         "version": "v4.1.6"
     },
+    "symfony/mailer": {
+        "version": "4.3",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "4.3",
+            "ref": "6e5921f710bec05533f664e0b9a3d838545edd82"
+        },
+        "files": [
+            "config/packages/mailer.yaml"
+        ]
+    },
+    "symfony/messenger": {
+        "version": "4.3",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "4.3",
+            "ref": "29716c100e8aef803ad72670deb3dc09bb052a64"
+        },
+        "files": [
+            "config/packages/messenger.yaml"
+        ]
+    },
     "symfony/mime": {
         "version": "v4.3.1"
     },
@@ -518,7 +545,7 @@
             "repo": "github.com/symfony/recipes",
             "branch": "master",
             "version": "2.5",
-            "ref": "3db029c03e452b4a23f7fc45cec7c922c2247eb8"
+            "ref": "429afc6c6778a1fdddb52a4f708cd94ff2c9960f"
         },
         "files": [
             "config/packages/dev/swiftmailer.yaml",
@@ -608,6 +635,27 @@
             "branch": "master",
             "version": "1.0",
             "ref": "fe5a50faf580eb58f08ada2abe8afbd2d4941e05"
+        }
+    },
+    "tijsverkoyen/css-to-inline-styles": {
+        "version": "2.2.1"
+    },
+    "twig/cssinliner-extension": {
+        "version": "1.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "1.0",
+            "ref": "3460ba58f2609c9f1a38c6e9f2a416ff911f0861"
+        }
+    },
+    "twig/inky-extension": {
+        "version": "1.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "1.0",
+            "ref": "98aa25792ca5b18aebbac6644a150ac90867408d"
         }
     },
     "twig/twig": {

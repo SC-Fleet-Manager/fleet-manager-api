@@ -55,7 +55,7 @@
                 } else if (err.response.data.errorMessage) {
                     toastr.error(err.response.data.errorMessage);
                 } else {
-                    toastr.error('An error has occurred when retrieving members list. Please retry more later.');
+                    toastr.error('An error has occurred when retrieving members list. Please try again later.');
                 }
                 console.error(err);
             });

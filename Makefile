@@ -20,13 +20,15 @@ help:
 ##
 ##Utilities
 ##---------------------------------------------------------------------------
-.PHONY: yarn yi yu composer ci cu console cc
+.PHONY: yarn yi yu watch composer ci cu console cc
 yarn: 									## launch an ephemeral node container for executing yarn with arbitrary args c="<args>"
 	$(EXEC_YARN) $(c)
 yi:										## yarn install
 	$(EXEC_YARN) install
 yu:										## yarn upgrade
 	$(EXEC_YARN) upgrade
+watch:									## yarn watch
+	$(EXEC_YARN) watch
 composer: 								## exec PHP composer with arbitrary args c="<args>"
 	$(EXEC_COMPOSER) $(c)
 ci:										## composer install
@@ -38,6 +40,8 @@ console:								## exec SF console with arbitrary args c="<args>"
 cc:										## clear and rebuild the cache
 	$(EXEC_CONSOLE) cache:clear --no-warmup
 	$(EXEC_CONSOLE) cache:warmup
+server-dump:							## launch the dump server for test env
+	$(EXEC_CONSOLE) server:dump -e test
 
 ##
 ##Setups

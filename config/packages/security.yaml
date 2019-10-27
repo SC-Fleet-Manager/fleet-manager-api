@@ -1,7 +1,16 @@
 security:
+    encoders:
+        App\Entity\User:
+            algorithm: sodium
+            memory_cost: 16384 # 16 MiB
+            time_cost: 3
     providers:
         oauth_user_provider:
             id: App\Security\OAuthUserProvider
+        user_entity:
+            entity:
+                class: 'App\Entity\User'
+                property: 'email'
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|build|icons|favicon\.ico|robots\.txt)/
@@ -10,14 +19,22 @@ security:
             pattern: ^/api/export$
             stateless: true
             guard:
+                provider: oauth_user_provider
                 authenticators: ['App\Security\TokenAuthenticator']
         main:
             anonymous: true
+            user_checker: App\Security\ConfirmedUserChecker
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800 # 1 week
                 path: /
                 always_remember_me: true
+            form_login:
+                provider: user_entity
+                login_path: /login
+                check_path: /api/login/check-form-login
+                success_handler: App\Security\FormLoginSuccessHandler
+                failure_handler: App\Security\FormLoginFailureHandler
             oauth:
                 resource_owners:
                     discord: /login/check-discord
@@ -25,7 +42,8 @@ security:
                 use_forward: false
                 failure_path: /login
                 always_use_default_target_path: true
-                default_target_path: '/profile'
+                default_target_path: /profile
+                provider: oauth_user_provider
                 oauth_user_provider:
                     service: App\Security\OAuthUserProvider
                 remember_me:  true

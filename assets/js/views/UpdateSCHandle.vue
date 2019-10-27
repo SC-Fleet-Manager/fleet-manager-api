@@ -49,7 +49,7 @@
                 form.append('handleSC', this.form.handle);
 
                 this.showError = false;
-                this.errorMessage = 'An error has been occurred. Please try again later.';
+                this.errorMessage = 'An error has occurred. Please try again later.';
                 this.submitDisabled = true;
                 axios({
                     method: 'post',

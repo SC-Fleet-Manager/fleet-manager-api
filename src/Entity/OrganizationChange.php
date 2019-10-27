@@ -23,6 +23,8 @@ class OrganizationChange
     public const TYPE_JOIN_ORGA = 'join_orga';
     /** When someone has leaved the orga */
     public const TYPE_LEAVE_ORGA = 'leave_orga';
+    /** When a citizen has been deleted from FM.  */
+    public const TYPE_DELETED_CITIZEN = 'deleted_citizen';
 
     /**
      * @var UuidInterface
@@ -68,6 +70,7 @@ class OrganizationChange
      * @var Citizen
      *
      * @ORM\ManyToOne(targetEntity="Citizen")
+     * @ORM\JoinColumn(onDelete="SET NULL")
      *
      * @Groups({"orga_fleet_admin"})
      */

@@ -25,6 +25,8 @@
         "symfony/form": "*",
         "symfony/framework-bundle": "*",
         "symfony/http-client": "*",
+        "symfony/mailer": "4.3.*",
+        "symfony/messenger": "4.3.*",
         "symfony/monolog-bundle": "^3.3",
         "symfony/orm-pack": "^1.0",
         "symfony/security-bundle": "*",
@@ -35,7 +37,9 @@
         "symfony/validator": "*",
         "symfony/web-link": "*",
         "symfony/webpack-encore-bundle": "^1.6",
-        "symfony/yaml": "*"
+        "symfony/yaml": "*",
+        "twig/cssinliner-extension": "^2.0",
+        "twig/inky-extension": "^2.0"
     },
     "require-dev": {
         "doctrine/data-fixtures": "^1.3",

@@ -13,6 +13,7 @@ export default {
     @import '~@fortawesome/fontawesome-free/scss/fontawesome';
     @import '~@fortawesome/fontawesome-free/scss/solid';
     @import '~@fortawesome/fontawesome-free/scss/brands';
+    /*@import '~@fortawesome/fontawesome-free/scss/regular';*/
     @import '~bootstrap-vue/dist/bootstrap-vue.css';
     @import '../css/style';
 </style>

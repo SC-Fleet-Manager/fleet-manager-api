@@ -10,7 +10,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\Table(indexes={
- *     @ORM\Index(name="discord_idx", columns={"discord_id"})
+ *     @ORM\Index(name="discord_idx", columns={"discord_id"}),
+ *     @ORM\Index(name="username_idx", columns={"username"}),
+ *     @ORM\Index(name="email_idx", columns={"email"})
  * })
  */
 class User implements UserInterface
@@ -44,9 +46,72 @@ class User implements UserInterface
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255, unique=false)
+     * @ORM\Column(type="string", length=127, nullable=true)
+     * @Groups({"profile"})
+     */
+    private $email;
+
+    /**
+     * When a new email is requested.
+     *
+     * @var string
+     *
+     * @ORM\Column(type="string", length=127, nullable=true)
+     */
+    private $pendingEmail;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean", options={"default":false})
+     * @Groups({"profile"})
+     */
+    private $emailConfirmed;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"profile", "me:read"})
+     */
+    private $nickname;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=127, nullable=true)
+     * @Groups({"must_not_be_exposed"})
+     */
+    private $password;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=64, options={"fixed":true}, nullable=true)
+     */
+    private $lostPasswordToken;
+
+    /**
+     * @var \DateTimeImmutable
+     *
+     * @ORM\Column(type="datetimetz_immutable", nullable=true)
+     */
+    private $lostPasswordRequestedAt;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, unique=false, nullable=true)
+     * @Groups({"profile"})
      */
     private $discordId;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, unique=false, nullable=true)
+     */
+    private $pendingDiscordId;
 
     /**
      * @var string
@@ -56,6 +121,8 @@ class User implements UserInterface
     private $discordTag;
 
     /**
+     * For RSI account linking.
+     *
      * @var string
      *
      * @ORM\Column(type="string", length=64, options={"fixed":true})
@@ -64,6 +131,8 @@ class User implements UserInterface
     private $token;
 
     /**
+     * For discussing with FM Webextension.
+     *
      * @var string
      *
      * @ORM\Column(type="string", length=64, options={"fixed":true})
@@ -72,9 +141,19 @@ class User implements UserInterface
     private $apiToken;
 
     /**
+     * For registration and change email.
+     *
+     * @var string
+     *
+     * @ORM\Column(type="string", length=64, options={"fixed":true}, nullable=true)
+     */
+    private $registrationConfirmationToken;
+
+    /**
      * @var Citizen
      *
      * @ORM\OneToOne(targetEntity="App\Entity\Citizen", cascade={"persist"})
+     * @ORM\JoinColumn(onDelete="SET NULL")
      * @Groups({"profile", "orga_fleet"})
      */
     private $citizen;
@@ -82,7 +161,7 @@ class User implements UserInterface
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=15, options={"default":"private"})
+     * @ORM\Column(type="string", length=15, options={"default":User::PUBLIC_CHOICE_PRIVATE})
      * @Groups({"profile", "orga_fleet"})
      */
     private $publicChoice;
@@ -99,12 +178,21 @@ class User implements UserInterface
      * @var \DateTimeImmutable
      *
      * @ORM\Column(type="datetimetz_immutable", nullable=true)
+     * @Groups({"profile", "me:read"})
+     */
+    private $updatedAt;
+
+    /**
+     * @var \DateTimeImmutable
+     *
+     * @ORM\Column(type="datetimetz_immutable", nullable=true)
      */
     private $lastConnectedAt;
 
     public function __construct(?UuidInterface $id = null)
     {
         $this->id = $id;
+        $this->emailConfirmed = false;
         $this->publicChoice = self::PUBLIC_CHOICE_ORGANIZATION;
         $this->createdAt = new \DateTimeImmutable();
     }
@@ -119,31 +207,9 @@ class User implements UserInterface
         return ['ROLE_USER'];
     }
 
-    public function getPassword(): ?string
-    {
-        return null;
-    }
-
-    public function getSalt(): ?string
-    {
-        return null;
-    }
-
-    /**
-     * @Groups({"profile", "me:read"})
-     */
-    public function getNickname(): ?string
+    public function getUsername(): string
     {
         return $this->username;
-    }
-
-    public function getUsername(): ?string
-    {
-        return $this->discordId;
-    }
-
-    public function eraseCredentials(): void
-    {
     }
 
     public function setUsername(string $username): self
@@ -153,14 +219,129 @@ class User implements UserInterface
         return $this;
     }
 
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(?string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    public function getLostPasswordToken(): ?string
+    {
+        return $this->lostPasswordToken;
+    }
+
+    public function setLostPasswordToken(?string $lostPasswordToken): self
+    {
+        $this->lostPasswordToken = $lostPasswordToken;
+
+        return $this;
+    }
+
+    public function getLostPasswordRequestedAt(): ?\DateTimeImmutable
+    {
+        return $this->lostPasswordRequestedAt;
+    }
+
+    public function setLostPasswordRequestedAt(?\DateTimeImmutable $lostPasswordRequestedAt): self
+    {
+        $this->lostPasswordRequestedAt = $lostPasswordRequestedAt;
+
+        return $this;
+    }
+
+    public function canBeLostPasswordRequested(): bool
+    {
+        return $this->lostPasswordRequestedAt === null || $this->lostPasswordRequestedAt <= new \DateTimeImmutable('-1 minute');
+    }
+
+    public function isLostPasswordRequestExpired(): bool
+    {
+        return $this->lostPasswordRequestedAt === null || $this->lostPasswordRequestedAt <= new \DateTimeImmutable('-15 minutes');
+    }
+
+    public function getSalt(): ?string
+    {
+        return null;
+    }
+
+    public function getNickname(): ?string
+    {
+        return $this->nickname;
+    }
+
+    public function setNickname(string $nickname): self
+    {
+        $this->nickname = $nickname;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(?string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function getPendingEmail(): ?string
+    {
+        return $this->pendingEmail;
+    }
+
+    public function setPendingEmail(?string $pendingEmail): self
+    {
+        $this->pendingEmail = $pendingEmail;
+
+        return $this;
+    }
+
+    public function isEmailConfirmed(): bool
+    {
+        return $this->emailConfirmed;
+    }
+
+    public function setEmailConfirmed(bool $emailConfirmed): self
+    {
+        $this->emailConfirmed = $emailConfirmed;
+
+        return $this;
+    }
+
+    public function eraseCredentials(): void
+    {
+    }
+
     public function getDiscordId(): ?string
     {
         return $this->discordId;
     }
 
-    public function setDiscordId(string $discordId): self
+    public function setDiscordId(?string $discordId): self
     {
         $this->discordId = $discordId;
+
+        return $this;
+    }
+
+    public function getPendingDiscordId(): ?string
+    {
+        return $this->pendingDiscordId;
+    }
+
+    public function setPendingDiscordId(?string $pendingDiscordId): self
+    {
+        $this->pendingDiscordId = $pendingDiscordId;
 
         return $this;
     }
@@ -201,6 +382,18 @@ class User implements UserInterface
         return $this;
     }
 
+    public function getRegistrationConfirmationToken(): ?string
+    {
+        return $this->registrationConfirmationToken;
+    }
+
+    public function setRegistrationConfirmationToken(?string $registrationConfirmationToken): self
+    {
+        $this->registrationConfirmationToken = $registrationConfirmationToken;
+
+        return $this;
+    }
+
     public function getCitizen(): ?Citizen
     {
         return $this->citizen;
@@ -235,6 +428,18 @@ class User implements UserInterface
     public function setCreatedAt(\DateTimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }

@@ -14,9 +14,6 @@
         <env name="SHELL_VERBOSITY" value="-1" />
         <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[self]=0" />
         <env name="SYMFONY_PHPUNIT_VERSION" value="7.5" />
-        <!-- ###+ symfony/swiftmailer-bundle ### -->
-        <env name="MAILER_URL" value="null://localhost"/>
-        <!-- ###- symfony/swiftmailer-bundle ### -->
     </php>
 
     <testsuites>

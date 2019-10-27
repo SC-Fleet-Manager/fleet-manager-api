@@ -1,0 +1,34 @@
+{% filter inky|inline_css(source('@css/foundation-emails.css')) %}
+    <style type="text/css">
+        body,
+        html,
+        .body {
+            background: #f3f3f3 !important;
+        }
+        .header {
+            background: #f3f3f3;
+        }
+    </style>
+
+    <spacer size="16"></spacer>
+    <container>
+        <row class="header">
+            <columns>
+                <spacer size="16"></spacer>
+                <h4 class="text-center">Fleet Manager</h4>
+            </columns>
+        </row>
+        <row>
+            <columns>
+                <spacer size="16"></spacer>
+                <h1 class="text-center">Registration confirmation</h1>
+                <spacer size="16"></spacer>
+                <p class="text-center">Welcome to Fleet Manager!<br/>To confirm your email address, simply click on the link below.</p>
+                <button class="large expand" href="{{ url('security_registration_confirmation', {'id': user.getId().toString(), 'token': user.getRegistrationConfirmationToken() }) }}">Confirm</button>
+                <hr/>
+                <p><small>This email has been sent to <b>{{ user.email }}</b>.<br/>You're getting this email because you've registered on Fleet Manager.</small></p>
+            </columns>
+        </row>
+        <spacer size="16"></spacer>
+    </container>
+{% endfilter %}

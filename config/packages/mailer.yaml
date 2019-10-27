@@ -1,0 +1,6 @@
+parameters:
+    env(MAILER_DSN): 'smtp://null'
+
+framework:
+    mailer:
+        dsn: '%env(MAILER_DSN)%'

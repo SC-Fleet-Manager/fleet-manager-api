@@ -1,0 +1,15 @@
+[mysqld]
+; InnoDB buffer pool size in bytes. The primary value to adjust on a database server,
+; can be set up to 80% of the total memory in these environments
+;
+; SELECT CEILING(Total_InnoDB_Bytes*1.6/POWER(1024,3)) RIBPS FROM
+;        (SELECT SUM(data_length+index_length) Total_InnoDB_Bytes
+;        FROM information_schema.tables WHERE engine='InnoDB') A;
+;
+innodb_buffer_pool_size = 2G
+; If innodb_buffer_pool_size is set to more than 1GB, innodb_buffer_pool_instances
+; divides the InnoDB buffer pool into this many instances.
+innodb_buffer_pool_instances = 2
+
+innodb_log_file_size = 128M
+innodb_log_buffer_size = 16M
