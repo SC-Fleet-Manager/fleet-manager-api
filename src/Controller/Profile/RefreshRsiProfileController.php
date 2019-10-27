@@ -3,6 +3,7 @@
 namespace App\Controller\Profile;
 
 use App\Entity\User;
+use App\Exception\NotFoundHandleSCException;
 use App\Service\Citizen\InfosProvider\CitizenInfosProviderInterface;
 use App\Service\Citizen\CitizenRefresher;
 use Doctrine\ORM\EntityManagerInterface;
@@ -53,8 +54,12 @@ class RefreshRsiProfileController extends AbstractController
             ], 400);
         }
 
-        $citizenInfos = $this->citizenInfosProvider->retrieveInfos(clone $citizen->getActualHandle(), false);
-        if (!$citizenInfos->numberSC->equals($citizen->getNumber())) {
+        try {
+            $citizenInfos = $this->citizenInfosProvider->retrieveInfos(clone $citizen->getActualHandle(), false);
+        } catch (NotFoundHandleSCException $e) {
+            $citizenInfos = null;
+        }
+        if ($citizenInfos === null || !$citizenInfos->numberSC->equals($citizen->getNumber())) {
             return $this->json([
                 'error' => 'bad_citizen',
                 'errorMessage' => sprintf('Your SC handle has probably changed. Please update it in <a href="/profile/">your Profile</a>.'),

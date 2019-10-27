@@ -95,7 +95,7 @@ class UpdateHandleController extends AbstractController
         } catch (NotFoundHandleSCException $e) {
             return $this->json([
                 'error' => 'not_found_handle',
-                'errorMessage' => sprintf('The SC handle %s does not exist.', $updateHandle->handleSC),
+                'errorMessage' => sprintf('Sorry, the handle %s does not exist.', (string) $e->handleSC),
             ], 400);
         }
 

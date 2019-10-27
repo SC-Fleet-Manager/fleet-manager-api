@@ -159,7 +159,7 @@ class SpaControllerTest extends PantherTestCase
         $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
             return count($driver->findElements(WebDriverBy::className('alert-danger'))) > 0;
         });
-        $this->assertContains('The SC handle not_found does not exist.', $this->client->findElement(WebDriverBy::cssSelector('.alert.alert-danger'))->getText());
+        $this->assertContains('Sorry, the handle not_found does not exist.', $this->client->findElement(WebDriverBy::cssSelector('.alert.alert-danger'))->getText());
 
         // update sc handle not same number
         $this->client->request('GET', '/profile');

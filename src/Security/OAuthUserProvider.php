@@ -115,8 +115,13 @@ class OAuthUserProvider extends BaseProvider implements AccountConnectorInterfac
 
     public function refreshUser(UserInterface $user)
     {
+        /** @var User $user */
         if (!$this->supportsClass(get_class($user))) {
             throw new UnsupportedUserException(sprintf('Unsupported user class "%s"', get_class($user)));
+        }
+
+        if ($user->getDiscordId() === null) {
+            throw new UnsupportedUserException(sprintf('The user %s does not have a Discord ID.', $user->getId()));
         }
 
         return $this->loadUserByUsername($user->getDiscordId());

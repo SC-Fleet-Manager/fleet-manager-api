@@ -262,7 +262,6 @@
                     if (err.response.data.errorMessage) {
                         toastr.error(err.response.data.errorMessage);
                     }
-                    console.error(err);
                 }).then(_ => {
                     this.refreshingProfile = false;
                 });

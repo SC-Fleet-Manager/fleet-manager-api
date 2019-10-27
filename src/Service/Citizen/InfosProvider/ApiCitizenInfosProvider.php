@@ -33,6 +33,9 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
         $this->serializer = $serializer;
     }
 
+    /**
+     * @throws NotFoundHandleSCException
+     */
     public function retrieveInfos(HandleSC $handleSC, bool $caching = true): CitizenInfos
     {
         return $this->cache->get('citizen_info_'.sha1($handleSC->getHandle()), function (CacheItem $cacheItem) use ($handleSC) {
@@ -56,7 +59,7 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
 
         if ($citizenNumber === null) {
             $this->logger->error(sprintf('Handle %s does not exist', (string) $handleSC), []);
-            throw new NotFoundHandleSCException(sprintf('Handle %s does not exist', (string) $handleSC));
+            throw new NotFoundHandleSCException($handleSC);
         }
 
         $nickname = null;

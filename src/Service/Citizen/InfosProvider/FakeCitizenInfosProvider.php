@@ -63,7 +63,7 @@ class FakeCitizenInfosProvider implements CitizenInfosProviderInterface
     public function retrieveInfos(HandleSC $handleSC, bool $caching = true): CitizenInfos
     {
         if (in_array($handleSC->getHandle(), self::BLACKLIST_HANDLES, true)) {
-            throw new NotFoundHandleSCException('Citizen not found.');
+            throw new NotFoundHandleSCException($handleSC);
         }
         foreach ($this->knownCitizens as $knownCitizen) {
             if ($knownCitizen->handle->getHandle() === $handleSC->getHandle()) {
@@ -71,7 +71,7 @@ class FakeCitizenInfosProvider implements CitizenInfosProviderInterface
             }
         }
         if ($this->citizen === null) {
-            throw new NotFoundHandleSCException('Citizen not found.');
+            throw new NotFoundHandleSCException($handleSC);
         }
         $sourceMainOrga = $this->citizen->getMainOrga();
         $mainOrga = null;
