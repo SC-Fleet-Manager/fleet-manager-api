@@ -1,13 +1,13 @@
 <template>
     <b-card header="Security" class="js-security" >
         <b-row>
-            <b-col col xl="6" lg="12" v-if="isEmailRegistered">
+            <b-col col xl="6" lg="12" v-if="isEmailRegistered" class="mb-3">
                 <ChangeEmail :user="user"></ChangeEmail>
             </b-col>
-            <b-col col xl="6" lg="12" v-if="isEmailRegistered">
+            <b-col col xl="6" lg="12" v-if="isEmailRegistered" class="mb-3">
                 <ChangePassword :user="user"></ChangePassword>
             </b-col>
-            <b-col col xl="6" lg="12">
+            <b-col col xl="6" lg="12" class="mb-3">
                 <h5 class="mb-3">My Sign-Ins</h5>
 
                 <b-alert variant="danger" :show="errorMessage != null" v-html="errorMessage"></b-alert>
@@ -24,7 +24,7 @@
                 </b-alert>
                 <div class="mb-3">
                     <b-button v-if="isDiscordLinked" size="lg" block disabled style="background-color: #7289da; color: #fff;" class="px-5" href="/connect/discord"><i class="fab fa-discord"></i> Discord linked <i class="fas fa-check"></i></b-button>
-                    <b-button v-else size="lg" style="background-color: #7289da; color: #fff;" class="px-5" href="/connect/discord"><i class="fab fa-discord"></i> Link my Discord</b-button>
+                    <b-button v-else size="lg" block style="background-color: #7289da; color: #fff;" class="px-5" href="/connect/discord"><i class="fab fa-discord"></i> Link my Discord</b-button>
                 </div>
 
                 <b-alert variant="success" :show="linkEmailPasswordSuccessMessage != null" v-html="linkEmailPasswordSuccessMessage"></b-alert>
@@ -95,7 +95,7 @@
         methods: {
             onLinkEmailPasswordSuccess() {
                 this.linkEmailPasswordCollapsed = false;
-                this.linkEmailPasswordSuccessMessage = 'Your email/password has been successfully linked. A confirmation email has been sent to you, check your inbox.';
+                this.linkEmailPasswordSuccessMessage = 'Your email/password has been successfully linked. A confirmation email has been sent to you, check your inbox/spams.';
                 this.$emit('accountLinked');
             },
             onSubmit(ev) {

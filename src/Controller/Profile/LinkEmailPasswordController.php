@@ -61,7 +61,7 @@ class LinkEmailPasswordController extends AbstractController
 
             return $this->json([
                 'error' => 'user_need_confirmation',
-                'errorMessage' => 'You must confirm your email address. Please check your inbox, we have sent you a new email.',
+                'errorMessage' => 'You must confirm your email address. Please check your inbox/spams, we have sent you a new email.',
             ], 400);
         }
 

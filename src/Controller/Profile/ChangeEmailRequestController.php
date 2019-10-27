@@ -50,7 +50,7 @@ class ChangeEmailRequestController extends AbstractController
         if (!$user->isEmailConfirmed()) {
             return $this->json([
                 'error' => 'user_not_confirmed',
-                'errorMessage' => 'You can\'t do that now. First, you have to confirm your email address. Please check your inbox.',
+                'errorMessage' => 'You can\'t do that now. First, you have to confirm your email address. Please check your inbox/spams.',
             ], 400);
         }
 
