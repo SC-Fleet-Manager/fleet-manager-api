@@ -34,7 +34,7 @@
                     </b-collapse>
                     <b-button v-if="!linkEmailPasswordCollapsed" size="lg" block variant="primary" v-b-toggle.collapse-link-email-password><i class="fas fa-key"></i> Link with email/password</b-button>
                 </template>
-                <b-button v-else size="lg" block variant="primary" disabled><i class="fas fa-key"></i> Email/password Linked <i class="fas fa-check"></i></b-button>
+                <b-button v-else size="lg" block variant="primary" disabled><i class="fas fa-key"></i> Email/password linked <i class="fas fa-check"></i></b-button>
             </b-col>
         </b-row>
     </b-card>
