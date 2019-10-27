@@ -36,7 +36,7 @@
 
             <h2>Sharing Information with Third Parties</h2>
 
-            <p>Fleet Manager does not sell, rent or lease its customer lists to third parties.</p>
+            <p>Fleet Manager does not sell, rent or lease its user list to third parties.</p>
 
             <h2>Automatically Collected Information</h2>
 
@@ -57,7 +57,8 @@
             <p>Fleet Manager secures your personal information from unauthorized access, use, or disclosure. Fleet Manager uses the following method(s) for this purpose:</p>
 
             <ul>
-                <li>TLS Protocol</li>
+                <li>TLS Protocol for HTTPS requests</li>
+                <li>Argon2 for password hashes</li>
             </ul>
 
             <p>We strive to take appropriate security measures to protect against unauthorized access to or alteration of your personal information. Unfortunately, no data transmission over the Internet or any wireless network can be guaranteed to be 100% secure. As a result, while we strive to protect your personal information, you acknowledge that: (a) there are security and privacy limitations inherent to the Internet which are beyond our control; and (b) security, integrity, and privacy of any and all information and data exchanged between you and us through this Site cannot be guaranteed.</p>
