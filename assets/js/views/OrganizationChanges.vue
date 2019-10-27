@@ -7,17 +7,20 @@
                     {{ formatDate(change.createdAt) }}
                     <b-badge style="width: 6rem;" :variant="getVariantChangeType(change)">{{ getTitleChangeType(change) }}</b-badge>
                     <span v-if="change.type == 'upload_fleet'">
-                        <b>{{ change.author.actualHandle.handle }}</b> :
+                        <b>{{ change.author ? change.author.actualHandle.handle : 'Unknown citizen' }}</b> :
                         <i v-if="change.payloadPrivate">hidden</i>
                         <template v-else>
                             <template v-for="(ship, index) in change.payload">{{ ship.count > 0 ? '+'+ship.count : ship.count }} {{ ship.ship }}<template v-if="index < change.payload.length - 1">, </template></template>
                         </template>
                     </span>
                     <span v-if="change.type == 'join_orga' || change.type == 'leave_orga'">
-                        <b>{{ change.author.actualHandle.handle }}</b>
+                        <b>{{ change.author ? change.author.actualHandle.handle : 'Unknown citizen' }}</b>
                     </span>
                     <span v-if="change.type == 'update_privacy_policy'">
-                        <b>{{ change.author.actualHandle.handle }}</b> has changed orga's policy from <b>{{ formatOrgaPolicy(change.payload.oldValue) }}</b> to <b>{{ formatOrgaPolicy(change.payload.newValue) }}</b>
+                        <b>{{ change.author ? change.author.actualHandle.handle : 'Unknown citizen' }}</b> has changed orga's policy from <b>{{ formatOrgaPolicy(change.payload.oldValue) }}</b> to <b>{{ formatOrgaPolicy(change.payload.newValue) }}</b>
+                    </span>
+                    <span v-if="change.type == 'deleted_citizen'">
+                        <b>{{ change.payload.handle }}</b> has been deleted and all of his/her ships.
                     </span>
                 </p>
             </div>
@@ -50,7 +53,6 @@
                     if (err.response.data.errorMessage) {
                         toastr.error(err.response.data.errorMessage);
                     }
-                    console.error(err);
                 });
             },
             getVariantChangeType(change) {
@@ -63,6 +65,8 @@
                         return 'danger';
                     case 'update_privacy_policy':
                         return 'warning';
+                    case 'deleted_citizen':
+                        return 'danger';
                 }
                 return 'secondary';
             },
@@ -76,6 +80,8 @@
                         return 'Orga leaved';
                     case 'update_privacy_policy':
                         return 'Updated settings';
+                    case 'deleted_citizen':
+                        return 'Deleted citizen';
                 }
                 return 'Unknown';
             },
@@ -88,7 +94,7 @@
                     case 'admin':
                         return 'Admin only';
                 }
-                return 'Unkown';
+                return 'Unknown';
             },
             formatDate(date) {
                 return moment(date).format('LLL');

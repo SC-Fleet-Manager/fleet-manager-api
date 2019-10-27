@@ -2,3 +2,8 @@ twig:
     default_path: '%kernel.project_dir%/templates'
     debug: '%kernel.debug%'
     strict_variables: '%kernel.debug%'
+    form_themes: ['bootstrap_4_layout.html.twig']
+    paths:
+        '%kernel.project_dir%/assets/css': css
+        '%kernel.project_dir%/assets/img': img
+        '%kernel.project_dir%/assets/fonts': fonts

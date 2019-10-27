@@ -21,4 +21,6 @@ hwi_oauth:
                 discordtag: discriminator
             options:
                 csrf: true
-    connect: ~
+    connect:
+        confirmation: false
+        account_connector: App\Security\OAuthUserProvider

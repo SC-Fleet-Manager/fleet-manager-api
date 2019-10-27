@@ -64,7 +64,7 @@
                             </p>
                             <b-alert variant="danger" :show="showError" v-html="errorMessage"></b-alert>
                             <div v-if="lastShortBio != null">
-                                <strong>Your actual bio:</strong>
+                                <strong>Your current bio:</strong>
                                 <p style="max-height: 150px; overflow-y: auto;">{{ lastShortBio }}</p>
                             </div>
                             <b-form-group>
@@ -133,6 +133,11 @@
                 </b-card>
             </b-col>
         </b-row>
+        <b-row>
+            <b-col col md="6" v-if="user != null">
+                <Security :user="user" @accountLinked="onAccountLinked"></Security>
+            </b-col>
+        </b-row>
     </div>
 </template>
 
@@ -140,16 +145,19 @@
     import axios from 'axios';
     import toastr from 'toastr';
     import UpdateScHandle from "./UpdateSCHandle";
+    import Security from "./Security";
     import { mapMutations } from 'vuex';
 
     export default {
         name: 'profile',
-        components: {UpdateScHandle},
+        components: {Security, UpdateScHandle},
         data() {
             return {
                 form: {
                     handle: null,
                 },
+                user: null,
+                citizen: null,
                 myFleetLink: null,
                 publicChoice: null,
                 orgaVisibilityChoices: {},
@@ -199,7 +207,7 @@
                 }).catch(err => {
                     this.checkAuth(err.response);
                     console.error(err);
-                    toastr.error('An error has occurred. Please retry more later.');
+                    toastr.error('An error has occurred. Please try again later.');
                 }).then(_ => {
                     this.savingPreferences = false;
                 });
@@ -210,14 +218,18 @@
             onCopyFleetLink() {
                 this.fleetLinkCopied = true;
             },
+            onAccountLinked() {
+                this.refreshProfile();
+            },
             refreshProfile() {
-                axios.get('/api/profile/').then(response => {
-                    this.citizen = response.data.citizen;
+                axios.get('/api/profile').then(response => {
+                    this.user = response.data;
+                    this.citizen = this.user.citizen;
                     this.showLinkAccount = !this.citizen;
                     this.showUpdateHandle = !!this.citizen;
-                    this.userToken = response.data.token;
+                    this.userToken = this.user.token;
                     this.myFleetLink = this.getMyFleetLink();
-                    this.publicChoice = response.data.publicChoice;
+                    this.publicChoice = this.user.publicChoice;
                     this.updateProfile(this.citizen);
 
                     if (this.citizen) {
@@ -250,7 +262,6 @@
                     if (err.response.data.errorMessage) {
                         toastr.error(err.response.data.errorMessage);
                     }
-                    console.error(err);
                 }).then(_ => {
                     this.refreshingProfile = false;
                 });
@@ -264,7 +275,7 @@
                 this.showErrorStep1 = false;
                 this.showCollapseStep2 = false;
                 this.searchingHandle = true;
-                axios.get('/api/search-handle', {
+                axios.get('/api/profile/search-handle', {
                     params: {handle: this.form.handle}
                 }).then(response => {
                     this.searchedCitizen = response.data;
@@ -275,7 +286,7 @@
                     } else if (err.response.data.error === 'not_found_handle') {
                         this.errorStep1Message = `Sorry, it seems that <a href="https://robertsspaceindustries.com/citizens/${this.form.handle}" target="_blank">SC Handle ${this.form.handle}</a> does not exist. Try to check the typo and search again.`;
                     } else {
-                        this.errorStep1Message = `Sorry, an unexpected error has occurred. Please retry.`;
+                        this.errorStep1Message = `Sorry, an unexpected error has occurred. Please try again later.`;
                     }
                     this.showErrorStep1 = true;
                     this.showButtonStep2 = false;
@@ -297,7 +308,7 @@
 
                 this.lastShortBio = null;
                 this.showError = false;
-                this.errorMessage = 'An error has been occurred. Please try again in a moment.';
+                this.errorMessage = 'An error has occurred. Please try again in a moment.';
                 this.submitDisabled = true;
                 axios.post('/api/profile/link-account', form).then(response => {
                     this.refreshProfile();
@@ -306,7 +317,7 @@
                 }).catch(async err => {
                     this.submitDisabled = false;
                     if (err.response.data.error === 'invalid_form') {
-                        const response = await axios.get('/api/search-handle', {
+                        const response = await axios.get('/api/profile/search-handle', {
                             params: {handle: this.form.handle}
                         });
                         if (response.data) {

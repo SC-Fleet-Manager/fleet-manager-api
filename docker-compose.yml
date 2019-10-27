@@ -1,6 +1,4 @@
 version: '3.4'
-volumes:
-    redis: ~
 services:
     php:
         build:
@@ -32,15 +30,6 @@ services:
         image: bitnami/redis:5.0.5-debian-9-r56
         hostname: redis
         environment:
-            REDIS_PASSWORD: ${REDIS_PASSWORD}
-        volumes:
-            - redis:/data
-    redis-commander:
-        image: rediscommander/redis-commander:latest
-        hostname: redis-commander
-        environment:
-            REDIS_HOST: redis
-            REDIS_PORT: 6379
             REDIS_PASSWORD: ${REDIS_PASSWORD}
     smtp:
         image: namshi/smtp

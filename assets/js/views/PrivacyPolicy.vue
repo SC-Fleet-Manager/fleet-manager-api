@@ -22,6 +22,7 @@
                 <li>RSI handle</li>
                 <li>RSI number</li>
                 <li>Discord handle</li>
+                <li>Email</li>
                 <li>Star Citizen Fleet informations</li>
             </ul>
 
@@ -75,11 +76,7 @@
 
             <h2>Contact Information</h2>
 
-            <p>Fleet Manager welcomes your questions or comments regarding this Statement of Privacy. If you believe that Fleet Manager has not adhered to this Statement, please contact Fleet Manager at:</p>
-
-            <ul>
-                <li>General: info [at] fleet-manager.space</li>
-            </ul>
+            <p>Fleet Manager welcomes your questions or comments regarding this Statement of Privacy. If you believe that Fleet Manager has not adhered to this Statement, please contact Fleet Manager at <b><span class="reverse">moc.liamnotorp [ta] reganam-teelf</span></b>.</p>
 
             <p>Effective as of May 30, 2019</p>
         </section>
@@ -101,3 +98,10 @@
         name: 'PrivacyPolicy'
     }
 </script>
+
+<style scoped>
+    .reverse {
+        unicode-bidi: bidi-override;
+        direction: rtl;
+    }
+</style>

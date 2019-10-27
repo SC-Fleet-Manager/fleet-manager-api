@@ -77,3 +77,13 @@ App\Entity\Citizen:
         actualHandle: '<(new \App\Domain\HandleSC("pulsar42_member3"))>'
         organizations: ['@pulsar42_member3_orga_pulsar42']
         mainOrga: '@pulsar42_member3_orga_pulsar42'
+    citizen_linksocialnetworks:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("9fa8f892-15d6-415b-b535-14455314b865"))>']
+        number: '<(new \App\Domain\CitizenNumber("62415214"))>'
+        nickname: 'Link social networks'
+        actualHandle: '<(new \App\Domain\HandleSC("link_social_networks"))>'
+    citizen_linksocialnetworks_pending:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("fb3ff308-f4ac-40b8-9be5-98d85035e2bf"))>']
+        number: '<(new \App\Domain\CitizenNumber("54118218"))>'
+        nickname: 'Link social networks pending'
+        actualHandle: '<(new \App\Domain\HandleSC("link_social_networks_pending"))>'

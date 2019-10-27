@@ -48,7 +48,7 @@
                 form.append('fleetFile', this.form.fleetFile);
 
                 this.showError = false;
-                this.errorMessage = 'An error has been occurred. Please try again in a moment.';
+                this.errorMessage = 'An error has occurred. Please try again in a moment.';
                 this.submitDisabled = true;
                 axios({
                     method: 'POST',

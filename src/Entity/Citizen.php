@@ -6,7 +6,6 @@ use App\Domain\CitizenNumber;
 use App\Domain\HandleSC;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -54,7 +53,7 @@ class Citizen
     /**
      * @var iterable|Fleet[]
      *
-     * @ORM\OneToMany(targetEntity="Fleet", mappedBy="owner")
+     * @ORM\OneToMany(targetEntity="Fleet", mappedBy="owner", cascade={"all"}, orphanRemoval=true)
      */
     private $fleets;
 
@@ -62,6 +61,7 @@ class Citizen
      * @var Fleet
      *
      * @ORM\OneToOne(targetEntity="Fleet")
+     * @ORM\JoinColumn(onDelete="SET NULL")
      */
     private $lastFleet;
 
@@ -110,6 +110,7 @@ class Citizen
      * @var CitizenOrganization
      *
      * @ORM\OneToOne(targetEntity="CitizenOrganization", fetch="EAGER", cascade={"all"})
+     * @ORM\JoinColumn(onDelete="SET NULL")
      * @Groups({"profile", "orga_fleet"})
      */
     private $mainOrga;

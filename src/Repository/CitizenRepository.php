@@ -158,7 +158,7 @@ class CitizenRepository extends ServiceEntityRepository
         $orgaMetadata = $this->_em->getClassMetadata(Organization::class);
 
         $sql = <<<EOT
-            SELECT c.*, c.id AS citizenId, co.*, co.id AS citizenOrgaId, co.organization_sid AS coOrgaId, o.*, o.id AS orgaId, o.avatar_url AS orgaAvatarUrl, o.last_refresh as orgaLastRefresh
+            SELECT c.*, c.id AS citizenId, co.*, co.id AS citizenOrgaId, co.organization_sid AS coOrgaId, o.*, o.id AS orgaId, o.avatar_url AS orgaAvatarUrl, o.last_refresh AS orgaLastRefresh
             FROM {$orgaMetadata->getTableName()} o
             INNER JOIN {$citizenOrgaMetadata->getTableName()} co ON co.organization_id = o.id AND o.organization_sid = :sid
             INNER JOIN {$citizenMetadata->getTableName()} c ON c.id = co.citizen_id
@@ -195,7 +195,7 @@ class CitizenRepository extends ServiceEntityRepository
         $orgaMetadata = $this->_em->getClassMetadata(Organization::class);
 
         $sql = <<<EOT
-            SELECT *, c.id as citizenId, f.id AS fleetId, s.id AS shipId FROM {$citizenMetadata->getTableName()} c 
+            SELECT *, c.nickname AS citizenNickname, c.id AS citizenId, f.id AS fleetId, s.id AS shipId FROM {$citizenMetadata->getTableName()} c 
             INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON citizenOrga.citizen_id = c.id
             INNER JOIN {$orgaMetadata->getTableName()} orga ON orga.id = citizenOrga.organization_id AND orga.organization_sid = :sid
             INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
@@ -220,7 +220,7 @@ class CitizenRepository extends ServiceEntityRepository
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata(Ship::class, 's', ['id' => 'shipId']);
         $rsm->addJoinedEntityFromClassMetadata(Fleet::class, 'f', 's', 'fleet', ['id' => 'fleetId']);
-        $rsm->addJoinedEntityFromClassMetadata(Citizen::class, 'c', 'f', 'owner', ['id' => 'citizenId']);
+        $rsm->addJoinedEntityFromClassMetadata(Citizen::class, 'c', 'f', 'owner', ['id' => 'citizenId', 'nickname' => 'citizenNickname']);
 
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
         $stmt->setParameter('sid', mb_strtolower($organizationId->getSid()));
@@ -243,7 +243,7 @@ class CitizenRepository extends ServiceEntityRepository
         $orgaMetadata = $this->_em->getClassMetadata(Organization::class);
 
         $sql = <<<EOT
-            SELECT count(DISTINCT c.id) as countOwners, count(*) as countOwned FROM {$citizenMetadata->getTableName()} c 
+            SELECT count(DISTINCT c.id) AS countOwners, count(*) AS countOwned FROM {$citizenMetadata->getTableName()} c 
             INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON citizenOrga.citizen_id = c.id
             INNER JOIN {$orgaMetadata->getTableName()} orga ON orga.id = citizenOrga.organization_id AND orga.organization_sid = :sid
             INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
@@ -299,8 +299,8 @@ class CitizenRepository extends ServiceEntityRepository
 
         $sql = <<<EOT
             SELECT u.*, u.id AS userId, 
-                   c.*, c.id AS citizenId,
-                   COUNT(s.id) as countShips
+                   c.*, c.nickname AS citizenNickname, c.id AS citizenId,
+                   COUNT(s.id) AS countShips
             FROM {$orgaMetadata->getTableName()} orga
             INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON orga.id = citizenOrga.organization_id AND orga.organization_sid = :sid
             INNER JOIN {$citizenMetadata->getTableName()} c ON citizenOrga.citizen_id = c.id
@@ -357,7 +357,7 @@ class CitizenRepository extends ServiceEntityRepository
 
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata(User::class, 'u', ['id' => 'userId']);
-        $rsm->addJoinedEntityFromClassMetadata(Citizen::class, 'c', 'u', 'citizen', ['id' => 'citizenId']);
+        $rsm->addJoinedEntityFromClassMetadata(Citizen::class, 'c', 'u', 'citizen', ['id' => 'citizenId', 'nickname' => 'citizenNickname']);
         $rsm->addScalarResult('countShips', 'countShips');
 
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
@@ -400,7 +400,7 @@ class CitizenRepository extends ServiceEntityRepository
         $orgaMetadata = $this->_em->getClassMetadata(Organization::class);
 
         $sql = <<<EOT
-            SELECT COUNT(DISTINCT c.id) as total
+            SELECT COUNT(DISTINCT c.id) AS total
             FROM {$orgaMetadata->getTableName()} orga
             INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON orga.id = citizenOrga.organization_id AND orga.organization_sid = :sid
             INNER JOIN {$citizenMetadata->getTableName()} c ON citizenOrga.citizen_id = c.id
@@ -485,7 +485,7 @@ class CitizenRepository extends ServiceEntityRepository
         $orgaMetadata = $this->_em->getClassMetadata(Organization::class);
 
         $sql = <<<EOT
-            SELECT COUNT(DISTINCT c.id) as total
+            SELECT COUNT(DISTINCT c.id) AS total
             FROM {$orgaMetadata->getTableName()} orga
             INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON orga.id = citizenOrga.organization_id AND orga.organization_sid = :sid
             INNER JOIN {$citizenMetadata->getTableName()} c ON citizenOrga.citizen_id = c.id

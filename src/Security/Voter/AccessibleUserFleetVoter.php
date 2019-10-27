@@ -39,6 +39,9 @@ class AccessibleUserFleetVoter extends Voter
         }
         /** @var User $me */
         $me = $token->getUser();
+        if (!$me instanceof User) {
+            return false;
+        }
 
         // private only if it's myself
         if ($subject->getPublicChoice() === User::PUBLIC_CHOICE_PRIVATE) {

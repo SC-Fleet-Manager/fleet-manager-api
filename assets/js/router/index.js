@@ -24,7 +24,7 @@ async function getProfile(force)
     if (!force && citizen) {
         return citizen;
     }
-    const response = await axios.get('/api/profile/');
+    const response = await axios.get('/api/profile');
     store.commit('updateProfile', response.data.citizen);
 
     return response.data.citizen;

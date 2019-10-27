@@ -4,6 +4,7 @@ namespace App\Listener;
 
 use App\Entity\Organization;
 use App\Entity\OrganizationChange;
+use App\Event\CitizenDeletedEvent;
 use App\Event\CitizenFleetUpdatedEvent;
 use App\Event\CitizenRefreshedEvent;
 use App\Event\OrganizationPolicyChangedEvent;
@@ -29,7 +30,27 @@ class CreateOrganizationChangeSubscriber implements EventSubscriberInterface
             CitizenFleetUpdatedEvent::class => 'onCitizenFleetUpdated',
             CitizenRefreshedEvent::class => 'onCitizenRefreshed',
             OrganizationPolicyChangedEvent::class => 'onOrganizationPolicyChangedEvent',
+            CitizenDeletedEvent::class => 'onCitizenDeleted',
         ];
+    }
+
+    public function onCitizenDeleted(CitizenDeletedEvent $event): void
+    {
+        $deletedCitizen = $event->getDeletedCitizen();
+
+        foreach ($deletedCitizen->getOrganizations() as $citizenOrga) {
+            $change = new OrganizationChange(Uuid::uuid4());
+            $change->setAuthor(null);
+            $change->setOrganization($citizenOrga->getOrganization());
+            $change->setType(OrganizationChange::TYPE_DELETED_CITIZEN);
+            $change->setPayload([
+                'handle' => $deletedCitizen->getActualHandle()->getHandle(),
+                'nickname' => $deletedCitizen->getNickname(),
+                'number' => $deletedCitizen->getNumber()->getNumber(),
+            ]);
+            $this->entityManager->persist($change);
+        }
+        $this->entityManager->flush();
     }
 
     public function onCitizenFleetUpdated(CitizenFleetUpdatedEvent $event): void
