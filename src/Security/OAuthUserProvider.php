@@ -2,6 +2,7 @@
 
 namespace App\Security;
 
+use Algatux\InfluxDbBundle\Events\DeferredUdpEvent;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Security\Exception\AlreadyLinkedDiscordException;
@@ -10,7 +11,11 @@ use HWI\Bundle\OAuthBundle\Connect\AccountConnectorInterface;
 use HWI\Bundle\OAuthBundle\OAuth\Response\PathUserResponse;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthUserProvider as BaseProvider;
+use InfluxDB\Database;
+use InfluxDB\Point;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -19,11 +24,15 @@ class OAuthUserProvider extends BaseProvider implements AccountConnectorInterfac
 {
     private $userRepository;
     private $entityManager;
+    private $eventDispatcher;
+    private $requestStack;
 
-    public function __construct(UserRepository $userRepository, EntityManagerInterface $entityManager)
+    public function __construct(UserRepository $userRepository, EntityManagerInterface $entityManager, EventDispatcherInterface $eventDispatcher, RequestStack $requestStack)
     {
         $this->userRepository = $userRepository;
         $this->entityManager = $entityManager;
+        $this->eventDispatcher = $eventDispatcher;
+        $this->requestStack = $requestStack;
     }
 
     public function connect(UserInterface $user, UserResponseInterface $response): void
@@ -138,6 +147,12 @@ class OAuthUserProvider extends BaseProvider implements AccountConnectorInterfac
         $newUser->setApiToken(User::generateToken());
 
         $this->entityManager->persist($newUser);
+
+        $this->eventDispatcher->dispatch(new DeferredUdpEvent([new Point(
+            'app.registration',
+            1,
+            ['method' => 'discord', 'host' => $this->requestStack->getCurrentRequest()->getHost()],
+        )], Database::PRECISION_SECONDS), DeferredUdpEvent::NAME);
 
         return $newUser;
     }

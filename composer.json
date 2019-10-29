@@ -9,6 +9,7 @@
         "ext-iconv": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
+        "algatux/influxdb-bundle": "^2.4",
         "fabpot/goutte": "^3.2",
         "guzzlehttp/guzzle": "^6.3",
         "hwi/oauth-bundle": "^0.6.3",
@@ -38,7 +39,8 @@
         "symfony/web-link": "*",
         "symfony/webpack-encore-bundle": "^1.6",
         "symfony/yaml": "*",
-        "twig/cssinliner-extension": "^2.0",
+        "twig/cssinliner-extra": "^2.12",
+        "twig/extra-bundle": "^2.12",
         "twig/inky-extension": "^2.0"
     },
     "require-dev": {

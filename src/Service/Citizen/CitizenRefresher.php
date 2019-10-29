@@ -2,6 +2,7 @@
 
 namespace App\Service\Citizen;
 
+use Algatux\InfluxDbBundle\Events\DeferredUdpEvent;
 use App\Domain\CitizenInfos;
 use App\Domain\SpectrumIdentification;
 use App\Entity\Citizen;
@@ -11,8 +12,11 @@ use App\Event\CitizenRefreshedEvent;
 use App\Repository\OrganizationRepository;
 use App\Service\Organization\InfosProvider\OrganizationInfosProviderInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use InfluxDB\Database;
+use InfluxDB\Point;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class CitizenRefresher
 {
@@ -20,29 +24,38 @@ class CitizenRefresher
     private $organizationRepository;
     private $organizationInfosProvider;
     private $eventDispatcher;
+    private $requestStack;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         OrganizationRepository $organizationRepository,
         OrganizationInfosProviderInterface $organizationInfosProvider,
-        EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher,
+        RequestStack $requestStack
     ) {
         $this->entityManager = $entityManager;
         $this->organizationRepository = $organizationRepository;
         $this->organizationInfosProvider = $organizationInfosProvider;
         $this->eventDispatcher = $eventDispatcher;
+        $this->requestStack = $requestStack;
     }
 
     public function refreshCitizen(Citizen $citizen, CitizenInfos $citizenInfos): void
     {
         foreach ($citizenInfos->organizations as $orgaInfo) {
             $orga = $this->organizationRepository->findOneBy(['organizationSid' => $orgaInfo->sid->getSid()]);
+            $providerOrgaInfos = $this->organizationInfosProvider->retrieveInfos(new SpectrumIdentification($orgaInfo->sid->getSid()));
             if ($orga === null) {
                 $orga = new Organization(Uuid::uuid4());
                 $orga->setOrganizationSid($orgaInfo->sid->getSid());
                 $this->entityManager->persist($orga);
+
+                $this->eventDispatcher->dispatch(new DeferredUdpEvent([new Point(
+                    'app.new_organization',
+                    1,
+                    ['orga_id' => $orga->getId(), 'orga_name' => $providerOrgaInfos->fullname, 'host' => $this->requestStack->getCurrentRequest()->getHost()],
+                )], Database::PRECISION_SECONDS), DeferredUdpEvent::NAME);
             }
-            $providerOrgaInfos = $this->organizationInfosProvider->retrieveInfos(new SpectrumIdentification($orgaInfo->sid->getSid()));
             $orga->setAvatarUrl($providerOrgaInfos->avatarUrl);
             $orga->setName($providerOrgaInfos->fullname);
         }
