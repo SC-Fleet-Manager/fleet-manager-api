@@ -4,7 +4,8 @@ namespace App\Listener;
 
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
+use Symfony\Component\HttpKernel\Event\ControllerEvent;
+use Symfony\Component\Security\Core\Authentication\Token\SwitchUserToken;
 use Symfony\Component\Security\Core\Security;
 
 class TrackConnectionListener
@@ -18,10 +19,15 @@ class TrackConnectionListener
         $this->security = $security;
     }
 
-    public function onController(FilterControllerEvent $event): void
+    public function onController(ControllerEvent $event): void
     {
-        if ($this->security->getToken() === null
-            || !$this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+        $token = $this->security->getToken();
+        if ($token === null || $token instanceof SwitchUserToken) {
+            // we don't want tracking when impersonation
+            return;
+        }
+
+        if (!$this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             return;
         }
 

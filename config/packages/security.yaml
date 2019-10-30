@@ -11,6 +11,10 @@ security:
             entity:
                 class: 'App\Entity\User'
                 property: 'email'
+        user_entity_username:
+            entity:
+                class: 'App\Entity\User'
+                property: 'username'
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|build|icons|favicon\.ico|robots\.txt)/
@@ -24,6 +28,9 @@ security:
         main:
             anonymous: true
             user_checker: App\Security\ConfirmedUserChecker
+            switch_user:
+                provider: user_entity_username
+                role: ROLE_ADMIN
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800 # 1 week
@@ -50,6 +57,9 @@ security:
             logout:
                 path: logout
             access_denied_handler: App\Security\ApiAccessDeniedHandler
+
+    role_hierarchy:
+        ROLE_ADMIN: ROLE_USER
 
     access_control:
         - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
