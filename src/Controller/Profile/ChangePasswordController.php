@@ -59,7 +59,7 @@ class ChangePasswordController extends AbstractController
 
         // TODO : extract in a Constraint
         if (!$this->passwordEncoder->isPasswordValid($user, $changePassword->oldPassword)) {
-            $errors->add(new ConstraintViolation('Your actual password is wrong.', null, [], null, 'oldPassword', null));
+            $errors->add(new ConstraintViolation('Your current password is wrong.', null, [], null, 'oldPassword', null));
         }
 
         if ($errors->count() > 0) {
