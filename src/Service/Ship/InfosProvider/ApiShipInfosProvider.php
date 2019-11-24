@@ -11,6 +11,7 @@ use Symfony\Contracts\Cache\CacheInterface;
 class ApiShipInfosProvider implements ShipInfosProviderInterface
 {
     private const BASE_URL = 'https://robertsspaceindustries.com';
+    private const MEDIA_URL = 'https://media.robertsspaceindustries.com';
 
     /** @var Client */
     private $client;
@@ -96,12 +97,12 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
             $shipInfos[$shipInfo->id] = $shipInfo;
         }
 
-        $shipInfos = array_merge($shipInfos, $this->getSpecialCases());
+        $shipInfos = array_merge($shipInfos, $this->getSpecialCases($shipInfos));
 
         return $shipInfos;
     }
 
-    private function getSpecialCases(): array
+    private function getSpecialCases(array $officialInfos): array
     {
         $shipInfos = [];
 
@@ -152,8 +153,17 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
         $shipInfo->manufacturerCode = 'CNOU'; // id=22
         $shipInfo->chassisId = '16';
         $shipInfo->chassisName = static::transformChassisIdToFamilyName($shipInfo->chassisId);
-        $shipInfo->mediaUrl = self::BASE_URL.'/media/gmru9y7ynd1bbr/source/Omega-Front.jpg';
-        $shipInfo->mediaThumbUrl = self::BASE_URL.'/media/gmru9y7ynd1bbr/store_small/Omega-Front.jpg';
+        $shipInfo->mediaUrl = self::MEDIA_URL.'/gmru9y7ynd1bbr/source.jpg';
+        $shipInfo->mediaThumbUrl = self::MEDIA_URL.'/gmru9y7ynd1bbr/store_small.jpg';
+        $shipInfos[$shipInfo->id] = $shipInfo;
+
+        // add Carrack with Pisces Expedition
+        $shipInfo = clone $officialInfos['62'];
+        $shipInfo->id = '1062';
+        $shipInfo->name = 'Carrack with Pisces Expedition';
+        $shipInfo->pledgeUrl = 'https://robertsspaceindustries.com/pledge/Standalone-Ships/Anvil-Carrack-IAE-2949';
+        $shipInfo->mediaUrl = self::MEDIA_URL.'/g7dx300udpe1v/source.jpg';
+        $shipInfo->mediaThumbUrl = self::MEDIA_URL.'/g7dx300udpe1v/store_small.jpg';
         $shipInfos[$shipInfo->id] = $shipInfo;
 
         return $shipInfos;
