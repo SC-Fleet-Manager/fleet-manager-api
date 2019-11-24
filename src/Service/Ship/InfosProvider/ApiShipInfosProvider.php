@@ -407,7 +407,6 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
             'Idris-M Frigate' => 'Idris-M',
             'Khartu-al' => 'Khartu-Al',
             'Nova Tank' => 'Nova',
-            'P-52 Merlin' => 'P52 Merlin',
             'P-72 Archimedes' => 'P72 Archimedes',
             'Reliant Kore - Mini Hauler' => 'Reliant Kore',
             'Reliant Mako - News Van' => 'Reliant Mako',
