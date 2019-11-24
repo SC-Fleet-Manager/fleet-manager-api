@@ -1,3 +1,8 @@
+parameters:
+    env(INFLUXDB_HOST): 'localhost'
+    env(INFLUXDB_DATABASE): 'fleet_manager'
+    env(INFLUXDB_UDP_PORT): 8089
+
 influx_db:
     default_connection: ~
     connections:
