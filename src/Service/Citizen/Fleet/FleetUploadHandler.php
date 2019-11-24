@@ -58,8 +58,7 @@ class FleetUploadHandler
 
         $lastVersion = $citizen->getLastFleet();
         if ($lastVersion !== null && $lastVersion->isUploadedDateTooClose()) {
-            throw new FleetUploadedTooCloseException(
-                sprintf('Last version of the fleet was uploaded at %s', $lastVersion->getUploadDate()->format('Y-m-d H:i')));
+            throw new FleetUploadedTooCloseException(sprintf('Last version of the fleet was uploaded at %s', $lastVersion->getUploadDate()->format('Y-m-d H:i')));
         }
 
         $fleet = $this->createNewFleet($fleetData, $lastVersion);
@@ -117,8 +116,8 @@ class FleetUploadHandler
             $ship
                 ->setName(trim($shipData['name']))
                 ->setManufacturer(trim($shipData['manufacturer']))
-                ->setInsured((bool)$shipData['lti'])
-                ->setCost((new Money((int)preg_replace('/^\$(\d+\.\d+)/', '$1', $shipData['cost'])))->getCost())
+                ->setInsured((bool) $shipData['lti'])
+                ->setCost((new Money((int) preg_replace('/^\$(\d+\.\d+)/', '$1', $shipData['cost'])))->getCost())
                 ->setPledgeDate(\DateTimeImmutable::createFromFormat('F d, Y', $shipData['pledge_date'])->setTime(0, 0))
                 ->setRawData($shipData);
             $fleet->addShip($ship);

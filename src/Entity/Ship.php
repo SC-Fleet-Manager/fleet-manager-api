@@ -140,9 +140,6 @@ class Ship
         return $this;
     }
 
-    /**
-     * @return float
-     */
     public function getCost(): float
     {
         return $this->cost;

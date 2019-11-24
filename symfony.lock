@@ -134,6 +134,9 @@
             "ref": "71822522faf7ed2792d86b7f94ce73443358ccb9"
         }
     },
+    "http-interop/http-factory-guzzle": {
+        "version": "1.0.0"
+    },
     "hwi/oauth-bundle": {
         "version": "0.6",
         "recipe": {
@@ -331,9 +334,6 @@
             "version": "3.3",
             "ref": "e3868d2f4a5104f19f844fe551099a00c6562527"
         }
-    },
-    "symfony/contracts": {
-        "version": "v1.1.0"
     },
     "symfony/css-selector": {
         "version": "v4.1.9"

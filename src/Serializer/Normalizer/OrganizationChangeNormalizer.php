@@ -25,6 +25,7 @@ class OrganizationChangeNormalizer implements NormalizerInterface
 
     /**
      * @param OrganizationChange $orgaChange
+     * @param mixed|null         $format
      */
     public function normalize($orgaChange, $format = null, array $context = [])
     {

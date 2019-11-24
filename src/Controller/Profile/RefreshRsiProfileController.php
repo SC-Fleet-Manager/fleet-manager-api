@@ -4,8 +4,8 @@ namespace App\Controller\Profile;
 
 use App\Entity\User;
 use App\Exception\NotFoundHandleSCException;
-use App\Service\Citizen\InfosProvider\CitizenInfosProviderInterface;
 use App\Service\Citizen\CitizenRefresher;
+use App\Service\Citizen\InfosProvider\CitizenInfosProviderInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;

@@ -26,8 +26,7 @@ class RefreshOrganizationController extends AbstractController
         OrganizationMembersInfosProviderInterface $organizationMembersInfosProvider,
         OrganizationMembersUtil $organizationMembersUtil,
         EntityManagerInterface $entityManager
-    )
-    {
+    ) {
         $this->security = $security;
         $this->organizationMembersInfosProvider = $organizationMembersInfosProvider;
         $this->organizationMembersUtil = $organizationMembersUtil;

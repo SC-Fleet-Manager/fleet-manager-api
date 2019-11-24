@@ -26,9 +26,11 @@ class AccessibleUserFleetVoter extends Voter
         return $subject instanceof User && $attribute === 'ACCESS_USER_FLEET';
     }
 
+    /**
+     * @param User $subject
+     */
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token): bool
     {
-        /** @var User $subject */
         if ($subject->getPublicChoice() === User::PUBLIC_CHOICE_PUBLIC) {
             return true;
         }

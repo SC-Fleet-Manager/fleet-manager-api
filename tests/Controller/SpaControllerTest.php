@@ -103,7 +103,7 @@ class SpaControllerTest extends PantherTestCase
             // My Orgas
             $this->client->clickLink('My Orgas');
             $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
-                return (int)$driver->executeScript('return document.querySelectorAll(".card-ship").length;') > 0;
+                return (int) $driver->executeScript('return document.querySelectorAll(".card-ship").length;') > 0;
             });
             $this->client->refreshCrawler();
             $this->assertSame('FallKrom', $this->client->findElement(WebDriverBy::id('select-orga'))->getText());

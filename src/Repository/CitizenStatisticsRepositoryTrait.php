@@ -25,8 +25,7 @@ trait CitizenStatisticsRepositoryTrait
         ';
         $query = $this->_em->createQuery($dql);
         $query->setParameter('sid', mb_strtolower($sid->getSid()));
-        $query->useResultCache(true);
-        $query->setResultCacheLifetime(300);
+        $query->enableResultCache(300);
 
         return $query->getSingleScalarResult();
     }
@@ -54,8 +53,7 @@ trait CitizenStatisticsRepositoryTrait
         $rsm->addScalarResult('avgShips', 'avgShips');
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
         $stmt->setParameter('sid', mb_strtolower($sid->getSid()));
-        $stmt->useResultCache(true);
-        $stmt->setResultCacheLifetime(300);
+        $stmt->enableResultCache(300);
 
         return $stmt->getSingleScalarResult();
     }
@@ -73,8 +71,7 @@ trait CitizenStatisticsRepositoryTrait
         ';
         $query = $this->_em->createQuery($dql);
         $query->setParameter('sid', mb_strtolower($sid->getSid()));
-        $query->useResultCache(true);
-        $query->setResultCacheLifetime(300);
+        $query->enableResultCache(300);
         $query->setMaxResults(1);
 
         return $query->getOneOrNullResult();
@@ -94,8 +91,7 @@ trait CitizenStatisticsRepositoryTrait
         ';
         $query = $this->_em->createQuery($dql);
         $query->setParameter('sid', mb_strtolower($sid->getSid()));
-        $query->useResultCache(true);
-        $query->setResultCacheLifetime(300);
+        $query->enableResultCache(300);
 
         return $query->getResult();
     }

@@ -43,6 +43,7 @@ security:
                 success_handler: App\Security\FormLoginSuccessHandler
                 failure_handler: App\Security\FormLoginFailureHandler
             oauth:
+                provider: oauth_user_provider
                 resource_owners:
                     discord: /login/check-discord
                 login_path: /login
@@ -50,7 +51,6 @@ security:
                 failure_path: /login
                 always_use_default_target_path: true
                 default_target_path: /profile
-                provider: oauth_user_provider
                 oauth_user_provider:
                     service: App\Security\OAuthUserProvider
                 remember_me:  true
