@@ -259,7 +259,10 @@
                         <b-alert :show="lostPasswordFormSuccessMessage" variant="success">{{ lostPasswordFormSuccessMessage }}</b-alert>
                         <b-collapse id="collapse-login-form" accordion="login-form" visible>
                             <b-form @submit="onSubmitLoginForm">
-                                <b-alert :show="loginFormErrorsGlobal" variant="danger">{{ loginFormErrorsGlobal }}</b-alert>
+                                <b-alert :show="loginFormErrorsGlobal" variant="danger">
+                                    {{ loginFormErrorsGlobal }}
+                                    <b-button v-if="loginNotConfirmed != null" :disabled="resendConfirmationEmailDisabled" type="button" variant="primary" class="mt-2" @click="resendConfirmationEmail"><i class="fas fa-redo"></i> Resend a confirmation email</b-button>
+                                </b-alert>
                                 <b-form-group label-for="input-email">
                                     <b-form-input
                                             type="email"
@@ -361,7 +364,9 @@ export default {
             lostPasswordForm: {email: null},
             loginFormShow: true,
             loginFormErrorsGlobal: null,
+            loginNotConfirmed: null,
             registrationFormShow: false,
+            resendConfirmationEmailDisabled: false,
             registrationFormSuccessMessage: null,
             registrationFormPasswordVisible: false,
             registrationFormErrorsGlobal: null,
@@ -454,6 +459,7 @@ export default {
             this.registrationFormErrorsGlobal = null;
             this.registrationFormErrorsViolations = {email: null, password: null};
             this.loginFormErrorsGlobal = null;
+            this.loginNotConfirmed = null;
             axios({
                 method: 'POST',
                 url: '/api/login/check-form-login',
@@ -469,9 +475,32 @@ export default {
             }).catch(err => {
                 if (err.response.data.errorMessage) {
                     this.loginFormErrorsGlobal = err.response.data.errorMessage;
+                    if (err.response.data.error === 'not_confirmed_registration') {
+                        this.loginNotConfirmed = this.loginForm.email;
+                    }
                 } else {
                     this.loginFormErrorsGlobal = 'An unexpected error has occurred. Please try again in a moment.';
                 }
+            });
+        },
+        resendConfirmationEmail() {
+            if (!this.loginNotConfirmed) {
+                return;
+            }
+            this.resendConfirmationEmailDisabled = true;
+            axios({
+                method: 'POST',
+                url: '/api/resend-registration-confirmation',
+                data: qs.stringify({
+                    'username': this.loginNotConfirmed,
+                }),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+            }).then(response => {
+                this.resendConfirmationEmailDisabled = false;
+            }).catch(err => {
+                this.resendConfirmationEmailDisabled = false;
             });
         },
         onSubmitRegistrationForm(ev) {
