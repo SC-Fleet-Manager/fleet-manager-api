@@ -58,12 +58,48 @@ class SpaControllerTest extends PantherTestCase
             });
             $this->client->refreshCrawler();
 
-            // connect with default user
+            // registration
             $this->client->findElement(WebDriverBy::xpath('//button[contains(text(), "Start using Fleet Manager now")]'))->click();
             $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
                 return $driver->findElement(WebDriverBy::id('modal-login___BV_modal_body_'))->isDisplayed();
             });
-            $this->client->clickLink('Login with Discord');
+            $this->client->findElement(WebDriverBy::xpath('//p[contains(text(), "I\'m not registered yet.")]'))->click();
+            $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+                return $driver->findElement(WebDriverBy::xpath('//button[contains(text(), "Register")]'))->isDisplayed();
+            });
+            $this->client->findElement(WebDriverBy::cssSelector('input#input-registration-email'))->sendKeys('foobar@example.com');
+            $this->client->findElement(WebDriverBy::cssSelector('input#input-registration-password'))->sendKeys('123456');
+            $this->client->findElement(WebDriverBy::xpath('//button[contains(text(), "Register")]'))->click();
+            $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+                return $driver->findElement(WebDriverBy::xpath('//*[@id="collapse-login-form"]//button[contains(text(), "Login")]'))->isDisplayed()
+                    && $driver->findElement(WebDriverBy::cssSelector('.alert'))->isDisplayed();
+            });
+            $this->assertContains('Well done! An email has been sent to you to confirm your registration.', $this->client->findElement(WebDriverBy::cssSelector('.alert.alert-success'))->getText());
+
+            // lost password
+            $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+                return $driver->findElement(WebDriverBy::xpath('//*[@id="collapse-login-form"]//button[contains(text(), "Login")]'))->isDisplayed();
+            });
+            $this->client->findElement(WebDriverBy::xpath('//p[contains(text(), "I lost my password.")]'))->click();
+            $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+                return $driver->findElement(WebDriverBy::xpath('//button[contains(text(), "Send me a new password")]'))->isDisplayed();
+            });
+            $this->client->findElement(WebDriverBy::cssSelector('input#input-lost-password-email'))->sendKeys('foobar@example.com');
+            $this->client->findElement(WebDriverBy::xpath('//button[contains(text(), "Send me a new password")]'))->click();
+
+            $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+                return $driver->findElement(WebDriverBy::xpath('//*[@id="collapse-login-form"]//button[contains(text(), "Login")]'))->isDisplayed()
+                    && $driver->findElement(WebDriverBy::cssSelector('.alert'))->isDisplayed();
+            });
+            $this->assertContains('If we recognize this email, we will send to you the instructions to create a new password.', $this->client->findElement(WebDriverBy::cssSelector('.alert.alert-success'))->getText());
+
+            // login
+            $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+                return $driver->findElement(WebDriverBy::xpath('//*[@id="collapse-login-form"]//button[contains(text(), "Login")]'))->isDisplayed();
+            });
+            $this->client->findElement(WebDriverBy::cssSelector('input#input-email'))->sendKeys('ioni@example.com');
+            $this->client->findElement(WebDriverBy::cssSelector('input#input-password'))->sendKeys('123456');
+            $this->client->findElement(WebDriverBy::xpath('//*[@id="collapse-login-form"]//button[contains(text(), "Login")]'))->click();
 
             // Profile
             $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
@@ -80,6 +116,7 @@ class SpaControllerTest extends PantherTestCase
             $this->assertTrue($this->client->executeScript('return document.querySelector(\'input[name="public-choice"][value="public"]\').checked;'), 'Personal fleet policy is not public.');
 
             // My Fleet
+            $this->client->refreshCrawler();
             $this->client->clickLink('My Fleet');
             $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
                 return count($driver->findElements(WebDriverBy::className('js-card-ship'))) > 0;
