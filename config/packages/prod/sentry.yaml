@@ -3,3 +3,7 @@ parameters:
 
 sentry:
     dsn: '%env(SENTRY_DSN)%'
+    options:
+        excluded_exceptions:
+            - 'Symfony\Component\Security\Core\Exception\AccessDeniedException'
+            - 'Symfony\Component\HttpKernel\Exception\NotFoundHttpException'

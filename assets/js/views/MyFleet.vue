@@ -166,7 +166,6 @@
                     case 'Idris-M Frigate': return 'Idris-M';
                     case 'Khartu-al': return 'Khartu-Al';
                     case 'Nova Tank': return 'Nova';
-                    case 'P-52 Merlin': return 'P52 Merlin';
                     case 'P-72 Archimedes': return 'P72 Archimedes';
                     case 'Reliant Kore - Mini Hauler': return 'Reliant Kore';
                     case 'Reliant Mako - News Van': return 'Reliant Mako';

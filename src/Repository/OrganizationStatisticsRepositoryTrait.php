@@ -22,8 +22,7 @@ trait OrganizationStatisticsRepositoryTrait
         ';
         $query = $this->_em->createQuery($dql);
         $query->setParameter('sid', mb_strtolower($sid->getSid()));
-        $query->useResultCache(true);
-        $query->setResultCacheLifetime(300);
+        $query->enableResultCache(300);
 
         return $query->getSingleScalarResult();
     }
@@ -42,8 +41,7 @@ trait OrganizationStatisticsRepositoryTrait
         ';
         $query = $this->_em->createQuery($dql);
         $query->setParameter('sid', mb_strtolower($sid->getSid()));
-        $query->useResultCache(true);
-        $query->setResultCacheLifetime(300);
+        $query->enableResultCache(300);
 
         return $query->getResult();
     }

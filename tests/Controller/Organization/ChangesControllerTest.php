@@ -43,7 +43,7 @@ class ChangesControllerTest extends WebTestCase
         $citizenInfosProvider->setCitizen($this->user->getCitizen());
 
         $this->client->xmlHttpRequest('POST', '/api/export', [], [], [
-            'HTTP_AUTHORIZATION' => 'Bearer ' . $this->user->getApiToken(),
+            'HTTP_AUTHORIZATION' => 'Bearer '.$this->user->getApiToken(),
             'CONTENT_TYPE' => 'application/json',
         ], $jsonContent);
 

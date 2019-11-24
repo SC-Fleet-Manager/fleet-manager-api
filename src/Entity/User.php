@@ -44,6 +44,13 @@ class User implements UserInterface
     private $username;
 
     /**
+     * @var string[]
+     *
+     * @ORM\Column(type="json_array")
+     */
+    private $roles;
+
+    /**
      * @var string
      *
      * @ORM\Column(type="string", length=127, nullable=true)
@@ -192,6 +199,7 @@ class User implements UserInterface
     public function __construct(?UuidInterface $id = null)
     {
         $this->id = $id;
+        $this->roles = ['ROLE_USER'];
         $this->emailConfirmed = false;
         $this->publicChoice = self::PUBLIC_CHOICE_ORGANIZATION;
         $this->createdAt = new \DateTimeImmutable();
@@ -204,7 +212,17 @@ class User implements UserInterface
 
     public function getRoles(): array
     {
-        return ['ROLE_USER'];
+        return $this->roles;
+    }
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+        if (empty($this->roles)) {
+            $this->roles[] = 'ROLE_USER';
+        }
+
+        return $this;
     }
 
     public function getUsername(): string
