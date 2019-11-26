@@ -60,7 +60,7 @@ class ChangeEmailRequestController extends AbstractController
 
         // TODO : extract in a Constraint
         if ($user->getEmail() === $changeEmail->newEmail) {
-            $errors->add(new ConstraintViolation('This is your actual email address. Please choose another.', null, [], null, 'newEmail', null));
+            $errors->add(new ConstraintViolation('This is your current email address. Please choose another.', null, [], null, 'newEmail', null));
         }
 
         if ($errors->count() > 0) {

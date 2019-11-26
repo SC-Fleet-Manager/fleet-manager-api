@@ -64,8 +64,7 @@ class CitizenRepository extends ServiceEntityRepository
         ';
         $query = $this->_em->createQuery($dql);
         $query->setParameter('sid', mb_strtolower($organizationId->getSid()));
-        $query->useResultCache(true);
-        $query->setResultCacheLifetime(30);
+        $query->enableResultCache(30);
 
         return $query->getResult();
     }
@@ -143,7 +142,7 @@ class CitizenRepository extends ServiceEntityRepository
             'userPublicChoiceOrga' => User::PUBLIC_CHOICE_ORGANIZATION,
             'viewerCitizenId' => $viewerCitizen !== null ? $viewerCitizen->getId()->toString() : null,
         ]);
-        $stmt->useResultCache(true, 30);
+        $stmt->enableResultCache(30);
 
         return $stmt->getResult();
     }
@@ -178,7 +177,7 @@ class CitizenRepository extends ServiceEntityRepository
         $stmt->setParameters([
             'sid' => mb_strtolower($organizationSid),
         ]);
-        $stmt->useResultCache(true, 30);
+        $stmt->enableResultCache(30);
 
         return $stmt->getResult();
     }
@@ -387,8 +386,6 @@ class CitizenRepository extends ServiceEntityRepository
 
     /**
      * @param Citizen|null $viewerCitizen the logged citizen
-     *
-     * @return int
      */
     public function countOwnersOfShip(string $organizationId, string $shipName, ?Citizen $viewerCitizen, ShipFamilyFilter $filter): int
     {
@@ -472,8 +469,6 @@ class CitizenRepository extends ServiceEntityRepository
 
     /**
      * @param Citizen|null $viewerCitizen the logged citizen
-     *
-     * @return int
      */
     public function countHiddenOwnersOfShip(string $organizationId, string $shipName, ?Citizen $viewerCitizen): int
     {

@@ -11,6 +11,10 @@ security:
             entity:
                 class: 'App\Entity\User'
                 property: 'email'
+        user_entity_username:
+            entity:
+                class: 'App\Entity\User'
+                property: 'username'
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|build|icons|favicon\.ico|robots\.txt)/
@@ -24,6 +28,9 @@ security:
         main:
             anonymous: true
             user_checker: App\Security\ConfirmedUserChecker
+            switch_user:
+                provider: user_entity_username
+                role: ROLE_ADMIN
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800 # 1 week
@@ -36,6 +43,7 @@ security:
                 success_handler: App\Security\FormLoginSuccessHandler
                 failure_handler: App\Security\FormLoginFailureHandler
             oauth:
+                provider: oauth_user_provider
                 resource_owners:
                     discord: /login/check-discord
                 login_path: /login
@@ -43,13 +51,15 @@ security:
                 failure_path: /login
                 always_use_default_target_path: true
                 default_target_path: /profile
-                provider: oauth_user_provider
                 oauth_user_provider:
                     service: App\Security\OAuthUserProvider
                 remember_me:  true
             logout:
                 path: logout
             access_denied_handler: App\Security\ApiAccessDeniedHandler
+
+    role_hierarchy:
+        ROLE_ADMIN: ROLE_USER
 
     access_control:
         - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY }

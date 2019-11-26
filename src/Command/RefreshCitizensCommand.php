@@ -4,8 +4,8 @@ namespace App\Command;
 
 use App\Entity\Citizen;
 use App\Repository\CitizenRepository;
-use App\Service\Citizen\InfosProvider\CitizenInfosProviderInterface;
 use App\Service\Citizen\CitizenRefresher;
+use App\Service\Citizen\InfosProvider\CitizenInfosProviderInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

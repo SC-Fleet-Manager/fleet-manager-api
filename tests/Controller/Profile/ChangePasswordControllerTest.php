@@ -51,7 +51,7 @@ class ChangePasswordControllerTest extends WebTestCase
         $this->assertSame(400, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('invalid_form', $json['error']);
-        $this->assertSame('Your actual password is wrong.', $json['formErrors']['violations'][0]['title']);
+        $this->assertSame('Your current password is wrong.', $json['formErrors']['violations'][0]['title']);
     }
 
     /**

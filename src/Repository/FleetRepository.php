@@ -32,7 +32,7 @@ class FleetRepository extends ServiceEntityRepository
         $rsm->addScalarResult('countShips', 'countShips');
 
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
-        $stmt->useResultCache(true, 300);
+        $stmt->enableResultCache(300);
 
         return $stmt->getSingleScalarResult();
     }

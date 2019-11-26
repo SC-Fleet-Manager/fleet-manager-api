@@ -96,22 +96,22 @@ fixtures: vendor								## executes all fixtures
 .PHONY: qa tests phpunit-tests functional-tests end2end-tests phpcsfix lint-twig lint-yaml
 qa: phpcsfix lint-twig lint-yaml tests					## launch tests + syntax checks
 
-tests:									## reset db tests + launch all tests
+tests:													## reset db tests + launch all tests
 	$(MAKE) db-reset-tests
 	$(MAKE) para-tests
-para-tests: unit-tests functional-tests end2end-tests			## launch all tests parallelisable
-unit-tests: vendor							## launch unit tests
+para-tests: unit-tests functional-tests end2end-tests	## launch all tests parallelisable
+unit-tests:												## launch unit tests
 	$(EXEC_PHP_NOTTY) $(PHPUNIT) --group=unit $(c)
-functional-tests: vendor						## launch functional tests
+functional-tests:										## launch functional tests
 	$(EXEC_PHP_NOTTY) $(PHPUNIT) --group=functional $(c)
-end2end-tests: vendor							## launch end2end tests
+end2end-tests:											## launch end2end tests
 	$(EXEC_PHP_NOTTY) $(PHPUNIT) --group=end2end $(c)
 
-phpcsfix: vendor							## fix syntax of all PHP sources
+phpcsfix:												## fix syntax of all PHP sources
 	$(EXEC_PHP) $(PHP_CS_FIXER) fix
-lint-twig: vendor							## check syntax of templates
+lint-twig:												## check syntax of templates
 	$(EXEC_CONSOLE) lint:twig templates
-lint-yaml: vendor							## check syntax of yaml files
+lint-yaml:												## check syntax of yaml files
 	$(EXEC_CONSOLE) lint:yaml --parse-tags *.yml fixtures/*.yaml
 
 # Files generation

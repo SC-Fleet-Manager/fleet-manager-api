@@ -1,4 +1,7 @@
 {
+    "algatux/influxdb-bundle": {
+        "version": "2.4.0"
+    },
     "clue/stream-filter": {
         "version": "v1.4.0"
     },
@@ -131,6 +134,9 @@
             "ref": "71822522faf7ed2792d86b7f94ce73443358ccb9"
         }
     },
+    "http-interop/http-factory-guzzle": {
+        "version": "1.0.0"
+    },
     "hwi/oauth-bundle": {
         "version": "0.6",
         "recipe": {
@@ -139,6 +145,9 @@
             "version": "0.6",
             "ref": "20cacc9b2da49d96ea55c8a8dd31324c5be88bc9"
         }
+    },
+    "influxdb/influxdb-php": {
+        "version": "1.15.0"
     },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
@@ -325,9 +334,6 @@
             "version": "3.3",
             "ref": "e3868d2f4a5104f19f844fe551099a00c6562527"
         }
-    },
-    "symfony/contracts": {
-        "version": "v1.1.0"
     },
     "symfony/css-selector": {
         "version": "v4.1.9"
@@ -638,16 +644,13 @@
         }
     },
     "tijsverkoyen/css-to-inline-styles": {
-        "version": "2.2.1"
+        "version": "2.2.2"
     },
-    "twig/cssinliner-extension": {
-        "version": "1.0",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "master",
-            "version": "1.0",
-            "ref": "3460ba58f2609c9f1a38c6e9f2a416ff911f0861"
-        }
+    "twig/cssinliner-extra": {
+        "version": "v2.12.1"
+    },
+    "twig/extra-bundle": {
+        "version": "v2.12.1"
     },
     "twig/inky-extension": {
         "version": "1.0",

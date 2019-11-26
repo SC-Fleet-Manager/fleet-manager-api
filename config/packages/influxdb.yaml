@@ -1,0 +1,17 @@
+parameters:
+    env(INFLUXDB_HOST): 'localhost'
+    env(INFLUXDB_DATABASE): 'fleet_manager'
+    env(INFLUXDB_UDP_PORT): 8089
+
+influx_db:
+    default_connection: ~
+    connections:
+        default:
+            host: '%env(INFLUXDB_HOST)%'
+            database: '%env(INFLUXDB_DATABASE)%'
+            udp: true
+            udp_port: '%env(int:INFLUXDB_UDP_PORT)%'
+            timeout: 0.0
+            connect_timeout: 0.0
+            listener_enabled: true
+            listener_class: Algatux\InfluxDbBundle\Events\Listeners\InfluxDbEventListener

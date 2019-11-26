@@ -3,6 +3,7 @@
 namespace App\Tests;
 
 use App\Entity\User;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Hautelook\AliceBundle\PhpUnit\ReloadDatabaseTrait;
 use HWI\Bundle\OAuthBundle\Security\Core\Authentication\Token\OAuthToken;
 use Symfony\Bridge\Doctrine\RegistryInterface;
@@ -32,7 +33,7 @@ class WebTestCase extends BaseWebTestCase
     public function setUp(): void
     {
         $this->client = static::createClient();
-        $this->doctrine = static::$container->get('doctrine');
+        $this->doctrine = static::$container->get(ManagerRegistry::class);
     }
 
     protected function logIn(User $user): void

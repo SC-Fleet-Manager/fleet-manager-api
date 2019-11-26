@@ -4,8 +4,8 @@ namespace App\Controller\Organization\Fleet;
 
 use App\Domain\SpectrumIdentification;
 use App\Service\Organization\Fleet\FleetOrganizationGuard;
-use App\Service\Organization\ShipFamilyFilterFactory;
 use App\Service\Organization\Fleet\OrganizationFleetHandler;
+use App\Service\Organization\ShipFamilyFilterFactory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

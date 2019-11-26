@@ -32,7 +32,7 @@
                 - <a href="/privacy-policy">Privacy policy</a>
             </div>
             <b-nav class="ml-auto">
-                <b-nav-item link-classes="p-2" target="_blank" href="https://fleet-extension.fallkrom.space/fleet_manager_extension-latest.xpi"><i style="font-size: 1.4rem;" class="fab fa-firefox"></i></b-nav-item>
+                <b-nav-item link-classes="p-2" href="https://ext.fleet-manager.space/fleet_manager_extension-latest.xpi"><i style="font-size: 1.4rem;" class="fab fa-firefox"></i></b-nav-item>
                 <b-nav-item link-classes="p-2" target="_blank" href="https://chrome.google.com/webstore/detail/fleet-manager-extension/hbbadomkekhkhemjjmhkhgiokjhpobhk"><i style="font-size: 1.4rem;" class="fab fa-chrome"></i></b-nav-item>
                 <b-nav-text class="p-2">–</b-nav-text>
                 <b-nav-item href="https://discord.gg/f6mrA3Y" target="_blank" link-classes="p-2"><i class="fab fa-discord" style="font-size: 1.4rem;"></i></b-nav-item>
@@ -42,27 +42,7 @@
             </b-nav>
         </TheFooter>
 
-        <b-modal
-            id="modal-login"
-            ref="modalLogin"
-            title="Connect to Fleet Manager"
-            size="md"
-            centered hide-footer
-            header-bg-variant="dark"
-            header-text-variant="light"
-            body-bg-variant="dark"
-            body-text-variant="light"
-            footer-bg-variant="dark"
-            footer-text-variant="light"
-        >
-            <b-row class="justify-content-center">
-                <b-col>
-                    <b-form class="text-center mt-3 mb-3">
-                        <b-button size="lg" style="background-color: #7289da; color: #fff;" class="px-5" href="/connect/discord"><i class="fab fa-discord"></i> Login with Discord</b-button>
-                    </b-form>
-                </b-col>
-            </b-row>
-        </b-modal>
+        <RegistrationAndLoginModal discord-login-url="/connect/discord"></RegistrationAndLoginModal>
     </div>
 </template>
 
@@ -77,10 +57,12 @@
         Footer as TheFooter
     } from '@coreui/vue';
     import { mapMutations } from 'vuex';
+    import RegistrationAndLoginModal from "../views/RegistrationAndLoginModal";
 
     export default {
         name: 'DefaultContainer',
         components: {
+            RegistrationAndLoginModal,
             AppHeader,
             AppSidebar,
             TheFooter,

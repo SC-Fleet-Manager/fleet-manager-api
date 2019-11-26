@@ -25,7 +25,7 @@ class UploadControllerTest extends WebTestCase
      */
     public function testValidUpload(): void
     {
-        file_put_contents(sys_get_temp_dir() . '/test-fleet.json', <<<EOT
+        file_put_contents(sys_get_temp_dir().'/test-fleet.json', <<<EOT
             [
               {
                 "manufacturer": "Drake",
@@ -55,7 +55,7 @@ class UploadControllerTest extends WebTestCase
 
         $this->logIn($this->user);
         $this->client->xmlHttpRequest('POST', '/api/upload', [], [
-            'fleetFile' => new UploadedFile(sys_get_temp_dir() . '/test-fleet.json', 'test-fleet.json', 'application/json', null),
+            'fleetFile' => new UploadedFile(sys_get_temp_dir().'/test-fleet.json', 'test-fleet.json', 'application/json', null),
         ]);
 
         $this->assertSame(204, $this->client->getResponse()->getStatusCode());

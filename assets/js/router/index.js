@@ -62,9 +62,6 @@ const router = new Router({
             redirect: '/profile',
             name: 'Home',
             component: DefaultContainer,
-            meta: {
-                requireAuth: true,
-            },
             children: [
                 {
                     path: 'organization-fleet/:sid',
@@ -145,6 +142,9 @@ const router = new Router({
                 {
                     path: 'my-fleet',
                     name: 'My Fleet',
+                    meta: {
+                        requireAuth: true,
+                    },
                     async beforeEnter(to, from, next) {
                         try {
                             const citizen = await getProfile();

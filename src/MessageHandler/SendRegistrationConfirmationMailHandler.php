@@ -8,7 +8,7 @@ use App\Repository\UserRepository;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
-use Symfony\Component\Mime\NamedAddress;
+use Symfony\Component\Mime\Address;
 
 class SendRegistrationConfirmationMailHandler implements MessageHandlerInterface
 {
@@ -32,7 +32,7 @@ class SendRegistrationConfirmationMailHandler implements MessageHandlerInterface
         }
 
         $email = (new TemplatedEmail())
-            ->from(new NamedAddress($this->registrationFromAddress, 'Fleet Manager'))
+            ->from(new Address($this->registrationFromAddress, 'Fleet Manager'))
             ->to($user->getEmail())
             ->subject('Fleet Manager : Registration confirmation')
             ->textTemplate('emails/registration_confirmation.txt.twig')

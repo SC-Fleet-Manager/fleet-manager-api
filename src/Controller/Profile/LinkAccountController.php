@@ -9,8 +9,8 @@ use App\Entity\User;
 use App\Exception\NotFoundHandleSCException;
 use App\Form\Dto\LinkAccount;
 use App\Form\LinkAccountForm;
-use App\Service\Citizen\InfosProvider\CitizenInfosProviderInterface;
 use App\Service\Citizen\CitizenRefresher;
+use App\Service\Citizen\InfosProvider\CitizenInfosProviderInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
@@ -146,7 +146,7 @@ class LinkAccountController extends AbstractController
             $userWithThatCitizen = $this->userRepository->findOneBy(['citizen' => $citizen]);
 
             if ($userWithThatCitizen !== null) {
-                $this->profileLinkAccountLogger->warning('Actual user that has this citizen found.', [
+                $this->profileLinkAccountLogger->warning('Current user that has this citizen found.', [
                     'citizenId' => $citizen->getId(),
                     'citizenHandle' => $citizen->getActualHandle(),
                     'infos' => $citizenInfos,
@@ -158,7 +158,7 @@ class LinkAccountController extends AbstractController
                 $userWithThatCitizen->setCitizen(null); // detach for old user
                 $this->entityManager->flush();
             } else {
-                $this->profileLinkAccountLogger->warning('No actual user that has this citizen found.',
+                $this->profileLinkAccountLogger->warning('No current user that has this citizen found.',
                     ['citizenId' => $citizen->getId(), 'citizenHandle' => $citizen->getActualHandle()->getHandle(), 'infos' => $citizenInfos, 'userId' => $user->getId(), 'nickname' => $user->getNickname()]);
             }
         }

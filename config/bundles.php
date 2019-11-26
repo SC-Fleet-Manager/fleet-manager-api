@@ -20,5 +20,6 @@ return [
     Symfony\WebpackEncoreBundle\WebpackEncoreBundle::class => ['all' => true],
     Twig\Inky\Bundle\TwigInkyBundle::class => ['all' => true],
     Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle::class => ['all' => true],
-    Twig\CssInliner\Bundle\TwigCssInlinerBundle::class => ['all' => true],
+    Algatux\InfluxDbBundle\InfluxDbBundle::class => ['all' => true],
+    Twig\Extra\TwigExtraBundle\TwigExtraBundle::class => ['all' => true],
 ];

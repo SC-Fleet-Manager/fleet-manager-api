@@ -2,12 +2,16 @@
 
 namespace App\Controller\Security;
 
+use Algatux\InfluxDbBundle\Events\DeferredUdpEvent;
 use App\Entity\User;
 use App\Form\Dto\Registration;
 use App\Message\Registration\SendRegistrationConfirmationMail;
 use Doctrine\ORM\EntityManagerInterface;
+use InfluxDB\Database;
+use InfluxDB\Point;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -23,19 +27,22 @@ class RegistrationController extends AbstractController
     private $passwordEncoder;
     private $serializer;
     private $bus;
+    private $eventDispatcher;
 
     public function __construct(
         ValidatorInterface $validator,
         EntityManagerInterface $entityManager,
         UserPasswordEncoderInterface $passwordEncoder,
         SerializerInterface $serializer,
-        MessageBusInterface $bus
+        MessageBusInterface $bus,
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->validator = $validator;
         $this->entityManager = $entityManager;
         $this->passwordEncoder = $passwordEncoder;
         $this->serializer = $serializer;
         $this->bus = $bus;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -66,6 +73,11 @@ class RegistrationController extends AbstractController
         $this->entityManager->flush();
 
         $this->bus->dispatch(new SendRegistrationConfirmationMail($newUser->getId()));
+        $this->eventDispatcher->dispatch(new DeferredUdpEvent([new Point(
+            'app.registration',
+            1,
+            ['method' => 'email/password', 'host' => $request->getHost()],
+        )], Database::PRECISION_SECONDS), DeferredUdpEvent::NAME);
 
         return $this->json(null, 204);
     }

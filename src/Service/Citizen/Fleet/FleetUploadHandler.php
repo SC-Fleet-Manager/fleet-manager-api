@@ -2,6 +2,7 @@
 
 namespace App\Service\Citizen\Fleet;
 
+use Algatux\InfluxDbBundle\Events\DeferredUdpEvent;
 use App\Domain\Money;
 use App\Entity\Citizen;
 use App\Entity\Fleet;
@@ -13,8 +14,11 @@ use App\Exception\InvalidFleetDataException;
 use App\Service\Citizen\CitizenRefresher;
 use App\Service\Citizen\InfosProvider\CitizenInfosProviderInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use InfluxDB\Database;
+use InfluxDB\Point;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class FleetUploadHandler
 {
@@ -22,17 +26,20 @@ class FleetUploadHandler
     private $citizenInfosProvider;
     private $citizenRefresher;
     private $eventDispatcher;
+    private $requestStack;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         CitizenInfosProviderInterface $citizenInfosProvider,
         CitizenRefresher $citizenRefresher,
-        EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher,
+        RequestStack $requestStack
     ) {
         $this->entityManager = $entityManager;
         $this->citizenInfosProvider = $citizenInfosProvider;
         $this->citizenRefresher = $citizenRefresher;
         $this->eventDispatcher = $eventDispatcher;
+        $this->requestStack = $requestStack;
     }
 
     public function handle(Citizen $citizen, array $fleetData): void
@@ -51,8 +58,7 @@ class FleetUploadHandler
 
         $lastVersion = $citizen->getLastFleet();
         if ($lastVersion !== null && $lastVersion->isUploadedDateTooClose()) {
-            throw new FleetUploadedTooCloseException(
-                sprintf('Last version of the fleet was uploaded at %s', $lastVersion->getUploadDate()->format('Y-m-d H:i')));
+            throw new FleetUploadedTooCloseException(sprintf('Last version of the fleet was uploaded at %s', $lastVersion->getUploadDate()->format('Y-m-d H:i')));
         }
 
         $fleet = $this->createNewFleet($fleetData, $lastVersion);
@@ -71,6 +77,11 @@ class FleetUploadHandler
         $this->entityManager->flush();
 
         $this->eventDispatcher->dispatch(new CitizenFleetUpdatedEvent($citizen, $fleet, $lastVersion));
+        $this->eventDispatcher->dispatch(new DeferredUdpEvent([new Point(
+            'app.fleet_upload',
+            1,
+            ['citizen_id' => $citizen->getId(), 'citizen_handle' => (string) $citizen->getActualHandle(), 'host' => $this->requestStack->getCurrentRequest()->getHost()],
+        )], Database::PRECISION_SECONDS), DeferredUdpEvent::NAME);
     }
 
     private function hasDiff(Fleet $newFleet, Fleet $lastFleet): bool

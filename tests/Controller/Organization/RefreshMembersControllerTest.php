@@ -4,7 +4,6 @@ namespace App\Tests\Controller\Organization;
 
 use App\Entity\User;
 use App\Tests\WebTestCase;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class RefreshMembersControllerTest extends WebTestCase
 {
