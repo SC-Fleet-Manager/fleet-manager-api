@@ -4,8 +4,7 @@ monolog:
             type: fingers_crossed
             action_level: error
             handler: grouped
-            excluded_404s:
-                - ^/
+            excluded_http_codes: [404]
         grouped:
             type:    group
             members: [streamed_error, deduplicated]
@@ -43,6 +42,7 @@ monolog:
         deduplicated:
             type: deduplication
             time: 60 # no duplicated messages within 60 seconds
+            store: '%kernel.logs_dir%/monolog_handler_deduplicated'
             handler: mailer
         mailer:
             type: swift_mailer
