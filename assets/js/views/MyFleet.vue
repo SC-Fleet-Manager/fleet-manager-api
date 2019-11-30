@@ -150,6 +150,8 @@
                     case 'Ballista': return 'Anvil Ballista';
                     case 'Ballista Snowblind': return 'Anvil Ballista Snowblind';
                     case 'Ballista Dunestalker': return 'Anvil Ballista Dunestalker';
+                    case 'Pisces': return 'C8 Pisces';
+                    case 'Pisces - Expedition': return 'C8X Pisces Expedition';
                     case 'Consolidated Outland Pioneer': return 'Pioneer';
                     case 'Crusader Mercury Star Runner': return 'Mercury Star Runner';
                     case 'Cyclone RC': return 'Cyclone-RC';
