@@ -353,6 +353,8 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
                 return 'Nautilus';
             case '77':
                 return 'Mantis';
+            case '78':
+                return 'Pisces';
             case '1001':
                 return 'F8C';
         }
@@ -401,6 +403,8 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
             'Ballista' => 'Anvil Ballista',
             'Ballista Snowblind' => 'Anvil Ballista Snowblind',
             'Ballista Dunestalker' => 'Anvil Ballista Dunestalker',
+            'Pisces' => 'C8 Pisces',
+            'Pisces - Expedition' => 'C8X Pisces Expedition',
             'Consolidated Outland Pioneer' => 'Pioneer',
             'Crusader Mercury Star Runner' => 'Mercury Star Runner',
             'Cyclone RC' => 'Cyclone-RC',
