@@ -140,6 +140,15 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
         $shipInfo->mediaThumbUrl = 'https://starcitizen.tools/images/8/87/F8C_concierge.jpg';
         $shipInfos[$shipInfo->id] = $shipInfo;
 
+        // add F8C Lightning Executive Edition
+        $shipInfo = clone $shipInfos['1001'];
+        $shipInfo->id = '1002';
+        $shipInfo->name = 'F8C Lightning Executive Edition';
+        $shipInfo->pledgeUrl = 'https://starcitizen.tools/F8C_Lightning_Executive_Edition';
+        $shipInfo->mediaUrl = 'https://starcitizen.tools/images/1/16/F8C_Lightning_Executive_Edition.jpg';
+        $shipInfo->mediaThumbUrl = 'https://starcitizen.tools/images/1/16/F8C_Lightning_Executive_Edition.jpg';
+        $shipInfos[$shipInfo->id] = $shipInfo;
+
         // add Mustang Omega : AMD Edition
         $shipInfo = new ShipInfo();
         $shipInfo->id = '1070';
