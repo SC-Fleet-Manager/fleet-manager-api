@@ -162,8 +162,8 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
         $shipInfo->manufacturerCode = 'CNOU'; // id=22
         $shipInfo->chassisId = '16';
         $shipInfo->chassisName = static::transformChassisIdToFamilyName($shipInfo->chassisId);
-        $shipInfo->mediaUrl = self::MEDIA_URL.'/gmru9y7ynd1bbr/source.jpg';
-        $shipInfo->mediaThumbUrl = self::MEDIA_URL.'/gmru9y7ynd1bbr/store_small.jpg';
+        $shipInfo->mediaUrl = self::BASE_URL.'/media/gmru9y7ynd1bbr/source/Omega-Front.jpg';
+        $shipInfo->mediaThumbUrl = self::BASE_URL.'/media/gmru9y7ynd1bbr/store_small/Omega-Front.jpg';
         $shipInfos[$shipInfo->id] = $shipInfo;
 
         // add Carrack with Pisces Expedition
