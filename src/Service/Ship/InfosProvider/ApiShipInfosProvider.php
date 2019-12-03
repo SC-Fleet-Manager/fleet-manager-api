@@ -440,6 +440,10 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
             'X1' => 'X1 Base',
             'X1 - FORCE' => 'X1 Force',
             'X1 - VELOCITY' => 'X1 Velocity',
+            'Cutlass 2949 Best In Show' => 'Cutlass Black Best In Show Edition',
+            'Caterpillar 2949 Best in Show' => 'Caterpillar Best In Show Edition',
+            'Hammerhead 2949 Best in Show' => 'Hammerhead Best In Show Edition',
+            'Reclaimer 2949 Best in Show' => 'Reclaimer Best In Show Edition',
         ];
     }
 }
