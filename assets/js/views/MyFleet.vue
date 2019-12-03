@@ -20,7 +20,8 @@
                                 <p class="card-text">
                                     <strong>Manufacturer</strong>: {{ ship.manufacturer }}<br/>
                                     <strong>LTI</strong>: <b-badge variant="success" v-if="ship.insured">Yes</b-badge><b-badge variant="danger" v-else>No</b-badge><br/>
-                                    <span v-if="ship.cost !== undefined"><strong>Cost</strong>: &dollar;{{ ship.cost }}<br/></span>
+                                    <span v-if="ship.cost !== undefined && ship.cost > 0"><strong>Cost</strong>: <i class="fas fa-dollar-sign" aria-hidden="true"></i> <span class="sr-only">$</span>{{ ship.cost }}<br/></span>
+                                    <span v-if="ship.cost !== undefined && ship.cost == 0"><b-badge variant="info">Referral</b-badge><br/></span>
                                     <strong>Pledge date</strong>: {{ ship.pledgeDate|date('LL') }}<br/>
                                 </p>
                             </b-card>
