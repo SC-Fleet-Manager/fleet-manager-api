@@ -140,6 +140,15 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
         $shipInfo->mediaThumbUrl = 'https://starcitizen.tools/images/8/87/F8C_concierge.jpg';
         $shipInfos[$shipInfo->id] = $shipInfo;
 
+        // add F8C Lightning Executive Edition
+        $shipInfo = clone $shipInfos['1001'];
+        $shipInfo->id = '1002';
+        $shipInfo->name = 'F8C Lightning Executive Edition';
+        $shipInfo->pledgeUrl = 'https://starcitizen.tools/F8C_Lightning_Executive_Edition';
+        $shipInfo->mediaUrl = 'https://starcitizen.tools/images/1/16/F8C_Lightning_Executive_Edition.jpg';
+        $shipInfo->mediaThumbUrl = 'https://starcitizen.tools/images/1/16/F8C_Lightning_Executive_Edition.jpg';
+        $shipInfos[$shipInfo->id] = $shipInfo;
+
         // add Mustang Omega : AMD Edition
         $shipInfo = new ShipInfo();
         $shipInfo->id = '1070';
@@ -153,8 +162,8 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
         $shipInfo->manufacturerCode = 'CNOU'; // id=22
         $shipInfo->chassisId = '16';
         $shipInfo->chassisName = static::transformChassisIdToFamilyName($shipInfo->chassisId);
-        $shipInfo->mediaUrl = self::MEDIA_URL.'/gmru9y7ynd1bbr/source.jpg';
-        $shipInfo->mediaThumbUrl = self::MEDIA_URL.'/gmru9y7ynd1bbr/store_small.jpg';
+        $shipInfo->mediaUrl = self::BASE_URL.'/media/gmru9y7ynd1bbr/source/Omega-Front.jpg';
+        $shipInfo->mediaThumbUrl = self::BASE_URL.'/media/gmru9y7ynd1bbr/store_small/Omega-Front.jpg';
         $shipInfos[$shipInfo->id] = $shipInfo;
 
         // add Carrack with Pisces Expedition
@@ -431,6 +440,10 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
             'X1' => 'X1 Base',
             'X1 - FORCE' => 'X1 Force',
             'X1 - VELOCITY' => 'X1 Velocity',
+            'Cutlass 2949 Best In Show' => 'Cutlass Black Best In Show Edition',
+            'Caterpillar 2949 Best in Show' => 'Caterpillar Best In Show Edition',
+            'Hammerhead 2949 Best in Show' => 'Hammerhead Best In Show Edition',
+            'Reclaimer 2949 Best in Show' => 'Reclaimer Best In Show Edition',
         ];
     }
 }

@@ -20,7 +20,8 @@
                                 <p class="card-text">
                                     <strong>Manufacturer</strong>: {{ ship.manufacturer }}<br/>
                                     <strong>LTI</strong>: <b-badge variant="success" v-if="ship.insured">Yes</b-badge><b-badge variant="danger" v-else>No</b-badge><br/>
-                                    <span v-if="ship.cost !== undefined"><strong>Cost</strong>: &dollar;{{ ship.cost }}<br/></span>
+                                    <span v-if="ship.cost !== undefined && ship.cost > 0"><strong>Cost</strong>: <i class="fas fa-dollar-sign" aria-hidden="true"></i> <span class="sr-only">$</span>{{ ship.cost }}<br/></span>
+                                    <span v-if="ship.cost !== undefined && ship.cost == 0"><b-badge variant="info">Referral/Event</b-badge><br/></span>
                                     <strong>Pledge date</strong>: {{ ship.pledgeDate|date('LL') }}<br/>
                                 </p>
                             </b-card>
@@ -178,6 +179,10 @@
                     case 'X1': return 'X1 Base';
                     case 'X1 - FORCE': return 'X1 Force';
                     case 'X1 - VELOCITY': return 'X1 Velocity';
+                    case 'Cutlass 2949 Best In Show': return 'Cutlass Black Best In Show Edition';
+                    case 'Caterpillar 2949 Best in Show': return 'Caterpillar Best In Show Edition';
+                    case 'Hammerhead 2949 Best in Show': return 'Hammerhead Best In Show Edition';
+                    case 'Reclaimer 2949 Best in Show': return 'Reclaimer Best In Show Edition';
                 }
 
                 return hangarShipName;
