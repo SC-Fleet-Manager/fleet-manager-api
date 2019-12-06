@@ -37,7 +37,6 @@
                 <b-nav-text class="p-2">–</b-nav-text>
                 <b-nav-item href="https://discord.gg/f6mrA3Y" target="_blank" link-classes="p-2"><i class="fab fa-discord" style="font-size: 1.4rem;"></i></b-nav-item>
                 <b-nav-item href="https://github.com/Ioni14/starcitizen-fleet-manager" target="_blank" link-classes="p-2"><i class="fab fa-github" style="font-size: 1.4rem;"></i></b-nav-item>
-                <b-nav-item href="https://www.patreon.com/ioni" target="_blank" link-classes="p-2"><i class="fab fa-patreon" style="font-size: 1.4rem;"></i></b-nav-item>
                 <b-nav-text><span class="mr-1">Created by </span><a target="_blank" href="https://github.com/ioni14">Ioni</a></b-nav-text>
             </b-nav>
         </TheFooter>
@@ -130,6 +129,15 @@
                         icon: 'fas fa-user',
                         attributes: {
                             disabled: this.user === null,
+                        },
+                    },
+                    {
+                        name: 'Supporters',
+                        url: '/supporters',
+                        icon: 'fas fa-star',
+                        badge: {
+                            text: 'NEW',
+                            variant: 'danger',
                         },
                     },
                 ];

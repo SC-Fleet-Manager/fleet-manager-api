@@ -1,9 +1,7 @@
 security:
     encoders:
         App\Entity\User:
-            algorithm: sodium
-            memory_cost: 16384 # 16 MiB
-            time_cost: 3
+            algorithm: auto
     providers:
         oauth_user_provider:
             id: App\Security\OAuthUserProvider
@@ -29,6 +27,7 @@ security:
                 provider: oauth_user_provider
                 authenticators: ['App\Security\TokenAuthenticator']
         main:
+            provider: user_entity # default provider
             anonymous: true
             user_checker: App\Security\ConfirmedUserChecker
             switch_user:

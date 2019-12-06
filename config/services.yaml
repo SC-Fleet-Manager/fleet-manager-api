@@ -4,6 +4,9 @@ parameters:
     env(REDIS_PASSWORD): ''
     locale: 'en'
     hwi_oauth.authentication.entry_point.oauth.class: 'App\Security\OAuthEntryPoint'
+    env(PAYPAL_CHECKOUT_CLIENT_ID): ''
+    env(PAYPAL_CHECKOUT_CLIENT_SECRET): ''
+    env(PAYPAL_CHECKOUT_MODE): !php/const App\Service\Funding\PaypalCheckout::MODE_SANDBOX
     env(WEBEXTENSION_VERSION_URL): ''
 
 services:
@@ -19,7 +22,7 @@ services:
 
     App\:
         resource: '../src/*'
-        exclude: '../src/{Entity,Migrations,Kernel.php}'
+        exclude: '../src/{Entity,Migrations,Message,Form/Dto,Kernel.php}'
 
     App\Controller\:
         resource: '../src/Controller/*/*'
@@ -65,3 +68,21 @@ services:
     App\Security\Listener\AlreadyLinkedDiscordListener:
         tags:
             - { name: 'kernel.event_listener', event: 'kernel.exception', method: 'onException' }
+
+    App\Service\Funding\PaypalCheckout:
+#        lazy: true
+        arguments:
+            $clientId: '%env(PAYPAL_CHECKOUT_CLIENT_ID)%'
+            $clientSecret: '%env(PAYPAL_CHECKOUT_CLIENT_SECRET)%'
+            $mode: '%env(PAYPAL_CHECKOUT_MODE)%'
+
+    App\MessageHandler\Funding\SendOrderCaptureSummaryMailHandler:
+        arguments:
+            $orderCaptureSummaryAddresses: '%env(csv:FUNDING_ORDER_CAPTURE_ADDRESSES)%'
+
+    App\Listener\Funding\GrantSupporterAdvantagesListener:
+        tags:
+            - { name: 'kernel.event_listener' }
+    App\Listener\Funding\RevokeSupporterAdvantagesListener:
+        tags:
+            - { name: 'kernel.event_listener' }

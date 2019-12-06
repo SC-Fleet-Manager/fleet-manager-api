@@ -11,6 +11,7 @@ const DefaultContainer = () => import('../containers/DefaultContainer');
 const CorpoFleets = () => import('../views/CorpoFleets');
 const Profile = () => import('../views/Profile');
 const MyFleet = () => import('../views/MyFleet');
+const Supporter = () => import('../views/Supporter');
 
 // Views - Pages
 const PrivacyPolicy = () => import('../views/PrivacyPolicy');
@@ -222,6 +223,34 @@ const router = new Router({
                             {
                                 property: 'og:description',
                                 content: '',
+                            },
+                            {
+                                property: 'og:url',
+                                content: async (to) => {
+                                    return `${window.location.protocol}//${window.location.host}${to.path}`;
+                                },
+                            },
+                            {
+                                property: 'og:image',
+                                content: `${window.location.protocol}//${window.location.host}/icons/favicon-96x96.png`,
+                            }
+                        ],
+                    },
+                },
+                {
+                    path: 'supporters',
+                    name: 'Supporters',
+                    component: Supporter,
+                    meta: {
+                        titleTag: 'Supporters - Fleet Manager',
+                        metaTags: [
+                            {
+                                name: 'description',
+                                content: 'Follows the great supporters of Fleet Manager. Big thanks for all of them!',
+                            },
+                            {
+                                property: 'og:description',
+                                content: 'Follows the great supporters of Fleet Manager. Big thanks for all of them!',
                             },
                             {
                                 property: 'og:url',

@@ -1,0 +1,13 @@
+Funding properties :
+
+Amount : {{ (funding.amount / 100)|number_format(2) }} {{ funding.currency }}
+Net Amount : {{ (funding.netAmount / 100)|number_format(2) }} {{ funding.currency }}
+ID : {{ funding.id }}
+Payer ID : {{ funding.user.id }}
+Payer username : {{ funding.user.username }}
+Gateway : {{ funding.gateway }}
+Created at : {{ funding.createdAt|date('r') }}
+Paypal Order Id : {{ funding.paypalOrderId }}
+Paypal Status : {{ funding.paypalStatus }}
+Paypal Capture :
+{{ funding.paypalCapture|json_encode(constant('JSON_PRETTY_PRINT')) }}

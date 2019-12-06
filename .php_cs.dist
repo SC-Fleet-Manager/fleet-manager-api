@@ -4,7 +4,7 @@ return PhpCsFixer\Config::create()
     ->setRiskyAllowed(true)
     ->setRules(array(
         '@Symfony' => true,
-        '@PHP71Migration' => true,
+        '@PHP73Migration' => true,
         'combine_consecutive_unsets' => true,
         'array_syntax' => array('syntax' => 'short'),
         'no_extra_consecutive_blank_lines' => array('break', 'continue', 'extra', 'return', 'throw', 'use', 'parenthesis_brace_block', 'square_brace_block', 'curly_brace_block'),
@@ -32,5 +32,4 @@ return PhpCsFixer\Config::create()
         PhpCsFixer\Finder::create()
             ->in('src/')
             ->in('tests/')
-    )
-;
+    );
