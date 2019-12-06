@@ -12,6 +12,7 @@ const CorpoFleets = () => import('../views/CorpoFleets');
 const Profile = () => import('../views/Profile');
 const MyFleet = () => import('../views/MyFleet');
 const Supporter = () => import('../views/Supporter');
+const MyBackings = () => import('../views/MyBackings');
 
 // Views - Pages
 const PrivacyPolicy = () => import('../views/PrivacyPolicy');
@@ -264,7 +265,36 @@ const router = new Router({
                             }
                         ],
                     },
-                }
+                },
+                {
+                    path: 'my-backings',
+                    name: 'My Backings',
+                    component: MyBackings,
+                    meta: {
+                        requireAuth: true,
+                        titleTag: 'My Backings - Fleet Manager',
+                        metaTags: [
+                            {
+                                name: 'description',
+                                content: '',
+                            },
+                            {
+                                property: 'og:description',
+                                content: '',
+                            },
+                            {
+                                property: 'og:url',
+                                content: async (to) => {
+                                    return `${window.location.protocol}//${window.location.host}${to.path}`;
+                                },
+                            },
+                            {
+                                property: 'og:image',
+                                content: `${window.location.protocol}//${window.location.host}/icons/favicon-96x96.png`,
+                            }
+                        ],
+                    },
+                },
             ]
         },
         {

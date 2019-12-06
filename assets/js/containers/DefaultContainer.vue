@@ -121,8 +121,7 @@
                     }
                 }
 
-                return [
-                    ...nav,
+                nav.push(
                     {
                         name: "Profile",
                         url: '/profile',
@@ -139,8 +138,18 @@
                             text: 'NEW',
                             variant: 'danger',
                         },
-                    },
-                ];
+                    }
+                );
+
+                if (this.citizen !== null) {
+                    nav.push({
+                        name: 'My backings',
+                        url: '/my-backings',
+                        icon: 'fas fa-hands-helping',
+                    });
+                }
+
+                return nav;
             }
         },
         methods: {

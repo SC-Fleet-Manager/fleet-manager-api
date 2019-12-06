@@ -54,30 +54,13 @@ class PaypalWebhookController extends AbstractController implements LoggerAwareI
     public function __invoke(Request $request): Response
     {
         $payload = $this->decoder->decode($request->getContent(), $request->getContentType());
-        dump($payload);
+        if ($payload['event_type'] !== 'PAYMENT.CAPTURE.REFUNDED') {
+            return new JsonResponse(null, 204);
+        }
 
-        $request->headers->get('paypal-auth-algo');
-        $request->headers->get('paypal-auth-version');
-        $request->headers->get('paypal-cert-url');
-        $request->headers->get('paypal-transmission-id');
-        $request->headers->get('paypal-transmission-sig');
-        $request->headers->get('paypal-transmission-time');
-
-        /*
-        request headers:
-
-        paypal-auth-algo "SHA256withRSA"
-
-        paypal-auth-version "v2"
-
-        paypal-cert-url "https://api.paypal.com/v1/notifications/certs/CERT-360caa42-fca2a594-5edc0ebc"
-
-        paypal-transmission-id "95e4c6b0-1850-11ea-b6db-1dcbc04d43b2"
-
-        paypal-transmission-sig "NYlwg1FPNSYduVzKpFY//ImrIALdCQ93Dr4KwlphtW/+l75v9OVJALCFWEtoEoQNFZKoQA15QRlKODRLch5bl6RXCn+X8goXdQJU0y6W75Y+sKsLTZ1jdIcrj4N9ZdwfGJPrZyeGuErdgxATqvgrbcrnOSmfSYrR8jwoK1L3gFdcVoWHKzlvnKUs6YiqCBRQKwjPlFbKseoSP/KvNfN5wuZtTStZIis+etZSFRbkLi9RWN3nn3IttutAtyc5z222C123wIx8qvvX6xmoGnKocPbuyryxzUaSz/qhU4ISUsVPiYhFi5tsBnHDA3GJd5AH3ru3tkfOaKX4rT/xO5UrIA=="
-
-        paypal-transmission-time "2019-12-06T17:48:17Z"
-        */
+        if (!$this->paypalCheckout->verifySignature($request)) {
+            return new JsonResponse(['error' => 'bad signature.'], 400);
+        }
 
         if ($payload['event_type'] === 'PAYMENT.CAPTURE.REFUNDED') {
             $this->entityManager->clear();

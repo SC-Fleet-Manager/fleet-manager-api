@@ -5,6 +5,10 @@ namespace App\Service\Funding;
 use App\Entity\Funding;
 use App\Entity\User;
 use App\Form\Dto\FundingRefund;
+use PayPal\Api\VerifyWebhookSignature;
+use PayPal\Api\VerifyWebhookSignatureResponse;
+use PayPal\Auth\OAuthTokenCredential;
+use PayPal\Rest\ApiContext;
 use PayPalCheckoutSdk\Core\PayPalEnvironment;
 use PayPalCheckoutSdk\Core\PayPalHttpClient;
 use PayPalCheckoutSdk\Core\ProductionEnvironment;
@@ -13,6 +17,8 @@ use PayPalCheckoutSdk\Orders\OrdersCaptureRequest;
 use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
 use PayPalHttp\HttpClient;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class PaypalCheckout
@@ -28,6 +34,7 @@ class PaypalCheckout
     private string $clientSecret;
     private string $mode;
     private HttpClient $client;
+    private ApiContext $apiContext;
 
     public function __construct(UrlGeneratorInterface $urlGenerator, LoggerInterface $fundingLogger, string $clientId, string $clientSecret, string $mode = self::MODE_SANDBOX)
     {
@@ -38,6 +45,10 @@ class PaypalCheckout
         $this->mode = $mode;
 
         $this->client = new PayPalHttpClient($this->createEnvironment());
+        $this->apiContext = new ApiContext(new OAuthTokenCredential($clientId, $clientSecret));
+        $this->apiContext->setConfig([
+            'mode' => $mode === self::MODE_PROD ? 'live' : 'sandbox',
+        ]);
     }
 
     public function create(Funding $funding, User $user, string $locale): void
@@ -124,6 +135,34 @@ class PaypalCheckout
         $funding->setPaypalStatus(Funding::STATUS_REFUNDED);
         $funding->setRefundedAmount($refund->refundedAmount);
         $funding->setRefundedAt(clone $refund->createdAt);
+    }
+
+    public function verifySignature(Request $request): bool
+    {
+        $signatureVerification = new VerifyWebhookSignature();
+        $signatureVerification->setAuthAlgo($request->headers->get('paypal-auth-algo'));
+        $signatureVerification->setTransmissionId($request->headers->get('paypal-transmission-id'));
+        $signatureVerification->setCertUrl($request->headers->get('paypal-cert-url'));
+        $signatureVerification->setWebhookId('72Y11928S1077440L');
+        $signatureVerification->setTransmissionSig($request->headers->get('paypal-transmission-sig'));
+        $signatureVerification->setTransmissionTime($request->headers->get('paypal-transmission-time'));
+        $signatureVerification->setRequestBody($request->getContent());
+
+        try {
+            /** @var VerifyWebhookSignatureResponse $output */
+            $output = $signatureVerification->post($this->apiContext);
+            if ($output !== 'SUCCESS') {
+                $this->fundingLogger->error('[Webhook] Bad signature.', ['headers' => $request->headers->all()]);
+
+                return false;
+            }
+        } catch (\Exception $e) {
+            $this->fundingLogger->error('[Webhook] Unable to verify webhook signature.', ['exception' => $e]);
+
+            throw $e;
+        }
+
+        return true;
     }
 
     private function createEnvironment(): PayPalEnvironment
