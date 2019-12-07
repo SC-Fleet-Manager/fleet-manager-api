@@ -39,7 +39,7 @@ RUN yarn install
 
 COPY assets assets
 COPY .babelrc webpack.config.js postcss.config.js ./
-RUN mkdir public && yarn encore production
+RUN mkdir public && yarn encore production && cp -r assets/js/vendors public/build/vendors
 
 ####################################
 FROM php:7.3-fpm-alpine as build_php
