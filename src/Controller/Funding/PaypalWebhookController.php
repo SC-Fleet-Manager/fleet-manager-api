@@ -78,10 +78,9 @@ class PaypalWebhookController extends AbstractController implements LoggerAwareI
                 $payload['resource']['amount']['currency_code'],
             );
             $this->paypalCheckout->refund($funding, $refund);
-
+            $this->eventDispatcher->dispatch(new FundingRefundedEvent($funding));
             $this->entityManager->flush();
 
-            $this->eventDispatcher->dispatch(new FundingRefundedEvent($funding));
             $this->bus->dispatch(new SendOrderRefundMail($funding->getId()));
         }
 

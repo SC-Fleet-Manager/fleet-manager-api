@@ -57,7 +57,6 @@
                 } else {
                     toastr.error('An error has occurred when retrieving members list. Please try again later.');
                 }
-                console.error(err);
             });
         },
         computed: {
@@ -123,7 +122,6 @@
                     if (err.response.data.errorMessage) {
                         toastr.error(err.response.data.errorMessage);
                     }
-                    console.error(err);
                 }).then(_ => {
                     this.$set(this.refreshingProfile, handle, false);
                 });

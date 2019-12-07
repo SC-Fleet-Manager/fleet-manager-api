@@ -67,7 +67,6 @@
                     } else if (err.response.data.error === 'invalid_form') {
                         this.errorMessage = err.response.data.formErrors.join("\n");
                     }
-                    console.error(err);
                 });
             },
             checkAuth(response) {

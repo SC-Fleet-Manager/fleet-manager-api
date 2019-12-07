@@ -8,19 +8,19 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\FundingRepository")
- * @ORM\Table(indexes={})
+ * @ORM\Table(indexes={
+ *     @ORM\Index(name="paypal_order_id_idx", columns={"paypal_order_id"})
+ * })
  */
 class Funding
 {
     public const PAYPAL = 'paypal';
 
-    public const STATUS_REFUNDED = 'REFUNDED';
-
     /**
      * @ORM\Id()
      * @ORM\Column(type="uuid", unique=true)
      *
-     * @Groups({"supporter"})
+     * @Groups({"supporter", "my_backings"})
      */
     private ?UuidInterface $id = null;
 
@@ -32,7 +32,7 @@ class Funding
     /**
      * @ORM\Column(type="string", length=15)
      *
-     * @Groups({"supporter"})
+     * @Groups({"supporter", "my_backings"})
      */
     private ?string $gateway = null;
 
@@ -44,54 +44,60 @@ class Funding
     private ?string $paypalOrderId = null;
 
     /**
-     * @ORM\Column(type="string", length=15, nullable=true)
+     * @ORM\Column(type="string", length=31, nullable=true)
      *
-     * @Groups({"supporter"})
+     * @Groups({"supporter", "my_backings"})
      */
     private ?string $paypalStatus = null;
 
     /**
+     * @var array
+     *
      * @ORM\Column(type="json", nullable=true)
      */
-    private ?array $paypalCapture = null;
+    private ?array $paypalPurchase = null;
 
     /**
      * In cents. (x100).
      *
      * @ORM\Column(type="integer")
      *
-     * @Groups({"supporter"})
+     * @Groups({"supporter", "my_backings"})
      */
     private int $amount;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      *
-     * @Groups({"supporter"})
+     * @Groups({"my_backings"})
      */
     private ?int $netAmount = null;
 
     /**
      * @ORM\Column(type="string", length=3, options={"fixed":true})
      *
-     * @Groups({"supporter"})
+     * @Groups({"supporter", "my_backings"})
      */
     private string $currency;
 
     /**
      * @ORM\Column(type="datetimetz_immutable")
      *
-     * @Groups({"supporter"})
+     * @Groups({"supporter", "my_backings"})
      */
     private \DateTimeInterface $createdAt;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     *
+     * @Groups({"my_backings"})
      */
     private ?int $refundedAmount = null;
 
     /**
      * @ORM\Column(type="datetimetz_immutable", nullable=true)
+     *
+     * @Groups({"my_backings"})
      */
     private ?\DateTimeInterface $refundedAt = null;
 
@@ -156,14 +162,14 @@ class Funding
         return $this;
     }
 
-    public function getPaypalCapture(): ?array
+    public function getPaypalPurchase(): ?array
     {
-        return $this->paypalCapture;
+        return $this->paypalPurchase;
     }
 
-    public function setPaypalCapture(?array $paypalCapture): self
+    public function setPaypalPurchase(?array $paypalPurchase): self
     {
-        $this->paypalCapture = $paypalCapture;
+        $this->paypalPurchase = $paypalPurchase;
 
         return $this;
     }
@@ -238,5 +244,14 @@ class Funding
         $this->refundedAt = $refundedAt;
 
         return $this;
+    }
+
+    public function getEffectiveAmount(): int
+    {
+        if ($this->amount === null) {
+            return 0;
+        }
+
+        return $this->amount - (int) $this->refundedAmount;
     }
 }

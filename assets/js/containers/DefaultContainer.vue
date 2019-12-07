@@ -80,6 +80,7 @@
         created() {
             axios.get('/api/profile').then(response => {
                 this.user = response.data;
+                this.updateUser(this.user);
                 this.citizen = this.user.citizen;
                 this.updateProfile(this.citizen);
                 // this.$refs.sidebarDesktop.toggle(true);
@@ -153,7 +154,7 @@
             }
         },
         methods: {
-            ...mapMutations(['updateProfile']),
+            ...mapMutations(['updateProfile', 'updateUser']),
             findLastVersion() {
                 axios.get('https://api.github.com/repos/Ioni14/starcitizen-fleet-manager/tags').then(response => {
                     this.lastVersion = response.data[0].name;

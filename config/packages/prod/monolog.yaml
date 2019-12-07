@@ -36,7 +36,7 @@ monolog:
         ########
         fingers_mail:
             type: fingers_crossed
-            action_level: error
+            action_level: warning
             handler: deduplicated
             excluded_http_codes: [403, 404]
         deduplicated:
@@ -47,9 +47,9 @@ monolog:
         mailer:
             type: swift_mailer
             from_email: 'noreply@fleet-manager.space'
-            to_email: ['thomas.talbot@fauya.fr']
-            subject: '[Fleet Manager] Error : %%message%%'
-            formatter:  monolog.formatter.html
+            to_email: '%env(csv:MONOLOG_MAILER_TO)%'
+            subject: '[FM Monolog] Error : %%message%%'
+            formatter: monolog.formatter.html
             content_type: text/html
         ########
         console:

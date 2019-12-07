@@ -110,7 +110,6 @@
                     } else {
                         toastr.error('Cannot retrieve your fleet.');
                     }
-                    console.error(err);
                 });
             },
             onUploadSuccess() {

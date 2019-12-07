@@ -203,7 +203,7 @@
                             data: data,
                         }).then(response => {
                             this.spinner = false;
-                            this.captureSuccessMessage = 'Thank you very much for your backing!<br/>You can show it in <a href="/my-backings">My backings</a>.';
+                            this.captureSuccessMessage = 'Thank you very much for your backing!<br/>You can review it in <a href="/my-backings">My backings</a>.';
                         }).catch(err => {
                             this.spinner = false;
                             if (err.response.data.errorMessage) {

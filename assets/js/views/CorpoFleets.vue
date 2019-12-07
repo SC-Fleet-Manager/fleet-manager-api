@@ -356,7 +356,6 @@
                         toastr.error('An error has occurred. Please try again later.');
                     }
                     this.fleetPolicyErrors = true;
-                    console.error(err);
                 }).then(_ => {
                     this.savingPreferences = false;
                 });
@@ -379,7 +378,6 @@
                             // not exist
                             return;
                         }
-                        console.error(err);
                     });
                 }
                 if (this.citizen !== null) {
@@ -408,7 +406,6 @@
                         if (err.response.data.errorMessage) {
                             toastr.error(err.response.data.errorMessage);
                         }
-                        console.error(err);
                         return;
                     }
                 }
@@ -443,7 +440,6 @@
                     if (err.response.status === 403 && err.response.data.error.startsWith('not_enough_rights')) {
                         this.notEnoughRightsMessage = err.response.data.errorMessage;
                     }
-                    console.error(err);
                 });
             },
             refreshOrganizationFleet(force) {
@@ -487,7 +483,6 @@
                     if (err.response.status === 403 && err.response.data.error.startsWith('not_enough_rights')) {
                         this.notEnoughRightsMessage = err.response.data.errorMessage;
                     }
-                    console.error(err);
                 }).then(_ => {
                     this.loadingOrgaFleet = false;
                 });
@@ -511,7 +506,6 @@
                     if (err.response.status === 403 && err.response.data.error.startsWith('not_enough_rights')) {
                         this.notEnoughRightsMessage = err.response.data.errorMessage;
                     }
-                    console.error(err);
                 });
                 axios.get(`/api/organization/${this.selectedSid}/ships`).then(response => {
                     this.filterOptionsShips = response.data;
@@ -531,7 +525,6 @@
                     if (err.response.status === 403 && err.response.data.error.startsWith('not_enough_rights')) {
                         this.notEnoughRightsMessage = err.response.data.errorMessage;
                     }
-                    console.error(err);
                 });
             },
             refreshMemberList() {
@@ -545,7 +538,6 @@
                     } else {
                         toastr.error('An error has occurred. Please try again later.');
                     }
-                    console.error(err);
                 }).then(_ => {
                     this.refreshingMemberList = false;
                 });

@@ -4,12 +4,15 @@ namespace App\Controller\Funding;
 
 use App\Entity\Funding;
 use App\Entity\User;
+use App\Event\FundingCapturedEvent;
+use App\Event\FundingRefundedEvent;
 use App\Form\Dto\PayPalCaptureTransaction;
 use App\Message\Funding\SendOrderCaptureSummaryMail;
 use App\Repository\FundingRepository;
 use App\Service\Funding\PaypalCheckout;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,6 +29,7 @@ class CaptureTransactionController extends AbstractController
     private FundingRepository $fundingRepository;
     private EntityManagerInterface $entityManager;
     private MessageBusInterface $bus;
+    private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
         Security $security,
@@ -33,7 +37,8 @@ class CaptureTransactionController extends AbstractController
         SerializerInterface $serializer,
         FundingRepository $fundingRepository,
         EntityManagerInterface $entityManager,
-        MessageBusInterface $bus
+        MessageBusInterface $bus,
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->security = $security;
         $this->paypalCheckout = $paypalCheckout;
@@ -41,6 +46,7 @@ class CaptureTransactionController extends AbstractController
         $this->fundingRepository = $fundingRepository;
         $this->entityManager = $entityManager;
         $this->bus = $bus;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -66,6 +72,7 @@ class CaptureTransactionController extends AbstractController
         }
 
         $this->paypalCheckout->capture($funding);
+        $this->eventDispatcher->dispatch(new FundingCapturedEvent($funding));
         $this->entityManager->flush();
 
         $this->bus->dispatch(new SendOrderCaptureSummaryMail($funding->getId()));

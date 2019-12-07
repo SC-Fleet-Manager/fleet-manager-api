@@ -19,8 +19,8 @@ final class Version20191204184557 extends AbstractMigration
             user_id CHAR(36) DEFAULT NULL COMMENT \'(DC2Type:uuid)\',
             gateway VARCHAR(15) NOT NULL,
             paypal_order_id VARCHAR(31) DEFAULT NULL,
-            paypal_status VARCHAR(15) DEFAULT NULL,
-            paypal_capture JSON DEFAULT NULL,
+            paypal_status VARCHAR(31) DEFAULT NULL,
+            paypal_purchase JSON DEFAULT NULL,
             amount INT NOT NULL,
             net_amount INT DEFAULT NULL,
             currency CHAR(3) NOT NULL,
@@ -31,12 +31,16 @@ final class Version20191204184557 extends AbstractMigration
         ) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('ALTER TABLE funding ADD CONSTRAINT FK_D30DD1D6A76ED395 FOREIGN KEY (user_id) REFERENCES user (id)');
         $this->addSql('CREATE INDEX IDX_D30DD1D6A76ED395 ON funding (user_id)');
+        $this->addSql('CREATE INDEX paypal_order_id_idx ON funding (paypal_order_id)');
+        $this->addSql('ALTER TABLE user ADD coins INT DEFAULT 0 NOT NULL');
     }
 
     public function down(Schema $schema): void
     {
+        $this->addSql('DROP INDEX paypal_order_id_idx ON funding');
         $this->addSql('ALTER TABLE funding DROP FOREIGN KEY FK_D30DD1D6A76ED395');
         $this->addSql('DROP INDEX IDX_D30DD1D6A76ED395 ON funding');
         $this->addSql('DROP TABLE funding');
+        $this->addSql('ALTER TABLE user DROP coins');
     }
 }

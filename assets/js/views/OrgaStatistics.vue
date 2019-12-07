@@ -138,7 +138,6 @@
                     } else {
                         toastr.error('An error has occurred when retrieving citizen stats. Please try again later.');
                     }
-                    console.error(err);
                 });
             },
             findShipsStatistics() {
@@ -167,7 +166,6 @@
                     } else {
                         toastr.error('An error has occurred when retrieving ships stats. Please try again later.');
                     }
-                    console.error(err);
                 });
             },
         },

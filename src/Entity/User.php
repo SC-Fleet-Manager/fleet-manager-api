@@ -174,6 +174,14 @@ class User implements UserInterface
     private $publicChoice;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(type="integer", options={"default":0})
+     * @Groups({"profile"})
+     */
+    private $coins;
+
+    /**
      * @var \DateTimeImmutable
      *
      * @ORM\Column(type="datetimetz_immutable")
@@ -202,6 +210,7 @@ class User implements UserInterface
         $this->roles = ['ROLE_USER'];
         $this->emailConfirmed = false;
         $this->publicChoice = self::PUBLIC_CHOICE_ORGANIZATION;
+        $this->coins = 0;
         $this->createdAt = new \DateTimeImmutable();
     }
 
@@ -436,6 +445,43 @@ class User implements UserInterface
         }
 
         return $this;
+    }
+
+    public function getCoins(): int
+    {
+        return $this->coins;
+    }
+
+    public function setCoins(int $coins): self
+    {
+        $this->coins = $coins;
+
+        return $this;
+    }
+
+    public function addCoins(int $coins): self
+    {
+        $this->coins += $coins;
+
+        return $this;
+    }
+
+    public function removeCoins(int $coins): self
+    {
+        $this->coins -= $coins;
+        if ($this->coins < 0) {
+            $this->coins = 0;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @Groups({"profile", "orga_fleet"})
+     */
+    public function isSupporter(): bool
+    {
+        return $this->coins >= 100;
     }
 
     public function getCreatedAt(): \DateTimeImmutable

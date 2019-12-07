@@ -15,9 +15,9 @@ use PayPalCheckoutSdk\Core\ProductionEnvironment;
 use PayPalCheckoutSdk\Core\SandboxEnvironment;
 use PayPalCheckoutSdk\Orders\OrdersCaptureRequest;
 use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
+use PayPalCheckoutSdk\Orders\OrdersGetRequest;
 use PayPalHttp\HttpClient;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -85,6 +85,7 @@ class PaypalCheckout
 
         if ($response->statusCode >= 400) {
             $this->fundingLogger->error('[Create Order] Unable to create the order on PayPal.', ['response' => $response]);
+
             throw new \LogicException('Unable to create an order on PayPal.');
         }
 
@@ -101,6 +102,7 @@ class PaypalCheckout
 
         if ($response->statusCode >= 400) {
             $this->fundingLogger->error('[Capture Order] Unable to capture the order on PayPal.', ['response' => $response]);
+
             throw new \LogicException('Unable to capture the order on PayPal.');
         }
 
@@ -108,33 +110,57 @@ class PaypalCheckout
             if ($purchaseUnit->reference_id !== self::BACKING_REFID) {
                 continue;
             }
+            $funding->setPaypalPurchase($this->transformPurchase($purchaseUnit));
             foreach ($purchaseUnit->payments->captures as $paymentCapture) {
                 if ($paymentCapture->custom_id !== $funding->getId()->toString()) {
                     continue;
                 }
-                $funding->setPaypalCapture(json_decode(json_encode($paymentCapture), true));
+
+                $funding->setPaypalStatus($paymentCapture->status);
+                $netAmount = $paymentCapture->seller_receivable_breakdown->net_amount->value ?? null;
+                if ($netAmount !== null) {
+                    $netAmount = (int) bcmul($netAmount, 100);
+                }
+                $funding->setNetAmount($netAmount ?? $funding->getAmount());
             }
         }
-        $funding->setPaypalStatus($response->result->status);
-        if (null !== $capture = $funding->getPaypalCapture()) {
-            $netAmount = $capture['seller_receivable_breakdown']['net_amount']['value'] ?? null;
-            if ($netAmount !== null) {
-                $netAmount = (int) bcmul($netAmount, 100);
-            }
-            $funding->setNetAmount($netAmount ?? $funding->getAmount());
-        }
+
+        // TODO : send email with $response->payer->email_address
     }
 
     public function refund(Funding $funding, FundingRefund $refund): void
     {
-        dump($funding, $refund);
-        if ($funding->getPaypalStatus() === Funding::STATUS_REFUNDED) {
+        if (in_array($funding->getPaypalStatus(), ['REFUNDED', 'PARTIALLY_REFUNDED'], true)) {
             return;
         }
 
-        $funding->setPaypalStatus(Funding::STATUS_REFUNDED);
+        $orderRequest = new OrdersGetRequest($funding->getPaypalOrderId());
+        $response = $this->client->execute($orderRequest);
+
+        if ($response->statusCode >= 400) {
+            // TODO : use MOM!
+            $this->fundingLogger->error('[Get Order] Unable to get the order from PayPal.', ['response' => $response]);
+
+            return;
+        }
+
+        $funding->setPaypalStatus('REFUNDED');
         $funding->setRefundedAmount($refund->refundedAmount);
         $funding->setRefundedAt(clone $refund->createdAt);
+        foreach ($response->result->purchase_units as $purchaseUnit) {
+            if ($purchaseUnit->reference_id !== self::BACKING_REFID) {
+                continue;
+            }
+            $funding->setPaypalPurchase($this->transformPurchase($purchaseUnit));
+            foreach ($purchaseUnit->payments->captures as $paymentCapture) {
+                if ($paymentCapture->custom_id !== $funding->getId()->toString()) {
+                    continue;
+                }
+                $funding->setPaypalStatus($paymentCapture->status);
+            }
+        }
+
+        // TODO : send email with $response->payer->email_address
     }
 
     public function verifySignature(Request $request): bool
@@ -151,18 +177,26 @@ class PaypalCheckout
         try {
             /** @var VerifyWebhookSignatureResponse $output */
             $output = $signatureVerification->post($this->apiContext);
-            if ($output !== 'SUCCESS') {
-                $this->fundingLogger->error('[Webhook] Bad signature.', ['headers' => $request->headers->all()]);
+            if ($output->getVerificationStatus() !== 'SUCCESS') {
+                $this->fundingLogger->error("[Webhook]\u{a0}Bad signature.", ['headers' => $request->headers->all()]);
 
                 return false;
             }
         } catch (\Exception $e) {
-            $this->fundingLogger->error('[Webhook] Unable to verify webhook signature.', ['exception' => $e]);
+            $this->fundingLogger->error("[Webhook]\u{a0}Unable to verify webhook signature.", ['exception' => $e]);
 
             throw $e;
         }
 
         return true;
+    }
+
+    private function transformPurchase(object $purchaseUnit): array
+    {
+        $purchase = json_decode(json_encode($purchaseUnit), true);
+        unset($purchase['shipping']); // RGPD
+
+        return $purchase;
     }
 
     private function createEnvironment(): PayPalEnvironment

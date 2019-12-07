@@ -206,7 +206,6 @@
                     toastr.success('Changes saved');
                 }).catch(err => {
                     this.checkAuth(err.response);
-                    console.error(err);
                     toastr.error('An error has occurred. Please try again later.');
                 }).then(_ => {
                     this.savingPreferences = false;
@@ -243,7 +242,6 @@
                     if (err.response.data.errorMessage) {
                         this.errorMessage = err.response.data.errorMessage;
                     }
-                    console.error(err);
                 });
             },
             getMyFleetLink() {
@@ -291,7 +289,6 @@
                     }
                     this.showErrorStep1 = true;
                     this.showButtonStep2 = false;
-                    console.error(err);
                 }).then(_ => {
                     this.searchingHandle = false;
                 });
@@ -332,7 +329,6 @@
                         this.errorMessage = err.response.data.formErrors.join("\n");
                     }
                     this.showError = true;
-                    console.error(err);
                 });
             },
             checkAuth(response) {
