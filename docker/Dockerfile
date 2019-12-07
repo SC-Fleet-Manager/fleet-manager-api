@@ -1,4 +1,4 @@
-FROM php:7.3-fpm-alpine as composer_deps
+FROM php:7.4-fpm-alpine as composer_deps
 
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
@@ -7,7 +7,7 @@ ARG ENV=prod
 
 RUN if [ $ENV != 'prod' ]; then apk add --no-cache --virtual .deps zlib libzip libxslt; fi
 RUN if [ $ENV != 'prod' ]; then \
-        apk add --no-cache --virtual .build-deps $PHPIZE_DEPS libzip-dev libxslt-dev \
+        apk add --no-cache --virtual .build-deps $PHPIZE_DEPS libzip-dev libxslt-dev libgcrypt-dev \
         && docker-php-ext-install zip xsl \
         && apk del .build-deps; \
     fi
@@ -42,14 +42,14 @@ COPY .babelrc webpack.config.js postcss.config.js ./
 RUN mkdir public && yarn encore production
 
 ####################################
-FROM php:7.3-fpm-alpine as build_php
+FROM php:7.4-fpm-alpine as build_php
 
 # prod|dev
 ARG ENV=prod
 ARG DUMP_ENV=0
 
 RUN apk add --no-cache --virtual .deps icu-libs zlib libintl libzip libxml2 libxslt
-RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS icu-dev libzip-dev libxml2-dev libxslt-dev \
+RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS icu-dev libzip-dev libxml2-dev libxslt-dev libgcrypt-dev \
     && docker-php-ext-install intl zip pdo_mysql xml xsl \
     && pecl install redis \
     && apk del .build-deps \
@@ -81,7 +81,8 @@ RUN if [ ${DUMP_ENV} == 0 ]; then echo "<?php return ['APP_ENV'=>'${ENV}'];" > .
     chown www-data .env*; \
     sed -i "s/^APP_ENV=.*$/APP_ENV=${ENV}/" .env; \
     if [ -e .env.local ]; then sed -i "s/^APP_ENV=.*$/APP_ENV=${ENV}/" .env.local; fi
-RUN mkdir -p public/bundles && bin/console assets:install -v \
+RUN mkdir -p public/bundles \
+    && bin/console assets:install -v \
     && rm -fr var/cache/* \
     && bin/console cache:warmup -v \
     && mkdir -p var/log && chown -R www-data var/log
@@ -118,7 +119,7 @@ ENV COMPOSER_MEMORY_LIMIT -1
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
 # Xdebug install
-ARG XDEBUG_VERSION=2.7.2
+ARG XDEBUG_VERSION=2.8.1
 RUN set -eux; \
 	apk add --no-cache --virtual .build-deps $PHPIZE_DEPS; \
 	pecl install xdebug-$XDEBUG_VERSION; \

@@ -53,7 +53,7 @@ class ApiOrganizationMembersInfosProvider implements OrganizationMembersInfosPro
             if ($countCrawler->count() === 0) {
                 throw new \LogicException('No data to scrap.');
             }
-            preg_match('~^(?P<count>\d+)~', $countCrawler->text(), $matches);
+            preg_match('~^(?P<count>\d+)~', $countCrawler->text(null, true), $matches);
 
             return (int) $matches['count'];
         }, $cache ? null : INF);
@@ -95,13 +95,13 @@ class ApiOrganizationMembersInfosProvider implements OrganizationMembersInfosPro
             $hiddenCitizens += $crawler->filter('.member-item.org-visibility-R')->count();
             $hiddenCitizens += $crawler->filter('.member-item.org-visibility-H')->count();
             $crawler->filter('.member-item.org-visibility-V')->each(static function (Crawler $crawler) use (&$visibleCitizens) {
-                $nickname = $crawler->filter('.name-wrap .name')->text();
-                $handle = $crawler->filter('.name-wrap .nick')->text();
+                $nickname = $crawler->filter('.name-wrap .name')->text(null, true);
+                $handle = $crawler->filter('.name-wrap .nick')->text(null, true);
                 $avatarUrl = null;
                 if ($crawler->filter('.thumb img')->attr('src') !== '') {
                     $avatarUrl = self::BASE_URL.$crawler->filter('.thumb img')->attr('src');
                 }
-                $rankName = $crawler->filter('.frontinfo .rank')->text();
+                $rankName = $crawler->filter('.frontinfo .rank')->text(null, true);
                 $rankStyle = $crawler->filter('.frontinfo .ranking-stars .stars')->attr('style');
                 $rank = 0;
                 switch ($rankStyle) {

@@ -24,6 +24,7 @@ class AdminManageableVoter extends Voter
 
     /**
      * @param SpectrumIdentification $organizationSid
+     * @param mixed                  $attribute
      */
     protected function voteOnAttribute($attribute, $organizationSid, TokenInterface $token): bool
     {

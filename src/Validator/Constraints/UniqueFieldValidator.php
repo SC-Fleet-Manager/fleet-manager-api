@@ -18,6 +18,7 @@ class UniqueFieldValidator extends ConstraintValidator
 
     /**
      * @param UniqueField $constraint
+     * @param mixed       $value
      */
     public function validate($value, Constraint $constraint): void
     {
