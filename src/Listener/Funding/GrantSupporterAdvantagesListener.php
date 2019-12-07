@@ -3,13 +3,9 @@
 namespace App\Listener\Funding;
 
 use App\Event\FundingCapturedEvent;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
 
-class GrantSupporterAdvantagesListener implements LoggerAwareInterface
+class GrantSupporterAdvantagesListener
 {
-    use LoggerAwareTrait;
-
     public function __invoke(FundingCapturedEvent $event): void
     {
         $funding = $event->getFunding();
@@ -21,7 +17,5 @@ class GrantSupporterAdvantagesListener implements LoggerAwareInterface
 
         $amount = $funding->getEffectiveAmount();
         $user->addCoins($amount);
-
-//        $user->removeCoins();
     }
 }

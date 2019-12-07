@@ -10,7 +10,6 @@
                             class="js-select-orga nav-item mr-3"
                             :text="organization.name ? organization.name : 'No selected orga'"
                             variant="outline-primary"
-                            @click="menu = 'fleet'"
                         >
                             <b-dropdown-item :active="organization.organizationSid == citizenOrga.organization.organizationSid" v-for="citizenOrga in citizen.organizations" :key="citizenOrga.organization.organizationSid" @click="changeSelectedOrga(citizenOrga.organization)">{{ citizenOrga.organization.name }}</b-dropdown-item>
                             <b-dropdown-item v-if="citizen.countRedactedOrganizations > 0" disabled>+{{ citizen.countRedactedOrganizations }} redacted organizations</b-dropdown-item>
@@ -102,29 +101,7 @@
                     <OrgaStatistics :selectedSid="selectedSid"/>
                 </b-card>
                 <b-card v-if="menu == 'admin_panel'">
-                    <h4>Admin panel of {{ organization.name }}</h4>
-                    <b-alert variant="danger" :show="fleetPolicyErrors" v-html="fleetPolicyErrorMessages"></b-alert>
-                    <b-row>
-                        <b-col lg="6">
-                            <b-form-group label="Fleet policy">
-                                <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="private">Members only <i class="fas fa-info-circle" v-b-tooltip.hover title="Only the orga's members can see the orga's fleet."></i></b-form-radio>
-                                <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="admin">Admin only <i class="fas fa-info-circle" v-b-tooltip.hover title="Only the highest ranks (admins) of the orga can see the orga's fleet."></i></b-form-radio>
-                                <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="public">Public <i class="fas fa-info-circle" v-b-tooltip.hover title="Everyone can see the orga's fleet."></i></b-form-radio>
-                            </b-form-group>
-                            <OrganizationChanges :selectedSid="selectedSid" ref="orgaChanges"/>
-                        </b-col>
-                        <b-col lg="6" >
-                            <b-row>
-                                <b-col class="mb-2" md="6" lg="12" xl="6">
-                                    <b-button :disabled="refreshingMemberList" @click="refreshMemberList" variant="secondary"><i class="fas fa-sync-alt" :class="{'fa-spin': refreshingMemberList}"></i> Refresh the members list</b-button>
-                                </b-col>
-                                <b-col md="6" lg="12" xl="6">
-                                    <div class="text-right"><b-button variant="primary" class="mb-3" download :disabled="selectedSid == null" :href="'/api/organization/export-orga-members/'+selectedSid"><i class="fas fa-file-csv"></i> Export <strong>{{ selectedSid != null ? orgaFullname : 'N/A' }}</strong> members (.csv)</b-button></div>
-                                </b-col>
-                            </b-row>
-                            <OrgaRegisteredMembers :selectedSid="selectedSid" ref="orgaRegisteredMembers" @profileRefreshed="refreshLastChanges()"/>
-                        </b-col>
-                    </b-row>
+                    <CorpoFleetsAdmin :organization.sync="organization" :selectedSid="selectedSid" @changed="refreshOrganization(true)"></CorpoFleetsAdmin>
                 </b-card>
             </b-col>
         </b-row>
@@ -141,6 +118,7 @@
     import OrgaRegisteredMembers from "./OrgaRegisteredMembers";
     import OrganizationChanges from "./OrganizationChanges";
     import OrgaStatistics from "./OrgaStatistics";
+    import CorpoFleetsAdmin from "./CorpoFleetsAdmin";
 
     const { mapGetters, mapMutations, mapActions } = createNamespacedHelpers('orga_fleet');
     const BREAKPOINTS = {xs: 0, sm: 576, md: 768, lg: 992, xl: 1200};
@@ -161,13 +139,12 @@
     export default {
         name: 'organizations-fleets',
         props: ['sid'],
-        components: {OrgaStatistics, OrgaRegisteredMembers, OrganizationChanges, vSelect, ShipFamily, ShipFamilyDetail},
+        components: {OrgaStatistics, OrgaRegisteredMembers, OrganizationChanges, vSelect, ShipFamily, ShipFamilyDetail, CorpoFleetsAdmin},
         data() {
             return {
                 menu: 'fleet',
                 organization: null,
                 orgaStats: {},
-                orgaPublicChoice: null,
                 fleetPolicyErrors: false,
                 fleetPolicyErrorMessages: null,
                 notEnoughRightsMessage: null,
@@ -330,45 +307,19 @@
             ...mapActions(['loadShipVariantUsers', 'selectShipFamily']),
             ...mapMutations(['updateSid']),
             selectSid(value) {
-                this.$router.replace({ path: `/organization-fleet/${value}` });
+                if (value !== this.selectedSid) {
+                    this.$router.replace({path: `/organization-fleet/${value}`});
+                }
                 this.updateSid(value);
             },
             changeSelectedOrga(orga) {
                 this.menu = 'fleet';
                 this.selectSid(orga.organizationSid);
             },
-            refreshLastChanges() {
-                this.$refs.orgaChanges.retrieveChanges();
-            },
-            savePreferences() {
-                this.savingPreferences = true;
-                this.fleetPolicyErrors = false;
-                axios.post(`/api/organization/${this.organization.organizationSid}/save-preferences`, {
-                   publicChoice: this.orgaPublicChoice,
-                }).then(response => {
-                    this.refreshLastChanges();
-                    toastr.success('Changes saved');
-                }).catch(err => {
-                    // this.checkAuth(err.response);
-                    if (err.response.data.errorMessage) {
-                        this.fleetPolicyErrorMessages = err.response.data.errorMessage;
-                    } else {
-                        toastr.error('An error has occurred. Please try again later.');
-                    }
-                    this.fleetPolicyErrors = true;
-                }).then(_ => {
-                    this.savingPreferences = false;
-                });
-            },
-            saveOrgaPublicChoice(value) {
-                this.orgaPublicChoice = value;
-                this.savePreferences();
-            },
-            refreshOrganization() {
-                if (this.organization === null) {
+            refreshOrganization(force) {
+                if (this.organization === null || force) {
                     axios.get(`/api/organization/${this.sid}`).then(response => {
                         this.organization = response.data;
-                        this.orgaPublicChoice = this.organization.publicChoice;
                     }).catch(err => {
                         if (err.response.status === 401) {
                             // not connected
@@ -525,21 +476,6 @@
                     if (err.response.status === 403 && err.response.data.error.startsWith('not_enough_rights')) {
                         this.notEnoughRightsMessage = err.response.data.errorMessage;
                     }
-                });
-            },
-            refreshMemberList() {
-                this.refreshingMemberList = true;
-                axios.post(`/api/organization/${this.organization.organizationSid}/refresh-orga`).then(response => {
-                    toastr.success('The members list has been refresh.');
-                    this.$refs.orgaRegisteredMembers.refreshMemberList(response.data);
-                }).catch(err => {
-                    if (err.response.data.errorMessage) {
-                        toastr.error(err.response.data.errorMessage);
-                    } else {
-                        toastr.error('An error has occurred. Please try again later.');
-                    }
-                }).then(_ => {
-                    this.refreshingMemberList = false;
                 });
             },
             refreshBreakpoint() {

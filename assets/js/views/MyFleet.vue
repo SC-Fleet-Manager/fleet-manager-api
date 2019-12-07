@@ -2,7 +2,8 @@
     <div class="animated fadeIn">
         <b-row>
             <b-col>
-                <b-card :title="!isMyProfile ? 'Citizen ' + userHandle : ''">
+                <b-card>
+                    <h4 v-if="!isMyProfile">Citizen <i v-if="isSupporter()" class="fas fa-hands-helping"></i> {{ userHandle }}</h4>
                     <div class="mb-3" v-if="isMyProfile">
                         <b-button v-b-modal.modal-upload-fleet variant="primary" :disabled="citizen == null"><i class="fas fa-cloud-upload-alt"></i> Update my fleet</b-button>
                         <b-button download :disabled="citizen == null" :href="citizen != null ? '/api/create-citizen-fleet-file' : ''" variant="success"><i class="fas fa-cloud-download-alt"></i> Export my fleet (.json)</b-button>
@@ -48,6 +49,8 @@
         components: {UpdateFleetFile},
         data() {
             return {
+                publicProfile: null,
+                user: null,
                 citizen: null,
                 isMyProfile: false,
                 ships: null,
@@ -56,10 +59,11 @@
                 errorMessage: '',
             };
         },
-        async created() {
+        created() {
             axios.get('/api/profile', {
                 params: {}
             }).then(response => {
+                this.user = response.data;
                 this.citizen = response.data.citizen;
                 this.$store.commit('updateProfile', response.data.citizen);
                 this.isMyProfile = this.citizen.actualHandle.handle === this.userHandle;
@@ -71,6 +75,9 @@
                 toastr.error('Cannot retrieve your profile.');
             }).then(_ => {
                 this.refreshMyFleet();
+            });
+            axios.get(`/api/public-profile/${this.userHandle}`).then(response => {
+                this.publicProfile = response.data;
             });
         },
         filters: {
@@ -84,10 +91,16 @@
                 this.shipInfos = [];
                 this.showError = false;
                 this.errorMessage = '';
+                if (this.citizen !== null) {
+                    this.isMyProfile = this.citizen.actualHandle.handle === this.userHandle;
+                }
                 this.refreshMyFleet();
             }
         },
         methods: {
+            isSupporter() {
+                return this.publicProfile !== null ? this.publicProfile.supporter : false;
+            },
             refreshMyFleet() {
                 axios.get(this.isMyProfile ? '/api/fleet/my-fleet' : `/api/fleet/user-fleet/${this.userHandle}`).then(response => {
                     this.ships = [];

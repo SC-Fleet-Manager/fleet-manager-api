@@ -79,7 +79,7 @@ class User implements UserInterface
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"profile", "me:read"})
+     * @Groups({"profile", "public_profile", "me:read"})
      */
     private $nickname;
 
@@ -477,7 +477,7 @@ class User implements UserInterface
     }
 
     /**
-     * @Groups({"profile", "orga_fleet"})
+     * @Groups({"profile", "public_profile", "orga_fleet"})
      */
     public function isSupporter(): bool
     {
