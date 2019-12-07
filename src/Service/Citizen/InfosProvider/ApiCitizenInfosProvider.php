@@ -54,7 +54,7 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
         $citizenNumber = null;
         $citizenNumberCrawler = $profileCrawler->filter('.citizen-record .value');
         if ($citizenNumberCrawler->count() > 0) {
-            $citizenNumber = preg_replace('/[^0-9]/', '', $citizenNumberCrawler->text());
+            $citizenNumber = preg_replace('/[^0-9]/', '', $citizenNumberCrawler->text(null, true));
         }
 
         if ($citizenNumber === null) {
@@ -65,7 +65,7 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
         $nickname = null;
         $nicknameCrawler = $profileCrawler->filter('.profile .info .entry:first-child .value');
         if ($nicknameCrawler->count() > 0) {
-            $nickname = trim($nicknameCrawler->text());
+            $nickname = $nicknameCrawler->text(null, true);
         }
 
         $avatarUrl = null;
@@ -77,13 +77,13 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
         $enlisted = null;
         $enlistedCrawler = $profileCrawler->filterXPath('//p[contains(.//*/text(), "Enlisted")]/*[contains(@class, "value")]');
         if ($enlistedCrawler->count() > 0) {
-            $enlisted = \DateTimeImmutable::createFromFormat('F j, Y', $enlistedCrawler->text())->setTime(0, 0);
+            $enlisted = \DateTimeImmutable::createFromFormat('F j, Y', $enlistedCrawler->text(null, true))->setTime(0, 0);
         }
 
         $bio = null;
         $bioCrawler = $profileCrawler->filter('.bio .value');
         if ($bioCrawler->count() > 0) {
-            $bio = trim($bioCrawler->text());
+            $bio = $bioCrawler->text(null, true);
         }
 
         $crawler = $this->client->request('GET', self::BASE_URL.'/citizens/'.$handleSC.'/organizations');
@@ -91,8 +91,8 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
         $mainOrgaRedacted = false;
         $mainOrgaCrawler = $crawler->filter('.org.main.visibility-V');
         if ($mainOrgaCrawler->count() > 0) {
-            $sid = $mainOrgaCrawler->filterXPath('//p[contains(.//*/text(), "Spectrum Identification (SID)")]/*[contains(@class, "value")]')->text();
-            $rankName = $mainOrgaCrawler->filterXPath('//p[contains(.//*/text(), "Organization rank")]/*[contains(@class, "value")]')->text();
+            $sid = $mainOrgaCrawler->filterXPath('//p[contains(.//*/text(), "Spectrum Identification (SID)")]/*[contains(@class, "value")]')->text(null, true);
+            $rankName = $mainOrgaCrawler->filterXPath('//p[contains(.//*/text(), "Organization rank")]/*[contains(@class, "value")]')->text(null, true);
             $rank = $mainOrgaCrawler->filter('.ranking .active')->count();
 
             $mainOrga = new CitizenOrganizationInfo(new SpectrumIdentification($sid), $rank, $rankName);
@@ -102,8 +102,8 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
 
         $orgaAffiliates = [];
         $crawler->filter('.org.affiliation.visibility-V')->each(static function (Crawler $node) use (&$orgaAffiliates) {
-            $sid = $node->filterXPath('//p[contains(.//*/text(), "Spectrum Identification (SID)")]/*[contains(@class, "value")]')->text();
-            $rankName = $node->filterXPath('//p[contains(.//*/text(), "Organization rank")]/*[contains(@class, "value")]')->text();
+            $sid = $node->filterXPath('//p[contains(.//*/text(), "Spectrum Identification (SID)")]/*[contains(@class, "value")]')->text(null, true);
+            $rankName = $node->filterXPath('//p[contains(.//*/text(), "Organization rank")]/*[contains(@class, "value")]')->text(null, true);
             $rank = $node->filter('.ranking .active')->count();
 
             $orga = new CitizenOrganizationInfo(new SpectrumIdentification($sid), $rank, $rankName);
