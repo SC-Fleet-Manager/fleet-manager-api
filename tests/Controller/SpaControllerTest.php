@@ -19,9 +19,13 @@ class SpaControllerTest extends PantherTestCase
     public function setUp(): void
     {
         if ($_SERVER['NO_PANTHER'] ?? false) {
-            $this->client = Client::createSeleniumClient('http://selenium-hub:4444/wd/hub', new DesiredCapabilities([
-                ChromeOptions::CAPABILITY => (new ChromeOptions())->addArguments(['start-maximized']),
-            ]), 'http://apache-test');
+            $this->client = Client::createSeleniumClient('http://selenium-hub:4444/wd/hub', DesiredCapabilities::chrome()->setCapability(
+                'goog:'.ChromeOptions::CAPABILITY, [
+                    'w3c' => false,
+                    'binary' => '',
+                    'args' => ['start-maximized'],
+                ],//(new ChromeOptions())->addArguments(['start-maximized'])
+            ), 'http://apache-test');
         } else {
             $this->client = Client::createChromeClient(null, null, [], 'http://apache-test');
         }
@@ -124,7 +128,7 @@ class SpaControllerTest extends PantherTestCase
             $this->assertSame('Cutlass Black', $this->client->findElement(WebDriverBy::cssSelector('.card-title'))->getText());
             $this->assertContains('Manufacturer: Drake', $this->client->findElement(WebDriverBy::cssSelector('.card-body'))->getText());
             $this->assertContains('LTI: Yes', $this->client->findElement(WebDriverBy::cssSelector('.card-body'))->getText());
-            $this->assertContains('Cost: $110', $this->client->findElement(WebDriverBy::cssSelector('.card-body'))->getText());
+            $this->assertContains('Cost: $ 110', preg_replace('~\s+~', ' ', $this->client->findElement(WebDriverBy::cssSelector('.card-body'))->getText()));
             $this->assertContains('Pledge date: April 10, 2019', $this->client->findElement(WebDriverBy::cssSelector('.card-body'))->getText());
             $this->assertStringEndsWith('/api/create-citizen-fleet-file', $this->client->findElement(WebDriverBy::linkText('Export my fleet (.json)'))->getAttribute('href'));
 

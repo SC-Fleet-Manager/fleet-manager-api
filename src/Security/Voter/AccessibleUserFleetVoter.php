@@ -27,7 +27,8 @@ class AccessibleUserFleetVoter extends Voter
     }
 
     /**
-     * @param User $subject
+     * @param User  $subject
+     * @param mixed $attribute
      */
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token): bool
     {

@@ -20,6 +20,11 @@ Encore
         // https://vue-loader.vuejs.org/options.html
     })
 
+    .copyFiles({
+        from: './assets/js/vendors',
+        to: 'vendors/[path][name].[ext]',
+    })
+
     // .autoProvidejQuery()
 ;
 
