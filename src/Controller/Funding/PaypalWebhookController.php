@@ -3,7 +3,7 @@
 namespace App\Controller\Funding;
 
 use App\Entity\Funding;
-use App\Event\FundingRefundedEvent;
+use App\Event\FundingUpdatedEvent;
 use App\Form\Dto\FundingRefund;
 use App\Message\Funding\SendOrderRefundMail;
 use App\Repository\FundingRepository;
@@ -72,13 +72,25 @@ class PaypalWebhookController extends AbstractController implements LoggerAwareI
 
                 throw new NotFoundHttpException(sprintf('Funding %s not found.', $payload['resource']['custom_id']));
             }
+
+            // search if we have already handled this Refund by checking its ID
+            $purchase = $funding->getPaypalPurchase();
+            if (isset($purchase['payments']['refunds'])) {
+                foreach ($purchase['payments']['refunds'] as $purchaseRefund) {
+                    if ($purchaseRefund['id'] === $payload['resource']['id']) {
+                        // already handled
+                        return new JsonResponse(null, 204);
+                    }
+                }
+            }
+
             $refund = new FundingRefund(
                 new \DateTimeImmutable($payload['create_time']),
-                (int) bcmul($payload['resource']['amount']['value'], 100),
-                $payload['resource']['amount']['currency_code'],
+                (int) bcmul($payload['resource']['seller_payable_breakdown']['total_refunded_amount']['value'], 100),
+                $payload['resource']['seller_payable_breakdown']['total_refunded_amount']['currency_code'],
             );
             $this->paypalCheckout->refund($funding, $refund);
-            $this->eventDispatcher->dispatch(new FundingRefundedEvent($funding));
+            $this->eventDispatcher->dispatch(new FundingUpdatedEvent($funding));
             $this->entityManager->flush();
 
             $this->bus->dispatch(new SendOrderRefundMail($funding->getId()));

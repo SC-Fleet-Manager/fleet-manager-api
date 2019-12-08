@@ -5,7 +5,7 @@ namespace App\Event;
 use App\Entity\Funding;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class FundingCapturedEvent extends Event
+class FundingUpdatedEvent extends Event
 {
     private Funding $funding;
 

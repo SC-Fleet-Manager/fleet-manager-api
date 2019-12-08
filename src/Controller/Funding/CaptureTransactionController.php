@@ -4,8 +4,7 @@ namespace App\Controller\Funding;
 
 use App\Entity\Funding;
 use App\Entity\User;
-use App\Event\FundingCapturedEvent;
-use App\Event\FundingRefundedEvent;
+use App\Event\FundingUpdatedEvent;
 use App\Form\Dto\PayPalCaptureTransaction;
 use App\Message\Funding\SendOrderCaptureSummaryMail;
 use App\Repository\FundingRepository;
@@ -71,8 +70,12 @@ class CaptureTransactionController extends AbstractController
             ], 404);
         }
 
+        if (!in_array($funding->getPaypalStatus(), ['CREATED', 'PENDING'], true)) {
+            return new JsonResponse(null, 204);
+        }
+
         $this->paypalCheckout->capture($funding);
-        $this->eventDispatcher->dispatch(new FundingCapturedEvent($funding));
+        $this->eventDispatcher->dispatch(new FundingUpdatedEvent($funding));
         $this->entityManager->flush();
 
         $this->bus->dispatch(new SendOrderCaptureSummaryMail($funding->getId()));

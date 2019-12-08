@@ -3,6 +3,7 @@
         <b-row>
             <b-col col lg="8" xl="6">
                 <b-card title="My Backings">
+                    <p>Total backed <i class="fas fa-dollar-sign"></i> {{ formatNumber(totalEffectiveAmount) }} <span v-if="user != null"><img src="../../img/coin.svg" title="FM Coins" alt="FM Coins" height="30"> {{ user.coins }}</span></p>
                     <b-table id="backings-table" striped hover :items="backings" :fields="fields"
                              :per-page="perPage"
                              :current-page="currentPage"
@@ -51,21 +52,23 @@
                     },
                     {
                         key: 'amount',
-                        label: 'Amount',
+                        label: 'Backed amount',
                         sortable: true,
                         formatter: this.formatAmount,
                     },
                     {
-                        // FM coins  +5300  (0 si CREATED)
+                        key: 'coins',
+                        label: 'Earned FM Coins',
+                        sortable: true,
                     },
                     {
-                        key: 'balance',
+                        key: 'coinsBalance',
                         label: 'FM Coins balance',
                         sortable: true,
-                        formatter: this.formatAmount,
                     },
                 ],
                 backings: [],
+                totalEffectiveAmount: 0,
             }
         },
         created() {
@@ -77,12 +80,22 @@
         watch: {
         },
         methods: {
+            formatNumber(value) {
+                return new Intl.NumberFormat('en-US', { style: 'decimal' }).format(value / 100);
+            },
             formatAmount(value, key, item) {
                 if (value === null) {
                     return null;
                 }
 
-                return new Intl.NumberFormat('en-US', { style: 'currency', currency: item.currency }).format(value / 100);
+                const amount = new Intl.NumberFormat('en-US', { style: 'currency', currency: item.currency }).format(value / 100);
+                const refundedAmount = new Intl.NumberFormat('en-US', { style: 'currency', currency: item.currency }).format(item.refundedAmount / 100);
+                const diff = new Intl.NumberFormat('en-US', { style: 'currency', currency: item.currency }).format((value - item.refundedAmount) / 100);
+
+                if (item.paypalStatus === 'PARTIALLY_REFUNDED' || item.paypalStatus === 'REFUNDED') {
+                    return `${diff} (${amount} - ${refundedAmount})`;
+                }
+                return amount;
             },
             formatStatus(value) {
                 switch (value) {
@@ -117,14 +130,15 @@
                     return item1.createdAt < item2.createdAt ? -1 : 1;
                 });
 
-                let balance = 0;
+                let coinsBalance = 0;
+                this.totalEffectiveAmount = 0;
                 for (let b of backings) {
-                    if (b.paypalStatus === 'COMPLETED') {
-                        balance += b.amount;
-                    } else if (b.paypalStatus === 'PARTIALLY_REFUNDED') {
-                        balance += b.amount - b.refundedAmount;
+                    this.totalEffectiveAmount += b.effectiveAmount;
+                    b.coins = b.effectiveAmount;
+                    if (b.paypalStatus === 'COMPLETED' || b.paypalStatus === 'REFUNDED' || b.paypalStatus === 'PARTIALLY_REFUNDED') {
+                        coinsBalance += b.coins;
                     }
-                    b.balance = balance;
+                    b.coinsBalance = coinsBalance;
                 }
 
                 return backings;

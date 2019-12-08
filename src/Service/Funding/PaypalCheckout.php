@@ -130,10 +130,6 @@ class PaypalCheckout
 
     public function refund(Funding $funding, FundingRefund $refund): void
     {
-        if (in_array($funding->getPaypalStatus(), ['REFUNDED', 'PARTIALLY_REFUNDED'], true)) {
-            return;
-        }
-
         $orderRequest = new OrdersGetRequest($funding->getPaypalOrderId());
         $response = $this->client->execute($orderRequest);
 

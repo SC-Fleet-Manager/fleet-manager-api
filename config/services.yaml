@@ -80,9 +80,6 @@ services:
         arguments:
             $orderCaptureSummaryAddresses: '%env(csv:FUNDING_ORDER_CAPTURE_ADDRESSES)%'
 
-    App\Listener\Funding\GrantSupporterAdvantagesListener:
-        tags:
-            - { name: 'kernel.event_listener' }
-    App\Listener\Funding\RevokeSupporterAdvantagesListener:
+    App\Listener\Funding\UpdateSupporterAdvantagesListener:
         tags:
             - { name: 'kernel.event_listener' }

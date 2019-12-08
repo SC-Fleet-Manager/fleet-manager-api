@@ -246,6 +246,9 @@ class Funding
         return $this;
     }
 
+    /**
+     * @Groups({"my_backings"})
+     */
     public function getEffectiveAmount(): int
     {
         if ($this->amount === null) {

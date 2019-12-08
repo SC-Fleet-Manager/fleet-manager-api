@@ -459,23 +459,6 @@ class User implements UserInterface
         return $this;
     }
 
-    public function addCoins(int $coins): self
-    {
-        $this->coins += $coins;
-
-        return $this;
-    }
-
-    public function removeCoins(int $coins): self
-    {
-        $this->coins -= $coins;
-        if ($this->coins < 0) {
-            $this->coins = 0;
-        }
-
-        return $this;
-    }
-
     /**
      * @Groups({"profile", "public_profile", "orga_fleet"})
      */
