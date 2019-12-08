@@ -47,13 +47,15 @@
             <script src="{{ preload(asset('build/main.js')) }}"></script>
         {% endblock %}
         {% if app.environment == 'prod' %}
-            <script async src="{{ asset('build/vendors/gtag.js') }}"></script>
-            <script>
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'UA-38751935-8', { 'anonymize_ip': true });
-            </script>
+            {% block gtag %}
+                <script async src="{{ asset('build/vendors/gtag.js') }}"></script>
+                <script>
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', 'UA-38751935-8', { 'anonymize_ip': true });
+                </script>
+            {% endblock %}
         {% endif %}
     </body>
 </html>

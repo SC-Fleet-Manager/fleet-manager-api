@@ -9,7 +9,7 @@
             <SidebarToggler class="d-md-down-none" display="lg" :defaultOpen="true" ref="sidebarDesktop"/>
             <b-navbar-nav class="ml-auto">
                 <b-nav-text v-if="user != null" class="px-3 d-none d-sm-inline-block">Welcome, <i v-if="user.supporter" class="fas fa-hands-helping"></i> {{ citizen !== null ? citizen.actualHandle.handle : (user.nickname !== null ? user.nickname : user.email) }}</b-nav-text>
-                <b-nav-text v-if="user != null" class="px-3 d-none d-sm-inline-block"><img src="../../img/coin.svg" title="FM Coins" alt="FM Coins" height="30"> {{ user.coins }}</b-nav-text>
+                <b-nav-text v-if="user != null && user.coins > 0" class="px-3 d-none d-sm-inline-block"><img src="../../img/coin.svg" title="FM Coins" alt="FM Coins" height="30"> {{ user.coins }}</b-nav-text>
                 <b-nav-item v-if="user != null" class="px-3" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</b-nav-item>
                 <b-nav-item v-else class="px-3" v-b-modal.modal-login><i class="fas fa-sign-in-alt"></i> Login</b-nav-item>
             </b-navbar-nav>
