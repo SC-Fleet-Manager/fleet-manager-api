@@ -96,4 +96,9 @@ class MonthlyCostCoverage
     {
         return $this->month->format('Y-m-d') === self::DEFAULT_DATE;
     }
+
+    public function isPast(): bool
+    {
+        return $this->month->format('Ym') < date('Ym');
+    }
 }

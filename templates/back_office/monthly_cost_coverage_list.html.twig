@@ -4,9 +4,10 @@
     <div class="container mt-4">
         <h1 class="mb-3">Monthly Cost Coverage List</h1>
 
-        <p><a href="{#{{ path('') }}#}" class="btn btn-primary"><i class="fas fa-edit"></i> Edit</a></p>
-
-        <p><strong>Default monthly cost coverage target:</strong> ${{ (default_cost_coverage.target/100)|number_format(2) }}</p>
+        <p>
+            <strong>Default monthly cost coverage target:</strong> ${{ (default_cost_coverage.target/100)|number_format(2) }}
+            <a href="{{ path('bo_monthly_cost_coverage_edit', {'id': default_cost_coverage.id}) }}" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i> Edit</a>
+        </p>
 
         <table class="table table-hover table-sm">
             <thead>
@@ -14,6 +15,7 @@
                 <th scope="col">Month</th>
                 <th scope="col">Target</th>
                 <th scope="col">Postpone</th>
+                <th scope="col">Edit</th>
             </tr>
             </thead>
             <tbody>
@@ -28,6 +30,12 @@
                     {% else %}
                         <span class="badge badge-danger">No</span>
                     {% endif %}
+                </td>
+                <td>
+                    <a href="{{ path('bo_monthly_cost_coverage_edit', {'id': monthly_cost_coverage.id}) }}"
+                       class="btn btn-primary btn-sm {{ monthly_cost_coverage.month|date('Ym') < 'now'|date('Ym') ? 'disabled' : '' }}"
+                        {{ monthly_cost_coverage.month|date('Ym') < 'now'|date('Ym') ? 'aria-disabled="true"' : '' }}
+                    ><i class="fas fa-edit"></i> Edit</a>
                 </td>
             </tr>
             {% endfor %}

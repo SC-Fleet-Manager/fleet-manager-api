@@ -37,6 +37,7 @@ class MonthlyCostCoverageListController extends AbstractController
                 break;
             }
         }
+
         if ($defaultCostCoverage === null) {
             $defaultCostCoverage = (new MonthlyCostCoverage(Uuid::uuid4()))
                 ->setMonth(new \DateTimeImmutable(MonthlyCostCoverage::DEFAULT_DATE))
