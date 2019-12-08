@@ -17,7 +17,7 @@ class MonthlyCostCoverage
     public ?int $target = null;
     public bool $postpone;
 
-    public function __construct(?\DateTimeInterface $month, ?int $target, bool $postpone = true)
+    public function __construct(?\DateTimeInterface $month = null, ?int $target = null, bool $postpone = true)
     {
         $this->month = $month;
         $this->target = $target;

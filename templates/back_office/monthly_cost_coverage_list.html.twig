@@ -4,6 +4,8 @@
     <div class="container mt-4">
         <h1 class="mb-3">Monthly Cost Coverage List</h1>
 
+        <p><a href="{{ path('bo_monthly_cost_coverage_create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Create a new month cost coverage</a></p>
+
         <p>
             <strong>Default monthly cost coverage target:</strong> ${{ (default_cost_coverage.target/100)|number_format(2) }}
             <a href="{{ path('bo_monthly_cost_coverage_edit', {'id': default_cost_coverage.id}) }}" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i> Edit</a>

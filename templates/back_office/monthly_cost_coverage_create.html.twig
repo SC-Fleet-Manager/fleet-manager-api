@@ -2,17 +2,14 @@
 
 {% block body %}
     <div class="container mt-4">
-        <h1 class="mb-3">Monthly Cost Coverage Edit</h1>
+        <h1 class="mb-3">Monthly Cost Coverage Create</h1>
 
         <p><a href="{{ path('bo_monthly_cost_coverage_list') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to the list</a></p>
 
-        {% if monthly_cost_coverage.isDefault() %}
-            <p>This is the default target.</p>
-        {% endif %}
-
-        <form action="{{ path('bo_monthly_cost_coverage_edit', {'id': monthly_cost_coverage.id}) }}" method="post">
+        <form action="{{ path('bo_monthly_cost_coverage_create') }}" method="post">
             {% if form.month is defined %}
                 <label>Month</label>
+                {{ form_errors((form.month)) }}
                 <fieldset class="form-group">
                     <div id="monthly_cost_coverage_form_month" class="form-inline">
                         {{ form_widget(form.month.year) }}

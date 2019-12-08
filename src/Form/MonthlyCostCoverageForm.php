@@ -8,6 +8,8 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class MonthlyCostCoverageForm extends AbstractType
@@ -38,7 +40,13 @@ class MonthlyCostCoverageForm extends AbstractType
                 ->add('postpone', CheckboxType::class, [
                     'required' => false,
                 ]);
+            $builder->get('month')->addEventListener(FormEvents::PRE_SUBMIT, static function (FormEvent $event) {
+                $data = $event->getData();
+                $data['day'] = '1';
+                $event->setData($data);
+            });
         }
+
     }
 
     public function configureOptions(OptionsResolver $resolver): void
