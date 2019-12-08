@@ -32,12 +32,14 @@ final class Version20191204184557 extends AbstractMigration
         $this->addSql('ALTER TABLE funding ADD CONSTRAINT FK_D30DD1D6A76ED395 FOREIGN KEY (user_id) REFERENCES user (id)');
         $this->addSql('CREATE INDEX IDX_D30DD1D6A76ED395 ON funding (user_id)');
         $this->addSql('CREATE INDEX paypal_order_id_idx ON funding (paypal_order_id)');
+        $this->addSql('CREATE INDEX created_at_idx ON funding (created_at)');
         $this->addSql('ALTER TABLE user ADD coins INT DEFAULT 0 NOT NULL');
     }
 
     public function down(Schema $schema): void
     {
         $this->addSql('DROP INDEX paypal_order_id_idx ON funding');
+        $this->addSql('DROP INDEX created_at_idx ON funding');
         $this->addSql('ALTER TABLE funding DROP FOREIGN KEY FK_D30DD1D6A76ED395');
         $this->addSql('DROP INDEX IDX_D30DD1D6A76ED395 ON funding');
         $this->addSql('DROP TABLE funding');

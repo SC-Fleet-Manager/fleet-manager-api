@@ -9,7 +9,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\FundingRepository")
  * @ORM\Table(indexes={
- *     @ORM\Index(name="paypal_order_id_idx", columns={"paypal_order_id"})
+ *     @ORM\Index(name="paypal_order_id_idx", columns={"paypal_order_id"}),
+ *     @ORM\Index(name="created_at_idx", columns={"created_at"})
  * })
  */
 class Funding

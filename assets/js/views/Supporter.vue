@@ -4,11 +4,12 @@
             <b-col col xs="12" sm="12" md="12" lg="8" xl="4">
                 <b-card>
                     <h2 class="text-center">Monthly Cost Coverage</h2>
-                    <b-progress class="mb-2" :value="amount" :max="monthlyTarget" variant="success" height="2rem"></b-progress>
+                    <b-progress class="mb-2" :value="amount / 100" :max="monthlyTarget / 100" variant="success" height="2rem"></b-progress>
                     <p class="text-right font-xl">
-                        <i class="fas fa-dollar-sign" aria-hidden="true"></i> <span class="sr-only">$</span>{{ amount }}
+                        <i class="fas fa-dollar-sign" aria-hidden="true"></i> <span class="sr-only">$</span>
+                        <animated-number :value="amount / 100" :formatValue="formatAmount" :duration="500"/>
                         /
-                        <i class="fas fa-dollar-sign" aria-hidden="true"></i> <span class="sr-only">$</span>{{ monthlyTarget }}
+                        <i class="fas fa-dollar-sign" aria-hidden="true"></i> <span class="sr-only">$</span>{{ formatAmount(monthlyTarget / 100) }}
                     </p>
                     <h4 class="text-center">Why supporting?</h4>
                     <p class="text-center">Your support means <strong>a lot</strong>. By backing our project, you help cover the costs of <strong>hosting and maintenance</strong>.</p>
@@ -106,14 +107,15 @@
 <script>
     import axios from 'axios';
     import toastr from 'toastr';
+    import AnimatedNumber from 'animated-number-vue';
 
     export default {
         name: 'supporters',
-        components: {},
+        components: {AnimatedNumber},
         data() {
             return {
                 amount: 0,
-                monthlyTarget: 150,
+                monthlyTarget: 0,
                 activeTab: 'alltime',
                 monthlyUsers: [ // sort on rank field
                     {rank: 1, name: 'Ioni14', amount: 3000},
@@ -134,9 +136,7 @@
             };
         },
         created() {
-            setTimeout(() => {
-                this.amount = 100;
-            }, 500);
+            this.refreshProgress();
         },
         mounted() {
             // TODO : retrieve currency + clientId from API
@@ -145,6 +145,19 @@
             document.head.appendChild(paypalScript);
         },
         methods: {
+            refreshProgress() {
+                axios({
+                    method: 'get',
+                    url: '/api/funding/progress',
+                }).then(response => {
+                    this.monthlyTarget = response.data.target;
+                    setTimeout(() => {
+                        this.amount = response.data.progress;
+                    }, 500);
+                }).catch(err => {
+                    toastr.error('Sorry, cannot retrieve the current progress cost coverage.');
+                });
+            },
             changeAmount(newAmount) {
                 this.form.amount = newAmount;
             },
