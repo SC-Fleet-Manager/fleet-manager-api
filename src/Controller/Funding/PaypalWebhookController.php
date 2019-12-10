@@ -4,7 +4,6 @@ namespace App\Controller\Funding;
 
 use App\Entity\Funding;
 use App\Event\FundingUpdatedEvent;
-use App\Form\Dto\FundingRefund;
 use App\Message\Funding\SendOrderRefundMail;
 use App\Repository\FundingRepository;
 use App\Service\Funding\PaypalCheckout;
@@ -62,40 +61,46 @@ class PaypalWebhookController extends AbstractController implements LoggerAwareI
             return new JsonResponse(['error' => 'bad signature.'], 400);
         }
 
-        if ($payload['event_type'] === 'PAYMENT.CAPTURE.REFUNDED') {
-            $this->entityManager->clear();
+        switch ($payload['event_type']) {
+            case 'PAYMENT.CAPTURE.REFUNDED':
+                $this->handlePaymentCaptureRefunded($payload);
+                break;
+            default:
+                $this->logger->warning('[PayPal Webhook] the event {event} is not implemented.', ['event' => $payload['event_type'], 'payload' => $payload]);
 
-            /** @var Funding $funding */
-            $funding = $this->fundingRepository->find($payload['resource']['custom_id']);
-            if ($funding === null) {
-                $this->logger->error('Funding {id} not found.', ['id' => $payload['resource']['custom_id'], 'payload' => $payload]);
-
-                throw new NotFoundHttpException(sprintf('Funding %s not found.', $payload['resource']['custom_id']));
-            }
-
-            // search if we have already handled this Refund by checking its ID
-            $purchase = $funding->getPaypalPurchase();
-            if (isset($purchase['payments']['refunds'])) {
-                foreach ($purchase['payments']['refunds'] as $purchaseRefund) {
-                    if ($purchaseRefund['id'] === $payload['resource']['id']) {
-                        // already handled
-                        return new JsonResponse(null, 204);
-                    }
-                }
-            }
-
-            $refund = new FundingRefund(
-                new \DateTimeImmutable($payload['create_time']),
-                (int) bcmul($payload['resource']['seller_payable_breakdown']['total_refunded_amount']['value'], 100),
-                $payload['resource']['seller_payable_breakdown']['total_refunded_amount']['currency_code'],
-            );
-            $this->paypalCheckout->refund($funding, $refund);
-            $this->eventDispatcher->dispatch(new FundingUpdatedEvent($funding));
-            $this->entityManager->flush();
-
-            $this->bus->dispatch(new SendOrderRefundMail($funding->getId()));
+                return new JsonResponse(sprintf('The event %s is not implemented yet.', $payload['event_type']), 501);
         }
 
         return new JsonResponse(null, 204);
+    }
+
+    private function handlePaymentCaptureRefunded(array $payload): void
+    {
+        $this->entityManager->clear();
+
+        /** @var Funding $funding */
+        $funding = $this->fundingRepository->find($payload['resource']['custom_id']);
+        if ($funding === null) {
+            $this->logger->error('Funding {id} not found.', ['id' => $payload['resource']['custom_id'], 'payload' => $payload]);
+
+            throw new NotFoundHttpException(sprintf('Funding %s not found.', $payload['resource']['custom_id']));
+        }
+
+        // search if we have already handled this Refund by checking its ID
+        $purchase = $funding->getPaypalPurchase();
+        if (isset($purchase['payments']['refunds'])) {
+            foreach ($purchase['payments']['refunds'] as $purchaseRefund) {
+                if ($purchaseRefund['id'] === $payload['resource']['id']) {
+                    // already handled
+                    return;
+                }
+            }
+        }
+
+        $this->paypalCheckout->refund($funding);
+        $this->entityManager->flush();
+        $this->eventDispatcher->dispatch(new FundingUpdatedEvent($funding));
+
+        $this->bus->dispatch(new SendOrderRefundMail($funding->getId()));
     }
 }

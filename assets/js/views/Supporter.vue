@@ -30,17 +30,25 @@
                         <b-nav-item :active="activeTab == 'alltime'" @click="activeTab = 'alltime'">All time Top 20</b-nav-item>
                     </b-nav>
                     <div v-if="activeTab == 'monthly'" class="supporting-ladder">
-                        <b-row v-for="user in monthlyUsers" :key="user.name" :class="{'font-weight-bold': !!user.me}">
+                        <b-alert variant="danger" :show="monthlyLadderErrorMessage != null" v-html="monthlyLadderErrorMessage"></b-alert>
+                        <div v-if="monthlySpinner" class="mb-2 text-center">
+                            <b-spinner variant="primary"></b-spinner>
+                        </div>
+                        <b-row v-for="user in monthlyUsers" :key="user.name" class="font-xl" :class="{'font-weight-bold': !!user.me}">
                             <b-col col class="text-right pr-0">{{ user.rank }}.</b-col>
                             <b-col col>{{ user.name }}</b-col>
-                            <b-col col class="text-left"><i class="fas fa-dollar-sign" aria-hidden="true"></i> <span class="sr-only">$</span>{{ formatAmount(user.amount) }}</b-col>
+                            <b-col col class="text-left"><i class="fas fa-dollar-sign" aria-hidden="true"></i> <span class="sr-only">$</span>{{ formatAmount(user.amount / 100) }}</b-col>
                         </b-row>
                     </div>
-                    <div v-if="activeTab == 'alltime'" class="supporting-ladder">
-                        <b-row v-for="user in allTimeUsers" :key="user.name" :class="{'font-weight-bold': !!user.me}">
+                    <div v-if="activeTab == 'alltime'">
+                        <b-alert variant="danger" :show="alltimeLadderErrorMessage != null" v-html="alltimeLadderErrorMessage"></b-alert>
+                        <div v-if="alltimeSpinner" class="mb-2 text-center">
+                            <b-spinner variant="primary"></b-spinner>
+                        </div>
+                        <b-row v-for="user in allTimeUsers" :key="user.name" class="font-xl" :class="{'font-weight-bold': !!user.me}">
                             <b-col col class="text-right pr-0">{{ user.rank }}.</b-col>
                             <b-col col>{{ user.name }}</b-col>
-                            <b-col col class="text-left"><i class="fas fa-dollar-sign" aria-hidden="true"></i> <span class="sr-only">$</span>{{ formatAmount(user.amount) }}</b-col>
+                            <b-col col class="text-left"><i class="fas fa-dollar-sign" aria-hidden="true"></i> <span class="sr-only">$</span>{{ formatAmount(user.amount / 100) }}</b-col>
                         </b-row>
                     </div>
                 </b-card>
@@ -117,26 +125,23 @@
                 amount: 0,
                 monthlyTarget: 0,
                 activeTab: 'alltime',
-                monthlyUsers: [ // sort on rank field
-                    {rank: 1, name: 'Ioni14', amount: 3000},
-                    {rank: 2, name: 'Ashuvidz', amount: 100.50},
-                    {rank: 3, name: 'Tarrhen', amount: 10},
-                    {rank: 3, name: 'Foobar', amount: 10},
-                    {rank: 157, name: 'Toto', amount: 5, me: true},
-                ],
-                allTimeUsers: [ // sort on rank field
-                    {rank: 1, name: 'Ioni14', amount: 200, me: true},
-                    {rank: 2, name: 'Ashuvidz', amount: 57},
-                ],
+                monthlySpinner: false,
+                alltimeSpinner: false,
+                monthlyUsers: [],
+                allTimeUsers: [],
                 form: {amount: 2},
                 formViolations: {amount: null},
                 errorMessage: null,
                 captureSuccessMessage: null,
                 spinner: false,
+                monthlyLadderErrorMessage: null,
+                alltimeLadderErrorMessage: null,
             };
         },
         created() {
             this.refreshProgress();
+            this.refreshAlltimeLadder();
+            this.refreshMonthlyLadder();
         },
         mounted() {
             // TODO : retrieve currency + clientId from API
@@ -145,6 +150,32 @@
             document.head.appendChild(paypalScript);
         },
         methods: {
+            refreshAlltimeLadder() {
+                this.alltimeSpinner = true;
+                axios({
+                    method: 'get',
+                    url: '/api/funding/ladder-alltime',
+                }).then(response => {
+                    this.alltimeSpinner = false;
+                    this.allTimeUsers = response.data.topFundings;
+                }).catch(err => {
+                    this.alltimeSpinner = false;
+                    this.alltimeLadderErrorMessage = 'Sorry, we cannot retrieve this ladder for the moment.';
+                });
+            },
+            refreshMonthlyLadder() {
+                this.monthlySpinner = true;
+                axios({
+                    method: 'get',
+                    url: '/api/funding/ladder-monthly',
+                }).then(response => {
+                    this.monthlySpinner = false;
+                    this.monthlyUsers = response.data.topFundings;
+                }).catch(err => {
+                    this.monthlySpinner = false;
+                    this.monthlyLadderErrorMessage = 'Sorry, we cannot retrieve this ladder for the moment.';
+                });
+            },
             refreshProgress() {
                 axios({
                     method: 'get',
@@ -236,7 +267,4 @@
 </script>
 
 <style lang="scss" scoped>
-    .supporting-ladder {
-        font-size: x-large;
-    }
 </style>

@@ -61,18 +61,18 @@ class Funding
     /**
      * In cents. (x100).
      *
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", options={"default":0})
      *
      * @Groups({"supporter", "my_backings"})
      */
     private int $amount;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="integer", options={"default":0})
      *
      * @Groups({"my_backings"})
      */
-    private ?int $netAmount = null;
+    private int $netAmount;
 
     /**
      * @ORM\Column(type="string", length=3, options={"fixed":true})
@@ -89,11 +89,18 @@ class Funding
     private \DateTimeInterface $createdAt;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="integer", options={"default":0})
      *
      * @Groups({"my_backings"})
      */
-    private ?int $refundedAmount = null;
+    private int $refundedAmount;
+
+    /**
+     * @ORM\Column(type="integer", options={"default":0})
+     *
+     * @Groups({"my_backings"})
+     */
+    private int $refundedNetAmount;
 
     /**
      * @ORM\Column(type="datetimetz_immutable", nullable=true)
@@ -106,6 +113,9 @@ class Funding
     {
         $this->id = $id;
         $this->amount = 0;
+        $this->netAmount = 0;
+        $this->refundedAmount = 0;
+        $this->refundedNetAmount = 0;
         $this->currency = 'USD';
         $this->createdAt = new \DateTimeImmutable();
     }
@@ -223,14 +233,26 @@ class Funding
         return $this;
     }
 
-    public function getRefundedAmount(): ?int
+    public function getRefundedAmount(): int
     {
         return $this->refundedAmount;
     }
 
-    public function setRefundedAmount(?int $refundedAmount): self
+    public function setRefundedAmount(int $refundedAmount): self
     {
         $this->refundedAmount = $refundedAmount;
+
+        return $this;
+    }
+
+    public function getRefundedNetAmount(): int
+    {
+        return $this->refundedNetAmount;
+    }
+
+    public function setRefundedNetAmount(int $refundedNetAmount): self
+    {
+        $this->refundedNetAmount = $refundedNetAmount;
 
         return $this;
     }
@@ -256,6 +278,6 @@ class Funding
             return 0;
         }
 
-        return $this->amount - (int) $this->refundedAmount;
+        return $this->amount - $this->refundedAmount;
     }
 }

@@ -21,11 +21,12 @@ final class Version20191204184557 extends AbstractMigration
             paypal_order_id VARCHAR(31) DEFAULT NULL,
             paypal_status VARCHAR(31) DEFAULT NULL,
             paypal_purchase JSON DEFAULT NULL,
-            amount INT NOT NULL,
-            net_amount INT DEFAULT NULL,
+            amount INT DEFAULT 0 NOT NULL,
+            net_amount INT DEFAULT 0 NOT NULL,
             currency CHAR(3) NOT NULL,
             created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetimetz_immutable)\',
-            refunded_amount INT DEFAULT NULL,
+            refunded_amount INT DEFAULT 0 NOT NULL,
+            refunded_net_amount INT DEFAULT 0 NOT NULL,
             refunded_at DATETIME DEFAULT NULL COMMENT \'(DC2Type:datetimetz_immutable)\',
             PRIMARY KEY(id)
         ) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');

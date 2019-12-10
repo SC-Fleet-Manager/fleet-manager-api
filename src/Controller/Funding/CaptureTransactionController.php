@@ -75,8 +75,8 @@ class CaptureTransactionController extends AbstractController
         }
 
         $this->paypalCheckout->capture($funding);
-        $this->eventDispatcher->dispatch(new FundingUpdatedEvent($funding));
         $this->entityManager->flush();
+        $this->eventDispatcher->dispatch(new FundingUpdatedEvent($funding));
 
         $this->bus->dispatch(new SendOrderCaptureSummaryMail($funding->getId()));
 

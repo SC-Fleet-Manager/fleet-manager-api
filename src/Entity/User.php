@@ -452,6 +452,11 @@ class User implements UserInterface
         return $this->coins;
     }
 
+    public function hasCoins(): bool
+    {
+        return $this->coins > 0;
+    }
+
     public function setCoins(int $coins): self
     {
         $this->coins = $coins;

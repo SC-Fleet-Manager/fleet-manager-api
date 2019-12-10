@@ -37,19 +37,21 @@ class MonthlyCostCoverageCreateController extends AbstractController
         ]);
         $form->handleRequest($request);
 
-        if ($this->monthlyCostCoverageRepository->findOneBy(['month' => $monthlyCostCoverage->month]) !== null) {
-            $form->get('month')->addError(new FormError('This month is already created.'));
-        }
+        if ($form->isSubmitted()) {
+            if ($this->monthlyCostCoverageRepository->findOneBy(['month' => $monthlyCostCoverage->month]) !== null) {
+                $form->get('month')->addError(new FormError('This month is already created.'));
+            }
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $costCoverage = new MonthlyCostCoverage(Uuid::uuid4());
-            $costCoverage->setMonth(clone $monthlyCostCoverage->month);
-            $costCoverage->setTarget($monthlyCostCoverage->target);
-            $costCoverage->setPostpone($monthlyCostCoverage->postpone);
-            $this->entityManager->persist($costCoverage);
-            $this->entityManager->flush();
+            if ($form->isValid()) {
+                $costCoverage = new MonthlyCostCoverage(Uuid::uuid4());
+                $costCoverage->setMonth(clone $monthlyCostCoverage->month);
+                $costCoverage->setTarget($monthlyCostCoverage->target);
+                $costCoverage->setPostpone($monthlyCostCoverage->postpone);
+                $this->entityManager->persist($costCoverage);
+                $this->entityManager->flush();
 
-            return $this->redirectToRoute('bo_monthly_cost_coverage_list');
+                return $this->redirectToRoute('bo_monthly_cost_coverage_list');
+            }
         }
 
         return $this->render('back_office/monthly_cost_coverage_create.html.twig', [

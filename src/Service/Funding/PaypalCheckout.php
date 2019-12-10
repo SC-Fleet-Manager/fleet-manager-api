@@ -4,7 +4,6 @@ namespace App\Service\Funding;
 
 use App\Entity\Funding;
 use App\Entity\User;
-use App\Form\Dto\FundingRefund;
 use PayPal\Api\VerifyWebhookSignature;
 use PayPal\Api\VerifyWebhookSignatureResponse;
 use PayPal\Auth\OAuthTokenCredential;
@@ -128,7 +127,7 @@ class PaypalCheckout
         // TODO : send email with $response->payer->email_address
     }
 
-    public function refund(Funding $funding, FundingRefund $refund): void
+    public function refund(Funding $funding): void
     {
         $orderRequest = new OrdersGetRequest($funding->getPaypalOrderId());
         $response = $this->client->execute($orderRequest);
@@ -140,9 +139,6 @@ class PaypalCheckout
             return;
         }
 
-        $funding->setPaypalStatus('REFUNDED');
-        $funding->setRefundedAmount($refund->refundedAmount);
-        $funding->setRefundedAt(clone $refund->createdAt);
         foreach ($response->result->purchase_units as $purchaseUnit) {
             if ($purchaseUnit->reference_id !== self::BACKING_REFID) {
                 continue;
@@ -154,6 +150,20 @@ class PaypalCheckout
                 }
                 $funding->setPaypalStatus($paymentCapture->status);
             }
+            $refundedAmount = 0;
+            $refundedNetAmount = 0;
+            $refundedAt = null;
+            foreach ($purchaseUnit->payments->refunds as $paymentRefund) {
+                $refundedAmount += (int) bcmul($paymentRefund->seller_payable_breakdown->gross_amount->value, 100);
+                $refundedNetAmount += (int) bcmul($paymentRefund->seller_payable_breakdown->net_amount->value, 100);
+                $createTime = new \DateTimeImmutable($paymentRefund->create_time);
+                if ($refundedAt === null || $createTime < $refundedAt) {
+                    $refundedAt = $createTime;
+                }
+            }
+            $funding->setRefundedAmount($refundedAmount);
+            $funding->setRefundedNetAmount($refundedNetAmount);
+            $funding->setRefundedAt($refundedAt);
         }
 
         // TODO : send email with $response->payer->email_address
@@ -174,12 +184,12 @@ class PaypalCheckout
             /** @var VerifyWebhookSignatureResponse $output */
             $output = $signatureVerification->post($this->apiContext);
             if ($output->getVerificationStatus() !== 'SUCCESS') {
-                $this->fundingLogger->error("[Webhook]\u{a0}Bad signature.", ['headers' => $request->headers->all()]);
+                $this->fundingLogger->error('[Webhook] Bad signature.', ['headers' => $request->headers->all()]);
 
                 return false;
             }
         } catch (\Exception $e) {
-            $this->fundingLogger->error("[Webhook]\u{a0}Unable to verify webhook signature.", ['exception' => $e]);
+            $this->fundingLogger->error('[Webhook] Unable to verify webhook signature.', ['exception' => $e]);
 
             throw $e;
         }
