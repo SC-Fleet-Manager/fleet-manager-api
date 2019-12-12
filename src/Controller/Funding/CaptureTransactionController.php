@@ -5,10 +5,11 @@ namespace App\Controller\Funding;
 use App\Entity\Funding;
 use App\Entity\User;
 use App\Event\FundingUpdatedEvent;
+use App\Exception\UnableToCreatePaypalOrderException;
 use App\Form\Dto\PayPalCaptureTransaction;
 use App\Message\Funding\SendOrderCaptureSummaryMail;
 use App\Repository\FundingRepository;
-use App\Service\Funding\PaypalCheckout;
+use App\Service\Funding\PaypalCheckoutInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -23,7 +24,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 class CaptureTransactionController extends AbstractController
 {
     private Security $security;
-    private PaypalCheckout $paypalCheckout;
+    private PaypalCheckoutInterface $paypalCheckout;
     private SerializerInterface $serializer;
     private FundingRepository $fundingRepository;
     private EntityManagerInterface $entityManager;
@@ -32,7 +33,7 @@ class CaptureTransactionController extends AbstractController
 
     public function __construct(
         Security $security,
-        PaypalCheckout $paypalCheckout,
+        PaypalCheckoutInterface $paypalCheckout,
         SerializerInterface $serializer,
         FundingRepository $fundingRepository,
         EntityManagerInterface $entityManager,
@@ -74,7 +75,15 @@ class CaptureTransactionController extends AbstractController
             return new JsonResponse(null, 204);
         }
 
-        $this->paypalCheckout->capture($funding);
+        try {
+            $this->paypalCheckout->capture($funding);
+        } catch (UnableToCreatePaypalOrderException $e) {
+            return $this->json([
+                'error' => 'paypal_error',
+                'paypalError' => $e->paypalError,
+            ], 400);
+        }
+
         $this->entityManager->flush();
         $this->eventDispatcher->dispatch(new FundingUpdatedEvent($funding));
 

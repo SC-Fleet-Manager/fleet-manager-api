@@ -4,10 +4,10 @@ namespace App\Controller\Funding;
 
 use App\Entity\Funding;
 use App\Entity\User;
+use App\Exception\UnableToCreatePaypalOrderException;
 use App\Form\Dto\FundingPayment;
-use App\Service\Funding\PaypalCheckout;
+use App\Service\Funding\PaypalCheckoutInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,21 +15,19 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Range;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class PaymentController extends AbstractController
 {
     private Security $security;
-    private PaypalCheckout $paypalCheckout;
+    private PaypalCheckoutInterface $paypalCheckout;
     private ValidatorInterface $validator;
     private SerializerInterface $serializer;
     private EntityManagerInterface $entityManager;
 
     public function __construct(
         Security $security,
-        PaypalCheckout $paypalCheckout,
+        PaypalCheckoutInterface $paypalCheckout,
         ValidatorInterface $validator,
         SerializerInterface $serializer,
         EntityManagerInterface $entityManager
@@ -68,7 +66,14 @@ class PaymentController extends AbstractController
         $funding->setAmount($fundingPayment->amount);
         $funding->setUser($user);
 
-        $this->paypalCheckout->create($funding, $user, $request->getLocale());
+        try {
+            $this->paypalCheckout->create($funding, $user, $request->getLocale());
+        } catch (UnableToCreatePaypalOrderException $e) {
+            return $this->json([
+                'error' => 'paypal_error',
+                'paypalError' => $e->paypalError,
+            ], 400);
+        }
 
         $this->entityManager->persist($funding);
         $this->entityManager->flush();

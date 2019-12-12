@@ -1,0 +1,51 @@
+App\Entity\Funding:
+    funding_created_1:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("618c4d07-6e1d-49e3-91e9-d269944de266"))>']
+        user: '@user_ioni'
+        gateway: 'paypal'
+        paypalOrderId: 'cf42c65f'
+        paypalStatus: 'CREATED'
+        paypalPurchase: null
+        amount: 100
+        currency: 'USD'
+        createdAt: '<(new \DateTimeImmutable("2019-11-15 11:22:33"))>'
+    funding_created_2:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("94837ade-f7c6-4eb6-8a46-0d1adb933b67"))>']
+        user: '@user_ashuvidz'
+        gateway: 'paypal'
+        paypalOrderId: '34da4bd8'
+        paypalStatus: 'CREATED'
+        paypalPurchase: null
+        amount: 123456
+        currency: 'USD'
+        createdAt: '<(new \DateTimeImmutable("2019-11-16 12:22:33"))>'
+    funding_completed_1:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("1154f530-dbb5-425d-94e8-9a3200b75e35"))>']
+        user: '@user_ioni'
+        gateway: 'paypal'
+        paypalOrderId: 'e39b153c'
+        paypalStatus: 'COMPLETED'
+        paypalPurchase:
+            payments:
+                captures:
+                    status: 'COMPLETED'
+                    amount:
+                        currency_code: 'USD'
+                        value: '51.33'
+                    seller_receivable_breakdown:
+                        gross_amount:
+                            currency_code: 'USD'
+                            value: '51.33'
+                        paypal_fee:
+                            currency_code: 'USD'
+                            value: '1.50'
+                        net_amount:
+                            currency_code: 'USD'
+                            value: '49.83'
+                    custom_id: '1154f530-dbb5-425d-94e8-9a3200b75e35'
+                    create_time: '2019-11-16T12:22:33Z'
+                    update_time: '2019-11-16T12:22:33Z'
+        amount: 5133
+        netAmount: 4983
+        currency: 'USD'
+        createdAt: '<(new \DateTimeImmutable("2019-11-16 12:22:33"))>'

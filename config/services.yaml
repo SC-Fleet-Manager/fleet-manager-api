@@ -6,7 +6,7 @@ parameters:
     hwi_oauth.authentication.entry_point.oauth.class: 'App\Security\OAuthEntryPoint'
     env(PAYPAL_CHECKOUT_CLIENT_ID): ''
     env(PAYPAL_CHECKOUT_CLIENT_SECRET): ''
-    env(PAYPAL_CHECKOUT_MODE): !php/const App\Service\Funding\PaypalCheckout::MODE_SANDBOX
+    env(PAYPAL_CHECKOUT_MODE): !php/const App\Service\Funding\PayPalHttpClientFactory::MODE_SANDBOX
     env(WEBEXTENSION_VERSION_URL): ''
 
 services:
@@ -22,7 +22,7 @@ services:
 
     App\:
         resource: '../src/*'
-        exclude: '../src/{Entity,Migrations,Message,Form/Dto,Kernel.php}'
+        exclude: '../src/{Entity,Migrations,Message,Form/Dto,Service/Funding/FakePaypalCheckout.php,Service/*/*/Fake*.php,Kernel.php}'
 
     App\Controller\:
         resource: '../src/Controller/*/*'
@@ -69,13 +69,6 @@ services:
         tags:
             - { name: 'kernel.event_listener', event: 'kernel.exception', method: 'onException' }
 
-    App\Service\Funding\PaypalCheckout:
-#        lazy: true
-        arguments:
-            $clientId: '%env(PAYPAL_CHECKOUT_CLIENT_ID)%'
-            $clientSecret: '%env(PAYPAL_CHECKOUT_CLIENT_SECRET)%'
-            $mode: '%env(PAYPAL_CHECKOUT_MODE)%'
-
     App\MessageHandler\Funding\SendOrderCaptureSummaryMailHandler:
         arguments:
             $orderCaptureSummaryAddresses: '%env(csv:FUNDING_ORDER_CAPTURE_ADDRESSES)%'
@@ -83,3 +76,18 @@ services:
     App\Listener\Funding\UpdateSupporterAdvantagesListener:
         tags:
             - { name: 'kernel.event_listener' }
+
+    App\Service\Funding\PaypalCheckout: ~
+    #        lazy: true
+    App\Service\Funding\PaypalCheckoutInterface: '@App\Service\Funding\PaypalCheckout'
+
+    App\Service\Funding\PayPalHttpClientFactory:
+        arguments:
+            $clientId: '%env(PAYPAL_CHECKOUT_CLIENT_ID)%'
+            $clientSecret: '%env(PAYPAL_CHECKOUT_CLIENT_SECRET)%'
+            $mode: '%env(PAYPAL_CHECKOUT_MODE)%'
+
+    PayPalCheckoutSdk\Core\PayPalHttpClient:
+        factory: ['@App\Service\Funding\PayPalHttpClientFactory', 'createPayPalHttpClient']
+    PayPal\Rest\ApiContext:
+        factory: ['@App\Service\Funding\PayPalHttpClientFactory', 'createApiContext']

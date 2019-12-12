@@ -231,6 +231,17 @@
                                 for (let violation of err.response.data.formErrors.violations) {
                                     this.$set(this.formViolations, violation.propertyPath, violation.title);
                                 }
+                            } else if (err.response.data.error === 'paypal_error') {
+                                this.errorMessage = 'An error has occurred when submitting your backing to PayPal:';
+                                this.errorMessage += '<ul class="mb-0">';
+                                if (err.response.data.paypalError.details.length > 0) {
+                                    for (let errorDetail of err.response.data.paypalError.details) {
+                                        this.errorMessage += `<li>${errorDetail.description}</li>`;
+                                    }
+                                } else {
+                                    this.errorMessage += `<li>${err.response.data.paypalError.message}</li>`;
+                                }
+                                this.errorMessage += '</ul>';
                             } else {
                                 this.errorMessage = 'An unexpected error has occurred. Please try again in a moment.';
                             }
@@ -252,6 +263,10 @@
                             this.spinner = false;
                             if (err.response.data.errorMessage) {
                                 this.errorMessage = err.response.data.errorMessage;
+                            } else if (err.response.data.error === 'paypal_error') {
+                                this.errorMessage = `An error has occurred when validating your backing to PayPal.<br/>
+                                    Please contact us to fleet-manager [at] protonmail.com.<br/>
+                                    We apologize for the inconvenience.`;
                             } else {
                                 this.errorMessage = 'Sorry, but an unexpected error has occurred. Please try again in a moment.';
                             }
@@ -265,6 +280,3 @@
         }
     }
 </script>
-
-<style lang="scss" scoped>
-</style>

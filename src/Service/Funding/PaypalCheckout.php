@@ -4,50 +4,32 @@ namespace App\Service\Funding;
 
 use App\Entity\Funding;
 use App\Entity\User;
+use App\Exception\UnableToCreatePaypalOrderException;
 use PayPal\Api\VerifyWebhookSignature;
 use PayPal\Api\VerifyWebhookSignatureResponse;
-use PayPal\Auth\OAuthTokenCredential;
 use PayPal\Rest\ApiContext;
-use PayPalCheckoutSdk\Core\PayPalEnvironment;
 use PayPalCheckoutSdk\Core\PayPalHttpClient;
-use PayPalCheckoutSdk\Core\ProductionEnvironment;
-use PayPalCheckoutSdk\Core\SandboxEnvironment;
 use PayPalCheckoutSdk\Orders\OrdersCaptureRequest;
 use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
 use PayPalCheckoutSdk\Orders\OrdersGetRequest;
 use PayPalHttp\HttpClient;
+use PayPalHttp\HttpException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class PaypalCheckout
+class PaypalCheckout implements PaypalCheckoutInterface
 {
-    public const MODE_PROD = 'prod';
-    public const MODE_SANDBOX = 'sandbox';
-
-    public const BACKING_REFID = '1a454096-31bc-47cb-9400-07b752809220';
-
-    private UrlGeneratorInterface $urlGenerator;
+//    private UrlGeneratorInterface $urlGenerator;
     private LoggerInterface $fundingLogger;
-    private string $clientId;
-    private string $clientSecret;
-    private string $mode;
     private HttpClient $client;
     private ApiContext $apiContext;
 
-    public function __construct(UrlGeneratorInterface $urlGenerator, LoggerInterface $fundingLogger, string $clientId, string $clientSecret, string $mode = self::MODE_SANDBOX)
+    public function __construct(/*UrlGeneratorInterface $urlGenerator, */ LoggerInterface $fundingLogger, PayPalHttpClient $client, ApiContext $apiContext)
     {
-        $this->urlGenerator = $urlGenerator;
+//        $this->urlGenerator = $urlGenerator;
         $this->fundingLogger = $fundingLogger;
-        $this->clientId = $clientId;
-        $this->clientSecret = $clientSecret;
-        $this->mode = $mode;
-
-        $this->client = new PayPalHttpClient($this->createEnvironment());
-        $this->apiContext = new ApiContext(new OAuthTokenCredential($clientId, $clientSecret));
-        $this->apiContext->setConfig([
-            'mode' => $mode === self::MODE_PROD ? 'live' : 'sandbox',
-        ]);
+        $this->client = $client;
+        $this->apiContext = $apiContext;
     }
 
     public function create(Funding $funding, User $user, string $locale): void
@@ -80,13 +62,27 @@ class PaypalCheckout
                 ],
             ],
         ];
-        $response = $this->client->execute($orderRequest);
+
+        try {
+            $response = $this->client->execute($orderRequest);
+        } catch (HttpException $e) {
+            if (!isset($e->headers['Content-Type'])) {
+                $this->fundingLogger->error('[Create Order] An error has occurred when creating an order on PayPal.', ['exception' => $e]);
+                throw new \LogicException('Unable to create an order on PayPal.');
+            }
+            $error = json_decode($e->getMessage(), true);
+            $this->fundingLogger->error('[Create Order] An error has occurred when creating an order on PayPal.', ['exception' => $e, 'error' => $error]);
+
+            throw new UnableToCreatePaypalOrderException($error, 'An error has occurred when submitting the backing.');
+        }
 
         if ($response->statusCode >= 400) {
             $this->fundingLogger->error('[Create Order] Unable to create the order on PayPal.', ['response' => $response]);
 
             throw new \LogicException('Unable to create an order on PayPal.');
         }
+
+        $this->fundingLogger->info('[Create Order] An order has been created.', ['response' => $response, 'fundingId' => $funding->getId()]);
 
         $funding->setPaypalOrderId($response->result->id);
         $funding->setPaypalStatus($response->result->status);
@@ -97,13 +93,27 @@ class PaypalCheckout
     {
         /** @see https://developer.paypal.com/docs/api/orders/v2/#orders_capture */
         $orderRequest = new OrdersCaptureRequest($funding->getPaypalOrderId());
-        $response = $this->client->execute($orderRequest);
+
+        try {
+            $response = $this->client->execute($orderRequest);
+        } catch (HttpException $e) {
+            if (!isset($e->headers['Content-Type'])) {
+                $this->fundingLogger->error('[Capture Order] An error has occurred when capturing an order on PayPal.', ['exception' => $e, 'fundingId' => $funding->getId()]);
+                throw new \LogicException('Unable to capture an order on PayPal.');
+            }
+            $error = json_decode($e->getMessage(), true);
+            $this->fundingLogger->error('[Capture Order] An error has occurred when capturing an order on PayPal.', ['exception' => $e, 'error' => $error, 'fundingId' => $funding->getId()]);
+
+            throw new UnableToCreatePaypalOrderException($error, 'An error has occurred when validating the backing.');
+        }
 
         if ($response->statusCode >= 400) {
-            $this->fundingLogger->error('[Capture Order] Unable to capture the order on PayPal.', ['response' => $response]);
+            $this->fundingLogger->error('[Capture Order] Unable to capture the order on PayPal.', ['response' => $response, 'fundingId' => $funding->getId()]);
 
             throw new \LogicException('Unable to capture the order on PayPal.');
         }
+
+        $this->fundingLogger->info('[Capture Order] An order has been captured.', ['response' => $response, 'fundingId' => $funding->getId()]);
 
         foreach ($response->result->purchase_units as $purchaseUnit) {
             if ($purchaseUnit->reference_id !== self::BACKING_REFID) {
@@ -169,6 +179,35 @@ class PaypalCheckout
         // TODO : send email with $response->payer->email_address
     }
 
+    public function deny(Funding $funding): void
+    {
+        $orderRequest = new OrdersGetRequest($funding->getPaypalOrderId());
+        $response = $this->client->execute($orderRequest);
+
+        if ($response->statusCode >= 400) {
+            // TODO : use MOM!
+            $this->fundingLogger->error('[Deny Order] Unable to get the order from PayPal.', ['response' => $response]);
+
+            return;
+        }
+
+        $funding->setPaypalStatus('DENIED');
+        foreach ($response->result->purchase_units as $purchaseUnit) {
+            if ($purchaseUnit->reference_id !== self::BACKING_REFID) {
+                continue;
+            }
+            $funding->setPaypalPurchase($this->transformPurchase($purchaseUnit));
+            foreach ($purchaseUnit->payments->captures as $paymentCapture) {
+                if ($paymentCapture->custom_id !== $funding->getId()->toString()) {
+                    continue;
+                }
+                $funding->setPaypalStatus($paymentCapture->status);
+            }
+        }
+
+        // TODO : send email with $response->payer->email_address
+    }
+
     public function verifySignature(Request $request): bool
     {
         $signatureVerification = new VerifyWebhookSignature();
@@ -203,14 +242,5 @@ class PaypalCheckout
         unset($purchase['shipping']); // RGPD
 
         return $purchase;
-    }
-
-    private function createEnvironment(): PayPalEnvironment
-    {
-        if ($this->mode === self::MODE_PROD) {
-            return new ProductionEnvironment($this->clientId, $this->clientSecret);
-        }
-
-        return new SandboxEnvironment($this->clientId, $this->clientSecret);
     }
 }

@@ -6,7 +6,7 @@ use App\Entity\Funding;
 use App\Event\FundingUpdatedEvent;
 use App\Message\Funding\SendOrderRefundMail;
 use App\Repository\FundingRepository;
-use App\Service\Funding\PaypalCheckout;
+use App\Service\Funding\PaypalCheckoutInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -24,7 +24,7 @@ class PaypalWebhookController extends AbstractController implements LoggerAwareI
 {
     use LoggerAwareTrait;
 
-    private PaypalCheckout $paypalCheckout;
+    private PaypalCheckoutInterface $paypalCheckout;
     private FundingRepository $fundingRepository;
     private DecoderInterface $decoder;
     private EntityManagerInterface $entityManager;
@@ -32,7 +32,7 @@ class PaypalWebhookController extends AbstractController implements LoggerAwareI
     private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
-        PaypalCheckout $paypalCheckout,
+        PaypalCheckoutInterface $paypalCheckout,
         FundingRepository $fundingRepository,
         DecoderInterface $decoder,
         EntityManagerInterface $entityManager,
@@ -53,22 +53,25 @@ class PaypalWebhookController extends AbstractController implements LoggerAwareI
     public function __invoke(Request $request): Response
     {
         $payload = $this->decoder->decode($request->getContent(), $request->getContentType());
-        if ($payload['event_type'] !== 'PAYMENT.CAPTURE.REFUNDED') {
-            return new JsonResponse(null, 204);
-        }
 
         if (!$this->paypalCheckout->verifySignature($request)) {
             return new JsonResponse(['error' => 'bad signature.'], 400);
         }
 
+        $this->logger->info('[PayPal Webhook] new event {event} fired.', ['event' => $payload['event_type'], 'payload' => $payload]);
+
         switch ($payload['event_type']) {
+            case 'PAYMENT.CAPTURE.REVERSED':
             case 'PAYMENT.CAPTURE.REFUNDED':
                 $this->handlePaymentCaptureRefunded($payload);
+                break;
+            case 'PAYMENT.CAPTURE.DENIED':
+                $this->handlePaymentCaptureDenied($payload);
                 break;
             default:
                 $this->logger->warning('[PayPal Webhook] the event {event} is not implemented.', ['event' => $payload['event_type'], 'payload' => $payload]);
 
-                return new JsonResponse(sprintf('The event %s is not implemented yet.', $payload['event_type']), 501);
+                return new JsonResponse(sprintf('The event %s is not implemented yet.', $payload['event_type']), 200);
         }
 
         return new JsonResponse(null, 204);
@@ -98,6 +101,29 @@ class PaypalWebhookController extends AbstractController implements LoggerAwareI
         }
 
         $this->paypalCheckout->refund($funding);
+        $this->entityManager->flush();
+        $this->eventDispatcher->dispatch(new FundingUpdatedEvent($funding));
+
+        $this->bus->dispatch(new SendOrderRefundMail($funding->getId()));
+    }
+
+    private function handlePaymentCaptureDenied(array $payload): void
+    {
+        $this->entityManager->clear();
+
+        /** @var Funding $funding */
+        $funding = $this->fundingRepository->find($payload['resource']['custom_id']);
+        if ($funding === null) {
+            $this->logger->error('Funding {id} not found.', ['id' => $payload['resource']['custom_id'], 'payload' => $payload]);
+
+            throw new NotFoundHttpException(sprintf('Funding %s not found.', $payload['resource']['custom_id']));
+        }
+
+        if ($funding->getPaypalStatus() === 'DENIED') {
+            return;
+        }
+
+        $this->paypalCheckout->deny($funding);
         $this->entityManager->flush();
         $this->eventDispatcher->dispatch(new FundingUpdatedEvent($funding));
 

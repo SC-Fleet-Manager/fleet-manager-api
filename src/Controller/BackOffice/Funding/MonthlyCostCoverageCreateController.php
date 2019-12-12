@@ -31,7 +31,6 @@ class MonthlyCostCoverageCreateController extends AbstractController
     public function __invoke(Request $request): Response
     {
         $monthlyCostCoverage = new MonthlyCostCoverageDto(new \DateTimeImmutable('first day of'), 0);
-        dump($monthlyCostCoverage);
         $form = $this->createForm(MonthlyCostCoverageForm::class, $monthlyCostCoverage, [
             'mode' => MonthlyCostCoverageForm::MODE_CREATE,
         ]);

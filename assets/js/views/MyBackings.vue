@@ -81,7 +81,7 @@
         },
         methods: {
             formatNumber(value) {
-                return new Intl.NumberFormat('en-US', { style: 'decimal' }).format(value / 100);
+                return new Intl.NumberFormat('en-US', { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value / 100);
             },
             formatAmount(value, key, item) {
                 if (value === null) {
