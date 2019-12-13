@@ -364,6 +364,8 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
                 return 'Mantis';
             case '78':
                 return 'Pisces';
+            case '79':
+                return 'Ares';
             case '1001':
                 return 'F8C';
         }
