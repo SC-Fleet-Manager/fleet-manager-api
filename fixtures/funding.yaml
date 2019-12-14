@@ -28,24 +28,78 @@ App\Entity\Funding:
         paypalPurchase:
             payments:
                 captures:
-                    status: 'COMPLETED'
-                    amount:
-                        currency_code: 'USD'
-                        value: '51.33'
-                    seller_receivable_breakdown:
-                        gross_amount:
+                    -
+                        status: 'COMPLETED'
+                        amount:
                             currency_code: 'USD'
                             value: '51.33'
-                        paypal_fee:
-                            currency_code: 'USD'
-                            value: '1.50'
-                        net_amount:
-                            currency_code: 'USD'
-                            value: '49.83'
-                    custom_id: '1154f530-dbb5-425d-94e8-9a3200b75e35'
-                    create_time: '2019-11-16T12:22:33Z'
-                    update_time: '2019-11-16T12:22:33Z'
+                        seller_receivable_breakdown:
+                            gross_amount:
+                                currency_code: 'USD'
+                                value: '51.33'
+                            paypal_fee:
+                                currency_code: 'USD'
+                                value: '1.50'
+                            net_amount:
+                                currency_code: 'USD'
+                                value: '49.83'
+                        custom_id: '1154f530-dbb5-425d-94e8-9a3200b75e35'
+                        create_time: '2019-11-16T12:22:33Z'
+                        update_time: '2019-11-16T12:22:33Z'
         amount: 5133
         netAmount: 4983
         currency: 'USD'
         createdAt: '<(new \DateTimeImmutable("2019-11-16 12:22:33"))>'
+    funding_partially_refunded_1:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("fc296ec6-0e4f-405e-a44c-05e089428751"))>']
+        user: '@user_ashuvidz'
+        gateway: 'paypal'
+        paypalOrderId: '3aaf10e4'
+        paypalStatus: 'PARTIALLY_REFUNDED'
+        paypalPurchase:
+            payments:
+                captures:
+                    -
+                        status: 'PARTIALLY_REFUNDED'
+                        amount:
+                            currency_code: 'USD'
+                            value: '12.00'
+                        seller_receivable_breakdown:
+                            gross_amount:
+                                currency_code: 'USD'
+                                value: '12.00'
+                            paypal_fee:
+                                currency_code: 'USD'
+                                value: '1.15'
+                            net_amount:
+                                currency_code: 'USD'
+                                value: '10.85'
+                        custom_id: 'fc296ec6-0e4f-405e-a44c-05e089428751'
+                        create_time: '2019-11-17T13:22:33Z'
+                        update_time: '2019-11-17T14:22:33Z'
+                refunds:
+                    -
+                        id: '9780f6f97c6e'
+                        status: 'COMPLETED'
+                        amount:
+                            currency_code: 'USD'
+                            value: '5.00'
+                        seller_payable_breakdown:
+                            gross_amount:
+                                currency_code: 'USD'
+                                value: '5.00'
+                            paypal_fee:
+                                currency_code: 'USD'
+                                value: '0.80'
+                            net_amount:
+                                currency_code: 'USD'
+                                value: '4.20'
+                        custom_id: 'fc296ec6-0e4f-405e-a44c-05e089428751'
+                        create_time: '2019-11-17T14:22:33Z'
+                        update_time: '2019-11-17T14:22:33Z'
+        amount: 1200
+        netAmount: 1085
+        refundedAmount: 500
+        refundedNetAmount: 420
+        currency: 'USD'
+        createdAt: '<(new \DateTimeImmutable("2019-11-17 13:22:33"))>'

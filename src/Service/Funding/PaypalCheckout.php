@@ -5,7 +5,6 @@ namespace App\Service\Funding;
 use App\Entity\Funding;
 use App\Entity\User;
 use App\Exception\UnableToCreatePaypalOrderException;
-use PayPal\Api\VerifyWebhookSignature;
 use PayPal\Api\VerifyWebhookSignatureResponse;
 use PayPal\Rest\ApiContext;
 use PayPalCheckoutSdk\Core\PayPalHttpClient;
@@ -23,13 +22,15 @@ class PaypalCheckout implements PaypalCheckoutInterface
     private LoggerInterface $fundingLogger;
     private HttpClient $client;
     private ApiContext $apiContext;
+    private VerifyWebhookSignatureFactory $verifyWebhookSignatureFactory;
 
-    public function __construct(/*UrlGeneratorInterface $urlGenerator, */ LoggerInterface $fundingLogger, PayPalHttpClient $client, ApiContext $apiContext)
+    public function __construct(/*UrlGeneratorInterface $urlGenerator, */ LoggerInterface $fundingLogger, PayPalHttpClient $client, ApiContext $apiContext, VerifyWebhookSignatureFactory $verifyWebhookSignatureFactory)
     {
 //        $this->urlGenerator = $urlGenerator;
         $this->fundingLogger = $fundingLogger;
         $this->client = $client;
         $this->apiContext = $apiContext;
+        $this->verifyWebhookSignatureFactory = $verifyWebhookSignatureFactory;
     }
 
     public function create(Funding $funding, User $user, string $locale): void
@@ -210,14 +211,7 @@ class PaypalCheckout implements PaypalCheckoutInterface
 
     public function verifySignature(Request $request): bool
     {
-        $signatureVerification = new VerifyWebhookSignature();
-        $signatureVerification->setAuthAlgo($request->headers->get('paypal-auth-algo'));
-        $signatureVerification->setTransmissionId($request->headers->get('paypal-transmission-id'));
-        $signatureVerification->setCertUrl($request->headers->get('paypal-cert-url'));
-        $signatureVerification->setWebhookId('72Y11928S1077440L');
-        $signatureVerification->setTransmissionSig($request->headers->get('paypal-transmission-sig'));
-        $signatureVerification->setTransmissionTime($request->headers->get('paypal-transmission-time'));
-        $signatureVerification->setRequestBody($request->getContent());
+        $signatureVerification = $this->verifyWebhookSignatureFactory->createVerifyWebhookSignature($request);
 
         try {
             /** @var VerifyWebhookSignatureResponse $output */

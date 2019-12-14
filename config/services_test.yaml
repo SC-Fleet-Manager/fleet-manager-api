@@ -17,6 +17,8 @@ services:
     App\Service\Organization\InfosProvider\OrganizationInfosProviderInterface: '@App\Service\Organization\InfosProvider\FakeOrganizationInfosProvider'
 
     App\Tests\Service\PayPal\MockPayPalHttpClient: ~
+    App\Tests\Service\PayPal\MockVerifyWebhookSignatureFactory: ~
     App\Service\Funding\PaypalCheckout:
         arguments:
             $client: '@App\Tests\Service\PayPal\MockPayPalHttpClient'
+            $verifyWebhookSignatureFactory: '@App\Tests\Service\PayPal\MockVerifyWebhookSignatureFactory'

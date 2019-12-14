@@ -52,11 +52,11 @@ class PaypalWebhookController extends AbstractController implements LoggerAwareI
      */
     public function __invoke(Request $request): Response
     {
-        $payload = $this->decoder->decode($request->getContent(), $request->getContentType());
-
         if (!$this->paypalCheckout->verifySignature($request)) {
             return new JsonResponse(['error' => 'bad signature.'], 400);
         }
+
+        $payload = $this->decoder->decode($request->getContent(), $request->getContentType());
 
         $this->logger->info('[PayPal Webhook] new event {event} fired.', ['event' => $payload['event_type'], 'payload' => $payload]);
 
@@ -126,7 +126,5 @@ class PaypalWebhookController extends AbstractController implements LoggerAwareI
         $this->paypalCheckout->deny($funding);
         $this->entityManager->flush();
         $this->eventDispatcher->dispatch(new FundingUpdatedEvent($funding));
-
-        $this->bus->dispatch(new SendOrderRefundMail($funding->getId()));
     }
 }
