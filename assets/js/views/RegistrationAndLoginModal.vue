@@ -45,6 +45,9 @@
                                 ></b-form-input>
                                 <p class="mt-2 mb-0" style="cursor: pointer" v-b-toggle.collapse-lost-password-form>I lost my password.</p>
                             </b-form-group>
+                            <b-form-group class="text-left">
+                                <b-form-checkbox v-model="loginForm.rememberMe">Remember me</b-form-checkbox>
+                            </b-form-group>
                             <b-button type="submit" size="lg" block variant="primary" class="px-5"><i class="fas fa-unlock-alt"></i> Login</b-button>
                             <p class="mt-2 mb-0" style="cursor: pointer" v-b-toggle.collapse-registration-form>I'm not registered yet.</p>
                         </b-form>
@@ -113,7 +116,7 @@
         components: {},
         data() {
             return {
-                loginForm: {email: null, password: null},
+                loginForm: {email: null, password: null, rememberMe: false},
                 registrationForm: {email: null, password: null},
                 lostPasswordForm: {email: null},
                 loginFormShow: true,
@@ -153,6 +156,7 @@
                     data: qs.stringify({
                         '_username': this.loginForm.email,
                         '_password': this.loginForm.password,
+                        '_remember_me': this.loginForm.rememberMe,
                     }),
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',

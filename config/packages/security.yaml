@@ -15,6 +15,9 @@ security:
             entity:
                 class: 'App\Entity\User'
                 property: 'username'
+        chain_user:
+            chain:
+                providers: ['user_entity_username', 'oauth_user_provider', 'user_entity']
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|build|icons|favicon\.ico|robots\.txt)/
@@ -35,20 +38,21 @@ security:
                 secret: '%kernel.secret%'
                 lifetime: 604800 # 1 week
                 path: /
-                always_remember_me: true
+                user_providers: ['chain_user']
             form_login:
                 provider: user_entity
-                login_path: /login
+                login_path: /login/
                 check_path: /api/login/check-form-login
                 success_handler: App\Security\FormLoginSuccessHandler
                 failure_handler: App\Security\FormLoginFailureHandler
+                remember_me:  true
             oauth:
                 provider: oauth_user_provider
                 resource_owners:
                     discord: /login/check-discord
-                login_path: /login
+                login_path: /login/
                 use_forward: false
-                failure_path: /login
+                failure_path: /login/
                 always_use_default_target_path: true
                 default_target_path: /profile
                 oauth_user_provider:
