@@ -514,6 +514,13 @@ class SpaControllerTest extends PantherTestCase
             $this->assertSame('RSI - Aurora', $cardShips[5]->findElement(WebDriverBy::className('card-title'))->getText());
             $this->assertSame('1', $cardShips[5]->findElement(WebDriverBy::className('card-ship-counter'))->getText());
 
+            $cardShips[0]->click();
+            $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+                return strpos($driver->findElement(WebDriverBy::cssSelector('.ship-family-detail-variant h4'))->getText(), 'Cutlass Black') !== false;
+            });
+            // supporter badge
+            $this->assertCount(1, $this->client->findElements(WebDriverBy::cssSelector('.ship-family-detail-variant-ownerlist .fa-hands-helping')));
+
             $this->client->request('GET', '/organization-fleet/not_exist'); // inexistent orga
             $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
                 return count($driver->findElements(WebDriverBy::className('alert'))) > 0;
