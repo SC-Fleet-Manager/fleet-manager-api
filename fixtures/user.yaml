@@ -224,3 +224,48 @@ App\Entity\User:
         citizen: '@citizen_linksocialnetworks_pending'
         createdAt: '<(new \DateTimeImmutable("2019-04-18 11:22:33"))>'
         lastConnectedAt: '<(new \DateTimeImmutable("2019-04-19 22:33:44"))>'
+    user_fundings_1:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("a70526d9-5319-4445-901a-4bcccd50d911"))>']
+        username: 'fundings-1'
+        email: 'fundings-1@example.com'
+        emailConfirmed: true
+        password: '123456'
+        token: 'J4608WcQicWa1FK3Gei6MwM5bjAjiAmB9xV7RnHAcrNRcXAeRz0XyvL8bHQyydb4'
+        apiToken: 'npNtci5QL77wPDC5pyLfwFWgRiiGjqhVjztkcIPKVI4DmJxIwrLjupVXe8gIsyqE'
+        registrationConfirmationToken: 'KrbnPSofXCPV7uWi22wp4aYG6bnmOaVvGdh8ZnPAV2WBPzwgYPzmnFNipD2RhZW8'
+        createdAt: '<(new \DateTimeImmutable("2019-04-19 11:22:33"))>'
+        lastConnectedAt: '<(new \DateTimeImmutable("2019-04-20 22:33:44"))>'
+    user_fundings_2:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("c704d896-2d69-4b3e-b373-51659c5fbc08"))>']
+        username: 'fundings-2'
+        email: 'fundings-2@example.com'
+        emailConfirmed: true
+        password: '123456'
+        token: 'fuKrAgkB9pr2SjzgXWcmtGpE1kQHuRlWloA4DEp2eTHdbdY8rMNNJNTbZ3OIMS51'
+        apiToken: 'SePDz2qZFNAf1yAndm9HdfUgMvwYOy9MDj4O1AVJglFNDycgB1NANlVtNLAATTBf'
+        registrationConfirmationToken: '00AUVH8JtGSkbmMezFcIfeSBhsXgYQQ5Ch02pE8YOxv2Jsq6i3nkyQGqjAttHHFZ'
+        createdAt: '<(new \DateTimeImmutable("2019-04-20 11:22:33"))>'
+        lastConnectedAt: '<(new \DateTimeImmutable("2019-04-21 22:33:44"))>'
+    user_fundings_3:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("129b2e1a-d808-4370-a07d-51837b436cb3"))>']
+        username: 'fundings-3'
+        email: 'fundings-3@example.com'
+        emailConfirmed: true
+        password: '123456'
+        token: 'fuKrAgkB9pr2SjzgXWcmtGpE1kQHuRlWloA4DEp2eTHdbdY8rMNNJNTbZ3OIMS52'
+        apiToken: 'SePDz2qZFNAf1yAndm9HdfUgMvwYOy9MDj4O1AVJglFNDycgB1NANlVtNLAATTB1'
+        registrationConfirmationToken: '00AUVH8JtGSkbmMezFcIfeSBhsXgYQQ5Ch02pE8YOxv2Jsq6i3nkyQGqjAttHHF1'
+        createdAt: '<(new \DateTimeImmutable("2019-04-21 11:22:33"))>'
+        lastConnectedAt: '<(new \DateTimeImmutable("2019-04-22 22:33:44"))>'
+    user_fundings_{10..30}:
+        __construct: ['<createUuid("14203774-91fa-4300-b464-bcda42697b", $current)>']
+        username: '<current()>_fundings'
+        email: '<current()>_fundings@example.com'
+        emailConfirmed: true
+        password: '123456'
+        token: 'fuKrAgkB9pr2SjzgXWcmtGpE1kQHuRlWloA4DEp2eTHdbdY8rMNNJNTbZ3OIMS<current()>'
+        apiToken: 'SePDz2qZFNAf1yAndm9HdfUgMvwYOy9MDj4O1AVJglFNDycgB1NANlVtNLAATT<current()>'
+        registrationConfirmationToken: '00AUVH8JtGSkbmMezFcIfeSBhsXgYQQ5Ch02pE8YOxv2Jsq6i3nkyQGqjAttHH<current()>'
+        createdAt: '<(new \DateTimeImmutable("2019-04-22 11:22:33"))>'
+        lastConnectedAt: '<(new \DateTimeImmutable("2019-04-23 22:33:44"))>'
+        coins: 100

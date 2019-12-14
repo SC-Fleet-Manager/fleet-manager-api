@@ -3,7 +3,7 @@
         <b-row>
             <b-col col lg="8" xl="6">
                 <b-card title="My Backings">
-                    <p>Total backed <i class="fas fa-dollar-sign"></i> {{ formatNumber(totalEffectiveAmount) }} <span v-if="user != null"><img src="../../img/coin.svg" title="FM Coins" alt="FM Coins" height="30"> {{ user.coins }}</span></p>
+                    <p>Total backed <span id="total-backed"><i class="fas fa-dollar-sign" aria-hidden="true"></i> <span class="sr-only">$</span>{{ formatNumber(totalEffectiveAmount) }}</span> <span v-if="user != null" id="count-fm-coins"><img src="../../img/coin.svg" title="FM Coins" alt="FM Coins" height="30"> {{ user.coins }}</span></p>
                     <b-table id="backings-table" striped hover :items="backings" :fields="fields"
                              :per-page="perPage"
                              :current-page="currentPage"
@@ -146,6 +146,3 @@
         }
     }
 </script>
-
-<style>
-</style>

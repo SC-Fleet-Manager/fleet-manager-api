@@ -12,9 +12,8 @@ class MyBackingsController extends AbstractController
 {
     private FundingRepository $fundingRepository;
 
-    public function __construct(
-        FundingRepository $fundingRepository
-    ) {
+    public function __construct(FundingRepository $fundingRepository)
+    {
         $this->fundingRepository = $fundingRepository;
     }
 

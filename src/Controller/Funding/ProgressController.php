@@ -5,6 +5,8 @@ namespace App\Controller\Funding;
 use App\Entity\MonthlyCostCoverage;
 use App\Repository\FundingRepository;
 use App\Repository\MonthlyCostCoverageRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,13 +16,16 @@ class ProgressController extends AbstractController
 {
     private FundingRepository $fundingRepository;
     private MonthlyCostCoverageRepository $monthlyCostCoverageRepository;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(
         FundingRepository $fundingRepository,
-        MonthlyCostCoverageRepository $monthlyCostCoverageRepository
+        MonthlyCostCoverageRepository $monthlyCostCoverageRepository,
+        EntityManagerInterface $entityManager
     ) {
         $this->fundingRepository = $fundingRepository;
         $this->monthlyCostCoverageRepository = $monthlyCostCoverageRepository;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -43,6 +48,9 @@ class ProgressController extends AbstractController
             // use default one
             /** @var MonthlyCostCoverage $defaultCostCoverage */
             $defaultCostCoverage = $this->monthlyCostCoverageRepository->findOneBy(['month' => new \DateTimeImmutable(MonthlyCostCoverage::DEFAULT_DATE)]);
+            if ($defaultCostCoverage === null) {
+                $defaultCostCoverage = $this->createDefaultCostCoverage();
+            }
             $target = $defaultCostCoverage->getTarget();
         } else {
             $target = $currentMonthCoverage->getTarget();
@@ -55,6 +63,9 @@ class ProgressController extends AbstractController
             if ($defaultCostCoverage === null) {
                 /** @var MonthlyCostCoverage $defaultCostCoverage */
                 $lastMonthCoverage = $this->monthlyCostCoverageRepository->findOneBy(['month' => new \DateTimeImmutable(MonthlyCostCoverage::DEFAULT_DATE)]);
+                if ($lastMonthCoverage === null) {
+                    $lastMonthCoverage = $this->createDefaultCostCoverage();
+                }
             } else {
                 $lastMonthCoverage = $defaultCostCoverage;
             }
@@ -67,5 +78,17 @@ class ProgressController extends AbstractController
             'progress' => $progress,
             'target' => $target,
         ]);
+    }
+
+    private function createDefaultCostCoverage(): MonthlyCostCoverage
+    {
+        $entity = new MonthlyCostCoverage(Uuid::uuid4());
+        $entity->setMonth(new \DateTimeImmutable(MonthlyCostCoverage::DEFAULT_DATE));
+        $entity->setTarget(0);
+        $entity->setPostpone(true);
+        $this->entityManager->persist($entity);
+        $this->entityManager->flush();
+
+        return $entity;
     }
 }

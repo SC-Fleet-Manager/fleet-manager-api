@@ -74,6 +74,8 @@ class FundingRepository extends ServiceEntityRepository
 
     public function getRankLadder(int $userTotalAmount, ?\DateTimeInterface $month = null): ?int
     {
+        $fundingMetadata = $this->_em->getClassMetadata(Funding::class);
+
         $monthSqlCondition = $month !== null ? '
             f.created_at >= :beginDate
             AND f.created_at < :endDate
@@ -86,14 +88,14 @@ class FundingRepository extends ServiceEntityRepository
                         @_sequence := @_sequence+1, @_last_value := effectiveAmount.totalAmount
                 FROM (
                     SELECT SUM(f.amount - f.refunded_amount) as totalAmount
-                    FROM funding f
+                    FROM {$fundingMetadata->getTableName()} f
                     WHERE ${monthSqlCondition} f.paypal_status IN ('COMPLETED', 'PARTIALLY_REFUNDED', 'REFUNDED')
                     GROUP BY f.user_id
                     ORDER BY totalAmount DESC
                 ) effectiveAmount,
                   (SELECT @curRank := 1, @_sequence := 1, @_last_value := 0) r
                 WHERE totalAmount >= :userTotalAmount
-                ORDER BY maxRank DESC
+                ORDER BY CAST(maxRank as unsigned) DESC
                 LIMIT 1;
             SQL;
 
@@ -144,7 +146,7 @@ class FundingRepository extends ServiceEntityRepository
                 LEFT JOIN {$citizenMetadata->getTableName()} c ON c.id = u.citizen_id
                 WHERE ${monthSqlCondition} f.paypal_status IN ('COMPLETED', 'PARTIALLY_REFUNDED', 'REFUNDED')
                 GROUP BY f.user_id
-                ORDER BY totalAmount DESC
+                ORDER BY totalAmount DESC, u.username ASC
                 LIMIT ${limit}
             SQL;
 

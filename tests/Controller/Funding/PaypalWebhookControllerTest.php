@@ -14,13 +14,6 @@ use Symfony\Component\Messenger\Transport\TransportInterface;
 
 class PaypalWebhookControllerTest extends WebTestCase
 {
-    private ?User $user;
-
-    public function setUp(): void
-    {
-        parent::setUp();
-    }
-
     /**
      * @group functional
      * @group funding

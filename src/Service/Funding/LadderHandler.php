@@ -44,10 +44,11 @@ class LadderHandler
         $viewFundings = [];
         $addMyRank = true;
         $rank = 1;
+        $sequence = 1;
         $lastAmount = null;
         foreach ($topFundings as $topFunding) {
             if ($lastAmount !== null && $lastAmount !== $topFunding['totalAmount']) {
-                ++$rank;
+                $rank = $sequence;
             }
             $lastAmount = $topFunding['totalAmount'];
             $viewFunding = new LadderView(
@@ -60,6 +61,7 @@ class LadderHandler
                 $addMyRank = false;
             }
             $viewFundings[] = $viewFunding;
+            ++$sequence;
         }
         if ($addMyRank) {
             $userRank = null;
@@ -70,7 +72,7 @@ class LadderHandler
                     $userRank = $this->fundingRepository->getRankLadder($totalAmount, $month);
                 }
             }
-            if ($userRank !== null && $totalAmount > 0) {
+            if ($userRank !== null) {
                 $citizen = $user->getCitizen();
                 $viewFundings[] = new LadderView(
                     $userRank,

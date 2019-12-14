@@ -143,7 +143,7 @@
                     }
                 );
 
-                if (this.citizen !== null) {
+                if (this.user !== null) {
                     nav.push({
                         name: 'My backings',
                         url: '/my-backings',

@@ -5,7 +5,7 @@
                 <b-card>
                     <h2 class="text-center">Monthly Cost Coverage</h2>
                     <b-progress class="mb-2" :value="amount / 100" :max="monthlyTarget / 100" variant="success" height="2rem"></b-progress>
-                    <p class="text-right font-xl">
+                    <p class="text-right font-xl" id="progress-amount">
                         <i class="fas fa-dollar-sign" aria-hidden="true"></i> <span class="sr-only">$</span>
                         <animated-number :value="amount / 100" :formatValue="formatAmount" :duration="500"/>
                         /
@@ -29,7 +29,7 @@
                         <b-nav-item :active="activeTab == 'monthly'" @click="activeTab = 'monthly'">Monthly Top 20</b-nav-item>
                         <b-nav-item :active="activeTab == 'alltime'" @click="activeTab = 'alltime'">All time Top 20</b-nav-item>
                     </b-nav>
-                    <div v-if="activeTab == 'monthly'" class="supporting-ladder">
+                    <div v-if="activeTab == 'monthly'" class="supporting-ladder" id="ladder-monthly">
                         <b-alert variant="danger" :show="monthlyLadderErrorMessage != null" v-html="monthlyLadderErrorMessage"></b-alert>
                         <div v-if="monthlySpinner" class="mb-2 text-center">
                             <b-spinner variant="primary"></b-spinner>
@@ -40,7 +40,7 @@
                             <b-col col class="text-left"><i class="fas fa-dollar-sign" aria-hidden="true"></i> <span class="sr-only">$</span>{{ formatAmount(user.amount / 100) }}</b-col>
                         </b-row>
                     </div>
-                    <div v-if="activeTab == 'alltime'">
+                    <div v-if="activeTab == 'alltime'" id="ladder-all-time">
                         <b-alert variant="danger" :show="alltimeLadderErrorMessage != null" v-html="alltimeLadderErrorMessage"></b-alert>
                         <div v-if="alltimeSpinner" class="mb-2 text-center">
                             <b-spinner variant="primary"></b-spinner>

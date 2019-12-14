@@ -21,10 +21,10 @@ class SpaControllerTest extends PantherTestCase
         if ($_SERVER['NO_PANTHER'] ?? false) {
             $this->client = Client::createSeleniumClient('http://selenium-hub:4444/wd/hub', DesiredCapabilities::chrome()->setCapability(
                 'goog:'.ChromeOptions::CAPABILITY, [
-                    'w3c' => false,
-                    'binary' => '',
-                    'args' => ['start-maximized'],
-                ],//(new ChromeOptions())->addArguments(['start-maximized'])
+                'w3c' => false,
+                'binary' => '',
+                'args' => ['start-maximized'],
+            ],//(new ChromeOptions())->addArguments(['start-maximized'])
             ), 'http://apache-test');
         } else {
             $this->client = Client::createChromeClient(null, null, [], 'http://apache-test');
@@ -600,6 +600,62 @@ class SpaControllerTest extends PantherTestCase
             $this->assertSame('Aurora MR', $variants[0]->findElement(WebDriverBy::cssSelector('h4'))->getText());
             $this->assertContains('pulsar42_member2 : 1', $variants[0]->findElement(WebDriverBy::className('ship-family-detail-variant-ownerlist'))->getText());
             $this->assertContains('+ 1 hidden owner', $variants[0]->findElement(WebDriverBy::className('ship-family-detail-variant-ownerlist'))->getText());
+        } catch (\Exception $e) {
+            $this->client->takeScreenshot(sprintf('var/screenshots/error-%s.png', date('Y-m-d_H:i:s')));
+            throw $e;
+        }
+    }
+
+    /**
+     * @group end2end
+     * @group funding
+     */
+    public function test(): void
+    {
+        $this->login('d92e229e-e743-4583-905a-e02c57eacfe0');
+
+        try {
+            $this->client->request('GET', '/my-backings');
+            $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+                return stripos($driver->findElement(WebDriverBy::id('backings-table'))->getText(), 'You have no backings! 😢 Feel free to support us. 😎') === false;
+            });
+            $this->client->refreshCrawler();
+
+            $this->assertSame("$\n52.33", $this->client->findElement(WebDriverBy::id('total-backed'))->getText());
+            $this->assertSame('5133', $this->client->findElement(WebDriverBy::id('count-fm-coins'))->getText());
+
+            $this->assertSame('November 17, 2019 12:00 AM', $this->client->findElement(WebDriverBy::cssSelector('#backings-table tbody tr:nth-child(1) td:nth-child(1)'))->getText());
+            $this->assertSame('Completed', $this->client->findElement(WebDriverBy::cssSelector('#backings-table tbody tr:nth-child(1) td:nth-child(2)'))->getText());
+            $this->assertSame('$51.33', $this->client->findElement(WebDriverBy::cssSelector('#backings-table tbody tr:nth-child(1) td:nth-child(3)'))->getText());
+            $this->assertSame('5133', $this->client->findElement(WebDriverBy::cssSelector('#backings-table tbody tr:nth-child(1) td:nth-child(4)'))->getText());
+            $this->assertSame('5133', $this->client->findElement(WebDriverBy::cssSelector('#backings-table tbody tr:nth-child(1) td:nth-child(5)'))->getText());
+
+            $this->assertSame('November 15, 2019 11:22 AM', $this->client->findElement(WebDriverBy::cssSelector('#backings-table tbody tr:nth-child(2) td:nth-child(1)'))->getText());
+            $this->assertSame('Created', $this->client->findElement(WebDriverBy::cssSelector('#backings-table tbody tr:nth-child(2) td:nth-child(2)'))->getText());
+            $this->assertSame('$1.00', $this->client->findElement(WebDriverBy::cssSelector('#backings-table tbody tr:nth-child(2) td:nth-child(3)'))->getText());
+            $this->assertSame('100', $this->client->findElement(WebDriverBy::cssSelector('#backings-table tbody tr:nth-child(2) td:nth-child(4)'))->getText());
+            $this->assertSame('0', $this->client->findElement(WebDriverBy::cssSelector('#backings-table tbody tr:nth-child(2) td:nth-child(5)'))->getText());
+
+            $this->assertCount(1, $this->client->findElements(WebDriverBy::cssSelector('.navbar-text .fa-hands-helping')));
+
+            $this->login('14203774-91fa-4300-b464-bcda42697b10');
+            $this->client->request('GET', '/supporters');
+            $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+                return count($driver->findElements(WebDriverBy::cssSelector('.spinner'))) === 0
+                    && strpos($driver->findElement(WebDriverBy::cssSelector('#progress-amount'))->getText(), '62.32') !== false;
+            });
+            $this->client->refreshCrawler();
+
+            $this->assertSame('$ 62.32 / $ 150.00', preg_replace('~\s+~', ' ', $this->client->findElement(WebDriverBy::cssSelector('#progress-amount'))->getText()));
+            $this->assertSame('1. ionni $ 51.33', preg_replace('~\s+~', ' ', $this->client->findElement(WebDriverBy::cssSelector('#ladder-all-time .row:nth-child(1)'))->getText()));
+            $this->assertSame('2. fundings-1 $ 21.50', preg_replace('~\s+~', ' ', $this->client->findElement(WebDriverBy::cssSelector('#ladder-all-time .row:nth-child(2)'))->getText()));
+            $this->assertSame('20. 16_fundings $ 1.16', preg_replace('~\s+~', ' ', $this->client->findElement(WebDriverBy::cssSelector('#ladder-all-time .row:nth-child(20)'))->getText()));
+            $this->assertSame('26. 10_fundings $ 1.10', preg_replace('~\s+~', ' ', $this->client->findElement(WebDriverBy::cssSelector('#ladder-all-time .row:nth-child(21)'))->getText()));
+
+            $this->client->findElement(WebDriverBy::xpath('//button[contains(text(), "Support Us")]'))->click();
+            $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+                return count($driver->findElements(WebDriverBy::cssSelector('#input-funding-amount'))) === 1;
+            });
         } catch (\Exception $e) {
             $this->client->takeScreenshot(sprintf('var/screenshots/error-%s.png', date('Y-m-d_H:i:s')));
             throw $e;
