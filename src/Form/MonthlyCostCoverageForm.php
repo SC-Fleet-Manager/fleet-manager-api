@@ -46,7 +46,6 @@ class MonthlyCostCoverageForm extends AbstractType
                 $event->setData($data);
             });
         }
-
     }
 
     public function configureOptions(OptionsResolver $resolver): void

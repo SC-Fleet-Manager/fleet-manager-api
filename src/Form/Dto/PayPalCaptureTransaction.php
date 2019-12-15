@@ -2,8 +2,6 @@
 
 namespace App\Form\Dto;
 
-use Symfony\Component\Validator\Constraints as Assert;
-
 class PayPalCaptureTransaction
 {
     /** e.g. "56L60734SJ740973U" */

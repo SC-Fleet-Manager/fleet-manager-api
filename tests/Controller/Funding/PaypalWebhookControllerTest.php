@@ -3,7 +3,6 @@
 namespace App\Tests\Controller\Profile;
 
 use App\Entity\Funding;
-use App\Entity\User;
 use App\Message\Funding\SendOrderRefundMail;
 use App\Tests\Service\PayPal\MockPayPalHttpClient;
 use App\Tests\Service\PayPal\MockVerifyWebhookSignatureFactory;
@@ -29,7 +28,7 @@ class PaypalWebhookControllerTest extends WebTestCase
         $verifyWebhookSignature->setVerifyWebhookSignature($mock);
 
         $paypalHttpClient = static::$container->get(MockPayPalHttpClient::class);
-        $paypalHttpClient->setGetResponse('1154f530-dbb5-425d-94e8-9a3200b75e35', '51.33', '49.83', '20.50', '19.40', true);
+        $paypalHttpClient->setGetResponse('1154f530-dbb5-425d-94e8-9a3200b75e35', '51.33', '49.83', '0daa10b329a9', '20.50', '19.40', true);
 
         /** @var Funding $funding */
         $funding = $this->doctrine->getRepository(Funding::class)->find('1154f530-dbb5-425d-94e8-9a3200b75e35');

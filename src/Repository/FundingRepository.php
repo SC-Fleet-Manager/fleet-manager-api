@@ -115,8 +115,6 @@ class FundingRepository extends ServiceEntityRepository
         return $stmt->getSingleResult()['maxRank'] ?? null;
     }
 
-
-
     public function getAlltimeLadder(int $limit = 20): array
     {
         return $this->getLadder($limit);
