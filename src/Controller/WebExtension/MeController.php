@@ -3,13 +3,15 @@
 namespace App\Controller\WebExtension;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
 
 class MeController extends AbstractController
 {
-    private $security;
+    private Security $security;
 
     public function __construct(Security $security)
     {
@@ -17,10 +19,18 @@ class MeController extends AbstractController
     }
 
     /**
-     * @Route("/api/me", name="web_extension_me", methods={"GET"})
+     * @Route("/api/me", name="web_extension_me", methods={"GET","OPTIONS"})
      */
-    public function __invoke(): Response
+    public function __invoke(Request $request): Response
     {
+        if ($request->isMethod('OPTIONS')) {
+            // Preflight CORS request.
+            return new JsonResponse(null, 204, [
+                'Access-Control-Allow-Headers' => 'Content-Type, X-FME-Version',
+                'Access-Control-Allow-Methods' => 'GET, OPTIONS',
+            ]);
+        }
+
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
 
         return $this->json($this->security->getUser(), 200, [], ['groups' => 'me:read']);

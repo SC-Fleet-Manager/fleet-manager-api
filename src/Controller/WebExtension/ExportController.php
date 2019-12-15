@@ -8,6 +8,7 @@ use App\Exception\FleetUploadedTooCloseException;
 use App\Exception\InvalidFleetDataException;
 use App\Exception\NotFoundHandleSCException;
 use App\Service\Citizen\Fleet\FleetUploadHandler;
+use App\Service\WebExtension\WebExtensionVersionComparator;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,15 +19,21 @@ use Symfony\Component\Security\Core\Security;
 
 class ExportController extends AbstractController
 {
-    private $security;
-    private $fleetUploadHandler;
-    private $logger;
+    private Security $security;
+    private FleetUploadHandler $fleetUploadHandler;
+    private LoggerInterface $logger;
+    private WebExtensionVersionComparator $webExtVersionComparator;
 
-    public function __construct(Security $security, FleetUploadHandler $fleetUploadHandler, LoggerInterface $webExtensionLogger)
-    {
+    public function __construct(
+        Security $security,
+        FleetUploadHandler $fleetUploadHandler,
+        LoggerInterface $webExtensionLogger,
+        WebExtensionVersionComparator $webExtVersionComparator
+    ) {
         $this->security = $security;
         $this->fleetUploadHandler = $fleetUploadHandler;
         $this->logger = $webExtensionLogger;
+        $this->webExtVersionComparator = $webExtVersionComparator;
     }
 
     /**
@@ -36,10 +43,16 @@ class ExportController extends AbstractController
     {
         if ($request->isMethod('OPTIONS')) {
             // Preflight CORS request.
-            return new JsonResponse(null, 204);
+            return new JsonResponse(null, 204, [
+                'Access-Control-Allow-Headers' => 'Authorization, Content-Type, X-FME-Version',
+                'Access-Control-Allow-Methods' => 'POST, OPTIONS',
+            ]);
         }
 
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
+
+        $extensionVersion = $request->headers->get('X-FME-Version');
+        $webExtVersionComparison = $this->webExtVersionComparator->compareVersions($extensionVersion);
 
         $contents = $request->getContent();
         if (($contentSize = strlen($contents)) >= 2 * 1000 * 1000) {
@@ -53,14 +66,14 @@ class ExportController extends AbstractController
                 'formErrors' => $errors,
             ], 400);
         }
-        $fleetData = \json_decode($contents, true);
+        $fleetData = json_decode($contents, true);
 
         if (JSON_ERROR_NONE !== $jsonError = json_last_error()) {
             $this->logger->error('Failed to decode json from fleet file', ['json_error' => $jsonError, 'fleet_file_contents' => $contents]);
 
             return $this->json([
                 'error' => 'bad_json',
-                'errorMessage' => sprintf('Your fleet file is not JSON well formatted. Please check it.'),
+                'errorMessage' => 'Your fleet file is not JSON well formatted. Please check it.',
             ], 400);
         }
 
@@ -74,38 +87,53 @@ class ExportController extends AbstractController
             ], 400);
         }
 
+        $status = 204;
+        $responsePayload = null;
         try {
             $this->fleetUploadHandler->handle($citizen, $fleetData);
         } catch (FleetUploadedTooCloseException $e) {
-            return $this->json([
+            $status = 400;
+            $responsePayload = [
                 'error' => 'uploaded_too_close',
                 'errorMessage' => 'Your fleet has been uploaded recently. Please wait before re-uploading.',
-            ], 400);
+            ];
         } catch (NotFoundHandleSCException $e) {
-            return $this->json([
+            $status = 400;
+            $responsePayload = [
                 'error' => 'not_found_handle',
                 'errorMessage' => sprintf('The SC handle %s does not exist.', $citizen->getActualHandle()),
                 'context' => ['handle' => $citizen->getActualHandle()],
-            ], 400);
+            ];
         } catch (BadCitizenException $e) {
-            return $this->json([
+            $status = 400;
+            $responsePayload = [
                 'error' => 'bad_citizen',
                 'errorMessage' => sprintf('Your SC handle has probably changed. Please update it in <a href="/profile/">your Profile</a>.'),
-            ], 400);
+            ];
         } catch (InvalidFleetDataException $e) {
-            return $this->json([
+            $status = 400;
+            $responsePayload = [
                 'error' => 'invalid_fleet_data',
                 'errorMessage' => sprintf('The fleet data in your file is invalid. Please check it.'),
-            ], 400);
+            ];
         } catch (\Exception $e) {
             $this->logger->error('cannot handle fleet file', ['exception' => $e]);
 
-            return $this->json([
+            $status = 400;
+            $responsePayload = [
                 'error' => 'cannot_handle_file',
                 'errorMessage' => 'Cannot handle the fleet file. Try again !',
-            ], 400);
+            ];
         }
 
-        return $this->json(null, 204);
+        if ($webExtVersionComparison !== null) {
+            $status = 200;
+            $responsePayload = $responsePayload ?? [];
+            $responsePayload['lastVersion'] = $webExtVersionComparison->lastVersion;
+            $responsePayload['requestExtensionVersion'] = $webExtVersionComparison->requestExtensionVersion;
+            $responsePayload['needUpgradeVersion'] = true;// $webExtVersionComparison->needUpgradeVersion;
+        }
+
+        return $this->json($responsePayload, $status);
     }
 }

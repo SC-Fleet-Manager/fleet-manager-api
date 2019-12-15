@@ -14,7 +14,7 @@ use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 
 class TokenAuthenticator extends AbstractGuardAuthenticator
 {
-    private $userRepository;
+    private UserRepository $userRepository;
 
     public function __construct(UserRepository $userRepository)
     {
@@ -68,8 +68,8 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
     {
         if ($request->isMethod('OPTIONS')) {
             return new JsonResponse(null, 204, [
-                'Access-Control-Allow-Headers' => 'Authorization,Content-Type',
-                'Access-Control-Allow-Methods' => 'POST',
+                'Access-Control-Allow-Headers' => 'Authorization, Content-Type, X-FME-Version',
+                'Access-Control-Allow-Methods' => 'GET, POST, OPTIONS',
             ]);
         }
 
