@@ -4,6 +4,7 @@ parameters:
     env(REDIS_PASSWORD): ''
     locale: 'en'
     hwi_oauth.authentication.entry_point.oauth.class: 'App\Security\OAuthEntryPoint'
+    env(WEBEXTENSION_VERSION_URL): ''
 
 services:
     _defaults:
@@ -13,6 +14,8 @@ services:
         bind:
             $profileLinkAccountLogger: '@monolog.logger.profile_link_account'
             $registrationFromAddress: 'noreply@fleet-manager.space'
+            $noreplyAddress: 'noreply@fleet-manager.space'
+            $webExtensionVersionUrl: '%env(WEBEXTENSION_VERSION_URL)%'
 
     App\:
         resource: '../src/*'
