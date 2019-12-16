@@ -28,7 +28,7 @@ class StatsCitizensControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArraySubset([
             'countCitizens' => 3,
             'totalMembers' => 5,
@@ -83,7 +83,7 @@ class StatsCitizensControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(403, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('not_enough_rights_public', $json['error']);
     }
 }

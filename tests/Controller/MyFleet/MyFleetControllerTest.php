@@ -27,7 +27,7 @@ class MyFleetControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(401, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('no_auth', $json['error']);
     }
 
@@ -43,7 +43,7 @@ class MyFleetControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArraySubset([
             'fleet' => [
                 'id' => '8fb44dad-8d40-447e-a670-62b3192d5521',

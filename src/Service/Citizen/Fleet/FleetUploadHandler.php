@@ -16,12 +16,16 @@ use App\Service\Citizen\InfosProvider\CitizenInfosProviderInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use InfluxDB\Database;
 use InfluxDB\Point;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class FleetUploadHandler
+class FleetUploadHandler implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     private $entityManager;
     private $citizenInfosProvider;
     private $citizenRefresher;
@@ -116,10 +120,12 @@ class FleetUploadHandler
             $ship
                 ->setName(trim($shipData['name']))
                 ->setManufacturer(trim($shipData['manufacturer']))
-                ->setInsured((bool) $shipData['lti'])
-                ->setCost((new Money((int) preg_replace('/^\$(\d+\.\d+)/', '$1', $shipData['cost'])))->getCost())
+                ->setInsured((bool) ($shipData['lti'] ?? false))
                 ->setPledgeDate(\DateTimeImmutable::createFromFormat('F d, Y', $shipData['pledge_date'])->setTime(0, 0))
                 ->setRawData($shipData);
+            if (isset($shipData['cost'])) {
+                $ship->setCost((new Money((int) preg_replace('/^\$(\d+\.\d+)/', '$1', $shipData['cost'])))->getCost());
+            }
             $fleet->addShip($ship);
         }
 
@@ -132,17 +138,22 @@ class FleetUploadHandler
             if (!isset(
                 $shipData['pledge_date'],
                 $shipData['manufacturer'],
-                $shipData['name'],
-                $shipData['lti'],
-                $shipData['cost']
+                $shipData['name']
             )) {
+                $this->logger->error('[FleetDataInvalid] either pledge_date, manufacturer or name key is empty.', ['ship_data' => $shipData]);
+
                 return false;
             }
+
             $date = \DateTimeImmutable::createFromFormat('F d, Y', $shipData['pledge_date']);
             if ($date === false) {
+                $this->logger->error('[FleetDataInvalid] the pledge_date is not in a good format.', ['ship_data' => $shipData]);
+
                 return false;
             }
-            if (preg_replace('/^\$(\d+\.\d+)/i', '$1', $shipData['cost']) === null) {
+            if (isset($shipData['cost']) && preg_replace('/^\$(\d+\.\d+)/i', '$1', $shipData['cost']) === null) {
+                $this->logger->error('[FleetDataInvalid] the cost is not in a good format.', ['ship_data' => $shipData]);
+
                 return false;
             }
         }

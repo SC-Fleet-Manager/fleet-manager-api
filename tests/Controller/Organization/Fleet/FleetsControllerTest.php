@@ -27,7 +27,7 @@ class FleetsControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArraySubset([
             [
                 'chassisId' => '1',
@@ -51,7 +51,7 @@ class FleetsControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArraySubset([
             [
                 'chassisId' => '6',
@@ -76,7 +76,7 @@ class FleetsControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(404, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('bad_organization', $json['error']);
     }
 
@@ -91,7 +91,7 @@ class FleetsControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(403, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('not_enough_rights_public', $json['error']);
     }
 
@@ -108,7 +108,7 @@ class FleetsControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(403, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('not_enough_rights_private', $json['error']);
     }
 
@@ -125,7 +125,7 @@ class FleetsControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(403, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('not_enough_rights_admin', $json['error']);
     }
 

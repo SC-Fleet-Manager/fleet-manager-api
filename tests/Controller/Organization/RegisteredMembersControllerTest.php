@@ -30,7 +30,7 @@ class RegisteredMembersControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArraySubset([
             'totalItems' => 2,
             'countHiddenMembers' => 3,
@@ -72,7 +72,7 @@ class RegisteredMembersControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(403, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('not_enough_rights', $json['error']);
     }
 }

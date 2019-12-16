@@ -17,7 +17,7 @@ class PublicProfileCitizenControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArraySubset([
             'nickname' => 'Ioni14',
             'actualHandle' => [
@@ -38,7 +38,7 @@ class PublicProfileCitizenControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(404, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('citizen_not_found', $json['error']);
     }
 }

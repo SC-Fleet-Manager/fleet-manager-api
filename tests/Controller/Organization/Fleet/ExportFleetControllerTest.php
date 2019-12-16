@@ -45,7 +45,7 @@ class ExportFleetControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(401, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('no_auth', $json['error']);
     }
 }

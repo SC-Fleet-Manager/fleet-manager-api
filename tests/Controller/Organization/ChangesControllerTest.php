@@ -25,19 +25,19 @@ class ChangesControllerTest extends WebTestCase
     public function testChangesUpdateFleet(): void
     {
         $jsonContent = <<<EOT
-            [
-              {
-                "manufacturer": "RSI",
-                "name": "Orion",
-                "lti": true,
-                "warbond": true,
-                "package_id": "15109407",
-                "pledge": "Standalone Orion",
-                "pledge_date": "April 28, 2018",
-                "cost": "$110.00 USD"
-              }
-            ]
-        EOT;
+                [
+                  {
+                    "manufacturer": "RSI",
+                    "name": "Orion",
+                    "lti": true,
+                    "warbond": true,
+                    "package_id": "15109407",
+                    "pledge": "Standalone Orion",
+                    "pledge_date": "April 28, 2018",
+                    "cost": "$110.00 USD"
+                  }
+                ]
+            EOT;
 
         $citizenInfosProvider = static::$container->get(CitizenInfosProviderInterface::class);
         $citizenInfosProvider->setCitizen($this->user->getCitizen());
@@ -47,7 +47,7 @@ class ChangesControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ], $jsonContent);
 
-        $this->assertSame(204, $this->client->getResponse()->getStatusCode());
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
 
         $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ashuvidz']);
         $this->logIn($user);
@@ -56,7 +56,7 @@ class ChangesControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArraySubset([
             [
                 'type' => 'upload_fleet',
@@ -103,7 +103,7 @@ class ChangesControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArraySubset([
             [
                 'type' => 'join_orga',
@@ -147,7 +147,7 @@ class ChangesControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArraySubset([
             [
                 'type' => 'leave_orga',
@@ -174,7 +174,7 @@ class ChangesControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(403, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('not_enough_rights', $json['error']);
     }
 
@@ -189,7 +189,7 @@ class ChangesControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(401, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('no_auth', $json['error']);
     }
 }

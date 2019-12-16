@@ -27,7 +27,7 @@ class UserFleetControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArraySubset([
             'fleet' => [
                 'ships' => [
@@ -71,7 +71,7 @@ class UserFleetControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(403, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('no_rights', $json['error']);
     }
 }

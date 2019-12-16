@@ -17,7 +17,7 @@ class OrganizationControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArraySubset([
             'id' => '80db0703-dd43-49a0-93d3-89947b9ab321',
             'organizationSid' => 'flk',
@@ -38,7 +38,7 @@ class OrganizationControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(404, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('orga_not_exist', $json['error']);
     }
 }

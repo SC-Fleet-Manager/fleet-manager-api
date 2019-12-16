@@ -23,10 +23,10 @@ class FleetRepository extends ServiceEntityRepository
         $shipMetadata = $this->_em->getClassMetadata(Ship::class);
 
         $sql = <<<EOT
-            SELECT count(*) as countShips FROM {$citizenMetadata->getTableName()} c 
-            INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
-            INNER JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id
-        EOT;
+                SELECT count(*) as countShips FROM {$citizenMetadata->getTableName()} c 
+                INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
+                INNER JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id
+            EOT;
 
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addScalarResult('countShips', 'countShips');

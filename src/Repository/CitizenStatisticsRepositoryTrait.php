@@ -39,15 +39,15 @@ trait CitizenStatisticsRepositoryTrait
         $orgaMetadata = $this->_em->getClassMetadata(Organization::class);
 
         $sql = <<<EOT
-            SELECT AVG(countShips) AS avgShips FROM (
-                SELECT COUNT(s.id) AS countShips FROM {$citizenMetadata->getTableName()} c
-                INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON citizenOrga.citizen_id = c.id
-                INNER JOIN {$orgaMetadata->getTableName()} orga ON orga.id = citizenOrga.organization_id AND orga.organization_sid = :sid
-                INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
-                LEFT JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id
-                GROUP BY c.id
-            ) CountShips
-        EOT;
+                SELECT AVG(countShips) AS avgShips FROM (
+                    SELECT COUNT(s.id) AS countShips FROM {$citizenMetadata->getTableName()} c
+                    INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON citizenOrga.citizen_id = c.id
+                    INNER JOIN {$orgaMetadata->getTableName()} orga ON orga.id = citizenOrga.organization_id AND orga.organization_sid = :sid
+                    INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
+                    LEFT JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id
+                    GROUP BY c.id
+                ) CountShips
+            EOT;
 
         $rsm = new ResultSetMapping();
         $rsm->addScalarResult('avgShips', 'avgShips');

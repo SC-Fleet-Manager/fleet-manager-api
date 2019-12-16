@@ -33,7 +33,7 @@ class LinkAccountSearchHandleControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArraySubset([
             'numberSC' => ['number' => '123456'],
             'nickname' => 'Foo bar',
@@ -60,7 +60,7 @@ class LinkAccountSearchHandleControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(404, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('not_found_handle', $json['error']);
     }
 
@@ -75,7 +75,7 @@ class LinkAccountSearchHandleControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(400, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('invalid_form', $json['error']);
     }
 }

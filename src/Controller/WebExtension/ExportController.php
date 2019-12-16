@@ -127,11 +127,11 @@ class ExportController extends AbstractController
         }
 
         if ($webExtVersionComparison !== null) {
-            $status = 200;
+            $status = $status === 204 ? 200 : $status;
             $responsePayload = $responsePayload ?? [];
             $responsePayload['lastVersion'] = $webExtVersionComparison->lastVersion;
             $responsePayload['requestExtensionVersion'] = $webExtVersionComparison->requestExtensionVersion;
-            $responsePayload['needUpgradeVersion'] = true;// $webExtVersionComparison->needUpgradeVersion;
+            $responsePayload['needUpgradeVersion'] = $webExtVersionComparison->needUpgradeVersion;
         }
 
         return $this->json($responsePayload, $status);

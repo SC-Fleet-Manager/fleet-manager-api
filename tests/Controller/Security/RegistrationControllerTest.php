@@ -51,7 +51,7 @@ class RegistrationControllerTest extends WebTestCase
         ]));
 
         $this->assertSame(400, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('invalid_form', $json['error']);
         $this->assertSame("Some extra characters and you'll have the 6 required. ;-)", $json['formErrors']['violations'][0]['title']);
     }
@@ -70,7 +70,7 @@ class RegistrationControllerTest extends WebTestCase
         ]));
 
         $this->assertSame(400, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('invalid_form', $json['error']);
         $this->assertSame('This value is not a valid email address.', $json['formErrors']['violations'][0]['title']);
     }
@@ -89,7 +89,7 @@ class RegistrationControllerTest extends WebTestCase
         ]));
 
         $this->assertSame(400, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('invalid_form', $json['error']);
         $this->assertSame('This email is already taken. Please choose another.', $json['formErrors']['violations'][0]['title']);
     }
