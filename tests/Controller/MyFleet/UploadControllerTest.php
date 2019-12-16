@@ -84,4 +84,38 @@ class UploadControllerTest extends WebTestCase
         $this->assertSame('invalid_form', $json['error']);
         $this->assertArraySubset(['You must choose a JSON fleet file.'], $json['formErrors']);
     }
+
+    /**
+     * @group functional
+     * @group api
+     */
+    public function testMissingOptionalFields(): void
+    {
+        file_put_contents(sys_get_temp_dir().'/test-fleet.json', <<<EOT
+            [
+              {
+                "manufacturer": "Drake",
+                "name": "Cutlass Black",
+                "pledge_date": "April 28, 2018"
+              }
+            ]
+        EOT
+        );
+        $citizenInfosProvider = static::$container->get(CitizenInfosProviderInterface::class);
+        $citizenInfosProvider->setCitizen($this->user->getCitizen());
+
+        $this->logIn($this->user);
+        $this->client->xmlHttpRequest('POST', '/api/upload', [], [
+            'fleetFile' => new UploadedFile(sys_get_temp_dir().'/test-fleet.json', 'test-fleet.json', 'application/json', null),
+        ]);
+        $this->assertSame(204, $this->client->getResponse()->getStatusCode());
+
+        /** @var Fleet $lastFleet */
+        $lastFleet = $this->user->getCitizen()->getLastFleet();
+        $this->assertSame(2, $lastFleet->getVersion());
+        $this->assertCount(1, $lastFleet->getShips());
+        $this->assertSame('Cutlass Black', $lastFleet->getShips()[0]->getName());
+        $this->assertFalse($lastFleet->getShips()[0]->isInsured());
+        $this->assertNull($lastFleet->getShips()[0]->getCost());
+    }
 }
