@@ -118,4 +118,80 @@ class UploadControllerTest extends WebTestCase
         $this->assertFalse($lastFleet->getShips()[0]->isInsured());
         $this->assertNull($lastFleet->getShips()[0]->getCost());
     }
+
+    /**
+     * @group functional
+     * @group api
+     */
+    public function testDifferentCosts(): void
+    {
+        file_put_contents(sys_get_temp_dir().'/test-fleet.json', <<<EOT
+            [
+              {
+                "manufacturer": "Drake",
+                "name": "Cutlass Black",
+                "cost": "$1,000.00",
+                "pledge_date": "April 28, 2018"
+              },
+              {
+                "manufacturer": "Drake",
+                "name": "Cutlass Black",
+                "cost": "$500.00",
+                "pledge_date": "April 28, 2018"
+              },
+              {
+                "manufacturer": "Drake",
+                "name": "Cutlass Black",
+                "cost": "$2,123,456.78",
+                "pledge_date": "April 28, 2018"
+              }
+            ]
+        EOT
+        );
+        $citizenInfosProvider = static::$container->get(CitizenInfosProviderInterface::class);
+        $citizenInfosProvider->setCitizen($this->user->getCitizen());
+
+        $this->logIn($this->user);
+        $this->client->xmlHttpRequest('POST', '/api/upload', [], [
+            'fleetFile' => new UploadedFile(sys_get_temp_dir().'/test-fleet.json', 'test-fleet.json', 'application/json', null),
+        ]);
+        $this->assertSame(204, $this->client->getResponse()->getStatusCode());
+
+        /** @var Fleet $lastFleet */
+        $lastFleet = $this->user->getCitizen()->getLastFleet();
+        $this->assertSame(1000.0, $lastFleet->getShips()[0]->getCost());
+        $this->assertSame(500.0, $lastFleet->getShips()[1]->getCost());
+        $this->assertSame(2123456.78, $lastFleet->getShips()[2]->getCost());
+    }
+
+    /**
+     * @group functional
+     * @group api
+     */
+    public function testBadCosts(): void
+    {
+        file_put_contents(sys_get_temp_dir().'/test-fleet.json', <<<EOT
+            [
+              {
+                "manufacturer": "Drake",
+                "name": "Cutlass Black",
+                "cost": "$5,00",
+                "pledge_date": "April 28, 2018"
+              }
+            ]
+        EOT
+        );
+        $citizenInfosProvider = static::$container->get(CitizenInfosProviderInterface::class);
+        $citizenInfosProvider->setCitizen($this->user->getCitizen());
+
+        $this->logIn($this->user);
+        $this->client->xmlHttpRequest('POST', '/api/upload', [], [
+            'fleetFile' => new UploadedFile(sys_get_temp_dir().'/test-fleet.json', 'test-fleet.json', 'application/json', null),
+        ]);
+
+        $this->assertSame(400, $this->client->getResponse()->getStatusCode());
+        $json = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertSame('invalid_fleet_data', $json['error']);
+        $this->assertSame('The fleet data in your file is invalid. Please check it.', $json['errorMessage']);
+    }
 }

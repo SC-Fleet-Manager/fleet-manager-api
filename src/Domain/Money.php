@@ -13,7 +13,7 @@ class Money
 
     public function __construct(float $cost)
     {
-        $this->cents = (int) ($cost * 100);
+        $this->cents = (int) bcmul($cost, 100, 2);
     }
 
     /**
@@ -21,6 +21,6 @@ class Money
      */
     public function getCost(): float
     {
-        return $this->cents / 100.0;
+        return (float) bcdiv($this->cents, 100, 2);
     }
 }
