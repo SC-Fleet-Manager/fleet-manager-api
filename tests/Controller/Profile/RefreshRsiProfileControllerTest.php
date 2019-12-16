@@ -71,7 +71,7 @@ class RefreshRsiProfileControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(400, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('too_many_refresh', $json['error']);
     }
 
@@ -88,7 +88,7 @@ class RefreshRsiProfileControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(400, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('no_citizen', $json['error']);
     }
 
@@ -103,7 +103,7 @@ class RefreshRsiProfileControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(401, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('no_auth', $json['error']);
     }
 }

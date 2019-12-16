@@ -54,7 +54,7 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
             ]);
             throw new \RuntimeException('Cannot retrieve ships infos.');
         }
-        $json = \json_decode($contents, true);
+        $json = json_decode($contents, true);
         if (!$json) {
             $this->logger->error(sprintf('Bad json response from %s', self::BASE_URL), [
                 'raw_content' => $contents,

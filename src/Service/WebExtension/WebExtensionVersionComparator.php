@@ -19,35 +19,39 @@ class WebExtensionVersionComparator implements LoggerAwareInterface
         $this->webExtensionVersionUrl = $webExtensionVersionUrl;
     }
 
-    public function compareVersions(string $requestExtensionVersion): ?WebExtensionComparison
+    public function compareVersions(?string $requestExtensionVersion): ?WebExtensionComparison
     {
-        if (!preg_match(self::VERSION_REGEX, $requestExtensionVersion)) {
+        if ($requestExtensionVersion !== null && !preg_match(self::VERSION_REGEX, $requestExtensionVersion)) {
             return null;
         }
 
-        $lastVersion = null;
-
-        $needUpgradeVersion = false;
         $webExtensionVersions = file_get_contents($this->webExtensionVersionUrl);
         if ($webExtensionVersions === false) {
             $this->logger->error('[WebExt Export] Cannot get web-extensions versions.', ['url' => $this->webExtensionVersionUrl]);
-        } else {
-            $webExtensionVersions = json_decode($webExtensionVersions, true);
-            if ($webExtensionVersions === false) {
-                $this->logger->error('[WebExt Export] Cannot json decode web-extensions versions.', ['json_error' => json_last_error(), 'json_msg' => json_last_error_msg()]);
-            } else {
-                $lastVersion = end($webExtensionVersions['addons']['info@fleet.fallkrom.space']['updates'])['version'] ?? null;
-                if ($lastVersion === null) {
-                    return null;
-                }
 
-                preg_match(self::VERSION_REGEX, $lastVersion, $matches);
-                $lastVersionNumeric = count($matches) >= 4 ? $this->transformVersionToNumeric($matches[1], $matches[2], $matches[3]) : 0;
-                preg_match(self::VERSION_REGEX, $requestExtensionVersion, $matches);
-                $extensionVersionNumeric = count($matches) >= 4 ? $this->transformVersionToNumeric($matches[1], $matches[2], $matches[3]) : 0;
+            return null;
+        }
 
-                $needUpgradeVersion = $extensionVersionNumeric < $lastVersionNumeric;
-            }
+        $webExtensionVersions = json_decode($webExtensionVersions, true);
+        if ($webExtensionVersions === false) {
+            $this->logger->error('[WebExt Export] Cannot json decode web-extensions versions.', ['json_error' => json_last_error(), 'json_msg' => json_last_error_msg()]);
+
+            return null;
+        }
+
+        $lastVersion = end($webExtensionVersions['addons']['info@fleet.fallkrom.space']['updates'])['version'] ?? null;
+        if ($lastVersion === null) {
+            return null;
+        }
+
+        $needUpgradeVersion = true;
+        if ($requestExtensionVersion !== null) {
+            preg_match(self::VERSION_REGEX, $lastVersion, $matches);
+            $lastVersionNumeric = count($matches) >= 4 ? $this->transformVersionToNumeric($matches[1], $matches[2], $matches[3]) : 0;
+            preg_match(self::VERSION_REGEX, $requestExtensionVersion, $matches);
+            $extensionVersionNumeric = count($matches) >= 4 ? $this->transformVersionToNumeric($matches[1], $matches[2], $matches[3]) : 0;
+
+            $needUpgradeVersion = $extensionVersionNumeric < $lastVersionNumeric;
         }
 
         return new WebExtensionComparison(

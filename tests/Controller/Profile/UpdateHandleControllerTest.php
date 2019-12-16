@@ -65,7 +65,7 @@ class UpdateHandleControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(400, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('invalid_form', $json['error']);
     }
 

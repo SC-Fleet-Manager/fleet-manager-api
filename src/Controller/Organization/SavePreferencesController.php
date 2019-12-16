@@ -39,7 +39,7 @@ class SavePreferencesController extends AbstractController
 
         /** @var User $user */
         $user = $this->security->getUser();
-        $content = \json_decode($request->getContent(), true);
+        $content = json_decode($request->getContent(), true);
 
         $citizen = $user->getCitizen();
         if ($citizen === null) {

@@ -76,7 +76,7 @@ class ResolveConflictConnectControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(400, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('You must choose a Citizen among the proposals.', $json['formErrors']['violations'][0]['title']);
     }
 }

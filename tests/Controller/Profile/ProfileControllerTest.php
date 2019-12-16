@@ -28,7 +28,7 @@ class ProfileControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArraySubset([
             'id' => 'd92e229e-e743-4583-905a-e02c57eacfe0',
             'username' => 'Ioni',
@@ -84,7 +84,7 @@ class ProfileControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(401, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('no_auth', $json['error']);
     }
 }

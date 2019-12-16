@@ -84,47 +84,47 @@ class CitizenRepository extends ServiceEntityRepository
         $shipMetadata = $this->_em->getClassMetadata(Ship::class);
 
         $sql = <<<EOT
-            SELECT c.*, c.id AS citizenId
-        EOT;
+                SELECT c.*, c.id AS citizenId
+            EOT;
         if ($withShips) {
             $sql .= ', f.*, f.id AS fleetId, s.*, s.id AS shipId ';
         }
         $sql .= <<<EOT
-            FROM {$orgaMetadata->getTableName()} orga
-            INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON orga.id = citizenOrga.organization_id AND orga.organization_sid = :sid
-            INNER JOIN {$citizenMetadata->getTableName()} c ON citizenOrga.citizen_id = c.id
-            INNER JOIN {$userMetadata->getTableName()} u ON u.citizen_id = c.id
-        EOT;
+                FROM {$orgaMetadata->getTableName()} orga
+                INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON orga.id = citizenOrga.organization_id AND orga.organization_sid = :sid
+                INNER JOIN {$citizenMetadata->getTableName()} c ON citizenOrga.citizen_id = c.id
+                INNER JOIN {$userMetadata->getTableName()} u ON u.citizen_id = c.id
+            EOT;
         if ($withShips) {
             $sql .= <<<EOT
-                INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
-                INNER JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id
-            EOT;
+                    INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
+                    INNER JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id
+                EOT;
         }
         $sql .= <<<EOT
-            WHERE (
-                u.public_choice = :userPublicChoicePublic
-                OR (u.public_choice = :userPublicChoiceOrga AND (
-                        # visibility ORGA : visible by everyone
-                        # visibility ADMIN : visible only by highest orga rank
-                        # visibility PRIVATE : visible by anybody
-                        citizenOrga.visibility = :visibilityOrga
-                        OR (citizenOrga.visibility = :visibilityAdmin AND :viewerCitizenId IS NOT NULL AND :viewerCitizenId IN (
-                                # select highest ranks of this orga
-                                SELECT co.citizen_id
-                                FROM {$orgaMetadata->getTableName()} o
-                                INNER JOIN {$citizenOrgaMetadata->getTableName()} co ON co.organization_id = o.id AND o.organization_sid = :sid
-                                WHERE co.rank = (
-                                    SELECT max(co.rank) AS maxRank
+                WHERE (
+                    u.public_choice = :userPublicChoicePublic
+                    OR (u.public_choice = :userPublicChoiceOrga AND (
+                            # visibility ORGA : visible by everyone
+                            # visibility ADMIN : visible only by highest orga rank
+                            # visibility PRIVATE : visible by anybody
+                            citizenOrga.visibility = :visibilityOrga
+                            OR (citizenOrga.visibility = :visibilityAdmin AND :viewerCitizenId IS NOT NULL AND :viewerCitizenId IN (
+                                    # select highest ranks of this orga
+                                    SELECT co.citizen_id
                                     FROM {$orgaMetadata->getTableName()} o
                                     INNER JOIN {$citizenOrgaMetadata->getTableName()} co ON co.organization_id = o.id AND o.organization_sid = :sid
+                                    WHERE co.rank = (
+                                        SELECT max(co.rank) AS maxRank
+                                        FROM {$orgaMetadata->getTableName()} o
+                                        INNER JOIN {$citizenOrgaMetadata->getTableName()} co ON co.organization_id = o.id AND o.organization_sid = :sid
+                                    )
                                 )
                             )
                         )
                     )
                 )
-            )
-        EOT;
+            EOT;
 
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata(Citizen::class, 'c', ['id' => 'citizenId']);
@@ -157,16 +157,16 @@ class CitizenRepository extends ServiceEntityRepository
         $orgaMetadata = $this->_em->getClassMetadata(Organization::class);
 
         $sql = <<<EOT
-            SELECT c.*, c.id AS citizenId, co.*, co.id AS citizenOrgaId, co.organization_sid AS coOrgaId, o.*, o.id AS orgaId, o.avatar_url AS orgaAvatarUrl, o.last_refresh AS orgaLastRefresh
-            FROM {$orgaMetadata->getTableName()} o
-            INNER JOIN {$citizenOrgaMetadata->getTableName()} co ON co.organization_id = o.id AND o.organization_sid = :sid
-            INNER JOIN {$citizenMetadata->getTableName()} c ON c.id = co.citizen_id
-            WHERE co.rank = (
-                SELECT max(co.rank) AS maxRank
+                SELECT c.*, c.id AS citizenId, co.*, co.id AS citizenOrgaId, co.organization_sid AS coOrgaId, o.*, o.id AS orgaId, o.avatar_url AS orgaAvatarUrl, o.last_refresh AS orgaLastRefresh
                 FROM {$orgaMetadata->getTableName()} o
                 INNER JOIN {$citizenOrgaMetadata->getTableName()} co ON co.organization_id = o.id AND o.organization_sid = :sid
-            )
-        EOT;
+                INNER JOIN {$citizenMetadata->getTableName()} c ON c.id = co.citizen_id
+                WHERE co.rank = (
+                    SELECT max(co.rank) AS maxRank
+                    FROM {$orgaMetadata->getTableName()} o
+                    INNER JOIN {$citizenOrgaMetadata->getTableName()} co ON co.organization_id = o.id AND o.organization_sid = :sid
+                )
+            EOT;
 
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata(Citizen::class, 'c', ['id' => 'citizenId']);
@@ -194,12 +194,12 @@ class CitizenRepository extends ServiceEntityRepository
         $orgaMetadata = $this->_em->getClassMetadata(Organization::class);
 
         $sql = <<<EOT
-            SELECT *, c.nickname AS citizenNickname, c.id AS citizenId, f.id AS fleetId, s.id AS shipId FROM {$citizenMetadata->getTableName()} c 
-            INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON citizenOrga.citizen_id = c.id
-            INNER JOIN {$orgaMetadata->getTableName()} orga ON orga.id = citizenOrga.organization_id AND orga.organization_sid = :sid
-            INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
-            INNER JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id
-        EOT;
+                SELECT *, c.nickname AS citizenNickname, c.id AS citizenId, f.id AS fleetId, s.id AS shipId FROM {$citizenMetadata->getTableName()} c 
+                INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON citizenOrga.citizen_id = c.id
+                INNER JOIN {$orgaMetadata->getTableName()} orga ON orga.id = citizenOrga.organization_id AND orga.organization_sid = :sid
+                INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
+                INNER JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id
+            EOT;
         // filtering
         if (count($filter->shipNames) > 0) {
             $sql .= ' AND (';
@@ -242,12 +242,12 @@ class CitizenRepository extends ServiceEntityRepository
         $orgaMetadata = $this->_em->getClassMetadata(Organization::class);
 
         $sql = <<<EOT
-            SELECT count(DISTINCT c.id) AS countOwners, count(*) AS countOwned FROM {$citizenMetadata->getTableName()} c 
-            INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON citizenOrga.citizen_id = c.id
-            INNER JOIN {$orgaMetadata->getTableName()} orga ON orga.id = citizenOrga.organization_id AND orga.organization_sid = :sid
-            INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
-            INNER JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id and LOWER(s.name) = :shipName 
-        EOT;
+                SELECT count(DISTINCT c.id) AS countOwners, count(*) AS countOwned FROM {$citizenMetadata->getTableName()} c 
+                INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON citizenOrga.citizen_id = c.id
+                INNER JOIN {$orgaMetadata->getTableName()} orga ON orga.id = citizenOrga.organization_id AND orga.organization_sid = :sid
+                INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
+                INNER JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id and LOWER(s.name) = :shipName 
+            EOT;
         // filtering
         if (count($filter->shipNames) > 0) {
             $sql .= ' AND (';
@@ -297,38 +297,38 @@ class CitizenRepository extends ServiceEntityRepository
         $orgaMetadata = $this->_em->getClassMetadata(Organization::class);
 
         $sql = <<<EOT
-            SELECT u.*, u.id AS userId, 
-                   c.*, c.nickname AS citizenNickname, c.id AS citizenId,
-                   COUNT(s.id) AS countShips
-            FROM {$orgaMetadata->getTableName()} orga
-            INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON orga.id = citizenOrga.organization_id AND orga.organization_sid = :sid
-            INNER JOIN {$citizenMetadata->getTableName()} c ON citizenOrga.citizen_id = c.id
-            INNER JOIN {$userMetadata->getTableName()} u ON u.citizen_id = c.id
-            INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
-            INNER JOIN {$shipMetadata->getTableName()} s ON s.fleet_id = f.id and LOWER(s.name) = :shipName
-            WHERE (
-                u.public_choice = :userPublicChoicePublic
-                OR (u.public_choice = :userPublicChoiceOrga AND (
-                        # visibility ORGA : visible by everyone
-                        # visibility ADMIN : visible only by highest orga rank
-                        # visibility PRIVATE : visible by anybody
-                        citizenOrga.visibility = :visibilityOrga
-                        OR (citizenOrga.visibility = :visibilityAdmin AND :viewerCitizenId IS NOT NULL AND :viewerCitizenId IN (
-                                # select highest ranks of this orga
-                                SELECT co.citizen_id
-                                FROM {$orgaMetadata->getTableName()} o
-                                INNER JOIN {$citizenOrgaMetadata->getTableName()} co ON co.organization_id = o.id AND o.organization_sid = :sid
-                                WHERE co.rank = (
-                                    SELECT max(co.rank) AS maxRank
+                SELECT u.*, u.id AS userId, 
+                       c.*, c.nickname AS citizenNickname, c.id AS citizenId,
+                       COUNT(s.id) AS countShips
+                FROM {$orgaMetadata->getTableName()} orga
+                INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON orga.id = citizenOrga.organization_id AND orga.organization_sid = :sid
+                INNER JOIN {$citizenMetadata->getTableName()} c ON citizenOrga.citizen_id = c.id
+                INNER JOIN {$userMetadata->getTableName()} u ON u.citizen_id = c.id
+                INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
+                INNER JOIN {$shipMetadata->getTableName()} s ON s.fleet_id = f.id and LOWER(s.name) = :shipName
+                WHERE (
+                    u.public_choice = :userPublicChoicePublic
+                    OR (u.public_choice = :userPublicChoiceOrga AND (
+                            # visibility ORGA : visible by everyone
+                            # visibility ADMIN : visible only by highest orga rank
+                            # visibility PRIVATE : visible by anybody
+                            citizenOrga.visibility = :visibilityOrga
+                            OR (citizenOrga.visibility = :visibilityAdmin AND :viewerCitizenId IS NOT NULL AND :viewerCitizenId IN (
+                                    # select highest ranks of this orga
+                                    SELECT co.citizen_id
                                     FROM {$orgaMetadata->getTableName()} o
                                     INNER JOIN {$citizenOrgaMetadata->getTableName()} co ON co.organization_id = o.id AND o.organization_sid = :sid
+                                    WHERE co.rank = (
+                                        SELECT max(co.rank) AS maxRank
+                                        FROM {$orgaMetadata->getTableName()} o
+                                        INNER JOIN {$citizenOrgaMetadata->getTableName()} co ON co.organization_id = o.id AND o.organization_sid = :sid
+                                    )
                                 )
                             )
                         )
                     )
                 )
-            )
-        EOT;
+            EOT;
 
         // filtering
         if (count($filter->shipNames) > 0) {
@@ -346,9 +346,9 @@ class CitizenRepository extends ServiceEntityRepository
             $sql .= ' 1=0) ';
         }
         $sql .= <<<EOT
-            GROUP BY u.id, c.id, citizenOrga.id
-            ORDER BY countShips DESC
-        EOT;
+                GROUP BY u.id, c.id, citizenOrga.id
+                ORDER BY countShips DESC
+            EOT;
         // pagination
         if ($page !== null) {
             $sql .= "\nLIMIT :first, :countItems\n";
@@ -397,36 +397,36 @@ class CitizenRepository extends ServiceEntityRepository
         $orgaMetadata = $this->_em->getClassMetadata(Organization::class);
 
         $sql = <<<EOT
-            SELECT COUNT(DISTINCT c.id) AS total
-            FROM {$orgaMetadata->getTableName()} orga
-            INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON orga.id = citizenOrga.organization_id AND orga.organization_sid = :sid
-            INNER JOIN {$citizenMetadata->getTableName()} c ON citizenOrga.citizen_id = c.id
-            INNER JOIN {$userMetadata->getTableName()} u ON u.citizen_id = c.id
-            INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
-            INNER JOIN {$shipMetadata->getTableName()} s ON s.fleet_id = f.id and LOWER(s.name) = :shipName
-            WHERE (
-                u.public_choice = :userPublicChoicePublic
-                OR (u.public_choice = :userPublicChoiceOrga AND (
-                        # visibility ORGA : visible by everyone
-                        # visibility ADMIN : visible only by highest orga rank
-                        # visibility PRIVATE : visible by anybody
-                        citizenOrga.visibility = :visibilityOrga
-                        OR (citizenOrga.visibility = :visibilityAdmin AND :viewerCitizenId IS NOT NULL AND :viewerCitizenId IN (
-                                # select highest ranks of this orga
-                                SELECT co.citizen_id
-                                FROM {$orgaMetadata->getTableName()} o
-                                INNER JOIN {$citizenOrgaMetadata->getTableName()} co ON co.organization_id = o.id AND o.organization_sid = :sid
-                                WHERE co.rank = (
-                                    SELECT max(co.rank) AS maxRank
+                SELECT COUNT(DISTINCT c.id) AS total
+                FROM {$orgaMetadata->getTableName()} orga
+                INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON orga.id = citizenOrga.organization_id AND orga.organization_sid = :sid
+                INNER JOIN {$citizenMetadata->getTableName()} c ON citizenOrga.citizen_id = c.id
+                INNER JOIN {$userMetadata->getTableName()} u ON u.citizen_id = c.id
+                INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
+                INNER JOIN {$shipMetadata->getTableName()} s ON s.fleet_id = f.id and LOWER(s.name) = :shipName
+                WHERE (
+                    u.public_choice = :userPublicChoicePublic
+                    OR (u.public_choice = :userPublicChoiceOrga AND (
+                            # visibility ORGA : visible by everyone
+                            # visibility ADMIN : visible only by highest orga rank
+                            # visibility PRIVATE : visible by anybody
+                            citizenOrga.visibility = :visibilityOrga
+                            OR (citizenOrga.visibility = :visibilityAdmin AND :viewerCitizenId IS NOT NULL AND :viewerCitizenId IN (
+                                    # select highest ranks of this orga
+                                    SELECT co.citizen_id
                                     FROM {$orgaMetadata->getTableName()} o
                                     INNER JOIN {$citizenOrgaMetadata->getTableName()} co ON co.organization_id = o.id AND o.organization_sid = :sid
+                                    WHERE co.rank = (
+                                        SELECT max(co.rank) AS maxRank
+                                        FROM {$orgaMetadata->getTableName()} o
+                                        INNER JOIN {$citizenOrgaMetadata->getTableName()} co ON co.organization_id = o.id AND o.organization_sid = :sid
+                                    )
                                 )
                             )
                         )
                     )
                 )
-            )
-        EOT;
+            EOT;
 
         // filtering
         if (count($filter->shipNames) > 0) {
@@ -480,37 +480,37 @@ class CitizenRepository extends ServiceEntityRepository
         $orgaMetadata = $this->_em->getClassMetadata(Organization::class);
 
         $sql = <<<EOT
-            SELECT COUNT(DISTINCT c.id) AS total
-            FROM {$orgaMetadata->getTableName()} orga
-            INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON orga.id = citizenOrga.organization_id AND orga.organization_sid = :sid
-            INNER JOIN {$citizenMetadata->getTableName()} c ON citizenOrga.citizen_id = c.id
-            INNER JOIN {$userMetadata->getTableName()} u ON u.citizen_id = c.id
-            INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
-            INNER JOIN {$shipMetadata->getTableName()} s ON s.fleet_id = f.id and LOWER(s.name) = :shipName
-            # notice the NOT to inverse the normal condition
-            WHERE NOT (
-                u.public_choice = :userPublicChoicePublic
-                OR (u.public_choice = :userPublicChoiceOrga AND (
-                        # visibility ORGA : visible by everyone
-                        # visibility ADMIN : visible only by highest orga rank
-                        # visibility PRIVATE : visible by anybody
-                        citizenOrga.visibility = :visibilityOrga
-                        OR (citizenOrga.visibility = :visibilityAdmin AND :viewerCitizenId IS NOT NULL AND :viewerCitizenId IN (
-                                # select highest ranks of this orga
-                                SELECT co.citizen_id
-                                FROM {$orgaMetadata->getTableName()} o
-                                INNER JOIN {$citizenOrgaMetadata->getTableName()} co ON co.organization_id = o.id AND o.organization_sid = :sid
-                                WHERE co.rank = (
-                                    SELECT max(co.rank) AS maxRank
+                SELECT COUNT(DISTINCT c.id) AS total
+                FROM {$orgaMetadata->getTableName()} orga
+                INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON orga.id = citizenOrga.organization_id AND orga.organization_sid = :sid
+                INNER JOIN {$citizenMetadata->getTableName()} c ON citizenOrga.citizen_id = c.id
+                INNER JOIN {$userMetadata->getTableName()} u ON u.citizen_id = c.id
+                INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
+                INNER JOIN {$shipMetadata->getTableName()} s ON s.fleet_id = f.id and LOWER(s.name) = :shipName
+                # notice the NOT to inverse the normal condition
+                WHERE NOT (
+                    u.public_choice = :userPublicChoicePublic
+                    OR (u.public_choice = :userPublicChoiceOrga AND (
+                            # visibility ORGA : visible by everyone
+                            # visibility ADMIN : visible only by highest orga rank
+                            # visibility PRIVATE : visible by anybody
+                            citizenOrga.visibility = :visibilityOrga
+                            OR (citizenOrga.visibility = :visibilityAdmin AND :viewerCitizenId IS NOT NULL AND :viewerCitizenId IN (
+                                    # select highest ranks of this orga
+                                    SELECT co.citizen_id
                                     FROM {$orgaMetadata->getTableName()} o
                                     INNER JOIN {$citizenOrgaMetadata->getTableName()} co ON co.organization_id = o.id AND o.organization_sid = :sid
+                                    WHERE co.rank = (
+                                        SELECT max(co.rank) AS maxRank
+                                        FROM {$orgaMetadata->getTableName()} o
+                                        INNER JOIN {$citizenOrgaMetadata->getTableName()} co ON co.organization_id = o.id AND o.organization_sid = :sid
+                                    )
                                 )
                             )
                         )
                     )
                 )
-            )
-        EOT;
+            EOT;
 
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addScalarResult('total', 'total');

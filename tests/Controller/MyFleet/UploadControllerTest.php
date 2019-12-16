@@ -26,29 +26,29 @@ class UploadControllerTest extends WebTestCase
     public function testValidUpload(): void
     {
         file_put_contents(sys_get_temp_dir().'/test-fleet.json', <<<EOT
-            [
-              {
-                "manufacturer": "Drake",
-                "name": "Cutlass Black",
-                "lti": true,
-                "warbond": true,
-                "package_id": "15109407",
-                "pledge": "Package - Origin 100i Starter Game Package Warbond",
-                "pledge_date": "April 28, 2018",
-                "cost": "$110.00 USD"
-              },
-              {
-                "manufacturer": "Tumbril",
-                "name": "Cyclone",
-                "lti": false,
-                "warbond": false,
-                "package_id": "15186605",
-                "pledge": "Standalone Ship - Tumbril Cyclone ",
-                "pledge_date": "May 15, 2018",
-                "cost": "$55.00 USD"
-              }
-            ]
-        EOT
+                [
+                  {
+                    "manufacturer": "Drake",
+                    "name": "Cutlass Black",
+                    "lti": true,
+                    "warbond": true,
+                    "package_id": "15109407",
+                    "pledge": "Package - Origin 100i Starter Game Package Warbond",
+                    "pledge_date": "April 28, 2018",
+                    "cost": "$110.00 USD"
+                  },
+                  {
+                    "manufacturer": "Tumbril",
+                    "name": "Cyclone",
+                    "lti": false,
+                    "warbond": false,
+                    "package_id": "15186605",
+                    "pledge": "Standalone Ship - Tumbril Cyclone ",
+                    "pledge_date": "May 15, 2018",
+                    "cost": "$55.00 USD"
+                  }
+                ]
+            EOT
         );
         $citizenInfosProvider = static::$container->get(CitizenInfosProviderInterface::class);
         $citizenInfosProvider->setCitizen($this->user->getCitizen());
@@ -80,7 +80,7 @@ class UploadControllerTest extends WebTestCase
         ]);
 
         $this->assertSame(400, $this->client->getResponse()->getStatusCode());
-        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame('invalid_form', $json['error']);
         $this->assertArraySubset(['You must choose a JSON fleet file.'], $json['formErrors']);
     }
