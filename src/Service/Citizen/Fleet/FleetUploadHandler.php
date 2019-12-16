@@ -124,7 +124,7 @@ class FleetUploadHandler implements LoggerAwareInterface
                 ->setPledgeDate(\DateTimeImmutable::createFromFormat('F d, Y', $shipData['pledge_date'])->setTime(0, 0))
                 ->setRawData($shipData);
             if (isset($shipData['cost'])) {
-                $ship->setCost((new Money((int) preg_replace('/^\$(\d+\.\d+)/', '$1', $shipData['cost'])))->getCost());
+                $ship->setCost((new Money((float) str_replace(',', '', preg_replace('~^\$(\d+(,\d+)*\.\d+)~', '$1', $shipData['cost']))))->getCost());
             }
             $fleet->addShip($ship);
         }
@@ -151,7 +151,7 @@ class FleetUploadHandler implements LoggerAwareInterface
 
                 return false;
             }
-            if (isset($shipData['cost']) && preg_replace('/^\$(\d+\.\d+)/i', '$1', $shipData['cost']) === null) {
+            if (isset($shipData['cost']) && !preg_match('~^\$(\d+(,\d+)*\.\d+)~', $shipData['cost'])) {
                 $this->logger->error('[FleetDataInvalid] the cost is not in a good format.', ['ship_data' => $shipData]);
 
                 return false;
