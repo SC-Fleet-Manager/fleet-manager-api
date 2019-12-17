@@ -50,7 +50,7 @@ ARG DUMP_ENV=0
 
 RUN apk add --no-cache --virtual .deps icu-libs zlib libintl libzip libxml2 libxslt
 RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS icu-dev libzip-dev libxml2-dev libxslt-dev libgcrypt-dev \
-    && docker-php-ext-install intl zip pdo_mysql xml xsl \
+    && docker-php-ext-install intl zip pdo_mysql xml xsl bcmath \
     && pecl install redis \
     && apk del .build-deps \
     && docker-php-ext-enable --ini-name 05-opcache.ini opcache \
