@@ -257,6 +257,7 @@
                 this.refreshingProfile = true;
                 axios.post('/api/profile/refresh-rsi-profile').then(response => {
                     toastr.success('Your RSI public profile has been successfully refreshed.');
+                    this.refreshProfile();
                 }).catch(err => {
                     this.checkAuth(err.response);
                     if (err.response.data.errorMessage) {
