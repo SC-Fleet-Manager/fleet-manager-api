@@ -87,11 +87,22 @@ class CitizenRefresher
             }
         }
 
+        // remove duplicated CitizenOrganization
+        $seenCitizenOrgas = [];
+        foreach ($citizen->getOrganizations() as $organization) {
+            if (isset($seenCitizenOrgas[$organization->getOrganization()->getId()->toString()])) {
+                // duplication
+                $this->entityManager->remove($organization);
+                continue;
+            }
+            $seenCitizenOrgas[$organization->getOrganization()->getId()->toString()] = $organization;
+        }
+
         // refresh & join new orga
         $citizen->setMainOrga(null);
         foreach ($citizenInfos->organizations as $orgaInfo) {
             $citizenOrga = null;
-            foreach ($citizen->getOrganizations() as $organization) {
+            foreach ($seenCitizenOrgas as $organization) {
                 if ($orgaInfo->sid->getSid() === $organization->getOrganization()->getOrganizationSid()) {
                     $citizenOrga = $organization;
                     break;
