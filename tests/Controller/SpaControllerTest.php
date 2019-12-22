@@ -626,9 +626,10 @@ class SpaControllerTest extends PantherTestCase
 
     /**
      * @group end2end
+     * @group spa
      * @group funding
      */
-    public function test(): void
+    public function testFunding(): void
     {
         $this->login('d92e229e-e743-4583-905a-e02c57eacfe0');
 
@@ -666,7 +667,7 @@ class SpaControllerTest extends PantherTestCase
 
             $this->assertSame('$ 62.32 / $ 150.00', preg_replace('~\s+~', ' ', $this->client->findElement(WebDriverBy::cssSelector('#progress-amount'))->getText()));
             $this->assertSame('1. ionni $ 51.33', preg_replace('~\s+~', ' ', $this->client->findElement(WebDriverBy::cssSelector('#ladder-all-time .row:nth-child(1)'))->getText()));
-            $this->assertSame('2. fundings-1 $ 21.50', preg_replace('~\s+~', ' ', $this->client->findElement(WebDriverBy::cssSelector('#ladder-all-time .row:nth-child(2)'))->getText()));
+            $this->assertSame('2. Anonymous $ 21.50', preg_replace('~\s+~', ' ', $this->client->findElement(WebDriverBy::cssSelector('#ladder-all-time .row:nth-child(2)'))->getText())); // fundings-1 /w supporterVisible == false
             $this->assertSame('20. 16_fundings $ 1.16', preg_replace('~\s+~', ' ', $this->client->findElement(WebDriverBy::cssSelector('#ladder-all-time .row:nth-child(20)'))->getText()));
             $this->assertSame('26. 10_fundings $ 1.10', preg_replace('~\s+~', ' ', $this->client->findElement(WebDriverBy::cssSelector('#ladder-all-time .row:nth-child(21)'))->getText()));
 

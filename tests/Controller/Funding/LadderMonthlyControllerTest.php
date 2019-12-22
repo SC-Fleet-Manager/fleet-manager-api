@@ -26,7 +26,7 @@ class LadderMonthlyControllerTest extends WebTestCase
                 [
                     'rank' => 1,
                     'amount' => 2150,
-                    'name' => 'fundings-1',
+                    'name' => 'Anonymous', // user_fundings_1 /w supporterVisible == false
                     'me' => false,
                 ],
                 [

@@ -6,8 +6,8 @@ use App\Entity\Citizen;
 use App\Entity\Fleet;
 use App\Entity\Ship;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
+use Doctrine\Persistence\ManagerRegistry;
 
 class FleetRepository extends ServiceEntityRepository
 {
@@ -23,7 +23,7 @@ class FleetRepository extends ServiceEntityRepository
         $shipMetadata = $this->_em->getClassMetadata(Ship::class);
 
         $sql = <<<EOT
-                SELECT count(*) as countShips FROM {$citizenMetadata->getTableName()} c 
+                SELECT count(*) as countShips FROM {$citizenMetadata->getTableName()} c
                 INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
                 INNER JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id
             EOT;

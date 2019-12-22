@@ -227,6 +227,7 @@ App\Entity\User:
     user_fundings_1:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("a70526d9-5319-4445-901a-4bcccd50d911"))>']
         username: 'fundings-1'
+        nickname: 'fundings-1'
         email: 'fundings-1@example.com'
         emailConfirmed: true
         password: '123456'
@@ -235,9 +236,11 @@ App\Entity\User:
         registrationConfirmationToken: 'KrbnPSofXCPV7uWi22wp4aYG6bnmOaVvGdh8ZnPAV2WBPzwgYPzmnFNipD2RhZW8'
         createdAt: '<(new \DateTimeImmutable("2019-04-19 11:22:33"))>'
         lastConnectedAt: '<(new \DateTimeImmutable("2019-04-20 22:33:44"))>'
+        supporterVisible: false
     user_fundings_2:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("c704d896-2d69-4b3e-b373-51659c5fbc08"))>']
         username: 'fundings-2'
+        nickname: 'fundings-2'
         email: 'fundings-2@example.com'
         emailConfirmed: true
         password: '123456'
@@ -249,6 +252,7 @@ App\Entity\User:
     user_fundings_3:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("129b2e1a-d808-4370-a07d-51837b436cb3"))>']
         username: 'fundings-3'
+        nickname: 'fundings-3'
         email: 'fundings-3@example.com'
         emailConfirmed: true
         password: '123456'
@@ -260,6 +264,7 @@ App\Entity\User:
     user_fundings_{10..30}:
         __construct: ['<createUuid("14203774-91fa-4300-b464-bcda42697b", $current)>']
         username: '<current()>_fundings'
+        nickname: '<current()>_fundings'
         email: '<current()>_fundings@example.com'
         emailConfirmed: true
         password: '123456'

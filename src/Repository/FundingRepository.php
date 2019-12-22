@@ -6,8 +6,8 @@ use App\Entity\Citizen;
 use App\Entity\Funding;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
+use Doctrine\Persistence\ManagerRegistry;
 
 class FundingRepository extends ServiceEntityRepository
 {
@@ -138,22 +138,23 @@ class FundingRepository extends ServiceEntityRepository
         ' : '';
 
         $sql = <<<SQL
-                SELECT u.id, u.nickname, u.username, c.actual_handle, SUM(f.amount - f.refunded_amount) as totalAmount
+                SELECT u.id, u.supporter_visible, u.nickname, u.username, c.actual_handle, SUM(f.amount - f.refunded_amount) as total_amount
                 FROM {$fundingMetadata->getTableName()} f
                 INNER JOIN {$userMetadata->getTableName()} u ON u.id = f.user_id
                 LEFT JOIN {$citizenMetadata->getTableName()} c ON c.id = u.citizen_id
                 WHERE ${monthSqlCondition} f.paypal_status IN ('COMPLETED', 'PARTIALLY_REFUNDED', 'REFUNDED')
                 GROUP BY f.user_id
-                ORDER BY totalAmount DESC, u.username ASC
+                ORDER BY total_amount DESC, u.username ASC
                 LIMIT ${limit}
             SQL;
 
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addScalarResult('id', 'userId');
+        $rsm->addScalarResult('supporter_visible', 'supporterVisible', 'boolean');
         $rsm->addScalarResult('username', 'username');
         $rsm->addScalarResult('nickname', 'nickname');
         $rsm->addScalarResult('actual_handle', 'actualHandle');
-        $rsm->addScalarResult('totalAmount', 'totalAmount');
+        $rsm->addScalarResult('total_amount', 'totalAmount', 'integer');
 
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
         if ($month !== null) {

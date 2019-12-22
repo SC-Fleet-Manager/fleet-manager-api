@@ -51,10 +51,14 @@ class LadderHandler
                 $rank = $sequence;
             }
             $lastAmount = $topFunding['totalAmount'];
+            $name = $topFunding['actualHandle'] ?? $topFunding['nickname'] ?? 'Unknown';
+            if (!($topFunding['supporterVisible'] ?? true)) {
+                $name = 'Anonymous';
+            }
             $viewFunding = new LadderView(
                 $rank,
                 $topFunding['totalAmount'],
-                $topFunding['actualHandle'] ?? $topFunding['nickname'] ?? $topFunding['username'],
+                $name,
                 $user !== null ? $user->getId()->toString() === $topFunding['userId'] : false,
             );
             if ($viewFunding->me) {
@@ -74,10 +78,14 @@ class LadderHandler
             }
             if ($userRank !== null) {
                 $citizen = $user->getCitizen();
+                $name = $citizen !== null ? $citizen->getActualHandle()->getHandle() : $user->getNickname() ?? $user->getUsername();
+                if (!$user->isSupporterVisible()) {
+                    $name = 'Anonymous';
+                }
                 $viewFundings[] = new LadderView(
                     $userRank,
                     $totalAmount,
-                    $citizen !== null ? $citizen->getActualHandle()->getHandle() : $user->getNickname() ?? $user->getUsername(),
+                    $name,
                     true,
                 );
             }

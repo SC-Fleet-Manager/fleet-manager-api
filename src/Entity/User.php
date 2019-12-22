@@ -27,151 +27,121 @@ class User implements UserInterface
     ];
 
     /**
-     * @var UuidInterface
-     *
      * @ORM\Id()
      * @ORM\Column(type="uuid", unique=true)
      * @Groups({"profile", "me:read", "orga_fleet"})
      */
-    private $id;
+    private ?UuidInterface $id = null;
 
     /**
-     * @var string
-     *
      * @ORM\Column(type="string", length=255)
      * @Groups({"profile"})
      */
-    private $username;
+    private ?string $username = null;
 
     /**
-     * @var string[]
-     *
      * @ORM\Column(type="json_array")
      */
-    private $roles;
+    private array $roles = ['ROLE_USER'];
 
     /**
-     * @var string
-     *
      * @ORM\Column(type="string", length=127, nullable=true)
      * @Groups({"profile"})
      */
-    private $email;
+    private ?string $email = null;
 
     /**
      * When a new email is requested.
      *
-     * @var string
-     *
      * @ORM\Column(type="string", length=127, nullable=true)
      */
-    private $pendingEmail;
+    private ?string $pendingEmail = null;
 
     /**
-     * @var bool
-     *
      * @ORM\Column(type="boolean", options={"default":false})
      * @Groups({"profile"})
      */
-    private $emailConfirmed;
+    private bool $emailConfirmed = false;
 
     /**
-     * @var string
-     *
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Groups({"profile", "public_profile", "me:read"})
      */
-    private $nickname;
+    private ?string $nickname = null;
 
     /**
-     * @var string
-     *
      * @ORM\Column(type="string", length=127, nullable=true)
      * @Groups({"must_not_be_exposed"})
      */
-    private $password;
+    private ?string $password = null;
 
     /**
-     * @var string
-     *
      * @ORM\Column(type="string", length=64, options={"fixed":true}, nullable=true)
      */
-    private $lostPasswordToken;
+    private ?string $lostPasswordToken = null;
 
     /**
-     * @var \DateTimeImmutable
-     *
      * @ORM\Column(type="datetimetz_immutable", nullable=true)
      */
-    private $lostPasswordRequestedAt;
+    private ?\DateTimeImmutable $lostPasswordRequestedAt = null;
 
     /**
-     * @var string
-     *
      * @ORM\Column(type="string", length=255, unique=false, nullable=true)
      * @Groups({"profile"})
      */
-    private $discordId;
+    private ?string $discordId = null;
 
     /**
-     * @var string
-     *
      * @ORM\Column(type="string", length=255, unique=false, nullable=true)
      */
-    private $pendingDiscordId;
+    private ?string $pendingDiscordId = null;
 
     /**
-     * @var string
-     *
      * @ORM\Column(type="string", length=15, nullable=true)
      */
-    private $discordTag;
+    private ?string $discordTag = null;
 
     /**
      * For RSI account linking.
      *
-     * @var string
-     *
      * @ORM\Column(type="string", length=64, options={"fixed":true})
      * @Groups({"profile", "me:read"})
      */
-    private $token;
+    private ?string $token = null;
 
     /**
      * For discussing with FM Webextension.
      *
-     * @var string
-     *
      * @ORM\Column(type="string", length=64, options={"fixed":true})
      * @Groups({"me:read"})
      */
-    private $apiToken;
+    private ?string $apiToken = null;
 
     /**
      * For registration and change email.
      *
-     * @var string
-     *
      * @ORM\Column(type="string", length=64, options={"fixed":true}, nullable=true)
      */
-    private $registrationConfirmationToken;
+    private ?string $registrationConfirmationToken = null;
 
     /**
-     * @var Citizen
-     *
      * @ORM\OneToOne(targetEntity="App\Entity\Citizen", cascade={"persist"})
      * @ORM\JoinColumn(onDelete="SET NULL")
      * @Groups({"profile", "orga_fleet"})
      */
-    private $citizen;
+    private ?Citizen $citizen = null;
 
     /**
-     * @var string
-     *
      * @ORM\Column(type="string", length=15, options={"default":User::PUBLIC_CHOICE_PRIVATE})
      * @Groups({"profile", "orga_fleet"})
      */
-    private $publicChoice;
+    private string $publicChoice = self::PUBLIC_CHOICE_PRIVATE;
+
+    /**
+     * @ORM\Column(type="boolean", options={"default":true})
+     * @Groups({"profile", "orga_fleet"})
+     */
+    private bool $supporterVisible = true;
 
     /**
      * @var int
@@ -179,38 +149,28 @@ class User implements UserInterface
      * @ORM\Column(type="integer", options={"default":0})
      * @Groups({"profile"})
      */
-    private $coins;
+    private int $coins = 0;
 
     /**
-     * @var \DateTimeImmutable
-     *
      * @ORM\Column(type="datetimetz_immutable")
      * @Groups({"profile", "me:read"})
      */
-    private $createdAt;
+    private \DateTimeImmutable $createdAt;
 
     /**
-     * @var \DateTimeImmutable
-     *
      * @ORM\Column(type="datetimetz_immutable", nullable=true)
      * @Groups({"profile", "me:read"})
      */
-    private $updatedAt;
+    private ?\DateTimeImmutable $updatedAt = null;
 
     /**
-     * @var \DateTimeImmutable
-     *
      * @ORM\Column(type="datetimetz_immutable", nullable=true)
      */
-    private $lastConnectedAt;
+    private ?\DateTimeImmutable  $lastConnectedAt = null;
 
     public function __construct(?UuidInterface $id = null)
     {
         $this->id = $id;
-        $this->roles = ['ROLE_USER'];
-        $this->emailConfirmed = false;
-        $this->publicChoice = self::PUBLIC_CHOICE_ORGANIZATION;
-        $this->coins = 0;
         $this->createdAt = new \DateTimeImmutable();
     }
 
@@ -443,6 +403,18 @@ class User implements UserInterface
         if (in_array($publicChoice, self::PUBLIC_CHOICES, true)) {
             $this->publicChoice = $publicChoice;
         }
+
+        return $this;
+    }
+
+    public function isSupporterVisible(): bool
+    {
+        return $this->supporterVisible;
+    }
+
+    public function setSupporterVisible(bool $supporterVisible): self
+    {
+        $this->supporterVisible = $supporterVisible;
 
         return $this;
     }

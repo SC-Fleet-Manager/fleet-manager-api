@@ -129,6 +129,10 @@
                             You have <strong>{{ citizen.countRedactedOrganizations }} redacted organizations</strong><template v-if="citizen.redactedMainOrga"> including your main orga</template>. Therefore, you will not be able to see their fleet.<br/>
                             To display them, you have to set <strong>"Visible"</strong> in your <a href="https://robertsspaceindustries.com/account/organization" target="_blank">RSI account</a>.
                         </b-alert>
+                        <strong>Supporters preferences</strong>
+                        <b-form-checkbox v-model="supporterVisible" @change="saveSupporterVisible" :disabled="savingPreferences" name="supporter-visibility" switch>
+                            Display my name on Supporters page
+                        </b-form-checkbox>
                     </b-form>
                 </b-card>
             </b-col>
@@ -182,6 +186,7 @@
                 lastShortBio: null,
                 showCollapseStep1: false,
                 showCollapseStep2: false,
+                supporterVisible: null,
             }
         },
         created() {
@@ -197,11 +202,16 @@
                 this.$set(this.orgaVisibilityChoices, orga.organizationSid, value);
                 this.savePreferences();
             },
+            saveSupporterVisible(value) {
+                this.supporterVisible = value;
+                this.savePreferences();
+            },
             savePreferences() {
                 this.savingPreferences = true;
                 axios.post('/api/profile/save-preferences', {
                     publicChoice: this.publicChoice,
                     orgaVisibilityChoices: this.orgaVisibilityChoices,
+                    supporterVisible: this.supporterVisible,
                 }).then(response => {
                     toastr.success('Changes saved');
                 }).catch(err => {
@@ -229,6 +239,7 @@
                     this.userToken = this.user.token;
                     this.myFleetLink = this.getMyFleetLink();
                     this.publicChoice = this.user.publicChoice;
+                    this.supporterVisible = this.user.supporterVisible;
                     this.updateProfile(this.citizen);
 
                     if (this.citizen) {
