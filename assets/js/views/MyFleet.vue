@@ -54,7 +54,7 @@
                 shipInfos: [],
                 showError: false,
                 errorMessage: '',
-            }
+            };
         },
         async created() {
             axios.get('/api/profile', {
@@ -148,6 +148,8 @@
                     case '890 JUMP': return '890 Jump';
                     case 'Aopoa San\'tok.yāi': return 'San\'tok.yāi';
                     case 'Argo SRV': return 'SRV';
+                    case 'Argo Mole - Carbon Edition': return 'Argo Mole Carbon Edition';
+                    case 'Argo Mole - Talus Edition': return 'Argo Mole Talus Edition';
                     case 'Ballista': return 'Anvil Ballista';
                     case 'Ballista Snowblind': return 'Anvil Ballista Snowblind';
                     case 'Ballista Dunestalker': return 'Anvil Ballista Dunestalker';

@@ -1,18 +1,27 @@
-FROM php:7.4-fpm-alpine as composer_deps
+FROM php:7.4.0-fpm-alpine as req_php
+
+# prod|dev
+ARG ENV=prod
+
+RUN apk add --no-cache --virtual .deps icu-libs zlib libintl libzip libxml2 libxslt
+RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS icu-dev libzip-dev libxml2-dev libxslt-dev libgcrypt-dev \
+    && docker-php-ext-install intl zip pdo_mysql xml xsl bcmath \
+    && pecl install redis \
+    && apk del .build-deps \
+    && docker-php-ext-enable --ini-name 05-opcache.ini opcache \
+    && docker-php-ext-enable --ini-name 20-redis.ini redis \
+    && rm -rf /tmp/*
+
+WORKDIR /app
+
+########################################
+FROM req_php as composer_deps
 
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
 # prod|dev
 ARG ENV=prod
 
-RUN if [ $ENV != 'prod' ]; then apk add --no-cache --virtual .deps zlib libzip libxslt; fi
-RUN if [ $ENV != 'prod' ]; then \
-        apk add --no-cache --virtual .build-deps $PHPIZE_DEPS libzip-dev libxslt-dev libgcrypt-dev \
-        && docker-php-ext-install zip xsl \
-        && apk del .build-deps; \
-    fi
-
-WORKDIR /app
 COPY src src
 COPY .env* composer.json composer.lock symfony.lock ./
 
@@ -42,29 +51,17 @@ COPY .babelrc webpack.config.js postcss.config.js ./
 RUN mkdir public && yarn encore production
 
 ####################################
-FROM php:7.4-fpm-alpine as build_php
+FROM req_php as build_php
 
 # prod|dev
 ARG ENV=prod
 ARG DUMP_ENV=0
 
-RUN apk add --no-cache --virtual .deps icu-libs zlib libintl libzip libxml2 libxslt
-RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS icu-dev libzip-dev libxml2-dev libxslt-dev libgcrypt-dev \
-    && docker-php-ext-install intl zip pdo_mysql xml xsl bcmath \
-    && pecl install redis \
-    && apk del .build-deps \
-    && docker-php-ext-enable --ini-name 05-opcache.ini opcache \
-    && docker-php-ext-enable --ini-name 20-redis.ini redis \
-    && rm -fr /tmp/*
-
 COPY docker/php/php.prod.ini /usr/local/etc/php/php.ini
 COPY docker/php/entrypoint.sh /usr/local/bin/docker-app-entrypoint
 RUN chmod +x /usr/local/bin/docker-app-entrypoint
 
-WORKDIR /app
-COPY assets/css assets/css
-COPY assets/fonts assets/fonts
-COPY assets/img assets/img
+COPY assets assets
 COPY bin/console bin/
 COPY config config
 COPY public/index.php public/
@@ -83,7 +80,7 @@ RUN if [ ${DUMP_ENV} == 0 ]; then echo "<?php return ['APP_ENV'=>'${ENV}'];" > .
     if [ -e .env.local ]; then sed -i "s/^APP_ENV=.*$/APP_ENV=${ENV}/" .env.local; fi
 RUN mkdir -p public/bundles \
     && bin/console assets:install -v \
-    && rm -fr var/cache/* \
+    && rm -rf var/cache/* \
     && bin/console cache:warmup -v \
     && mkdir -p var/log && chown -R www-data var/log
 
