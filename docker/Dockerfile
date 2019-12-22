@@ -82,7 +82,6 @@ RUN mkdir -p public/bundles \
     && bin/console assets:install -v \
     && rm -rf var/cache/* \
     && bin/console cache:warmup -v \
-    && rm -rf assets \
     && mkdir -p var/log && chown -R www-data var/log
 
 ENV BUILD_ENV prod
