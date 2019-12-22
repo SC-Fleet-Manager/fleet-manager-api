@@ -173,7 +173,7 @@ class LadderAlltimeControllerTest extends WebTestCase
                 [
                     'rank' => 1,
                     'amount' => 5833,
-                    'name' => 'FallKrom',
+                    'name' => 'Anonymous', // FallKrom /w supporterVisible==false
                     'me' => false,
                 ],
                 [

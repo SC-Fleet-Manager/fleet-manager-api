@@ -330,8 +330,7 @@
                             return;
                         }
                     });
-                }
-                if (this.citizen !== null) {
+                } else if (this.citizen !== null) {
                     for (let citizenOrga of this.citizen.organizations) {
                         if (citizenOrga.organization.organizationSid === this.selectedSid) {
                             this.organization = citizenOrga.organization;

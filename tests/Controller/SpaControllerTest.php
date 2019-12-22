@@ -683,9 +683,9 @@ class SpaControllerTest extends PantherTestCase
 
             $this->client->findElement(WebDriverBy::xpath('//label[contains(text(), "Organizations Tops")]'))->click();
             $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
-                return strpos($driver->findElement(WebDriverBy::cssSelector('#ladder-all-time'))->getText(), 'FallKrom') !== false;
+                return strpos($driver->findElement(WebDriverBy::cssSelector('#ladder-all-time'))->getText(), 'Anonymous') !== false;
             });
-            $this->assertSame('1. FallKrom $ 58.33', preg_replace('~\s+~', ' ', $this->client->findElement(WebDriverBy::cssSelector('#ladder-all-time .row:nth-child(1)'))->getText()));
+            $this->assertSame('1. Anonymous $ 58.33', preg_replace('~\s+~', ' ', $this->client->findElement(WebDriverBy::cssSelector('#ladder-all-time .row:nth-child(1)'))->getText())); // FallKrom /w supporterVisible==false
             $this->assertSame('2. Les Gardiens $ 0.90', preg_replace('~\s+~', ' ', $this->client->findElement(WebDriverBy::cssSelector('#ladder-all-time .row:nth-child(2)'))->getText()));
 
             $this->client->findElement(WebDriverBy::xpath('//a[contains(text(), "Monthly Top 20")]'))->click();

@@ -54,9 +54,9 @@ class LadderHandler
             }
             $lastAmount = $topFunding['totalAmount'];
             $name = $topFunding['orgaName'] ?? $topFunding['sid'] ?? 'Unknown';
-//            if (!($topFunding['supporterVisible'] ?? true)) {
-//                $name = 'Anonymous';
-//            }
+            if (!($topFunding['supporterVisible'] ?? true)) {
+                $name = 'Anonymous';
+            }
             $viewFunding = new LadderView(
                 $rank,
                 $topFunding['totalAmount'],

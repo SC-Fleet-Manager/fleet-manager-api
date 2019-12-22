@@ -9,6 +9,11 @@
                     <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="admin">Admin only <i class="fas fa-info-circle" v-b-tooltip.hover title="Only the highest ranks (admins) of the orga can see the orga's fleet."></i></b-form-radio>
                     <b-form-radio v-model="orgaPublicChoice" @change="saveOrgaPublicChoice" :disabled="savingPreferences" :name="'orga-public-choice-' + organization.organizationSid" value="public">Public <i class="fas fa-info-circle" v-b-tooltip.hover title="Everyone can see the orga's fleet."></i></b-form-radio>
                 </b-form-group>
+                <b-form-group label="Supporters preferences">
+                    <b-form-checkbox v-model="supporterVisible" @change="saveSupporterVisible" :disabled="savingPreferences" name="supporter-visibility" switch>
+                        Display the orga name on Supporters page
+                    </b-form-checkbox>
+                </b-form-group>
                 <OrganizationChanges :selectedSid="selectedSid" ref="orgaChanges"/>
             </b-col>
             <b-col lg="6" >
@@ -43,10 +48,12 @@
                 fleetPolicyErrorMessages: null,
                 savingPreferences: false,
                 refreshingMemberList: false,
+                supporterVisible: null,
             };
         },
         created() {
             this.orgaPublicChoice = this.organization.publicChoice;
+            this.supporterVisible = this.organization.supporterVisible;
         },
         computed: {
             orgaFullname() {
@@ -60,6 +67,7 @@
         watch: {
             organization() {
                 this.orgaPublicChoice = this.organization.publicChoice;
+                this.supporterVisible = this.organization.supporterVisible;
             },
         },
         methods: {
@@ -70,7 +78,8 @@
                 this.savingPreferences = true;
                 this.fleetPolicyErrors = false;
                 axios.post(`/api/organization/${this.organization.organizationSid}/save-preferences`, {
-                   publicChoice: this.orgaPublicChoice,
+                    publicChoice: this.orgaPublicChoice,
+                    supporterVisible: this.supporterVisible,
                 }).then(response => {
                     this.$emit('changed');
                     this.refreshLastChanges();
@@ -88,6 +97,10 @@
             },
             saveOrgaPublicChoice(value) {
                 this.orgaPublicChoice = value;
+                this.savePreferences();
+            },
+            saveSupporterVisible(value) {
+                this.supporterVisible = value;
                 this.savePreferences();
             },
             refreshMemberList() {

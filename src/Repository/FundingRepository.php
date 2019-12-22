@@ -152,7 +152,7 @@ class FundingRepository extends ServiceEntityRepository
         ' : '';
 
         $sql = <<<SQL
-                SELECT o.id, o.organization_sid, o.name, SUM(f.amount - f.refunded_amount) as total_amount
+                SELECT o.id, o.supporter_visible, o.organization_sid, o.name, SUM(f.amount - f.refunded_amount) as total_amount
                 FROM {$citizenOrgaMetadata->getTableName()} co
                 INNER JOIN {$orgaMetadata->getTableName()} o on co.organization_id = o.id
                 INNER JOIN {$citizenMetadata->getTableName()} c on co.citizen_id = c.id
@@ -166,6 +166,7 @@ class FundingRepository extends ServiceEntityRepository
 
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addScalarResult('id', 'orgaId');
+        $rsm->addScalarResult('supporter_visible', 'supporterVisible', 'boolean');
         $rsm->addScalarResult('organization_sid', 'sid');
         $rsm->addScalarResult('name', 'orgaName');
         $rsm->addScalarResult('total_amount', 'totalAmount', 'integer');

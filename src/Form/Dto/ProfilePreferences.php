@@ -8,6 +8,7 @@ class ProfilePreferences
 {
     /**
      * @Assert\NotBlank(message="You must choose a fleet policy.")
+     * @Assert\Choice(choices=App\Entity\User::PUBLIC_CHOICES, message="You must select a valid option.")
      */
     public ?string $publicChoice;
 

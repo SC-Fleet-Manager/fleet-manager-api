@@ -22,6 +22,9 @@ class SavePreferencesControllerTest extends WebTestCase
     public function testSavePreferences(): void
     {
         $this->logIn($this->user);
+
+        $this->assertTrue($this->user->isSupporterVisible(), 'SupporterVisible must be true.');
+
         $this->client->xmlHttpRequest('POST', '/api/profile/save-preferences', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ], json_encode([
