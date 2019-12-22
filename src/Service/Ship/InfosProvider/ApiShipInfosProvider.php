@@ -366,6 +366,8 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
                 return 'Pisces';
             case '79':
                 return 'Ares';
+            case '80':
+                return 'Mole';
             case '1001':
                 return 'F8C';
         }
@@ -411,6 +413,8 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
             '890 JUMP' => '890 Jump',
             'Aopoa San\'tok.yāi' => 'San\'tok.yāi',
             'Argo SRV' => 'SRV',
+            'Argo Mole - Carbon Edition' => 'Argo Mole Carbon Edition',
+            'Argo Mole - Talus Edition' => 'Argo Mole Talus Edition',
             'Ballista' => 'Anvil Ballista',
             'Ballista Snowblind' => 'Anvil Ballista Snowblind',
             'Ballista Dunestalker' => 'Anvil Ballista Dunestalker',
