@@ -152,4 +152,30 @@ class LadderMonthlyControllerTest extends WebTestCase
             ],
         ], $json);
     }
+
+    /**
+     * @group functional
+     * @group funding
+     */
+    public function testOrga(): void
+    {
+        $this->client->xmlHttpRequest('GET', '/api/funding/ladder-monthly', [
+            'orgaMode' => true,
+        ], [], [
+            'CONTENT_TYPE' => 'application/json',
+        ]);
+
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertArraySubset([
+            'topFundings' => [
+                [
+                    'rank' => 1,
+                    'amount' => 90,
+                    'name' => 'Les Gardiens',
+                    'me' => false,
+                ],
+            ],
+        ], $json);
+    }
 }

@@ -152,4 +152,37 @@ class LadderAlltimeControllerTest extends WebTestCase
             ],
         ], $json);
     }
+
+    /**
+     * @group functional
+     * @group funding
+     */
+    public function testOrga(): void
+    {
+        $this->client->xmlHttpRequest('GET', '/api/funding/ladder-alltime', [
+            'orgaMode' => true,
+        ], [], [
+            'CONTENT_TYPE' => 'application/json',
+        ]);
+
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        dump($json);
+        $this->assertArraySubset([
+            'topFundings' => [
+                [
+                    'rank' => 1,
+                    'amount' => 5833,
+                    'name' => 'FallKrom',
+                    'me' => false,
+                ],
+                [
+                    'rank' => 2,
+                    'amount' => 90,
+                    'name' => 'Les Gardiens',
+                    'me' => false,
+                ],
+            ],
+        ], $json);
+    }
 }

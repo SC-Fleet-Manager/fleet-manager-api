@@ -44,12 +44,38 @@ App\Entity\Funding:
                                 currency_code: 'USD'
                                 value: '49.83'
                         custom_id: '1154f530-dbb5-425d-94e8-9a3200b75e35'
-                        create_time: '2019-11-16T12:22:33Z'
-                        update_time: '2019-11-16T12:22:33Z'
         amount: 5133
         netAmount: 4983
         currency: 'USD'
         createdAt: '<(new \DateTimeImmutable("third sunday of last month"))>'
+    funding_completed_2:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("5aabd357-f6e7-4658-995f-872ea1128a53"))>']
+        user: '@user_gardiens1'
+        gateway: 'paypal'
+        paypalOrderId: '850f4235'
+        paypalStatus: 'COMPLETED'
+        paypalPurchase:
+            payments:
+                captures:
+                    -   status: 'COMPLETED'
+                        amount:
+                            currency_code: 'USD'
+                            value: '0.90'
+                        seller_receivable_breakdown:
+                            gross_amount:
+                                currency_code: 'USD'
+                                value: '0.90'
+                            paypal_fee:
+                                currency_code: 'USD'
+                                value: '0.10'
+                            net_amount:
+                                currency_code: 'USD'
+                                value: '0.80'
+                        custom_id: '5aabd357-f6e7-4658-995f-872ea1128a53'
+        amount: 90
+        netAmount: 80
+        currency: 'USD'
+        createdAt: '<(new \DateTimeImmutable("first day of"))>'
     funding_partially_refunded_1:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("fc296ec6-0e4f-405e-a44c-05e089428751"))>']
         user: '@user_ashuvidz'

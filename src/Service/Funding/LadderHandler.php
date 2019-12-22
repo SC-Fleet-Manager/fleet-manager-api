@@ -30,6 +30,45 @@ class LadderHandler
         return $this->buildLadder($this->fundingRepository->getMonthlyLadder($month), $month);
     }
 
+    public function getAlltimeOrgaLadder(): array
+    {
+        return $this->buildOrgaLadder($this->fundingRepository->getAlltimeOrgaLadder());
+    }
+
+    public function getMonthlyOrgaLadder(): array
+    {
+        $month = new \DateTimeImmutable('first day of');
+
+        return $this->buildOrgaLadder($this->fundingRepository->getMonthlyOrgaLadder($month));
+    }
+
+    private function buildOrgaLadder(array $topFundings): array
+    {
+        $viewFundings = [];
+        $rank = 1;
+        $sequence = 1;
+        $lastAmount = null;
+        foreach ($topFundings as $topFunding) {
+            if ($lastAmount !== null && $lastAmount !== $topFunding['totalAmount']) {
+                $rank = $sequence;
+            }
+            $lastAmount = $topFunding['totalAmount'];
+            $name = $topFunding['orgaName'] ?? $topFunding['sid'] ?? 'Unknown';
+//            if (!($topFunding['supporterVisible'] ?? true)) {
+//                $name = 'Anonymous';
+//            }
+            $viewFunding = new LadderView(
+                $rank,
+                $topFunding['totalAmount'],
+                $name,
+            );
+            $viewFundings[] = $viewFunding;
+            ++$sequence;
+        }
+
+        return $viewFundings;
+    }
+
     /**
      * @return LadderView[]
      */

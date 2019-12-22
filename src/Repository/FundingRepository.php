@@ -3,7 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Citizen;
+use App\Entity\CitizenOrganization;
 use App\Entity\Funding;
+use App\Entity\Organization;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
@@ -123,6 +125,63 @@ class FundingRepository extends ServiceEntityRepository
     public function getMonthlyLadder(\DateTimeInterface $month, int $limit = 20): array
     {
         return $this->getLadder($limit, $month);
+    }
+
+    public function getAlltimeOrgaLadder(int $limit = 20): array
+    {
+        return $this->getOrgaLadder($limit);
+    }
+
+    public function getMonthlyOrgaLadder(\DateTimeInterface $month, int $limit = 20): array
+    {
+        return $this->getOrgaLadder($limit, $month);
+    }
+
+    public function getOrgaLadder(int $limit, ?\DateTimeInterface $month = null): array
+    {
+        $fundingMetadata = $this->_em->getClassMetadata(Funding::class);
+        $userMetadata = $this->_em->getClassMetadata(User::class);
+        $citizenMetadata = $this->_em->getClassMetadata(Citizen::class);
+        $orgaMetadata = $this->_em->getClassMetadata(Organization::class);
+        $citizenOrgaMetadata = $this->_em->getClassMetadata(CitizenOrganization::class);
+
+        $monthSqlCondition = $month !== null ? '
+            f.created_at >= :beginDate
+            AND f.created_at < :endDate
+            AND
+        ' : '';
+
+        $sql = <<<SQL
+                SELECT o.id, o.organization_sid, o.name, SUM(f.amount - f.refunded_amount) as total_amount
+                FROM {$citizenOrgaMetadata->getTableName()} co
+                INNER JOIN {$orgaMetadata->getTableName()} o on co.organization_id = o.id
+                INNER JOIN {$citizenMetadata->getTableName()} c on co.citizen_id = c.id
+                INNER JOIN {$userMetadata->getTableName()} u on c.id = u.citizen_id
+                INNER JOIN {$fundingMetadata->getTableName()} f on u.id = f.user_id
+                WHERE ${monthSqlCondition} f.paypal_status IN ('COMPLETED', 'PARTIALLY_REFUNDED', 'REFUNDED')
+                GROUP BY co.organization_id
+                ORDER BY total_amount DESC, o.organization_sid ASC
+                LIMIT ${limit}
+            SQL;
+
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addScalarResult('id', 'orgaId');
+        $rsm->addScalarResult('organization_sid', 'sid');
+        $rsm->addScalarResult('name', 'orgaName');
+        $rsm->addScalarResult('total_amount', 'totalAmount', 'integer');
+
+        $stmt = $this->_em->createNativeQuery($sql, $rsm);
+        if ($month !== null) {
+            $beginDate = (new \DateTimeImmutable($month->format('Y-m-01 00:00')));
+            $endDate = $beginDate->add(new \DateInterval('P1M'));
+            $stmt->setParameters([
+                'beginDate' => $beginDate,
+                'endDate' => $endDate,
+            ]);
+        }
+        $stmt->enableResultCache(300);
+
+        return $stmt->getResult();
     }
 
     private function getLadder(int $limit, ?\DateTimeInterface $month = null): array

@@ -55,6 +55,7 @@ App\Entity\User:
         publicChoice: 'public'
         createdAt: '<(new \DateTimeImmutable("2019-04-05 11:22:33"))>'
         lastConnectedAt: '<(new \DateTimeImmutable("2019-04-06 22:33:44"))>'
+        coins: 90
     user_ihaveships:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("503e3bc1-cff9-42b8-9f27-a6064b0a78f2"))>']
         username: 'iHaveShips'

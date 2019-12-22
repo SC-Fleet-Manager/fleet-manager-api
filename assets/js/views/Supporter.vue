@@ -25,6 +25,8 @@
 
                     <p class="text-center my-4"><b-btn v-b-modal.modal-funding variant="primary" size="lg"><i class="fas fa-hands-helping"></i> Support Us</b-btn></p>
 
+                    <p class="mb-3"><b-form-checkbox v-model="organizationLadder" @change="changeLaddersMode" switch size="lg">Organizations Tops</b-form-checkbox></p>
+
                     <b-nav tabs fill class="mb-3">
                         <b-nav-item :active="activeTab == 'monthly'" @click="activeTab = 'monthly'">Monthly Top 20</b-nav-item>
                         <b-nav-item :active="activeTab == 'alltime'" @click="activeTab = 'alltime'">All time Top 20</b-nav-item>
@@ -142,6 +144,7 @@
                 spinner: false,
                 monthlyLadderErrorMessage: null,
                 alltimeLadderErrorMessage: null,
+                organizationLadder: false,
             };
         },
         created() {
@@ -156,11 +159,16 @@
             document.head.appendChild(paypalScript);
         },
         methods: {
+            changeLaddersMode(orgaLadder) {
+                this.organizationLadder = orgaLadder;
+                this.refreshAlltimeLadder();
+                this.refreshMonthlyLadder();
+            },
             refreshAlltimeLadder() {
                 this.alltimeSpinner = true;
                 axios({
                     method: 'get',
-                    url: '/api/funding/ladder-alltime',
+                    url: `/api/funding/ladder-alltime?orgaMode=${this.organizationLadder}`,
                 }).then(response => {
                     this.alltimeSpinner = false;
                     this.allTimeUsers = response.data.topFundings;
@@ -173,7 +181,7 @@
                 this.monthlySpinner = true;
                 axios({
                     method: 'get',
-                    url: '/api/funding/ladder-monthly',
+                    url: `/api/funding/ladder-monthly?orgaMode=${this.organizationLadder}`,
                 }).then(response => {
                     this.monthlySpinner = false;
                     this.monthlyUsers = response.data.topFundings;

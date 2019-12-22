@@ -19,7 +19,7 @@ class ProgressControllerTest extends WebTestCase
 
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame(6232, $json['progress']);
+        $this->assertSame(6312, $json['progress']);
         $this->assertSame(15000, $json['target']);
     }
 

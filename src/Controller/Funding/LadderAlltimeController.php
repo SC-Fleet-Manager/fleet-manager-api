@@ -22,7 +22,9 @@ class LadderAlltimeController extends AbstractController
      */
     public function __invoke(Request $request): Response
     {
-        $topFundings = $this->ladderHandler->getAlltimeLadder();
+        $orgaMode = $request->query->getBoolean('orgaMode', false);
+
+        $topFundings = $orgaMode ? $this->ladderHandler->getAlltimeOrgaLadder() : $this->ladderHandler->getAlltimeLadder();
 
         return $this->json([
             'topFundings' => $topFundings,

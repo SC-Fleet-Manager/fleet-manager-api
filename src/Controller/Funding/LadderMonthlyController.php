@@ -22,7 +22,9 @@ class LadderMonthlyController extends AbstractController
      */
     public function __invoke(Request $request): Response
     {
-        $topFundings = $this->ladderHandler->getMonthlyLadder();
+        $orgaMode = $request->query->getBoolean('orgaMode', false);
+
+        $topFundings = $orgaMode ? $this->ladderHandler->getMonthlyOrgaLadder() : $this->ladderHandler->getMonthlyLadder();
 
         return $this->json([
             'topFundings' => $topFundings,
