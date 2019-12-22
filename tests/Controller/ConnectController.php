@@ -18,9 +18,9 @@ class ConnectController extends AbstractController
     /** @see user fixtures */
     private const DEFAULT_USER_ID = 'd92e229e-e743-4583-905a-e02c57eacfe0';
 
-    private $tokenStorage;
-    private $entityManager;
-    private $accountConnector;
+    private TokenStorageInterface $tokenStorage;
+    private EntityManagerInterface $entityManager;
+    private OAuthUserProvider $accountConnector;
 
     public function __construct(TokenStorageInterface $tokenStorage, EntityManagerInterface $entityManager, OAuthUserProvider $accountConnector)
     {
@@ -31,6 +31,7 @@ class ConnectController extends AbstractController
 
     public function login(Request $request, string $service): Response
     {
+        /** @var User $user */
         $user = $this->entityManager->getRepository(User::class)->find($request->get('userId', self::DEFAULT_USER_ID));
 
         $token = new OAuthToken(md5(mt_rand()), $user->getRoles());

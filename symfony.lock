@@ -98,9 +98,6 @@
     "facebook/webdriver": {
         "version": "1.6.0"
     },
-    "fig/link-util": {
-        "version": "1.0.0"
-    },
     "friendsofphp/php-cs-fixer": {
         "version": "2.2",
         "recipe": {

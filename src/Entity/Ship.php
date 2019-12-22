@@ -8,78 +8,74 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ShipRepository")
- * @ORM\Table(indexes={@ORM\Index(name="name_idx", columns={"name"})})
+ * @ORM\Table(indexes={
+ *     @ORM\Index(name="name_idx", columns={"name"})
+ * })
  */
 class Ship
 {
     /**
-     * @var UuidInterface
-     *
      * @ORM\Id()
      * @ORM\Column(type="uuid", unique=true)
      * @Groups({"my-fleet", "public-fleet"})
      */
-    private $id;
+    private ?UuidInterface $id = null;
 
     /**
      * @var array
      *
      * @ORM\Column(type="json")
      */
-    private $rawData;
+    private array $rawData = [];
 
     /**
-     * @var string
-     *
      * @ORM\Column(type="string", length=255)
      * @Groups({"my-fleet", "public-fleet"})
      */
-    private $name;
+    private ?string $name = null;
 
     /**
-     * @var string
-     *
      * @ORM\Column(type="string", length=255)
      * @Groups({"my-fleet", "public-fleet"})
      */
-    private $manufacturer;
+    private ?string $manufacturer = null;
 
     /**
-     * @var \DateTimeImmutable
-     *
      * @ORM\Column(type="datetime_immutable", nullable=true)
      * @Groups({"my-fleet", "public-fleet"})
      */
-    private $pledgeDate;
+    private ?\DateTimeImmutable $pledgeDate = null;
 
     /**
-     * @var float
-     *
      * @ORM\Column(type="float", nullable=true)
      * @Groups({"my-fleet"})
      */
-    private $cost;
+    private ?float $cost = null;
 
     /**
-     * @var bool
+     * Lifetime insured.
      *
      * @ORM\Column(type="boolean", options={"default":false})
      * @Groups({"my-fleet", "public-fleet"})
      */
-    private $insured;
+    private bool $insured = false;
 
     /**
-     * @var Fleet
+     * In months.
      *
+     * @ORM\Column(type="integer", nullable=true)
+     * @Groups({"my-fleet", "public-fleet"})
+     */
+    private ?int $insuranceDuration = null;
+
+    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Fleet", inversedBy="ships")
      */
-    private $fleet;
+    private ?Fleet $fleet = null;
 
     public function __construct(?UuidInterface $id = null)
     {
         $this->id = $id;
-        $this->insured = false;
-        $this->rawData = [];
     }
 
     public function getId(): ?UuidInterface
@@ -164,6 +160,18 @@ class Ship
         return $this;
     }
 
+    public function getInsuranceDuration(): ?int
+    {
+        return $this->insuranceDuration;
+    }
+
+    public function setInsuranceDuration(?int $insuranceDuration): self
+    {
+        $this->insuranceDuration = $insuranceDuration;
+
+        return $this;
+    }
+
     public function getFleet(): ?Fleet
     {
         return $this->fleet;
@@ -182,6 +190,7 @@ class Ship
         return mb_strtolower($this->name) === mb_strtolower($other->name)
             && mb_strtolower($this->manufacturer) === mb_strtolower($other->manufacturer)
             && $this->insured === $other->insured
+            && $this->insuranceDuration === $other->insuranceDuration
             && $this->cost === $other->cost
             && $this->pledgeDate->format('Ymd') === $other->pledgeDate->format('Ymd');
     }

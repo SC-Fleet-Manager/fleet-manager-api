@@ -127,7 +127,7 @@ class SpaControllerTest extends PantherTestCase
             });
             $this->assertSame('Cutlass Black', $this->client->findElement(WebDriverBy::cssSelector('.card-title'))->getText());
             $this->assertContains('Manufacturer: Drake', $this->client->findElement(WebDriverBy::cssSelector('.card-body'))->getText());
-            $this->assertContains('LTI: Yes', $this->client->findElement(WebDriverBy::cssSelector('.card-body'))->getText());
+            $this->assertContains('Insurance: Lifetime', $this->client->findElement(WebDriverBy::cssSelector('.card-body'))->getText());
             $this->assertContains('Cost: $ 110', preg_replace('~\s+~', ' ', $this->client->findElement(WebDriverBy::cssSelector('.card-body'))->getText()));
             $this->assertContains('Pledge date: April 10, 2019', $this->client->findElement(WebDriverBy::cssSelector('.card-body'))->getText());
             $this->assertStringEndsWith('/api/create-citizen-fleet-file', $this->client->findElement(WebDriverBy::linkText('Export my fleet (.json)'))->getAttribute('href'));
@@ -148,6 +148,17 @@ class SpaControllerTest extends PantherTestCase
             });
             $this->client->refreshCrawler();
             $this->assertSame('FallKrom', $this->client->findElement(WebDriverBy::id('select-orga'))->getText());
+
+            // Months Insurance
+            $this->login('46380677-9915-4b7c-87ba-418840cb1772');
+            $this->client->request('GET', '/my-fleet');
+            $this->client->refreshCrawler();
+            $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+                return count($driver->findElements(WebDriverBy::className('js-card-ship'))) > 0;
+            });
+            $this->assertSame('Aurora MR', $this->client->findElement(WebDriverBy::cssSelector('.card-title'))->getText());
+            $this->assertContains('Manufacturer: RSI', $this->client->findElement(WebDriverBy::cssSelector('.card-body'))->getText());
+            $this->assertContains('Insurance: 6 months', $this->client->findElement(WebDriverBy::cssSelector('.card-body'))->getText());
         } catch (\Exception $e) {
             $this->client->takeScreenshot(sprintf('var/screenshots/error-%s.png', date('Y-m-d_H:i:s')));
             throw $e;

@@ -20,7 +20,13 @@
                                     :title="ship.name">
                                 <p class="card-text">
                                     <strong>Manufacturer</strong>: {{ ship.manufacturer }}<br/>
-                                    <strong>LTI</strong>: <b-badge variant="success" v-if="ship.insured">Yes</b-badge><b-badge variant="danger" v-else>No</b-badge><br/>
+                                    <template v-if="ship.insured">
+                                        <strong>Insurance</strong>: <b-badge variant="success">Lifetime</b-badge><br/>
+                                    </template>
+                                    <template v-else>
+                                        <template v-if="ship.insuranceDuration != null"><strong>Insurance</strong>: <b-badge variant="info">{{ ship.insuranceDuration }} months</b-badge><br/></template>
+                                        <template v-else><strong>Insurance</strong>: <b-badge variant="danger">No</b-badge><br/></template>
+                                    </template>
                                     <span v-if="ship.cost !== undefined && ship.cost > 0"><strong>Cost</strong>: <i class="fas fa-dollar-sign" aria-hidden="true"></i> <span class="sr-only">$</span>{{ ship.cost }}<br/></span>
                                     <span v-if="ship.cost !== undefined && ship.cost == 0"><b-badge variant="info">Referral/Event</b-badge><br/></span>
                                     <strong>Pledge date</strong>: {{ ship.pledgeDate|date('LL') }}<br/>
