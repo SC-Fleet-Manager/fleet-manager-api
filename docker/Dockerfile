@@ -1,4 +1,4 @@
-FROM php:7.4.0-fpm-alpine as req_php
+FROM php:7.4.1-fpm-alpine as req_php
 
 # prod|dev
 ARG ENV=prod
@@ -116,7 +116,7 @@ ENV COMPOSER_MEMORY_LIMIT -1
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
 # Xdebug install
-ARG XDEBUG_VERSION=2.8.1
+ARG XDEBUG_VERSION=2.9.0
 RUN set -eux; \
 	apk add --no-cache --virtual .build-deps $PHPIZE_DEPS; \
 	pecl install xdebug-$XDEBUG_VERSION; \
