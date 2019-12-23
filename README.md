@@ -51,7 +51,7 @@ make yi
 
 **Compile & Watch assets**
 ```
-make yarn c=watch
+make watch
 ```
 
 **Launch all tests**
