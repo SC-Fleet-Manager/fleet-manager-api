@@ -1,4 +1,4 @@
-FROM php:7.4.1-fpm-alpine as req_php
+FROM php:7.4.0-fpm-alpine as req_php
 
 # prod|dev
 ARG ENV=prod
