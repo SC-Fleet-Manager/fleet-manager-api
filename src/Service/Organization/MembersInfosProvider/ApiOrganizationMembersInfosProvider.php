@@ -16,10 +16,10 @@ class ApiOrganizationMembersInfosProvider implements OrganizationMembersInfosPro
 {
     private const BASE_URL = 'https://robertsspaceindustries.com';
 
-    private $client;
-    private $httpClient;
-    private $logger;
-    private $cache;
+    private GoutteClient $client;
+    private HttpClientInterface $httpClient;
+    private LoggerInterface $logger;
+    private CacheInterface $cache;
 
     public function __construct(LoggerInterface $logger, CacheInterface $cache, HttpClientInterface $rsiOrgaMembersClient)
     {

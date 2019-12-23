@@ -1,0 +1,54 @@
+{% extends 'back_office_layout.html.twig' %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1 class="mb-3">Ship Transform List</h1>
+
+        <p><a href="{{ path('bo_ship_transform_create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Create a new transform</a></p>
+
+        <table class="table table-hover table-sm">
+            <thead>
+            <tr>
+                <th scope="col">My Hangar name</th>
+                <th scope="col">Ship Matrix name</th>
+                <th scope="col">Edit</th>
+                <th scope="col">Delete</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for ship_name in ship_names %}
+            <tr>
+                <td >{{ ship_name.myHangarName }}</td>
+                <td>{{ ship_name.shipMatrixName }}</td>
+                <td>
+                    <a href="{{ path('bo_ship_transform_edit', {'id': ship_name.id}) }}" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i> Edit</a>
+                </td>
+                <td>
+                    <form action="{{ path('bo_ship_transform_delete', {'id': ship_name.id}) }}" method="post" class="js-form-remove">
+                        <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <form action="{{ path('bo_clear_rsi_cache') }}" method="post" class="js-form-remove mb-3">
+            <button type="submit" class="btn btn-success"><i class="fas fa-sync-alt"></i> Refresh RSI ships cache</button>
+        </form>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        document.querySelectorAll('.js-form-remove').forEach((el) => {
+            el.addEventListener('submit', (ev) => {
+                ev.preventDefault();
+                const result = confirm("Confirm?");
+                if (result) {
+                    ev.currentTarget.submit();
+                }
+            });
+        });
+    </script>
+{% endblock %}

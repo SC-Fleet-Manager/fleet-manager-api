@@ -28,6 +28,8 @@ framework:
         scoped_clients:
             rsi.orga_members.client:
                 base_uri: 'https://robertsspaceindustries.com'
+            rsi.ship_infos.client:
+                base_uri: 'https://robertsspaceindustries.com'
 
     php_errors:
         log: true

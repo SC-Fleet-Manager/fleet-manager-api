@@ -42,8 +42,7 @@ services:
             - [setRedis, ['@redis']]
 
     App\Service\Ship\InfosProvider\ShipInfosProviderInterface: '@App\Service\Ship\InfosProvider\ApiShipInfosProvider'
-    App\Service\Ship\InfosProvider\ApiShipInfosProvider:
-        arguments: { '$cache': '@rsi.ships.cache' }
+    App\Service\Ship\InfosProvider\ApiShipInfosProvider: ~
 
     App\Service\Organization\InfosProvider\OrganizationInfosProviderInterface: '@App\Service\Organization\InfosProvider\ApiOrganizationInfosProvider'
     App\Service\Organization\InfosProvider\ApiOrganizationInfosProvider:
