@@ -47,7 +47,7 @@ class MonthlyCostCoverageListController extends AbstractController
             $this->entityManager->flush();
         }
 
-        return $this->render('back_office/monthly_cost_coverage_list.html.twig', [
+        return $this->render('back_office/funding/monthly_cost_coverage_list.html.twig', [
             'default_cost_coverage' => $defaultCostCoverage,
             'monthly_cost_coverages' => $costCoverages,
         ]);

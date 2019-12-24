@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6b75951bd557941bc1d6b9843294910b",
+    "content-hash": "57bfa06d5d68a39383bf03461189b9ab",
     "packages": [
         {
             "name": "algatux/influxdb-bundle",
@@ -9936,7 +9936,8 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-json": "*",
-        "ext-mbstring": "*"
+        "ext-mbstring": "*",
+        "ext-zend-opcache": "*"
     },
     "platform-dev": []
 }

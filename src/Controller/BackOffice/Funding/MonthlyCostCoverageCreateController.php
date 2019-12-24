@@ -53,7 +53,7 @@ class MonthlyCostCoverageCreateController extends AbstractController
             }
         }
 
-        return $this->render('back_office/monthly_cost_coverage_create.html.twig', [
+        return $this->render('back_office/funding/monthly_cost_coverage_create.html.twig', [
             'form' => $form->createView(),
         ]);
     }

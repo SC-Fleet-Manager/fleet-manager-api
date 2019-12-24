@@ -58,7 +58,7 @@ class MonthlyCostCoverageEditController extends AbstractController
             return $this->redirectToRoute('bo_monthly_cost_coverage_list');
         }
 
-        return $this->render('back_office/monthly_cost_coverage_edit.html.twig', [
+        return $this->render('back_office/funding/monthly_cost_coverage_edit.html.twig', [
             'form' => $form->createView(),
             'monthly_cost_coverage' => $costCoverage,
         ]);
