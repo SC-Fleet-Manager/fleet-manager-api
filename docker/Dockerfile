@@ -1,4 +1,4 @@
-FROM php:7.4.0-fpm-alpine as req_php
+FROM php:7.4.1-fpm-alpine as req_php
 
 # prod|dev
 ARG ENV=prod
@@ -58,6 +58,8 @@ ARG ENV=prod
 ARG DUMP_ENV=0
 
 COPY docker/php/php.prod.ini /usr/local/etc/php/php.ini
+COPY docker/php/php-fpm.prod.conf /usr/local/etc/php-fpm.conf
+COPY docker/php/www.prod.conf /usr/local/etc/php-fpm.d/www.conf
 COPY docker/php/entrypoint.sh /usr/local/bin/docker-app-entrypoint
 RUN chmod +x /usr/local/bin/docker-app-entrypoint
 
@@ -130,5 +132,7 @@ ENV PANTHER_CHROME_DRIVER_BINARY /usr/lib/chromium/chromedriver
 ENV PANTHER_NO_SANDBOX 1
 
 COPY docker/php/php.dev.ini /usr/local/etc/php/php.ini
+COPY docker/php/php-fpm.dev.conf /usr/local/etc/php-fpm.conf
+COPY docker/php/www.dev.conf /usr/local/etc/php-fpm.d/www.conf
 
 ENV BUILD_ENV dev
