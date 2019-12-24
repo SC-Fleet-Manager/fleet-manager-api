@@ -1,0 +1,5 @@
+App\Entity\ShipChassis:
+    ship_chassis_1:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("a4f47e08-ac5d-48b4-a080-cca7ab260391"))>']
+        rsiId: 1234
+        name: 'ShipChassis1'
