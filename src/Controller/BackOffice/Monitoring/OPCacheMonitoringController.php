@@ -115,6 +115,7 @@ class OPCacheMonitoringController extends AbstractController
                     case 'last_used':
                         return $f2['last_used_timestamp'] - $f1['last_used_timestamp'];
                 }
+
                 return 0;
             });
             $files = array_slice($files, 0, 150);
@@ -124,13 +125,13 @@ class OPCacheMonitoringController extends AbstractController
                 $since = time() - $file['last_used_timestamp'];
                 $memory = number_format((int) $file['memory_consumption'] / 1024, 1);
                 $html .= <<<EOT
-                    <tr>
-                        <td>{$file['full_path']}</td>
-                        <td>{$file['hits']}</td>
-                        <td>{$memory} K</td>
-                        <td>{$since}</td>
-                    </tr>
-                EOT;
+                        <tr>
+                            <td>{$file['full_path']}</td>
+                            <td>{$file['hits']}</td>
+                            <td>{$memory} K</td>
+                            <td>{$since}</td>
+                        </tr>
+                    EOT;
             }
             $html .= '</tbody></table>';
         }
