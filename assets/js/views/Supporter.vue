@@ -153,10 +153,11 @@
             this.refreshMonthlyLadder();
         },
         mounted() {
-            // TODO : retrieve currency + clientId from API
-            let paypalScript = document.createElement('script');
-            paypalScript.setAttribute('src', 'https://www.paypal.com/sdk/js?currency=USD&client-id=ATtYOovEBhFqTlYetulg1P7hJVlYwKoN3zMxQDrQYdI5_HKlfyy6Jmsn9ieY6FrdlXmsVqHzAcoVBJEq');
-            document.head.appendChild(paypalScript);
+            axios.get('/api/funding/configuration').then(response => {
+                let paypalScript = document.createElement('script');
+                paypalScript.setAttribute('src', `https://www.paypal.com/sdk/js?currency=${response.data.currency}&client-id=${response.data.paypalClientId}`);
+                document.head.appendChild(paypalScript);
+            });
         },
         methods: {
             changeLaddersMode(orgaLadder) {

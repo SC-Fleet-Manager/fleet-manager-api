@@ -74,7 +74,7 @@
                                     <b-alert show variant="warning">Sorry, no ships have been found.</b-alert>
                                 </b-col>
                                 <b-col col xl="12" lg="12" md="12" sm="12" xs="12" v-if="loadingOrgaFleet" class="text-center">
-                                    <i class="fas fa-circle-notch fa-spin fa-5x" style="color:#ccc"></i>
+                                    <b-spinner variant="primary" style="width: 3rem; height: 3rem;"></b-spinner>
                                 </b-col>
                             </template>
                         </template>

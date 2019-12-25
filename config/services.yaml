@@ -3,6 +3,7 @@ parameters:
     env(REDIS_PORT): '6379'
     env(REDIS_PASSWORD): ''
     locale: 'en'
+    currency: 'USD'
     hwi_oauth.authentication.entry_point.oauth.class: 'App\Security\OAuthEntryPoint'
     env(PAYPAL_CHECKOUT_CLIENT_ID): ''
     env(PAYPAL_CHECKOUT_CLIENT_SECRET): ''
@@ -85,6 +86,12 @@ services:
             $clientId: '%env(PAYPAL_CHECKOUT_CLIENT_ID)%'
             $clientSecret: '%env(PAYPAL_CHECKOUT_CLIENT_SECRET)%'
             $mode: '%env(PAYPAL_CHECKOUT_MODE)%'
+
+    App\Controller\Funding\ConfigurationController:
+        arguments:
+            $currency: '%currency%'
+            $paypalClientId: '%env(PAYPAL_CHECKOUT_CLIENT_ID)%'
+        tags: ['controller.service_arguments']
 
     PayPalCheckoutSdk\Core\PayPalHttpClient:
         factory: ['@App\Service\Funding\PayPalHttpClientFactory', 'createPayPalHttpClient']
