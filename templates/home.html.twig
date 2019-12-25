@@ -10,9 +10,12 @@
 {% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="{{ preload(asset('build/home.css')) }}">
+    <link rel="preload" href="{{ preload(asset('build/fonts/josefin.woff2'), {'as': 'font'}) }}" as="font" type="font/woff2">
+    <link rel="preload" href="{{ preload(asset('build/fonts/fa-brands-400.woff2'), {'as': 'font'}) }}" as="font" type="font/woff2">
+    <link rel="preload" href="{{ preload(asset('build/fonts/fa-solid-900.woff2'), {'as': 'font'}) }}" as="font" type="font/woff2">
+    <link rel="stylesheet" href="{{ preload(asset('build/home.css'), {'as': 'style'}) }}">
 {% endblock %}
 
 {% block javascripts %}
-    <script src="{{ preload(asset('build/home.js')) }}"></script>
+    <script src="{{ preload(asset('build/home.js'), {'as': 'script'}) }}"></script>
 {% endblock %}
