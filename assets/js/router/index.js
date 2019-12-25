@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import axios from 'axios';
-import toastr from 'toastr';
 import store from '../store/store';
 
 // Containers
@@ -126,7 +125,7 @@ const router = new Router({
                         try {
                             const citizen = await getProfile();
                             if (citizen === null || citizen.organizations.length === 0) {
-                                toastr.error('Sorry, you have no visible organizations to access this page.');
+                                this.$toastr.e('Sorry, you have no visible organizations to access this page.');
                                 next({ path: '/profile' });
                             }
                             const defaultOrga = citizen.mainOrga !== null ? citizen.mainOrga.organization.organizationSid : (

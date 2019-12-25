@@ -110,7 +110,6 @@
 
 <script>
     import axios from 'axios';
-    import toastr from 'toastr';
     import vSelect from 'vue-select';
     import ShipFamilyDetail from './ShipFamilyDetail';
     import ShipFamily from './ShipFamily';
@@ -354,7 +353,7 @@
                             return;
                         }
                         if (err.response.data.errorMessage) {
-                            toastr.error(err.response.data.errorMessage);
+                            this.$toastr.e(err.response.data.errorMessage);
                         }
                         return;
                     }

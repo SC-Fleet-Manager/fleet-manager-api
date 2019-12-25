@@ -1,4 +1,6 @@
 const Encore = require('@symfony/webpack-encore');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
 
 Encore
     .setOutputPath('public/build/')
@@ -25,7 +27,12 @@ Encore
         to: 'vendors/[path][name].[ext]',
     })
 
-    // .autoProvidejQuery()
+    .addPlugin(new BundleAnalyzerPlugin({
+        analyzerHost: '0.0.0.0'
+    }))
+    .addPlugin(new MomentLocalesPlugin({
+        localesToKeep: ['en'],
+    }))
 ;
 
 module.exports = Encore.getWebpackConfig();

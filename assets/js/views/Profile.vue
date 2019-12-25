@@ -147,10 +147,13 @@
 
 <script>
     import axios from 'axios';
-    import toastr from 'toastr';
     import UpdateScHandle from "./UpdateSCHandle";
     import Security from "./Security";
     import { mapMutations } from 'vuex';
+    import VueClipboard from 'vue-clipboard2';
+
+    import Vue from "vue";
+    Vue.use(VueClipboard);
 
     export default {
         name: 'profile',
@@ -213,10 +216,10 @@
                     orgaVisibilityChoices: this.orgaVisibilityChoices,
                     supporterVisible: this.supporterVisible,
                 }).then(response => {
-                    toastr.success('Changes saved');
+                    this.$toastr.s('Changes saved');
                 }).catch(err => {
                     this.checkAuth(err.response);
-                    toastr.error('An error has occurred. Please try again later.');
+                    this.$toastr.e('An error has occurred. Please try again later.');
                 }).then(_ => {
                     this.savingPreferences = false;
                 });
@@ -265,12 +268,12 @@
             refreshMyRsiProfile(ev) {
                 this.refreshingProfile = true;
                 axios.post('/api/profile/refresh-rsi-profile').then(response => {
-                    toastr.success('Your RSI public profile has been successfully refreshed.');
+                    this.$toastr.s('Your RSI public profile has been successfully refreshed.');
                     this.refreshProfile();
                 }).catch(err => {
                     this.checkAuth(err.response);
                     if (err.response.data.errorMessage) {
-                        toastr.error(err.response.data.errorMessage);
+                        this.$toastr.e(err.response.data.errorMessage);
                     }
                 }).then(_ => {
                     this.refreshingProfile = false;
@@ -321,7 +324,7 @@
                 this.submitDisabled = true;
                 axios.post('/api/profile/link-account', form).then(response => {
                     this.refreshProfile();
-                    toastr.success('Your RSI account has been successfully linked! You can remove the token from your bio.');
+                    this.$toastr.s('Your RSI account has been successfully linked! You can remove the token from your bio.');
                     this.submitDisabled = false;
                 }).catch(async err => {
                     this.submitDisabled = false;

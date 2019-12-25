@@ -122,7 +122,6 @@
 
 <script>
     import axios from 'axios';
-    import toastr from 'toastr';
     import AnimatedNumber from 'animated-number-vue';
 
     export default {
@@ -201,7 +200,7 @@
                         this.amount = response.data.progress;
                     }, 500);
                 }).catch(err => {
-                    toastr.error('Sorry, cannot retrieve the current progress cost coverage.');
+                    this.$toastr.e('Sorry, cannot retrieve the current progress cost coverage.');
                 });
             },
             changeAmount(newAmount) {

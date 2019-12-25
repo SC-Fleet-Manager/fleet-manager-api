@@ -33,7 +33,6 @@
 
 <script>
     import axios from 'axios';
-    import toastr from 'toastr';
     import OrgaRegisteredMembers from "./OrgaRegisteredMembers";
     import OrganizationChanges from "./OrganizationChanges";
 
@@ -83,12 +82,12 @@
                 }).then(response => {
                     this.$emit('changed');
                     this.refreshLastChanges();
-                    toastr.success('Changes saved');
+                    this.$toastr.s('Changes saved');
                 }).catch(err => {
                     if (err.response.data.errorMessage) {
                         this.fleetPolicyErrorMessages = err.response.data.errorMessage;
                     } else {
-                        toastr.error('An error has occurred. Please try again later.');
+                        this.$toastr.e('An error has occurred. Please try again later.');
                     }
                     this.fleetPolicyErrors = true;
                 }).then(_ => {
@@ -106,13 +105,13 @@
             refreshMemberList() {
                 this.refreshingMemberList = true;
                 axios.post(`/api/organization/${this.organization.organizationSid}/refresh-orga`).then(response => {
-                    toastr.success('The members list has been refresh.');
+                    this.$toastr.s('The members list has been refresh.');
                     this.$refs.orgaRegisteredMembers.refreshMemberList(response.data);
                 }).catch(err => {
                     if (err.response.data.errorMessage) {
-                        toastr.error(err.response.data.errorMessage);
+                        this.$toastr.e(err.response.data.errorMessage);
                     } else {
-                        toastr.error('An error has occurred. Please try again later.');
+                        this.$toastr.e('An error has occurred. Please try again later.');
                     }
                 }).then(_ => {
                     this.refreshingMemberList = false;

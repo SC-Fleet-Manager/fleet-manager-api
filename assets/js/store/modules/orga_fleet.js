@@ -119,10 +119,7 @@ const actions = {
                 shipVariants: response.data,
             });
         } catch (err) {
-            // this.checkAuth(err.response);
-            // if (err.response.data.errorMessage) {
-            //     toastr.error(err.response.data.errorMessage);
-            // }
+
         }
     }
 };

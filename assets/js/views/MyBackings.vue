@@ -26,7 +26,6 @@
 
 <script>
     import axios from 'axios';
-    import toastr from 'toastr';
     import moment from 'moment-timezone';
     import {mapGetters} from "vuex";
 
@@ -122,7 +121,7 @@
                 axios.get('/api/funding/my-backings').then(response => {
                     this.backings = this.computeBalances(response.data);
                 }).catch(err => {
-                    toastr.error('Unable to retrieve your backings list. Please retry in a moment.');
+                    this.$toastr.e('Unable to retrieve your backings list. Please retry in a moment.');
                 });
             },
             computeBalances(backings) {

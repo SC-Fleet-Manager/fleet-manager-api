@@ -45,7 +45,6 @@
 
 <script>
     import axios from 'axios';
-    import toastr from 'toastr';
     import moment from 'moment-timezone';
     import UpdateFleetFile from './UpdateFleetFile';
 
@@ -79,7 +78,7 @@
                     // not connected
                     return;
                 }
-                toastr.error('Cannot retrieve your profile.');
+                this.$toastr.e('Cannot retrieve your profile.');
             }).then(_ => {
                 this.refreshMyFleet();
             });
@@ -131,7 +130,7 @@
                     } else if (err.response.status === 404) {
                         this.errorMessage = 'This citizen does not exist.';
                     } else {
-                        toastr.error('Cannot retrieve your fleet.');
+                        this.$toastr.e('Cannot retrieve your fleet.');
                     }
                 });
             },

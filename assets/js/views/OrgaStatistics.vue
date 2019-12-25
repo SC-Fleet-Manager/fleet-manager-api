@@ -85,7 +85,6 @@
 
 <script>
     import axios from 'axios';
-    import toastr from 'toastr';
     import ShipPerCitizenBar from '../charts/ShipPerCitizenBar';
     import ShipSizeDoughnut from '../charts/ShipSizeDoughnut';
 
@@ -134,9 +133,9 @@
                         return;
                     }
                     if (err.response.data.errorMessage) {
-                        toastr.error(err.response.data.errorMessage);
+                        this.$toastr.e(err.response.data.errorMessage);
                     } else {
-                        toastr.error('An error has occurred when retrieving citizen stats. Please try again later.');
+                        this.$toastr.e('An error has occurred when retrieving citizen stats. Please try again later.');
                     }
                 });
             },
@@ -162,9 +161,9 @@
                         return;
                     }
                     if (err.response.data.errorMessage) {
-                        toastr.error(err.response.data.errorMessage);
+                        this.$toastr.e(err.response.data.errorMessage);
                     } else {
-                        toastr.error('An error has occurred when retrieving ships stats. Please try again later.');
+                        this.$toastr.e('An error has occurred when retrieving ships stats. Please try again later.');
                     }
                 });
             },
