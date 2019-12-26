@@ -40,7 +40,7 @@ RUN composer global require "hirak/prestissimo:^0.3" --prefer-dist --no-progress
     composer dump-env $ENV
 
 ################################
-FROM node:10-alpine as node_deps
+FROM node:12-alpine as node_deps
 
 WORKDIR /app
 COPY package.json yarn.lock ./
