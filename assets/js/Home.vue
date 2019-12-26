@@ -3,7 +3,7 @@
         <nav class="navbar navbar-expand-lg" style="background-color: rgba(15, 15, 15, 1)">
             <div class="container">
                 <a class="navbar-brand" href="/">
-                    <img src="../img/logo.png" height="45" alt="Fleet Manager Logo">
+                    <img src="../img/logo_fm_white.svg" height="40" alt="Fleet Manager">
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                       aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -224,7 +224,7 @@
             <div class="container text-white">
                 <div class="row align-items-center">
                     <div class="col-6">
-                        <a class="navbar-brand" href="/"><img src="../img/logo.png" height="45" alt="Fleet Manager Logo"></a>
+                        <a class="navbar-brand" href="/"><img src="../img/logo_fm_white.svg" height="40" alt="Fleet Manager"></a>
                         <a href="/privacy-policy">Privacy policy</a>
                     </div>
                     <div class="col-6 d-flex align-items-center">

@@ -11,7 +11,8 @@ EXEC_PHP_ROOT=$(DOCKER_COMPOSE) exec php
 EXEC_MYSQL=$(DOCKER_COMPOSE) exec -T mysql
 EXEC_COMPOSER=$(EXEC_PHP) composer
 EXEC_CONSOLE=$(EXEC_PHP) $(CONSOLE)
-EXEC_YARN=docker container run --rm -it -u ${UID}:${GID} -v ${PROJECT_DIR}:/app -w /app node:12-alpine yarn
+EXEC_NODE=docker container run --rm -it -u ${UID}:${GID} -v ${PROJECT_DIR}:/app -w /app node:12-alpine
+EXEC_YARN=$(EXEC_NODE) yarn
 
 .PHONY: help
 help:
@@ -20,7 +21,9 @@ help:
 ##
 ##Utilities
 ##---------------------------------------------------------------------------
-.PHONY: yarn yi yu watch composer ci cu console cc
+.PHONY: node yarn yi yu watch composer ci cu console cc
+node:									## execute a node command
+	$(EXEC_NODE) $(c)
 yarn: 									## launch an ephemeral node container for executing yarn with arbitrary args c="<args>"
 	$(EXEC_YARN) $(c)
 yi:										## yarn install
