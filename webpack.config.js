@@ -28,7 +28,8 @@ Encore
     })
 
     .addPlugin(new BundleAnalyzerPlugin({
-        analyzerHost: '0.0.0.0'
+        analyzerMode: 'disabled',
+        generateStatsFile: true,
     }))
     .addPlugin(new MomentLocalesPlugin({
         localesToKeep: ['en'],
