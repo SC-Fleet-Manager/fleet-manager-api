@@ -4,7 +4,7 @@
             <b-col col xs="12" sm="12" md="12" lg="8" xl="4">
                 <b-card>
                     <h2 class="text-center">Monthly Cost Coverage</h2>
-                    <b-progress class="mb-2" :value="amount / 100" :max="monthlyTarget / 100" variant="success" height="2rem"></b-progress>
+                    <b-progress class="mb-2" :value="amount / 100" :max="monthlyTarget == 0 ? 100 : monthlyTarget / 100" variant="success" height="2rem"></b-progress>
                     <p class="text-right font-xl" id="progress-amount">
                         <i class="fas fa-dollar-sign" aria-hidden="true"></i> <span class="sr-only">$</span>
                         <animated-number :value="amount / 100" :formatValue="formatAmount" :duration="500"/>

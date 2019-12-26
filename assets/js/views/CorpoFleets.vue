@@ -5,7 +5,7 @@
                 <nav class="mb-3 navbar navbar-light bg-light" v-if="!notEnoughRightsMessage">
                     <ul class="nav">
                         <b-dropdown
-                            v-if="citizen != null && citizenOrgaInfo != null"
+                            v-if="citizen != null && citizenOrgaInfo != null && organization != null"
                             id="select-orga"
                             class="js-select-orga nav-item mr-3"
                             :text="organization.name ? organization.name : 'No selected orga'"
