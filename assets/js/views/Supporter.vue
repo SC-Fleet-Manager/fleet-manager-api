@@ -37,7 +37,7 @@
                             <b-spinner variant="primary"></b-spinner>
                         </div>
                         <b-alert v-if="monthlyUsers.length === 0" variant="warning" :show="monthlyUsers.length === 0" class="text-center">
-                            Nobody has backed this month yet. 😢 What if you would <a href="/supporters">support us</a>? 😎
+                            Nobody has backed this month yet. 😢 What if you would <a href="#" v-b-modal.modal-funding>support us</a>? 😎
                         </b-alert>
                         <b-row v-for="user in monthlyUsers" :key="user.name" class="font-xl" :class="{'font-weight-bold': !!user.me}">
                             <b-col col class="text-right pr-0">{{ user.rank }}.</b-col>
@@ -51,7 +51,7 @@
                             <b-spinner variant="primary"></b-spinner>
                         </div>
                         <b-alert v-if="allTimeUsers.length === 0" variant="warning" :show="allTimeUsers.length === 0" class="text-center">
-                            Nobody has backed yet. 😢 What if you would <a href="/supporters">support us</a>? 😎
+                            Nobody has backed yet. 😢 What if you would <a href="#" v-b-modal.modal-funding>support us</a>? 😎
                         </b-alert>
                         <b-row v-for="user in allTimeUsers" :key="user.name" class="font-xl" :class="{'font-weight-bold': !!user.me}">
                             <b-col col class="text-right pr-0">{{ user.rank }}.</b-col>
