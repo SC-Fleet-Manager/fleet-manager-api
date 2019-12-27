@@ -68,6 +68,9 @@ class PaypalWebhookController extends AbstractController implements LoggerAwareI
             case 'PAYMENT.CAPTURE.DENIED':
                 $this->handlePaymentCaptureDenied($payload);
                 break;
+            case 'PAYMENT.CAPTURE.COMPLETED':
+                $this->handlePaymentCaptureCompleted($payload);
+                break;
             default:
                 $this->logger->warning('[PayPal Webhook] the event {event} is not implemented.', ['event' => $payload['event_type'], 'payload' => $payload]);
 
@@ -75,6 +78,28 @@ class PaypalWebhookController extends AbstractController implements LoggerAwareI
         }
 
         return new JsonResponse(null, 204);
+    }
+
+    private function handlePaymentCaptureCompleted(array $payload): void
+    {
+        $this->entityManager->clear();
+
+        /** @var Funding $funding */
+        $funding = $this->fundingRepository->find($payload['resource']['custom_id']);
+        if ($funding === null) {
+            $this->logger->error('Funding {id} not found.', ['id' => $payload['resource']['custom_id'], 'payload' => $payload]);
+
+            throw new NotFoundHttpException(sprintf('Funding %s not found.', $payload['resource']['custom_id']));
+        }
+
+        // search if we have already handled
+        if (!in_array($funding->getPaypalStatus(), ['CREATED', 'PENDING'], true)) {
+            return;
+        }
+
+        $this->paypalCheckout->complete($funding);
+        $this->entityManager->flush();
+        $this->eventDispatcher->dispatch(new FundingUpdatedEvent($funding));
     }
 
     private function handlePaymentCaptureRefunded(array $payload): void

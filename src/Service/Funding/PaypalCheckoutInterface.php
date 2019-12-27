@@ -14,6 +14,8 @@ interface PaypalCheckoutInterface
 
     public function capture(Funding $funding): void;
 
+    public function complete(Funding $funding): void;
+
     public function refund(Funding $funding): void;
 
     public function deny(Funding $funding): void;

@@ -69,7 +69,7 @@ class FundingRepository extends ServiceEntityRepository
             $stmt->setParameter('beginDate', $beginDate);
             $stmt->setParameter('endDate', $endDate);
         }
-        $stmt->enableResultCache(300);
+        $stmt->enableResultCache(30);
 
         return $stmt->getSingleScalarResult() ?? 0;
     }
@@ -112,7 +112,7 @@ class FundingRepository extends ServiceEntityRepository
             $stmt->setParameter('beginDate', $beginDate);
             $stmt->setParameter('endDate', $endDate);
         }
-        $stmt->enableResultCache(300);
+        $stmt->enableResultCache(30);
 
         return $stmt->getSingleResult()['maxRank'] ?? null;
     }
@@ -180,7 +180,7 @@ class FundingRepository extends ServiceEntityRepository
                 'endDate' => $endDate,
             ]);
         }
-        $stmt->enableResultCache(300);
+        $stmt->enableResultCache(30);
 
         return $stmt->getResult();
     }
@@ -225,7 +225,7 @@ class FundingRepository extends ServiceEntityRepository
                 'endDate' => $endDate,
             ]);
         }
-        $stmt->enableResultCache(300);
+        $stmt->enableResultCache(30);
 
         return $stmt->getResult();
     }

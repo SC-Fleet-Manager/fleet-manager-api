@@ -138,6 +138,41 @@ class PaypalCheckout implements PaypalCheckoutInterface
         // TODO : send email with $response->payer->email_address
     }
 
+    public function complete(Funding $funding): void
+    {
+        $orderRequest = new OrdersGetRequest($funding->getPaypalOrderId());
+        $response = $this->client->execute($orderRequest);
+
+        if ($response->statusCode >= 400) {
+            // TODO : use MOM!
+            $this->fundingLogger->error('[Get Order] Unable to get the order from PayPal.', ['response' => $response]);
+
+            return;
+        }
+
+        $this->fundingLogger->info('[Capture Order] An order has been completed.', ['response' => $response, 'fundingId' => $funding->getId()]);
+
+        foreach ($response->result->purchase_units as $purchaseUnit) {
+            if ($purchaseUnit->reference_id !== self::BACKING_REFID) {
+                continue;
+            }
+            $funding->setPaypalPurchase($this->transformPurchase($purchaseUnit));
+            foreach ($purchaseUnit->payments->captures as $paymentCapture) {
+                if ($paymentCapture->custom_id !== $funding->getId()->toString()) {
+                    continue;
+                }
+                $funding->setPaypalStatus($paymentCapture->status);
+                $netAmount = $paymentCapture->seller_receivable_breakdown->net_amount->value ?? null;
+                if ($netAmount !== null) {
+                    $netAmount = (int) bcmul($netAmount, 100);
+                }
+                $funding->setNetAmount($netAmount ?? $funding->getAmount());
+            }
+        }
+
+        // TODO : send email with $response->payer->email_address
+    }
+
     public function refund(Funding $funding): void
     {
         $orderRequest = new OrdersGetRequest($funding->getPaypalOrderId());
