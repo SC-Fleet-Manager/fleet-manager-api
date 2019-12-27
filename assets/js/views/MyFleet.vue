@@ -139,14 +139,13 @@
                 this.$refs.modalUploadFleet.hide();
             },
             getShipInfo(shipName) {
-                for (let i in this.shipInfos) {
-                    let shipInfo = this.shipInfos[i];
+                for (let shipInfo of this.shipInfos) {
                     if (shipInfo.name.toLowerCase().trim() === shipName.toLowerCase().trim()) {
                         return shipInfo;
                     }
                 }
 
-                return {mediaThumbUrl: ''};
+                return {mediaThumbUrl: '/build/images/static/placeholder_ship.svg'};
             },
             checkAuth(response) {
                 const status = response.status;

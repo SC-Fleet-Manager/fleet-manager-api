@@ -112,12 +112,12 @@ class ShipInfo
      *
      * @Groups({"my-fleet", "public-fleet"})
      */
-    public $mediaUrl;
+    public $mediaUrl = '/build/images/static/placeholder_ship.svg';
 
     /**
      * @var string
      *
      * @Groups({"my-fleet", "public-fleet"})
      */
-    public $mediaThumbUrl;
+    public $mediaThumbUrl = '/build/images/static/placeholder_ship.svg';
 }
