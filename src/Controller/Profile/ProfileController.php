@@ -4,6 +4,7 @@ namespace App\Controller\Profile;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,11 +15,13 @@ class ProfileController extends AbstractController
 {
     private Security $security;
     private UserRepository $userRepository;
+    private EntityManagerInterface $entityManager;
 
-    public function __construct(Security $security, UserRepository $userRepository)
+    public function __construct(Security $security, UserRepository $userRepository, EntityManagerInterface $entityManager)
     {
         $this->security = $security;
         $this->userRepository = $userRepository;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -32,6 +35,7 @@ class ProfileController extends AbstractController
 
         /** @var User $user */
         $user = $this->userRepository->find($this->security->getUser()->getId());
+        $this->entityManager->refresh($user);
 
         return $this->json($user, 200, [], ['groups' => 'profile']);
     }
