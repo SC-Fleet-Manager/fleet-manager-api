@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -22,63 +23,58 @@ class Organization
     ];
 
     /**
-     * @var UuidInterface
-     *
      * @ORM\Id()
      * @ORM\Column(type="uuid", unique=true)
      */
-    private $id;
+    private ?UuidInterface $id = null;
 
     /**
-     * @var string
-     *
      * @ORM\Column(type="string", length=31, unique=true)
      * @Groups({"profile", "orga_fleet", "orga_fleet_admin"})
      */
-    private $organizationSid;
+    private string $organizationSid = '';
 
     /**
-     * @var string
-     *
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Groups({"profile", "orga_fleet", "orga_fleet_admin"})
      */
-    private $name;
+    private ?string $name = null;
 
     /**
-     * @var string
-     *
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Groups({"profile", "orga_fleet"})
      */
-    private $avatarUrl;
+    private ?string $avatarUrl = null;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(type="string", length=15, options={"default":"private"})
+     * @ORM\Column(type="string", length=15, options={"default":Organization::PUBLIC_CHOICE_PRIVATE})
+     * @Groups({"Default", "profile", "orga_fleet"})
      */
-    private $publicChoice;
+    private string $publicChoice = self::PUBLIC_CHOICE_PRIVATE;
+
+    /**
+     * @ORM\Column(type="boolean", options={"default":true})
+     * @Groups({"Default", "profile", "orga_fleet"})
+     */
+    private bool $supporterVisible = true;
 
     /**
      * @var \DateTimeInterface
      *
      * @ORM\Column(type="datetimetz_immutable", nullable=true)
      */
-    private $lastRefresh;
+    private ?\DateTimeInterface $lastRefresh = null;
 
     /**
-     * @var OrganizationChange[]
+     * @var Collection|OrganizationChange[]
      *
      * @ORM\OneToMany(targetEntity="OrganizationChange", mappedBy="organization")
      */
-    private $changes;
+    private Collection $changes;
 
     public function __construct(?UuidInterface $id = null)
     {
         $this->id = $id;
-        $this->organizationSid = '';
-        $this->publicChoice = self::PUBLIC_CHOICE_PRIVATE;
         $this->changes = new ArrayCollection();
     }
 
@@ -133,6 +129,18 @@ class Organization
         if (in_array($publicChoice, self::PUBLIC_CHOICES, true)) {
             $this->publicChoice = $publicChoice;
         }
+
+        return $this;
+    }
+
+    public function isSupporterVisible(): bool
+    {
+        return $this->supporterVisible;
+    }
+
+    public function setSupporterVisible(bool $supporterVisible): self
+    {
+        $this->supporterVisible = $supporterVisible;
 
         return $this;
     }

@@ -3,20 +3,17 @@
 namespace App\Controller\Spa;
 
 use App\Repository\OrganizationRepository;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\SerializerInterface;
 
-class OrganizationController
+class OrganizationController extends AbstractController
 {
-    private $organizationRepository;
-    private $serializer;
+    private OrganizationRepository $organizationRepository;
 
-    public function __construct(OrganizationRepository $organizationRepository, SerializerInterface $serializer)
+    public function __construct(OrganizationRepository $organizationRepository)
     {
         $this->organizationRepository = $organizationRepository;
-        $this->serializer = $serializer;
     }
 
     /**
@@ -26,12 +23,12 @@ class OrganizationController
     {
         $orga = $this->organizationRepository->findOneBy(['organizationSid' => $sid]);
         if ($orga === null) {
-            return new JsonResponse($this->serializer->serialize([
+            return $this->json([
                 'error' => 'orga_not_exist',
                 'errorMessage' => sprintf('The organization %s does not exist.', $sid),
-            ], 'json'), 404, [], true);
+            ], 404);
         }
 
-        return new JsonResponse($this->serializer->serialize($orga, 'json'), 200, [], true);
+        return $this->json($orga);
     }
 }

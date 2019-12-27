@@ -3,6 +3,7 @@
 namespace App\Security;
 
 use Algatux\InfluxDbBundle\Events\DeferredUdpEvent;
+use App\Entity\Funding;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Security\Exception\AlreadyLinkedDiscordException;
@@ -64,6 +65,10 @@ class OAuthUserProvider extends BaseProvider implements AccountConnectorInterfac
                 }
                 if ($userAlreadyLinked->getCreatedAt() < $user->getCreatedAt()) {
                     $user->setCreatedAt(clone $userAlreadyLinked->getCreatedAt());
+                }
+                $fundings = $this->entityManager->getRepository(Funding::class)->findBy(['user' => $userAlreadyLinked]);
+                foreach ($fundings as $funding) {
+                    $this->entityManager->remove($funding);
                 }
                 $this->entityManager->remove($userAlreadyLinked);
                 $this->entityManager->flush();

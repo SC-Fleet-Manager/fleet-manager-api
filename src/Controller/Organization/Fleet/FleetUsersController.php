@@ -16,12 +16,12 @@ use Symfony\Component\Security\Core\Security;
 
 class FleetUsersController extends AbstractController
 {
-    private $security;
-    private $fleetOrganizationGuard;
-    private $shipInfosProvider;
-    private $logger;
-    private $citizenRepository;
-    private $shipFamilyFilterFactory;
+    private Security $security;
+    private FleetOrganizationGuard $fleetOrganizationGuard;
+    private ShipInfosProviderInterface $shipInfosProvider;
+    private LoggerInterface $logger;
+    private CitizenRepository $citizenRepository;
+    private ShipFamilyFilterFactory $shipFamilyFilterFactory;
 
     public function __construct(
         Security $security,

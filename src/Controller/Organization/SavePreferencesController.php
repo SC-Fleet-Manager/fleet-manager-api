@@ -6,6 +6,7 @@ use App\Domain\SpectrumIdentification;
 use App\Entity\Organization;
 use App\Entity\User;
 use App\Event\OrganizationPolicyChangedEvent;
+use App\Form\Dto\OrgaPreferences;
 use App\Repository\OrganizationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -14,40 +15,41 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class SavePreferencesController extends AbstractController
 {
-    private $security;
-    private $organizationRepository;
-    private $entityManager;
-    private $eventDispatcher;
+    private Security $security;
+    private OrganizationRepository $organizationRepository;
+    private EntityManagerInterface $entityManager;
+    private EventDispatcherInterface $eventDispatcher;
+    private SerializerInterface $serializer;
+    private ValidatorInterface $validator;
 
-    public function __construct(Security $security, OrganizationRepository $organizationRepository, EntityManagerInterface $entityManager, EventDispatcherInterface $eventDispatcher)
-    {
+    public function __construct(
+        Security $security,
+        OrganizationRepository $organizationRepository,
+        EntityManagerInterface $entityManager,
+        EventDispatcherInterface $eventDispatcher,
+        SerializerInterface $serializer,
+        ValidatorInterface $validator
+    ) {
         $this->security = $security;
         $this->organizationRepository = $organizationRepository;
         $this->entityManager = $entityManager;
         $this->eventDispatcher = $eventDispatcher;
+        $this->serializer = $serializer;
+        $this->validator = $validator;
     }
 
     /**
-     * @Route("/api/organization/{organizationSid}/save-preferences", name="organization_save_preferences", methods={"POST"}, condition="request.getContentType() == 'json'")
+     * @Route("/api/organization/{organizationSid}/save-preferences", name="organization_save_preferences", methods={"POST"})
      */
     public function __invoke(Request $request, string $organizationSid): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
 
-        /** @var User $user */
-        $user = $this->security->getUser();
-        $content = json_decode($request->getContent(), true);
-
-        $citizen = $user->getCitizen();
-        if ($citizen === null) {
-            return $this->json([
-                'error' => 'no_citizen_created',
-                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
-            ], 400);
-        }
         /** @var Organization|null $organization */
         $organization = $this->organizationRepository->findOneBy(['organizationSid' => $organizationSid]);
         if ($organization === null) {
@@ -64,16 +66,31 @@ class SavePreferencesController extends AbstractController
             ], 403);
         }
 
-        if (!isset($content['publicChoice'])) {
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $citizen = $user->getCitizen();
+        if ($citizen === null) {
+            return $this->json([
+                'error' => 'no_citizen_created',
+                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
+            ], 400);
+        }
+
+        /** @var OrgaPreferences $preferences */
+        $preferences = $this->serializer->deserialize($request->getContent(), OrgaPreferences::class, $request->getContentType());
+        $errors = $this->validator->validate($preferences);
+
+        if ($errors->count() > 0) {
             return $this->json([
                 'error' => 'invalid_form',
-                'errorMessage' => 'The field publicChoice must not be blank.',
+                'formErrors' => $errors,
             ], 400);
         }
 
         $oldPublicChoice = $organization->getPublicChoice();
 
-        $organization->setPublicChoice($content['publicChoice']);
+        $organization->setPublicChoice($preferences->publicChoice);
+        $organization->setSupporterVisible($preferences->supporterVisible);
         $this->entityManager->flush();
 
         if ($organization->getPublicChoice() !== $oldPublicChoice) {

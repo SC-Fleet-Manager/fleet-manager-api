@@ -4,7 +4,7 @@ namespace App\Listener;
 
 use App\Entity\Citizen;
 use App\Entity\Fleet;
-use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
+use Doctrine\Persistence\Event\LifecycleEventArgs;
 
 class UpdateCitizenLastFleetListener
 {

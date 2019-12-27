@@ -9,8 +9,8 @@ use App\Entity\Fleet;
 use App\Entity\Organization;
 use App\Entity\Ship;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
+use Doctrine\Persistence\ManagerRegistry;
 
 class ShipRepository extends ServiceEntityRepository
 {
@@ -43,14 +43,14 @@ class ShipRepository extends ServiceEntityRepository
         $orgaMetadata = $this->_em->getClassMetadata(Organization::class);
 
         $sql = <<<EOT
-                SELECT DISTINCT s.name AS shipName FROM {$citizenMetadata->getTableName()} c 
+                SELECT DISTINCT s.name AS shipName FROM {$citizenMetadata->getTableName()} c
                 INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON citizenOrga.citizen_id = c.id
                 INNER JOIN {$orgaMetadata->getTableName()} orga ON orga.id = citizenOrga.organization_id
                 INNER JOIN {$fleetMetadata->getTableName()} f ON c.id = f.owner_id AND f.id = (
                     SELECT f2.id FROM {$fleetMetadata->getTableName()} f2 WHERE f2.owner_id = f.owner_id ORDER BY f2.version DESC LIMIT 1
                 )
                 INNER JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id
-                WHERE orga.organization_sid = :sid 
+                WHERE orga.organization_sid = :sid
                 ORDER BY s.name
             EOT;
 

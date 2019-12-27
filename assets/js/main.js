@@ -1,35 +1,68 @@
-import 'core-js/es6/promise';
-import 'core-js/es6/string';
-import 'core-js/es7/array';
 import Vue from 'vue';
-import BootstrapVue from 'bootstrap-vue';
-import VueClipboard from 'vue-clipboard2';
+import {
+    LayoutPlugin,
+    FormPlugin,
+    FormGroupPlugin,
+    FormInputPlugin,
+    FormCheckboxPlugin,
+    FormFilePlugin,
+    FormRadioPlugin,
+    InputGroupPlugin,
+    ButtonPlugin,
+    ButtonGroupPlugin,
+    AlertPlugin,
+    CardPlugin,
+    ModalPlugin,
+    DropdownPlugin,
+    SpinnerPlugin,
+    LinkPlugin,
+    NavPlugin,
+    NavbarPlugin,
+    PaginationPlugin,
+    BadgePlugin,
+    CollapsePlugin,
+    ProgressPlugin,
+    TablePlugin,
+    VBTooltipPlugin,
+} from 'bootstrap-vue';
+import VueToastr from "vue-toastr";
 import App from './App';
 import router from './router';
 import store from './store/store';
-import toastr from 'toastr';
-import 'toastr/toastr.scss';
 
-toastr.options = {
-    "closeButton": false,
-    "debug": false,
-    "newestOnTop": false,
-    "progressBar": false,
-    "positionClass": "toast-bottom-right",
-    "preventDuplicates": false,
-    "onclick": null,
-    "showDuration": "300",
-    "hideDuration": "1000",
-    "timeOut": "5000",
-    "extendedTimeOut": "1000",
-    "showEasing": "swing",
-    "hideEasing": "linear",
-    "showMethod": "fadeIn",
-    "hideMethod": "fadeOut"
-};
+Vue.use(LayoutPlugin);
+Vue.use(FormPlugin);
+Vue.use(FormGroupPlugin);
+Vue.use(FormInputPlugin);
+Vue.use(FormCheckboxPlugin);
+Vue.use(FormFilePlugin);
+Vue.use(FormRadioPlugin);
+Vue.use(InputGroupPlugin);
+Vue.use(ButtonPlugin);
+Vue.use(ButtonGroupPlugin);
+Vue.use(AlertPlugin);
+Vue.use(CardPlugin);
+Vue.use(ModalPlugin);
+Vue.use(DropdownPlugin);
+Vue.use(SpinnerPlugin);
+Vue.use(LinkPlugin);
+Vue.use(NavPlugin);
+Vue.use(NavbarPlugin);
+Vue.use(PaginationPlugin);
+Vue.use(BadgePlugin);
+Vue.use(CollapsePlugin);
+Vue.use(ProgressPlugin);
+Vue.use(TablePlugin);
+Vue.use(VBTooltipPlugin);
 
-Vue.use(BootstrapVue);
-Vue.use(VueClipboard);
+Vue.use(VueToastr, {
+    defaultTimeout: 3000,
+    defaultProgressBar: false,
+    defaultProgressBarValue: 0,
+    defaultPosition: "toast-bottom-right",
+    defaultCloseOnHover: false,
+    defaultClassNames: ["animated", "zoomInUp"]
+});
 
 new Vue({
     el: '#app',

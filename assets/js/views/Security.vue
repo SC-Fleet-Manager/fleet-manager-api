@@ -42,7 +42,6 @@
 
 <script>
     import axios from 'axios';
-    import toastr from 'toastr';
     import ChangePassword from "./ChangePassword";
     import ChangeEmail from "./ChangeEmail";
     import LinkEmailPassword from "./LinkEmailPassword";
@@ -116,7 +115,7 @@
                     this.form = {choiceResolveConflict: null};
                     this.conflict = null; // hide the warning form
                     this.$emit('accountLinked');
-                    toastr.success('Your Discord account is successfully linked!');
+                    this.$toastr.s('Your Discord account is successfully linked!');
                 }).catch(err => {
                     this.submitDisabled = false;
                     if (err.response.data.formErrors) {

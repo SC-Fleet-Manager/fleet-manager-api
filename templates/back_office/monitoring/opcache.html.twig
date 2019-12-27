@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>OCP - Opcache Control Panel</title>
+    <meta name="ROBOTS" content="NOINDEX,NOFOLLOW,NOARCHIVE" />
+
+    <style type="text/css">
+        body {background-color: #fff; color: #000;}
+        body, td, th, h1, h2 {font-family: sans-serif;}
+        pre {margin: 0px; font-family: monospace;}
+        a:link,a:visited {color: #000099; text-decoration: none;}
+        a:hover {text-decoration: underline;}
+        table {border-collapse: collapse; width: 600px; }
+        .center {text-align: center;}
+        .center table { margin-left: auto; margin-right: auto; text-align: left;}
+        .center th { text-align: center !important; }
+        .middle {vertical-align:middle;}
+        td, th { border: 1px solid #000; font-size: 75%; vertical-align: baseline; padding: 3px; }
+        h1 {font-size: 150%;}
+        h2 {font-size: 125%;}
+        .p {text-align: left;}
+        .e {background-color: #ccccff; font-weight: bold; color: #000; width:50%; white-space:nowrap;}
+        .h {background-color: #9999cc; font-weight: bold; color: #000;}
+        .v {background-color: #cccccc; color: #000;}
+        .vr {background-color: #cccccc; text-align: right; color: #000; white-space: nowrap;}
+        .b {font-weight:bold;}
+        .white, .white a {color:#fff;}
+        img {float: right; border: 0px;}
+        hr {width: 600px; background-color: #cccccc; border: 0px; height: 1px; color: #000;}
+        .meta, .small {font-size: 75%; }
+        .meta {margin: 2em 0;}
+        .meta a, th a {padding: 10px; white-space:nowrap; }
+        .buttons {margin:0 0 1em;}
+        .buttons a {margin:0 15px; background-color: #9999cc; color:#fff; text-decoration:none; padding:1px; border:1px solid #000; display:inline-block; width:5em; text-align:center;}
+        #files td.v a {font-weight:bold; color:#9999cc; margin:0 10px 0 5px; text-decoration:none; font-size:120%;}
+        #files td.v a:hover {font-weight:bold; color:#ee0000;}
+        .graph {display:inline-block; width:145px; margin:1em 0 1em 1px; border:0; vertical-align:top;}
+        .graph table {width:100%; height:150px; border:0; padding:0; margin:5px 0 0 0; position:relative;}
+        .graph td {vertical-align:middle; border:0; padding:0 0 0 5px;}
+        .graph .bar {width:25px; text-align:right; padding:0 2px; color:#fff;}
+        .graph .total {width:34px; text-align:center; padding:0 5px 0 0;}
+        .graph .total div {border:1px dashed #888; border-right:0; height:99%; width:12px; position:absolute; bottom:0; left:17px; z-index:-1;}
+        .graph .total span {background:#fff; font-weight:bold;}
+        .graph .actual {text-align:right; font-weight:bold; padding:0 5px 0 0;}
+        .graph .red {background:#ee0000;}
+        .graph .green {background:#00cc00;}
+        .graph .brown {background:#8B4513;}
+    </style>
+</head>
+
+<body>
+    <div class="center">
+        <h1><a href="?">Opcache Control Panel</a></h1>
+
+        <div class="buttons">
+            <a href="?">Summary</a>
+            <a href="?dump=1">Dump</a>
+            <a href="?files=1">Files</a>
+            <a href="?reset=1" onclick="return confirm('RESET cache ?')">Reset</a>
+            <a href="?recheck=1" onclick="return confirm('Recheck all files in the cache ?')">Recheck</a>
+        </div>
+
+        {{ content|raw }}
+
+        <div class="meta">
+            <a href="http://files.zend.com/help/Zend-Server-6/content/zendoptimizerplus.html">directives guide</a> |
+            <a href="http://files.zend.com/help/Zend-Server-6/content/zend_optimizer+_-_php_api.htm">functions guide</a> |
+            <a href="https://wiki.php.net/rfc/optimizerplus">wiki.php.net</a> |
+            <a href="http://pecl.php.net/package/ZendOpcache">pecl</a> |
+            <a href="https://github.com/zend-dev/ZendOptimizerPlus/">Zend source</a> |
+            <a href="https://gist.github.com/ck-on/4959032/?ocp.php">OCP latest</a>
+        </div>
+    </div>
+</body>
+</html>

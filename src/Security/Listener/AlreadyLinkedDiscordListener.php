@@ -10,8 +10,7 @@ class AlreadyLinkedDiscordListener
 {
     public function onException(ExceptionEvent $event): void
     {
-//        $e = $event->getThrowable(); // TODO SF 4.4+
-        $e = $event->getException();
+        $e = $event->getThrowable();
         if (!$e instanceof AlreadyLinkedDiscordException) {
             return;
         }
