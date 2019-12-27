@@ -16,10 +16,10 @@
                     <div class="text-center">
                         <strong>What you get:</strong>
                         <ul>
-                            <li>Supporter icon next to your name.</li>
+                            <li>Supporter icon <img src="../../img/icon_supporter.svg" alt="" height="30" /> next to your name.</li>
                             <li>Your name in Supporters Ladder.</li>
                             <li>A chance to access to the FM beta version to test the next version new features and last changes.</li>
-                            <li>An amount of FM Coins proportional to your backing to be used in upcoming premium features.</li>
+                            <li>An amount of FM Coins <img src="../../img/coin.svg" alt="Icon" height="30"> proportional to your backing to be used in upcoming premium features.</li>
                         </ul>
                     </div>
 

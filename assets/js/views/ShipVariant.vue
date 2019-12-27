@@ -12,7 +12,7 @@
 <!--        <div class="mb-3"><b-form-input type="text" v-model="search[ship.shipInfo.id]" placeholder="Search citizen"></b-form-input></div>&ndash;&gt;-->
         <div class="ship-family-detail-variant-ownerlist" @scroll="onUsersScroll">
             <div v-for="user in shipVariantUsers">
-                <a :href="'/citizen/'+user[0].citizen.actualHandle.handle" target="_blank"><i v-if="user[0].supporter" class="fas fa-hands-helping"></i> {{ user[0].citizen.actualHandle.handle }}</a>
+                <a :href="'/citizen/'+user[0].citizen.actualHandle.handle" target="_blank"><img v-if="user[0].supporter" src="../../img/icon_supporter.svg" alt="Supporter" style="height: 1.4rem" /> {{ user[0].citizen.actualHandle.handle }}</a>
                 : {{ user.countShips }}
             </div>
             <i v-if="shipVariantHiddenUsers > 0">
