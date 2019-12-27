@@ -175,6 +175,20 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
         $shipInfo->mediaThumbUrl = self::MEDIA_URL.'/g7dx300udpe1v/store_small.jpg';
         $shipInfos[$shipInfo->id] = $shipInfo;
 
+        // add Rover
+        $shipInfo = new ShipInfo();
+        $shipInfo->id = '1003';
+        $shipInfo->productionStatus = ShipInfo::NOT_READY;
+        $shipInfo->minCrew = 1;
+        $shipInfo->maxCrew = 2;
+        $shipInfo->name = 'Rover';
+        $shipInfo->size = ShipInfo::SIZE_VEHICLE;
+        $shipInfo->manufacturerName = 'Origin';
+        $shipInfo->manufacturerCode = 'ORIG'; // id=6
+        $shipInfo->chassisId = '1002';
+        $shipInfo->chassisName = $this->findChassisName($shipInfo->chassisId);
+        $shipInfos[$shipInfo->id] = $shipInfo;
+
         return $shipInfos;
     }
 

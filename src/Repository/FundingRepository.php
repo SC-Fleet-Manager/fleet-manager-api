@@ -153,11 +153,11 @@ class FundingRepository extends ServiceEntityRepository
 
         $sql = <<<SQL
                 SELECT o.id, o.supporter_visible, o.organization_sid, o.name, SUM(f.amount - f.refunded_amount) as total_amount
-                FROM {$citizenOrgaMetadata->getTableName()} co
-                INNER JOIN {$orgaMetadata->getTableName()} o on co.organization_id = o.id
-                INNER JOIN {$citizenMetadata->getTableName()} c on co.citizen_id = c.id
-                INNER JOIN {$userMetadata->getTableName()} u on c.id = u.citizen_id
-                INNER JOIN {$fundingMetadata->getTableName()} f on u.id = f.user_id
+                FROM {$citizenMetadata->getTableName()} c
+                    INNER JOIN {$citizenOrgaMetadata->getTableName()} co on c.main_orga_id = co.id
+                    INNER JOIN {$orgaMetadata->getTableName()} o on co.organization_id = o.id
+                    INNER JOIN {$userMetadata->getTableName()} u on c.id = u.citizen_id
+                    INNER JOIN {$fundingMetadata->getTableName()} f on u.id = f.user_id
                 WHERE ${monthSqlCondition} f.paypal_status IN ('COMPLETED', 'PARTIALLY_REFUNDED', 'REFUNDED')
                 GROUP BY co.organization_id
                 ORDER BY total_amount DESC, o.organization_sid ASC

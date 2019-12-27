@@ -26,6 +26,10 @@ Encore
         from: './assets/js/vendors',
         to: 'vendors/[path][name].[ext]',
     })
+    .copyFiles({
+        from: './assets/img/static',
+        to: 'images/static/[path][name].[ext]',
+    })
 
     .addPlugin(new BundleAnalyzerPlugin({
         analyzerMode: 'disabled',
