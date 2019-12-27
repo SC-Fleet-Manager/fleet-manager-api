@@ -3,10 +3,9 @@
 namespace App\Tests;
 
 use App\Entity\User;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 use Hautelook\AliceBundle\PhpUnit\ReloadDatabaseTrait;
 use HWI\Bundle\OAuthBundle\Security\Core\Authentication\Token\OAuthToken;
-use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase as BaseWebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
@@ -15,10 +14,8 @@ class WebTestCase extends BaseWebTestCase
 {
     use ReloadDatabaseTrait;
 
-    /** @var KernelBrowser */
-    protected $client;
-    /** @var RegistryInterface */
-    protected $doctrine;
+    protected KernelBrowser $client;
+    protected ManagerRegistry $doctrine;
 
     protected static function createClient(array $options = [], array $server = [])
     {

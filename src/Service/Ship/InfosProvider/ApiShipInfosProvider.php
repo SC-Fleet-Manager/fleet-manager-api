@@ -3,28 +3,40 @@
 namespace App\Service\Ship\InfosProvider;
 
 use App\Domain\ShipInfo;
-use GuzzleHttp\Client;
+use App\Repository\ShipChassisRepository;
+use App\Repository\ShipNameRepository;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Cache\CacheItem;
 use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ApiShipInfosProvider implements ShipInfosProviderInterface
 {
     private const BASE_URL = 'https://robertsspaceindustries.com';
     private const MEDIA_URL = 'https://media.robertsspaceindustries.com';
 
-    /** @var Client */
-    private $client;
-    private $logger;
-    private $cache;
-    /** @var iterable */
-    private $ships;
+    private LoggerInterface $logger;
+    private CacheInterface $cache;
+    private ShipNameRepository $shipNameRepository;
+    private ShipChassisRepository $shipChassisRepository;
+    private HttpClientInterface $httpClient;
+    private array $ships = [];
+    private array $shipNames = [];
+    private array $shipNamesFlipped = [];
+    private array $chassisNames = [];
 
-    public function __construct(LoggerInterface $logger, CacheInterface $cache)
-    {
-        $this->client = new Client(['base_uri' => self::BASE_URL]);
+    public function __construct(
+        LoggerInterface $logger,
+        CacheInterface $rsiShipsCache,
+        HttpClientInterface $rsiShipInfosClient,
+        ShipNameRepository $shipNameRepository,
+        ShipChassisRepository $shipChassisRepository
+    ) {
         $this->logger = $logger;
-        $this->cache = $cache;
+        $this->cache = $rsiShipsCache;
+        $this->shipNameRepository = $shipNameRepository;
+        $this->shipChassisRepository = $shipChassisRepository;
+        $this->httpClient = $rsiShipInfosClient;
     }
 
     /**
@@ -45,28 +57,16 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
 
     private function scrap(): array
     {
-        $response = $this->client->get('/ship-matrix/index');
-        $contents = $response->getBody()->getContents();
-        if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300) {
-            $this->logger->error(sprintf('Bad response status code from %s', self::BASE_URL), [
-                'status_code' => $response->getStatusCode(),
-                'raw_content' => $contents,
-            ]);
-            throw new \RuntimeException('Cannot retrieve ships infos.');
+        $response = $this->httpClient->request('GET', '/ship-matrix/index');
+        try {
+            $json = $response->toArray();
+        } catch (\Exception $e) {
+            $this->logger->error(sprintf('Cannot retrieve ships infos from %s.', self::BASE_URL), ['exception' => $e]);
+            throw new \RuntimeException('Cannot retrieve ships infos.', 0, $e);
         }
-        $json = json_decode($contents, true);
-        if (!$json) {
-            $this->logger->error(sprintf('Bad json response from %s', self::BASE_URL), [
-                'raw_content' => $contents,
-                'json_error' => json_last_error(),
-                'json_error_msg' => json_last_error_msg(),
-            ]);
-            throw new \RuntimeException('Cannot retrieve ships infos.');
-        }
+
         if (!isset($json['success']) || !$json['success']) {
-            $this->logger->error(sprintf('Bad json data from %s', self::BASE_URL), [
-                'json' => $json,
-            ]);
+            $this->logger->error(sprintf('Bad json data from %s', self::BASE_URL), ['json' => $json]);
             throw new \RuntimeException('Cannot retrieve ships infos.');
         }
 
@@ -84,7 +84,7 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
             $shipInfo->manufacturerName = $shipData['manufacturer']['name'];
             $shipInfo->manufacturerCode = $shipData['manufacturer']['code'];
             $shipInfo->chassisId = $shipData['chassis_id'];
-            $shipInfo->chassisName = static::transformChassisIdToFamilyName($shipInfo->chassisId);
+            $shipInfo->chassisName = $this->findChassisName($shipInfo->chassisId);
             $shipInfo->mediaUrl = \count($shipData['media']) > 0 ? self::BASE_URL.$shipData['media'][0]['source_url'] ?? null : null;
             if (\count($shipData['media']) > 0) {
                 $mediaUrl = $shipData['media'][0]['images']['store_small'] ?? null;
@@ -118,7 +118,7 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
         $shipInfo->manufacturerName = 'Greycat Industrial';
         $shipInfo->manufacturerCode = 'GRIN'; // id=84
         $shipInfo->chassisId = '0';
-        $shipInfo->chassisName = static::transformChassisIdToFamilyName($shipInfo->chassisId);
+        $shipInfo->chassisName = $this->findChassisName($shipInfo->chassisId);
         $shipInfo->mediaUrl = self::BASE_URL.'/media/5rg8z7erquf0wr/source/Buggy.jpg';
         $shipInfo->mediaThumbUrl = self::BASE_URL.'/media/5rg8z7erquf0wr/store_small/Buggy.jpg';
         $shipInfos[$shipInfo->id] = $shipInfo;
@@ -135,7 +135,7 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
         $shipInfo->manufacturerName = 'Anvil Aerospace';
         $shipInfo->manufacturerCode = 'ANVL'; // id=3
         $shipInfo->chassisId = '1001';
-        $shipInfo->chassisName = static::transformChassisIdToFamilyName($shipInfo->chassisId);
+        $shipInfo->chassisName = $this->findChassisName($shipInfo->chassisId);
         $shipInfo->mediaUrl = 'https://starcitizen.tools/images/8/87/F8C_concierge.jpg';
         $shipInfo->mediaThumbUrl = 'https://starcitizen.tools/images/8/87/F8C_concierge.jpg';
         $shipInfos[$shipInfo->id] = $shipInfo;
@@ -161,7 +161,7 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
         $shipInfo->manufacturerName = 'Consolidated Outland';
         $shipInfo->manufacturerCode = 'CNOU'; // id=22
         $shipInfo->chassisId = '16';
-        $shipInfo->chassisName = static::transformChassisIdToFamilyName($shipInfo->chassisId);
+        $shipInfo->chassisName = $this->findChassisName($shipInfo->chassisId);
         $shipInfo->mediaUrl = self::BASE_URL.'/media/gmru9y7ynd1bbr/source/Omega-Front.jpg';
         $shipInfo->mediaThumbUrl = self::BASE_URL.'/media/gmru9y7ynd1bbr/store_small/Omega-Front.jpg';
         $shipInfos[$shipInfo->id] = $shipInfo;
@@ -209,170 +209,13 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
         return null;
     }
 
-    public static function transformChassisIdToFamilyName(string $chassisId): string
+    public function findChassisName(string $chassisId): string
     {
-        switch ($chassisId) {
-            case '0':
-                return 'Greycat';
-            case '1':
-                return 'Aurora';
-            case '2':
-                return '300';
-            case '3':
-                return 'Hornet';
-            case '4':
-                return 'Constellation';
-            case '5':
-                return 'Freelancer';
-            case '6':
-                return 'Cutlass';
-            case '7':
-                return 'Avenger';
-            case '8':
-                return 'Gladiator';
-            case '9':
-                return 'M50';
-            case '10':
-                return 'Starfarer';
-            case '11':
-                return 'Caterpillar';
-            case '12':
-                return 'Retaliator';
-            case '13':
-                return 'Scythe';
-            case '14':
-                return 'Idris';
-            case '15':
-                return 'Merlin';
-            case '16':
-                return 'Mustang';
-            case '17':
-                return 'Redeemer';
-            case '18':
-                return 'Gladius';
-            case '19':
-                return 'Khartu';
-            case '20':
-                return 'Merchantman';
-            case '21':
-                return '890 Jump';
-            case '22':
-                return 'Carrack';
-            case '23':
-                return 'Herald';
-            case '24':
-                return 'Hull';
-            case '25':
-                return 'Orion';
-            case '26':
-                return 'Reclaimer';
-            case '28':
-                return 'Javelin';
-            case '30':
-                return 'Vanguard';
-            case '31':
-                return 'Reliant';
-            case '32':
-                return 'Starliner';
-            case '33':
-                return 'Glaive';
-            case '34':
-                return 'Endeavor';
-            case '35':
-                return 'Sabre';
-            case '37':
-                return 'Crucible';
-            case '38':
-                return 'P72 Archimedes';
-            case '39':
-                return 'Blade';
-            case '40':
-                return 'Prospector';
-            case '41':
-                return 'Buccaneer';
-            case '42':
-                return 'Dragonfly';
-            case '43':
-                return 'MPUV';
-            case '44':
-                return 'Terrapin';
-            case '45':
-                return 'Polaris';
-            case '46':
-                return 'Prowler';
-            case '47':
-                return '85X';
-            case '48':
-                return 'Razor';
-            case '49':
-                return 'Hurricane';
-            case '50':
-                return 'Defender';
-            case '51':
-                return 'Eclipse';
-            case '52':
-                return 'Nox';
-            case '53':
-                return 'Cyclone';
-            case '54':
-                return 'Ursa';
-            case '55':
-                return '600i';
-            case '56':
-                return 'X1';
-            case '57':
-                return 'Pioneer';
-            case '58':
-                return 'Hawk';
-            case '59':
-                return 'Hammerhead';
-            case '60':
-                return 'Planetary Beacon'; // NOT A SHIP ! Oo
-            case '61':
-                return 'Nova';
-            case '62':
-                return 'Vulcan';
-            case '63':
-                return '100';
-            case '64':
-                return 'Starlifter';
-            case '65':
-                return 'Vulture';
-            case '66':
-                return 'Apollo';
-            case '67':
-                return 'Mercury Star Runner';
-            case '68':
-                return 'Valkyrie';
-            case '69':
-                return 'Kraken';
-            case '70':
-                return 'Arrow';
-            case '71':
-                return "San'tok.yāi";
-            case '72':
-                return 'SRV';
-            case '73':
-                return 'Corsair';
-            case '74':
-                return 'Ranger';
-            case '75':
-                return 'Ballista';
-            case '76':
-                return 'Nautilus';
-            case '77':
-                return 'Mantis';
-            case '78':
-                return 'Pisces';
-            case '79':
-                return 'Ares';
-            case '80':
-                return 'Mole';
-            case '1001':
-                return 'F8C';
+        if ($this->chassisNames === []) {
+            $this->chassisNames = $this->shipChassisRepository->findAllChassisNames();
         }
 
-        return 'Unknown chassis';
+        return $this->chassisNames[(int) $chassisId]['name'] ?? 'Unknown chassis';
     }
 
     public function shipNamesAreEquals(string $hangarName, string $providerName): bool
@@ -382,74 +225,37 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
 
     public function transformProviderToHangar(string $providerName): string
     {
-        $map = array_flip(static::mapHangarToProvider());
-        if (\array_key_exists($providerName, $map)) {
-            return $map[$providerName];
-        }
+        $shipNames = $this->findAllShipNamesFlipped();
 
-        return $providerName;
+        return $shipNames[$providerName]['myHangarName'] ?? $providerName;
     }
 
     public function transformHangarToProvider(string $hangarName): string
     {
-        $hangarName = trim($hangarName);
-        $map = static::mapHangarToProvider();
-        if (\array_key_exists($hangarName, $map)) {
-            return $map[$hangarName];
-        }
+        $shipNames = $this->findAllShipNames();
 
-        return $hangarName;
+        return $shipNames[$hangarName]['shipMatrixName'] ?? $hangarName;
     }
 
-    private static function mapHangarToProvider(): array
+    private function findAllShipNames(): array
     {
-        // hangar name => provider name
-        return [
-            '315p Explorer' => '315p',
-            '325a Fighter' => '325a',
-            '350r Racer' => '350r',
-            '600i Exploration Module' => '600i Explorer',
-            '600i Touring Module' => '600i Touring',
-            '890 JUMP' => '890 Jump',
-            'Aopoa San\'tok.yāi' => 'San\'tok.yāi',
-            'Argo SRV' => 'SRV',
-            'Argo Mole - Carbon Edition' => 'Argo Mole Carbon Edition',
-            'Argo Mole - Talus Edition' => 'Argo Mole Talus Edition',
-            'Ballista' => 'Anvil Ballista',
-            'Ballista Snowblind' => 'Anvil Ballista Snowblind',
-            'Ballista Dunestalker' => 'Anvil Ballista Dunestalker',
-            'Pisces' => 'C8 Pisces',
-            'Pisces - Expedition' => 'C8X Pisces Expedition',
-            'Consolidated Outland Pioneer' => 'Pioneer',
-            'Crusader Mercury Star Runner' => 'Mercury Star Runner',
-            'Cyclone RC' => 'Cyclone-RC',
-            'Cyclone RN' => 'Cyclone-RN',
-            'Cyclone-TR' => 'Cyclone-TR', // yes, same
-            'Cyclone AA' => 'Cyclone-AA',
-            'Defender' => 'Banu Defender',
-            'Hercules Starlifter C2' => 'C2 Hercules',
-            'Hercules Starlifter M2' => 'M2 Hercules',
-            'Hercules Starlifter A2' => 'A2 Hercules',
-            'Hornet F7C' => 'F7C Hornet',
-            'Hornet F7C-M Heartseeker' => 'F7C-M Super Hornet Heartseeker',
-            'Idris-P Frigate' => 'Idris-P',
-            'Idris-M Frigate' => 'Idris-M',
-            'Khartu-al' => 'Khartu-Al',
-            'Nova Tank' => 'Nova',
-            'P-72 Archimedes' => 'P72 Archimedes',
-            'Reliant Kore - Mini Hauler' => 'Reliant Kore',
-            'Reliant Mako - News Van' => 'Reliant Mako',
-            'Reliant Sen - Researcher' => 'Reliant Sen',
-            'Reliant Tana - Skirmisher' => 'Reliant Tana',
-            'Valkyrie' => 'Valkyrie',
-            'Valkyrie Liberator Edition' => 'Valkyrie Liberator Edition',
-            'X1' => 'X1 Base',
-            'X1 - FORCE' => 'X1 Force',
-            'X1 - VELOCITY' => 'X1 Velocity',
-            'Cutlass 2949 Best In Show' => 'Cutlass Black Best In Show Edition',
-            'Caterpillar 2949 Best in Show' => 'Caterpillar Best In Show Edition',
-            'Hammerhead 2949 Best in Show' => 'Hammerhead Best In Show Edition',
-            'Reclaimer 2949 Best in Show' => 'Reclaimer Best In Show Edition',
-        ];
+        if ($this->shipNames === []) {
+            $this->shipNames = $this->shipNameRepository->findAllShipNames();
+        }
+
+        return $this->shipNames;
+    }
+
+    private function findAllShipNamesFlipped(): array
+    {
+        if ($this->shipNamesFlipped === []) {
+            $shipNames = $this->findAllShipNames();
+            $this->shipNamesFlipped = [];
+            foreach ($shipNames as $shipName) {
+                $this->shipNamesFlipped[$shipName['shipMatrixName']] = $shipName;
+            }
+        }
+
+        return $this->shipNamesFlipped;
     }
 }

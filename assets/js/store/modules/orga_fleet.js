@@ -91,13 +91,8 @@ const actions = {
                         shipId: ship.shipInfo.id,
                         countHidden: response.data.hiddenUsers,
                     });
-                }).catch(err => {
-                    console.error(err);
                 });
             }
-        }).catch(err => {
-            // this.checkAuth(err.response);
-            console.error(err);
         });
     },
     async selectShipFamily({commit, state}, payload) {
@@ -124,11 +119,7 @@ const actions = {
                 shipVariants: response.data,
             });
         } catch (err) {
-            // this.checkAuth(err.response);
-            // if (err.response.data.errorMessage) {
-            //     toastr.error(err.response.data.errorMessage);
-            // }
-            console.error(err);
+
         }
     }
 };

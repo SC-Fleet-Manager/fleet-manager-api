@@ -98,9 +98,6 @@
     "facebook/webdriver": {
         "version": "1.6.0"
     },
-    "fig/link-util": {
-        "version": "1.0.0"
-    },
     "friendsofphp/php-cs-fixer": {
         "version": "2.2",
         "recipe": {
@@ -178,6 +175,15 @@
     },
     "ocramius/proxy-manager": {
         "version": "2.2.2"
+    },
+    "paypal/paypal-checkout-sdk": {
+        "version": "1.0.1"
+    },
+    "paypal/paypalhttp": {
+        "version": "1.0.0"
+    },
+    "paypal/rest-api-sdk-php": {
+        "version": "1.14.0"
     },
     "php": {
         "version": "7.4"
@@ -367,6 +373,9 @@
     },
     "symfony/dotenv": {
         "version": "v4.1.6"
+    },
+    "symfony/error-handler": {
+        "version": "v4.4.1"
     },
     "symfony/event-dispatcher": {
         "version": "v4.1.6"
@@ -655,14 +664,8 @@
     "twig/extra-bundle": {
         "version": "v2.12.1"
     },
-    "twig/inky-extension": {
-        "version": "1.0",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "master",
-            "version": "1.0",
-            "ref": "98aa25792ca5b18aebbac6644a150ac90867408d"
-        }
+    "twig/inky-extra": {
+        "version": "v3.0.0"
     },
     "twig/twig": {
         "version": "v2.5.0"

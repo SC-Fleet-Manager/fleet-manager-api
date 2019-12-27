@@ -25,7 +25,6 @@
 
 <script>
     import axios from 'axios';
-    import toastr from 'toastr';
 
     export default {
         name: 'update-sc-handle',
@@ -58,7 +57,7 @@
                 }).then(response => {
                     this.submitDisabled = false;
                     this.form.handle = null;
-                    toastr.success('Your new SC Handle has been successfully updated!');
+                    this.$toastr.s('Your new SC Handle has been successfully updated!');
                 }).catch(err => {
                     this.checkAuth(err.response);
                     this.submitDisabled = false;
@@ -68,7 +67,6 @@
                     } else if (err.response.data.error === 'invalid_form') {
                         this.errorMessage = err.response.data.formErrors.join("\n");
                     }
-                    console.error(err);
                 });
             },
             checkAuth(response) {

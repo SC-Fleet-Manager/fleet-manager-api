@@ -121,6 +121,7 @@ class FleetUploadHandler implements LoggerAwareInterface
                 ->setName(trim($shipData['name']))
                 ->setManufacturer(trim($shipData['manufacturer']))
                 ->setInsured((bool) ($shipData['lti'] ?? false))
+                ->setInsuranceDuration(isset($shipData['monthsInsurance']) ? (int) $shipData['monthsInsurance'] : null)
                 ->setPledgeDate(\DateTimeImmutable::createFromFormat('F d, Y', $shipData['pledge_date'])->setTime(0, 0))
                 ->setRawData($shipData);
             if (isset($shipData['cost'])) {

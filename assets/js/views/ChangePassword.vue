@@ -35,7 +35,6 @@
 
 <script>
     import axios from 'axios';
-    import toastr from 'toastr';
 
     export default {
         name: 'change-password',
@@ -76,7 +75,7 @@
                 }).then(response => {
                     this.submitDisabled = false;
                     this.changePasswordForm = {oldPassword: null, newPassword: null};
-                    toastr.success('Your password has been successfully updated!');
+                    this.$toastr.s('Your password has been successfully updated!');
                 }).catch(err => {
                     this.submitDisabled = false;
                     if (err.response.data.formErrors) {

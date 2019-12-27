@@ -3,12 +3,13 @@
         <AppHeader fixed>
             <SidebarToggler class="d-lg-none" display="md" mobile/>
             <b-link class="navbar-brand" href="/">
-                <img class="navbar-brand-full" src="../../img/fleet_manager_155x55.png" alt="SC Fleet Manager" height="45">
-                <img class="navbar-brand-minimized" src="../../img/fleet_manager_128.png" alt="FM" height="40">
+                <img class="navbar-brand-full" src="../../img/logo_fm_blue.svg" alt="SC Fleet Manager" height="40">
+                <img class="navbar-brand-minimized" src="../../img/icon_fm_blue.svg" alt="FM" height="40">
             </b-link>
             <SidebarToggler class="d-md-down-none" display="lg" :defaultOpen="true" ref="sidebarDesktop"/>
             <b-navbar-nav class="ml-auto">
-                <b-nav-text v-if="user != null" class="px-3 d-none d-sm-inline-block">Welcome, {{ citizen !== null ? citizen.actualHandle.handle : (user.nickname !== null ? user.nickname : user.email) }}</b-nav-text>
+                <b-nav-text v-if="user != null" class="px-3 d-none d-sm-inline-block">Welcome, <i v-if="user.supporter" class="fas fa-hands-helping"></i> {{ citizen !== null ? citizen.actualHandle.handle : (user.nickname !== null ? user.nickname : user.email) }}</b-nav-text>
+                <b-nav-text v-if="user != null && user.coins > 0" class="px-3 d-none d-sm-inline-block"><img src="../../img/coin.svg" title="FM Coins" alt="FM Coins" height="30"> {{ user.coins }}</b-nav-text>
                 <b-nav-item v-if="user != null" class="px-3" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</b-nav-item>
                 <b-nav-item v-else class="px-3" v-b-modal.modal-login><i class="fas fa-sign-in-alt"></i> Login</b-nav-item>
             </b-navbar-nav>
@@ -37,7 +38,6 @@
                 <b-nav-text class="p-2">–</b-nav-text>
                 <b-nav-item href="https://discord.gg/f6mrA3Y" target="_blank" link-classes="p-2"><i class="fab fa-discord" style="font-size: 1.4rem;"></i></b-nav-item>
                 <b-nav-item href="https://github.com/Ioni14/starcitizen-fleet-manager" target="_blank" link-classes="p-2"><i class="fab fa-github" style="font-size: 1.4rem;"></i></b-nav-item>
-                <b-nav-item href="https://www.patreon.com/ioni" target="_blank" link-classes="p-2"><i class="fab fa-patreon" style="font-size: 1.4rem;"></i></b-nav-item>
                 <b-nav-text><span class="mr-1">Created by </span><a target="_blank" href="https://github.com/ioni14">Ioni</a></b-nav-text>
             </b-nav>
         </TheFooter>
@@ -81,6 +81,7 @@
         created() {
             axios.get('/api/profile').then(response => {
                 this.user = response.data;
+                this.updateUser(this.user);
                 this.citizen = this.user.citizen;
                 this.updateProfile(this.citizen);
                 // this.$refs.sidebarDesktop.toggle(true);
@@ -122,8 +123,7 @@
                     }
                 }
 
-                return [
-                    ...nav,
+                nav.push(
                     {
                         name: "Profile",
                         url: '/profile',
@@ -132,11 +132,30 @@
                             disabled: this.user === null,
                         },
                     },
-                ];
+                    {
+                        name: 'Supporters',
+                        url: '/supporters',
+                        icon: 'fas fa-star',
+                        badge: {
+                            text: 'NEW',
+                            variant: 'danger',
+                        },
+                    }
+                );
+
+                if (this.user !== null) {
+                    nav.push({
+                        name: 'My backings',
+                        url: '/my-backings',
+                        icon: 'fas fa-hands-helping',
+                    });
+                }
+
+                return nav;
             }
         },
         methods: {
-            ...mapMutations(['updateProfile']),
+            ...mapMutations(['updateProfile', 'updateUser']),
             findLastVersion() {
                 axios.get('https://api.github.com/repos/Ioni14/starcitizen-fleet-manager/tags').then(response => {
                     this.lastVersion = response.data[0].name;

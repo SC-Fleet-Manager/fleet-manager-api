@@ -46,6 +46,13 @@ class UploadControllerTest extends WebTestCase
                     "pledge": "Standalone Ship - Tumbril Cyclone ",
                     "pledge_date": "May 15, 2018",
                     "cost": "$55.00 USD"
+                  },
+                  {
+                    "manufacturer": "Tumbril",
+                    "name": "Cyclone",
+                    "lti": false,
+                    "monthsInsurance": 6,
+                    "pledge_date": "May 15, 2018"
                   }
                 ]
             EOT
@@ -63,9 +70,12 @@ class UploadControllerTest extends WebTestCase
         /** @var Fleet $lastFleet */
         $lastFleet = $this->user->getCitizen()->getLastFleet();
         $this->assertSame(2, $lastFleet->getVersion());
-        $this->assertCount(2, $lastFleet->getShips());
+        $this->assertCount(3, $lastFleet->getShips());
         $this->assertSame('Cutlass Black', $lastFleet->getShips()[0]->getName());
         $this->assertSame('Cyclone', $lastFleet->getShips()[1]->getName());
+        $this->assertFalse($lastFleet->getShips()[1]->isInsured());
+        $this->assertNull($lastFleet->getShips()[1]->getInsuranceDuration());
+        $this->assertSame(6, $lastFleet->getShips()[2]->getInsuranceDuration());
     }
 
     /**
@@ -92,14 +102,14 @@ class UploadControllerTest extends WebTestCase
     public function testMissingOptionalFields(): void
     {
         file_put_contents(sys_get_temp_dir().'/test-fleet.json', <<<EOT
-            [
-              {
-                "manufacturer": "Drake",
-                "name": "Cutlass Black",
-                "pledge_date": "April 28, 2018"
-              }
-            ]
-        EOT
+                [
+                  {
+                    "manufacturer": "Drake",
+                    "name": "Cutlass Black",
+                    "pledge_date": "April 28, 2018"
+                  }
+                ]
+            EOT
         );
         $citizenInfosProvider = static::$container->get(CitizenInfosProviderInterface::class);
         $citizenInfosProvider->setCitizen($this->user->getCitizen());
@@ -126,27 +136,27 @@ class UploadControllerTest extends WebTestCase
     public function testDifferentCosts(): void
     {
         file_put_contents(sys_get_temp_dir().'/test-fleet.json', <<<EOT
-            [
-              {
-                "manufacturer": "Drake",
-                "name": "Cutlass Black",
-                "cost": "$1,000.00",
-                "pledge_date": "April 28, 2018"
-              },
-              {
-                "manufacturer": "Drake",
-                "name": "Cutlass Black",
-                "cost": "$500.00",
-                "pledge_date": "April 28, 2018"
-              },
-              {
-                "manufacturer": "Drake",
-                "name": "Cutlass Black",
-                "cost": "$2,123,456.78",
-                "pledge_date": "April 28, 2018"
-              }
-            ]
-        EOT
+                [
+                  {
+                    "manufacturer": "Drake",
+                    "name": "Cutlass Black",
+                    "cost": "$1,000.00",
+                    "pledge_date": "April 28, 2018"
+                  },
+                  {
+                    "manufacturer": "Drake",
+                    "name": "Cutlass Black",
+                    "cost": "$500.00",
+                    "pledge_date": "April 28, 2018"
+                  },
+                  {
+                    "manufacturer": "Drake",
+                    "name": "Cutlass Black",
+                    "cost": "$2,123,456.78",
+                    "pledge_date": "April 28, 2018"
+                  }
+                ]
+            EOT
         );
         $citizenInfosProvider = static::$container->get(CitizenInfosProviderInterface::class);
         $citizenInfosProvider->setCitizen($this->user->getCitizen());
@@ -171,15 +181,15 @@ class UploadControllerTest extends WebTestCase
     public function testBadCosts(): void
     {
         file_put_contents(sys_get_temp_dir().'/test-fleet.json', <<<EOT
-            [
-              {
-                "manufacturer": "Drake",
-                "name": "Cutlass Black",
-                "cost": "$5,00",
-                "pledge_date": "April 28, 2018"
-              }
-            ]
-        EOT
+                [
+                  {
+                    "manufacturer": "Drake",
+                    "name": "Cutlass Black",
+                    "cost": "$5,00",
+                    "pledge_date": "April 28, 2018"
+                  }
+                ]
+            EOT
         );
         $citizenInfosProvider = static::$container->get(CitizenInfosProviderInterface::class);
         $citizenInfosProvider->setCitizen($this->user->getCitizen());

@@ -1,0 +1,21 @@
+App\Entity\MonthlyCostCoverage:
+    default:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("5bd9283a-e375-425f-90fa-762f2a09b91e"))>']
+        target: 10000 # $100.00
+        month: '<(new \DateTimeImmutable("0000-01-01 00:00:00"))>'
+        postpone: true
+    last_month:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("d427d39d-f1d0-4ece-b1fe-0a9e80735b76"))>']
+        target: 20000
+        month: '<(new \DateTimeImmutable("first day of last month"))>'
+        postpone: false
+    this_month:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("0a77f3fc-3ecd-48f5-b9f6-dfb8ac5ed642"))>']
+        target: 15000
+        month: '<(new \DateTimeImmutable("first day of"))>'
+        postpone: true
+    next_month:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("8f2c9401-1452-4f7a-bdef-8d9e6a188e20"))>']
+        target: 20000
+        month: '<(new \DateTimeImmutable("first day of next month"))>'
+        postpone: false

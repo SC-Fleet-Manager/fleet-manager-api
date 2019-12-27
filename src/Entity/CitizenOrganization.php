@@ -72,7 +72,7 @@ class CitizenOrganization
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=15, options={"default":"orga"})
+     * @ORM\Column(type="string", length=15, options={"default":CitizenOrganization::VISIBILITY_ORGA})
      * @Groups({"profile"})
      */
     private $visibility;

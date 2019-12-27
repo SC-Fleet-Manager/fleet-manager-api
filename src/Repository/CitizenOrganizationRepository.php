@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use App\Entity\CitizenOrganization;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 
 class CitizenOrganizationRepository extends ServiceEntityRepository
 {

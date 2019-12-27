@@ -1,0 +1,37 @@
+{% extends 'back_office_layout.html.twig' %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1 class="mb-3">Monthly Cost Coverage Edit</h1>
+
+        <p><a href="{{ path('bo_monthly_cost_coverage_list') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to the list</a></p>
+
+        {% if monthly_cost_coverage.isDefault() %}
+            <p>This is the default target.</p>
+        {% endif %}
+
+        <form action="{{ path('bo_monthly_cost_coverage_edit', {'id': monthly_cost_coverage.id}) }}" method="post">
+            {% if form.month is defined %}
+                <label>Month</label>
+                <fieldset class="form-group">
+                    <div id="monthly_cost_coverage_form_month" class="form-inline">
+                        {{ form_widget(form.month.year) }}
+                        {{ form_widget(form.month.month) }}
+                    </div>
+                </fieldset>
+            {% endif %}
+            {{ form_row(form.target) }}
+            {% if form.postpone is defined %}
+                {{ form_row(form.postpone) }}
+            {% endif %}
+
+            <button type="submit" class="btn btn-success">Valider</button>
+            {% if form._token is defined %}
+                {{ form_widget(form._token) }}
+            {% endif %}
+        </form>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+{% endblock %}

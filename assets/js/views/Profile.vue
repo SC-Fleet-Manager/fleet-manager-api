@@ -129,6 +129,10 @@
                             You have <strong>{{ citizen.countRedactedOrganizations }} redacted organizations</strong><template v-if="citizen.redactedMainOrga"> including your main orga</template>. Therefore, you will not be able to see their fleet.<br/>
                             To display them, you have to set <strong>"Visible"</strong> in your <a href="https://robertsspaceindustries.com/account/organization" target="_blank">RSI account</a>.
                         </b-alert>
+                        <strong>Supporters preferences</strong>
+                        <b-form-checkbox v-model="supporterVisible" @change="saveSupporterVisible" :disabled="savingPreferences" name="supporter-visibility" switch>
+                            Display my name on Supporters page
+                        </b-form-checkbox>
                     </b-form>
                 </b-card>
             </b-col>
@@ -143,10 +147,13 @@
 
 <script>
     import axios from 'axios';
-    import toastr from 'toastr';
     import UpdateScHandle from "./UpdateSCHandle";
     import Security from "./Security";
     import { mapMutations } from 'vuex';
+    import VueClipboard from 'vue-clipboard2';
+
+    import Vue from "vue";
+    Vue.use(VueClipboard);
 
     export default {
         name: 'profile',
@@ -182,6 +189,7 @@
                 lastShortBio: null,
                 showCollapseStep1: false,
                 showCollapseStep2: false,
+                supporterVisible: null,
             }
         },
         created() {
@@ -197,17 +205,21 @@
                 this.$set(this.orgaVisibilityChoices, orga.organizationSid, value);
                 this.savePreferences();
             },
+            saveSupporterVisible(value) {
+                this.supporterVisible = value;
+                this.savePreferences();
+            },
             savePreferences() {
                 this.savingPreferences = true;
                 axios.post('/api/profile/save-preferences', {
                     publicChoice: this.publicChoice,
                     orgaVisibilityChoices: this.orgaVisibilityChoices,
+                    supporterVisible: this.supporterVisible,
                 }).then(response => {
-                    toastr.success('Changes saved');
+                    this.$toastr.s('Changes saved');
                 }).catch(err => {
                     this.checkAuth(err.response);
-                    console.error(err);
-                    toastr.error('An error has occurred. Please try again later.');
+                    this.$toastr.e('An error has occurred. Please try again later.');
                 }).then(_ => {
                     this.savingPreferences = false;
                 });
@@ -230,6 +242,7 @@
                     this.userToken = this.user.token;
                     this.myFleetLink = this.getMyFleetLink();
                     this.publicChoice = this.user.publicChoice;
+                    this.supporterVisible = this.user.supporterVisible;
                     this.updateProfile(this.citizen);
 
                     if (this.citizen) {
@@ -243,7 +256,6 @@
                     if (err.response.data.errorMessage) {
                         this.errorMessage = err.response.data.errorMessage;
                     }
-                    console.error(err);
                 });
             },
             getMyFleetLink() {
@@ -256,12 +268,12 @@
             refreshMyRsiProfile(ev) {
                 this.refreshingProfile = true;
                 axios.post('/api/profile/refresh-rsi-profile').then(response => {
-                    toastr.success('Your RSI public profile has been successfully refreshed.');
+                    this.$toastr.s('Your RSI public profile has been successfully refreshed.');
                     this.refreshProfile();
                 }).catch(err => {
                     this.checkAuth(err.response);
                     if (err.response.data.errorMessage) {
-                        toastr.error(err.response.data.errorMessage);
+                        this.$toastr.e(err.response.data.errorMessage);
                     }
                 }).then(_ => {
                     this.refreshingProfile = false;
@@ -291,7 +303,6 @@
                     }
                     this.showErrorStep1 = true;
                     this.showButtonStep2 = false;
-                    console.error(err);
                 }).then(_ => {
                     this.searchingHandle = false;
                 });
@@ -313,7 +324,7 @@
                 this.submitDisabled = true;
                 axios.post('/api/profile/link-account', form).then(response => {
                     this.refreshProfile();
-                    toastr.success('Your RSI account has been successfully linked! You can remove the token from your bio.');
+                    this.$toastr.s('Your RSI account has been successfully linked! You can remove the token from your bio.');
                     this.submitDisabled = false;
                 }).catch(async err => {
                     this.submitDisabled = false;
@@ -332,7 +343,6 @@
                         this.errorMessage = err.response.data.formErrors.join("\n");
                     }
                     this.showError = true;
-                    console.error(err);
                 });
             },
             checkAuth(response) {

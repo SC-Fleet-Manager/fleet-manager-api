@@ -2,7 +2,8 @@
     <div class="animated fadeIn">
         <b-row>
             <b-col>
-                <b-card :title="!isMyProfile ? 'Citizen ' + userHandle : ''">
+                <b-card>
+                    <h4 v-if="!isMyProfile">Citizen <i v-if="isSupporter()" class="fas fa-hands-helping"></i> {{ userHandle }}</h4>
                     <div class="mb-3" v-if="isMyProfile">
                         <b-button v-b-modal.modal-upload-fleet variant="primary" :disabled="citizen == null"><i class="fas fa-cloud-upload-alt"></i> Update my fleet</b-button>
                         <b-button download :disabled="citizen == null" :href="citizen != null ? '/api/create-citizen-fleet-file' : ''" variant="success"><i class="fas fa-cloud-download-alt"></i> Export my fleet (.json)</b-button>
@@ -19,7 +20,13 @@
                                     :title="ship.name">
                                 <p class="card-text">
                                     <strong>Manufacturer</strong>: {{ ship.manufacturer }}<br/>
-                                    <strong>LTI</strong>: <b-badge variant="success" v-if="ship.insured">Yes</b-badge><b-badge variant="danger" v-else>No</b-badge><br/>
+                                    <template v-if="ship.insured">
+                                        <strong>Insurance</strong>: <b-badge variant="success">Lifetime</b-badge><br/>
+                                    </template>
+                                    <template v-else>
+                                        <template v-if="ship.insuranceDuration != null"><strong>Insurance</strong>: <b-badge variant="info">{{ ship.insuranceDuration }} months</b-badge><br/></template>
+                                        <template v-else><strong>Insurance</strong>: <b-badge variant="danger">No</b-badge><br/></template>
+                                    </template>
                                     <span v-if="ship.cost !== undefined && ship.cost > 0"><strong>Cost</strong>: <i class="fas fa-dollar-sign" aria-hidden="true"></i> <span class="sr-only">$</span>{{ ship.cost }}<br/></span>
                                     <span v-if="ship.cost !== undefined && ship.cost == 0"><b-badge variant="info">Referral/Event</b-badge><br/></span>
                                     <strong>Pledge date</strong>: {{ ship.pledgeDate|date('LL') }}<br/>
@@ -38,7 +45,6 @@
 
 <script>
     import axios from 'axios';
-    import toastr from 'toastr';
     import moment from 'moment-timezone';
     import UpdateFleetFile from './UpdateFleetFile';
 
@@ -48,18 +54,22 @@
         components: {UpdateFleetFile},
         data() {
             return {
+                publicProfile: null,
+                user: null,
                 citizen: null,
                 isMyProfile: false,
                 ships: null,
                 shipInfos: [],
                 showError: false,
                 errorMessage: '',
+                shipNames: {},
             };
         },
-        async created() {
+        created() {
             axios.get('/api/profile', {
                 params: {}
             }).then(response => {
+                this.user = response.data;
                 this.citizen = response.data.citizen;
                 this.$store.commit('updateProfile', response.data.citizen);
                 this.isMyProfile = this.citizen.actualHandle.handle === this.userHandle;
@@ -68,9 +78,15 @@
                     // not connected
                     return;
                 }
-                toastr.error('Cannot retrieve your profile.');
+                this.$toastr.e('Cannot retrieve your profile.');
             }).then(_ => {
                 this.refreshMyFleet();
+            });
+            axios.get(`/api/public-profile/${this.userHandle}`).then(response => {
+                this.publicProfile = response.data;
+            });
+            axios.get('/api/ship-names').then(response => {
+                this.shipNames = response.data.shipNames;
             });
         },
         filters: {
@@ -84,10 +100,16 @@
                 this.shipInfos = [];
                 this.showError = false;
                 this.errorMessage = '';
+                if (this.citizen !== null) {
+                    this.isMyProfile = this.citizen.actualHandle.handle === this.userHandle;
+                }
                 this.refreshMyFleet();
             }
         },
         methods: {
+            isSupporter() {
+                return this.publicProfile !== null ? this.publicProfile.supporter : false;
+            },
             refreshMyFleet() {
                 axios.get(this.isMyProfile ? '/api/fleet/my-fleet' : `/api/fleet/user-fleet/${this.userHandle}`).then(response => {
                     this.ships = [];
@@ -108,9 +130,8 @@
                     } else if (err.response.status === 404) {
                         this.errorMessage = 'This citizen does not exist.';
                     } else {
-                        toastr.error('Cannot retrieve your fleet.');
+                        this.$toastr.e('Cannot retrieve your fleet.');
                     }
-                    console.error(err);
                 });
             },
             onUploadSuccess() {
@@ -125,9 +146,7 @@
                     }
                 }
 
-                return {
-                    mediaThumbUrl: '',
-                };
+                return {mediaThumbUrl: ''};
             },
             checkAuth(response) {
                 const status = response.status;
@@ -138,60 +157,12 @@
                 }
             },
             getFixShipName(hangarShipName) {
-                // case '<Display name>: return '<ShipMatrix name>';'
-                switch (hangarShipName) {
-                    case '315p Explorer': return '315p';
-                    case '325a Fighter': return '325a';
-                    case '350r Racer': return '350r';
-                    case '600i Exploration Module': return '600i Explorer';
-                    case '600i Touring Module': return '600i Touring';
-                    case '890 JUMP': return '890 Jump';
-                    case 'Aopoa San\'tok.yāi': return 'San\'tok.yāi';
-                    case 'Argo SRV': return 'SRV';
-                    case 'Argo Mole - Carbon Edition': return 'Argo Mole Carbon Edition';
-                    case 'Argo Mole - Talus Edition': return 'Argo Mole Talus Edition';
-                    case 'Ballista': return 'Anvil Ballista';
-                    case 'Ballista Snowblind': return 'Anvil Ballista Snowblind';
-                    case 'Ballista Dunestalker': return 'Anvil Ballista Dunestalker';
-                    case 'Pisces': return 'C8 Pisces';
-                    case 'Pisces - Expedition': return 'C8X Pisces Expedition';
-                    case 'Consolidated Outland Pioneer': return 'Pioneer';
-                    case 'Crusader Mercury Star Runner': return 'Mercury Star Runner';
-                    case 'Cyclone RC': return 'Cyclone-RC';
-                    case 'Cyclone RN': return 'Cyclone-RN';
-                    case 'Cyclone-TR': return 'Cyclone-TR'; // yes, same
-                    case 'Cyclone AA': return 'Cyclone-AA';
-                    case 'Defender': return 'Banu Defender';
-                    case 'Hercules Starlifter C2': return 'C2 Hercules';
-                    case 'Hercules Starlifter M2': return 'M2 Hercules';
-                    case 'Hercules Starlifter A2': return 'A2 Hercules';
-                    case 'Hornet F7C': return 'F7C Hornet';
-                    case 'Hornet F7C-M Heartseeker': return 'F7C-M Super Hornet Heartseeker';
-                    case 'Idris-P Frigate': return 'Idris-P';
-                    case 'Idris-M Frigate': return 'Idris-M';
-                    case 'Khartu-al': return 'Khartu-Al';
-                    case 'Nova Tank': return 'Nova';
-                    case 'P-72 Archimedes': return 'P72 Archimedes';
-                    case 'Reliant Kore - Mini Hauler': return 'Reliant Kore';
-                    case 'Reliant Mako - News Van': return 'Reliant Mako';
-                    case 'Reliant Sen - Researcher': return 'Reliant Sen';
-                    case 'Reliant Tana - Skirmisher': return 'Reliant Tana';
-                    case 'Valkyrie ': return 'Valkyrie';
-                    case 'Valkyrie Liberator Edition ': return 'Valkyrie Liberator Edition';
-                    case 'X1': return 'X1 Base';
-                    case 'X1 - FORCE': return 'X1 Force';
-                    case 'X1 - VELOCITY': return 'X1 Velocity';
-                    case 'Cutlass 2949 Best In Show': return 'Cutlass Black Best In Show Edition';
-                    case 'Caterpillar 2949 Best in Show': return 'Caterpillar Best In Show Edition';
-                    case 'Hammerhead 2949 Best in Show': return 'Hammerhead Best In Show Edition';
-                    case 'Reclaimer 2949 Best in Show': return 'Reclaimer Best In Show Edition';
+                if (!this.shipNames[hangarShipName]) {
+                    return hangarShipName;
                 }
 
-                return hangarShipName;
+                return this.shipNames[hangarShipName].shipMatrixName;
             }
         }
     }
 </script>
-
-<style>
-</style>

@@ -4,10 +4,21 @@ services:
         autoconfigure: true
         public: false
 
+    App\Tests\Controller\ConnectController:
+        tags: ['controller.service_arguments']
+
+    App\Service\Citizen\InfosProvider\FakeCitizenInfosProvider: ~
+    App\Service\Ship\InfosProvider\FakeShipInfosProvider: ~
+    App\Service\Organization\MembersInfosProvider\FakeOrganizationMembersInfosProvider: ~
+    App\Service\Organization\InfosProvider\FakeOrganizationInfosProvider: ~
     App\Service\Citizen\InfosProvider\CitizenInfosProviderInterface: '@App\Service\Citizen\InfosProvider\FakeCitizenInfosProvider'
     App\Service\Ship\InfosProvider\ShipInfosProviderInterface: '@App\Service\Ship\InfosProvider\FakeShipInfosProvider'
     App\Service\Organization\MembersInfosProvider\OrganizationMembersInfosProviderInterface: '@App\Service\Organization\MembersInfosProvider\FakeOrganizationMembersInfosProvider'
     App\Service\Organization\InfosProvider\OrganizationInfosProviderInterface: '@App\Service\Organization\InfosProvider\FakeOrganizationInfosProvider'
 
-    App\Tests\Controller\ConnectController:
-        tags: ['controller.service_arguments']
+    App\Tests\Service\PayPal\MockPayPalHttpClient: ~
+    App\Tests\Service\PayPal\MockVerifyWebhookSignatureFactory: ~
+    App\Service\Funding\PaypalCheckout:
+        arguments:
+            $client: '@App\Tests\Service\PayPal\MockPayPalHttpClient'
+            $verifyWebhookSignatureFactory: '@App\Tests\Service\PayPal\MockVerifyWebhookSignatureFactory'

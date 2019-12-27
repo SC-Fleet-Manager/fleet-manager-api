@@ -22,7 +22,6 @@
 
 <script>
     import axios from 'axios';
-    import toastr from 'toastr';
     import moment from 'moment-timezone';
 
     export default {
@@ -53,11 +52,10 @@
                 if (err.response.data.error === 'orga_too_big') {
                     this.membersListWarningMessage = err.response.data.errorMessage;
                 } else if (err.response.data.errorMessage) {
-                    toastr.error(err.response.data.errorMessage);
+                    this.$toastr.e(err.response.data.errorMessage);
                 } else {
-                    toastr.error('An error has occurred when retrieving members list. Please try again later.');
+                    this.$toastr.e('An error has occurred when retrieving members list. Please try again later.');
                 }
-                console.error(err);
             });
         },
         computed: {
@@ -118,12 +116,11 @@
                 this.$set(this.refreshingProfile, handle, true);
                 axios.post(`/api/organization/${this.selectedSid}/refresh-member/${handle}`).then(response => {
                     this.$emit('profileRefreshed', handle);
-                    toastr.success(`The RSI public profile of ${handle} has been successfully refreshed.`);
+                    this.$toastr.s(`The RSI public profile of ${handle} has been successfully refreshed.`);
                 }).catch(err => {
                     if (err.response.data.errorMessage) {
-                        toastr.error(err.response.data.errorMessage);
+                        this.$toastr.e(err.response.data.errorMessage);
                     }
-                    console.error(err);
                 }).then(_ => {
                     this.$set(this.refreshingProfile, handle, false);
                 });

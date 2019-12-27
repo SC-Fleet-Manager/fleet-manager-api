@@ -23,7 +23,6 @@
 
 <script>
     import axios from 'axios';
-    import toastr from "toastr";
 
     export default {
         name: 'update-fleet-file',
@@ -56,7 +55,7 @@
                     data: form,
                 }).then(response => {
                     this.submitDisabled = false;
-                    toastr.success('Your fleet has been successfully updated!');
+                    this.$toastr.s('Your fleet has been successfully updated!');
                     this.$emit('success');
                 }).catch(err => {
                     this.checkAuth(err.response);
@@ -67,7 +66,6 @@
                     } else if (err.response.data.error === 'invalid_form') {
                         this.errorMessage = err.response.data.formErrors.join("\n");
                     }
-                    console.error(err);
                 });
             },
             checkAuth(response) {

@@ -3,6 +3,7 @@
 namespace App\Controller\Profile;
 
 use App\Entity\User;
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,11 +12,13 @@ use Symfony\Component\Security\Core\Security;
 
 class ProfileController extends AbstractController
 {
-    private $security;
+    private Security $security;
+    private UserRepository $userRepository;
 
-    public function __construct(Security $security)
+    public function __construct(Security $security, UserRepository $userRepository)
     {
         $this->security = $security;
+        $this->userRepository = $userRepository;
     }
 
     /**
@@ -28,7 +31,7 @@ class ProfileController extends AbstractController
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
 
         /** @var User $user */
-        $user = $this->security->getUser();
+        $user = $this->userRepository->find($this->security->getUser()->getId());
 
         return $this->json($user, 200, [], ['groups' => 'profile']);
     }

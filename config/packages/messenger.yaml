@@ -9,3 +9,5 @@ framework:
              'App\Message\Registration\SendLostPasswordRequestMail': sync
              'App\Message\Profile\SendChangeEmailRequestMail': sync
              'App\Message\Profile\SendLinkEmailPasswordConfirmationMail': sync
+             'App\Message\Funding\SendOrderCaptureSummaryMail': sync
+             'App\Message\Funding\SendOrderRefundMail': sync

@@ -30,7 +30,6 @@
 
 <script>
     import axios from 'axios';
-    import toastr from 'toastr';
     import moment from 'moment-timezone';
 
     export default {
@@ -51,7 +50,7 @@
                     this.changes = response.data;
                 }).catch(err => {
                     if (err.response.data.errorMessage) {
-                        toastr.error(err.response.data.errorMessage);
+                        this.$toastr.e(err.response.data.errorMessage);
                     }
                 });
             },

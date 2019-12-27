@@ -9,11 +9,15 @@ export default new Vuex.Store({
         orga_fleet,
     },
     state: {
+        user: null,
         profile: null,
         citizens: {},
         organizations: {},
     },
     getters: {
+        user(state) {
+            return state.user;
+        },
         citizen(state) {
             return state.profile;
         },
@@ -25,6 +29,9 @@ export default new Vuex.Store({
         },
     },
     mutations: {
+        updateUser(state, payload) {
+            state.user = payload;
+        },
         updateProfile(state, payload) {
             state.profile = payload;
         },

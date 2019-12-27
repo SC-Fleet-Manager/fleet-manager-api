@@ -11,9 +11,9 @@ use App\Entity\Ship;
 use App\Entity\User;
 use App\Service\Dto\ShipFamilyFilter;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
+use Doctrine\Persistence\ManagerRegistry;
 
 class CitizenRepository extends ServiceEntityRepository
 {
@@ -194,7 +194,7 @@ class CitizenRepository extends ServiceEntityRepository
         $orgaMetadata = $this->_em->getClassMetadata(Organization::class);
 
         $sql = <<<EOT
-                SELECT *, c.nickname AS citizenNickname, c.id AS citizenId, f.id AS fleetId, s.id AS shipId FROM {$citizenMetadata->getTableName()} c 
+                SELECT *, c.nickname AS citizenNickname, c.id AS citizenId, f.id AS fleetId, s.id AS shipId FROM {$citizenMetadata->getTableName()} c
                 INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON citizenOrga.citizen_id = c.id
                 INNER JOIN {$orgaMetadata->getTableName()} orga ON orga.id = citizenOrga.organization_id AND orga.organization_sid = :sid
                 INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
@@ -242,11 +242,11 @@ class CitizenRepository extends ServiceEntityRepository
         $orgaMetadata = $this->_em->getClassMetadata(Organization::class);
 
         $sql = <<<EOT
-                SELECT count(DISTINCT c.id) AS countOwners, count(*) AS countOwned FROM {$citizenMetadata->getTableName()} c 
+                SELECT count(DISTINCT c.id) AS countOwners, count(*) AS countOwned FROM {$citizenMetadata->getTableName()} c
                 INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON citizenOrga.citizen_id = c.id
                 INNER JOIN {$orgaMetadata->getTableName()} orga ON orga.id = citizenOrga.organization_id AND orga.organization_sid = :sid
                 INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
-                INNER JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id and LOWER(s.name) = :shipName 
+                INNER JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id and LOWER(s.name) = :shipName
             EOT;
         // filtering
         if (count($filter->shipNames) > 0) {
@@ -297,7 +297,7 @@ class CitizenRepository extends ServiceEntityRepository
         $orgaMetadata = $this->_em->getClassMetadata(Organization::class);
 
         $sql = <<<EOT
-                SELECT u.*, u.id AS userId, 
+                SELECT u.*, u.id AS userId,
                        c.*, c.nickname AS citizenNickname, c.id AS citizenId,
                        COUNT(s.id) AS countShips
                 FROM {$orgaMetadata->getTableName()} orga

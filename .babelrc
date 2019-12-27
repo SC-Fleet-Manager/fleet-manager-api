@@ -1,13 +1,13 @@
 {
     "presets": [
         [
-            "@babel/preset-env",
+            "@vue/app",
             {
                 "useBuiltIns": "usage",
-                "corejs": "2.6",
-                "targets": {
-                    "browsers": "last 2 versions or ie >= 11"
-                }
+                "polyfills": [
+                    "es.promise",
+                    "es.symbol"
+                ]
             }
         ]
     ],

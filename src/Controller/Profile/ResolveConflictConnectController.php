@@ -2,6 +2,7 @@
 
 namespace App\Controller\Profile;
 
+use App\Entity\Funding;
 use App\Entity\User;
 use App\Event\CitizenDeletedEvent;
 use App\Form\Dto\ResolveConflictConnect;
@@ -92,6 +93,10 @@ class ResolveConflictConnectController extends AbstractController
             $this->eventDispatcher->dispatch(new CitizenDeletedEvent($citizenToRemove));
 
             $this->entityManager->remove($citizenToRemove);
+            $fundings = $this->entityManager->getRepository(Funding::class)->findBy(['user' => $alreadyLinkedUser]);
+            foreach ($fundings as $funding) {
+                $this->entityManager->remove($funding);
+            }
             $this->entityManager->remove($alreadyLinkedUser);
             $this->entityManager->flush();
             $user->setCitizen($citizenToKeep);

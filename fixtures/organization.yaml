@@ -4,6 +4,7 @@ App\Entity\Organization:
         organizationSid: 'flk'
         name: 'FallKrom'
         publicChoice: 'private'
+        supporterVisible: false
     orga_gardiens:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("901ccbf8-fa63-4b07-81aa-f10f60954715"))>']
         organizationSid: 'gardiens'

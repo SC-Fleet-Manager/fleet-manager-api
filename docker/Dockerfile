@@ -1,4 +1,4 @@
-FROM php:7.4.0-fpm-alpine as req_php
+FROM php:7.4.1-fpm-alpine as req_php
 
 # prod|dev
 ARG ENV=prod
@@ -40,7 +40,7 @@ RUN composer global require "hirak/prestissimo:^0.3" --prefer-dist --no-progress
     composer dump-env $ENV
 
 ################################
-FROM node:10-alpine as node_deps
+FROM node:12-alpine as node_deps
 
 WORKDIR /app
 COPY package.json yarn.lock ./
@@ -48,7 +48,7 @@ RUN yarn install
 
 COPY assets assets
 COPY .babelrc webpack.config.js postcss.config.js ./
-RUN mkdir public && yarn encore production
+RUN mkdir public && yarn encore production && cp -r assets/js/vendors public/build/vendors
 
 ####################################
 FROM req_php as build_php
@@ -58,6 +58,8 @@ ARG ENV=prod
 ARG DUMP_ENV=0
 
 COPY docker/php/php.prod.ini /usr/local/etc/php/php.ini
+COPY docker/php/php-fpm.prod.conf /usr/local/etc/php-fpm.conf
+COPY docker/php/www.prod.conf /usr/local/etc/php-fpm.d/www.conf
 COPY docker/php/entrypoint.sh /usr/local/bin/docker-app-entrypoint
 RUN chmod +x /usr/local/bin/docker-app-entrypoint
 
@@ -116,7 +118,7 @@ ENV COMPOSER_MEMORY_LIMIT -1
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
 # Xdebug install
-ARG XDEBUG_VERSION=2.8.1
+ARG XDEBUG_VERSION=2.9.0
 RUN set -eux; \
 	apk add --no-cache --virtual .build-deps $PHPIZE_DEPS; \
 	pecl install xdebug-$XDEBUG_VERSION; \
@@ -130,5 +132,7 @@ ENV PANTHER_CHROME_DRIVER_BINARY /usr/lib/chromium/chromedriver
 ENV PANTHER_NO_SANDBOX 1
 
 COPY docker/php/php.dev.ini /usr/local/etc/php/php.ini
+COPY docker/php/php-fpm.dev.conf /usr/local/etc/php-fpm.conf
+COPY docker/php/www.dev.conf /usr/local/etc/php-fpm.d/www.conf
 
 ENV BUILD_ENV dev
