@@ -7,6 +7,7 @@ parameters:
     hwi_oauth.authentication.entry_point.oauth.class: 'App\Security\OAuthEntryPoint'
     env(PAYPAL_CHECKOUT_CLIENT_ID): ''
     env(PAYPAL_CHECKOUT_CLIENT_SECRET): ''
+    env(PAYPAL_CHECKOUT_WEBHOOK_ID): ''
     env(PAYPAL_CHECKOUT_MODE): !php/const App\Service\Funding\PayPalHttpClientFactory::MODE_SANDBOX
     env(WEBEXTENSION_VERSION_URL): ''
 
@@ -80,6 +81,10 @@ services:
     App\Service\Funding\PaypalCheckout: ~
     #        lazy: true
     App\Service\Funding\PaypalCheckoutInterface: '@App\Service\Funding\PaypalCheckout'
+
+    App\Service\Funding\VerifyWebhookSignatureFactory:
+        arguments:
+            $webhookId: '%env(PAYPAL_CHECKOUT_WEBHOOK_ID)%'
 
     App\Service\Funding\PayPalHttpClientFactory:
         arguments:

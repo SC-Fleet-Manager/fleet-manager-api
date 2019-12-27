@@ -12,6 +12,7 @@ class MockVerifyWebhookSignatureFactory extends VerifyWebhookSignatureFactory
 
     public function __construct()
     {
+        parent::__construct('');
         $this->verifyWebhookSignature = new VerifyWebhookSignature();
     }
 
