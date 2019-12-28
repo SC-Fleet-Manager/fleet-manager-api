@@ -17,15 +17,25 @@ cd starcitizen-fleet-manager
 
 **Customize environment variables**
 
+*For development:*
 ```
 echo "APP_ENV=dev" > .env.local
 ```
 
-You can add your Discord OAuth2 config via `DISCORD_ID` and `DISCORD_SECRET`:
+*For Production:*
+```
+echo "APP_ENV=prod" > .env.local
+```
+
+You can add your Discord OAuth2 config via `DISCORD_ID` and `DISCORD_SECRET` in `.env` file:
 
 1. Create an app on https://discordapp.com/developers/applications/
 2. Generate a client secret
 3. Add your domain in OAuth2 redirects uri
+
+You can also change the `DB_NAME` and `DB_ROOT_PASSWORD` for security.
+
+Changing the Symfony `APP_SECRET` is recommended.
 
 **Customize docker-compose.override.yml**
 
