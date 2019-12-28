@@ -189,6 +189,21 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
         $shipInfo->chassisName = $this->findChassisName($shipInfo->chassisId);
         $shipInfos[$shipInfo->id] = $shipInfo;
 
+        // add Dragonfly Star Kitten Edition
+        $shipInfo = clone $officialInfos['112']; // Dragonfly Black
+        $shipInfo->id = '1112';
+        $shipInfo->name = 'Dragonfly Star Kitten Edition';
+        $shipInfo->pledgeUrl = 'https://starcitizen.tools/Star_Kitten';
+        $shipInfo->mediaUrl = 'https://starcitizen.tools/images/f/fb/Star_Kitten_Dragonfly.png';
+        $shipInfo->mediaThumbUrl = 'https://starcitizen.tools/images/thumb/f/fb/Star_Kitten_Dragonfly.png/320px-Star_Kitten_Dragonfly.png';
+        $shipInfos[$shipInfo->id] = $shipInfo;
+
+        // add Dragonfly Star Kitten Edition
+        $shipInfo = clone $officialInfos['26']; // Scythe
+        $shipInfo->id = '1026';
+        $shipInfo->name = 'Captured Vanduul Scythe';
+        $shipInfos[$shipInfo->id] = $shipInfo;
+
         return $shipInfos;
     }
 
