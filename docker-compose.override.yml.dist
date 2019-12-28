@@ -11,7 +11,7 @@ services:
                 DUMP_ENV: 1
         volumes:
             - .:/app
-        environment:
+#        environment:
             # Docker for mac : try remote_host=host.docker.internal instead of remote_connect_back
 #            XDEBUG_CONFIG: >-
 #                remote_enable=1
@@ -22,7 +22,7 @@ services:
         volumes:
             - .:/app
         ports:
-            - 127.0.0.1:8000:80
+            - 80:80
     apache-test:
         build:
             context: .
