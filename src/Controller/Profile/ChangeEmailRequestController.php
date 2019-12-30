@@ -18,11 +18,11 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ChangeEmailRequestController extends AbstractController
 {
-    private $security;
-    private $entityManager;
-    private $serializer;
-    private $validator;
-    private $bus;
+    private Security $security;
+    private EntityManagerInterface $entityManager;
+    private SerializerInterface $serializer;
+    private ValidatorInterface $validator;
+    private MessageBusInterface $bus;
 
     public function __construct(
         Security $security,

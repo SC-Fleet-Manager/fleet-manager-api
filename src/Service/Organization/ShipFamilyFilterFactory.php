@@ -10,8 +10,8 @@ use Symfony\Component\Security\Core\Security;
 
 class ShipFamilyFilterFactory
 {
-    private $security;
-    private $citizenRepository;
+    private Security $security;
+    private CitizenRepository $citizenRepository;
 
     public function __construct(Security $security, CitizenRepository $citizenRepository)
     {

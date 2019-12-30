@@ -14,12 +14,15 @@ use Symfony\Component\Security\Core\Security;
 
 class CreateFleetFileController extends AbstractController
 {
-    private $security;
-    private $fleetOrganizationGuard;
-    private $organizationFleetGenerator;
+    private Security $security;
+    private FleetOrganizationGuard $fleetOrganizationGuard;
+    private OrganizationFleetGenerator $organizationFleetGenerator;
 
-    public function __construct(Security $security, FleetOrganizationGuard $fleetOrganizationGuard, OrganizationFleetGenerator $organizationFleetGenerator)
-    {
+    public function __construct(
+        Security $security,
+        FleetOrganizationGuard $fleetOrganizationGuard,
+        OrganizationFleetGenerator $organizationFleetGenerator
+    ) {
         $this->security = $security;
         $this->fleetOrganizationGuard = $fleetOrganizationGuard;
         $this->organizationFleetGenerator = $organizationFleetGenerator;

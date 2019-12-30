@@ -60,7 +60,7 @@ services:
 
     App\Listener\TrackConnectionListener:
         tags:
-            - { name: 'kernel.event_listener', event: 'kernel.controller', method: 'onController' }
+            - { name: 'kernel.event_listener', event: 'kernel.terminate', method: 'onTerminate' }
 
     App\Listener\UpdateCitizenLastFleetListener:
         tags:

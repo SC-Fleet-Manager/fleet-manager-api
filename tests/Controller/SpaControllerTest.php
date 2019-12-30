@@ -364,6 +364,8 @@ class SpaControllerTest extends PantherTestCase
      * @group end2end
      * @group spa
      * @group spa_orgas
+     *
+     * @group toto
      */
     public function testOrganizationFleets(): void
     {
@@ -529,8 +531,9 @@ class SpaControllerTest extends PantherTestCase
             $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
                 return strpos($driver->findElement(WebDriverBy::cssSelector('.ship-family-detail-variant h4'))->getText(), 'Cutlass Black') !== false;
             });
+
             // supporter badge
-            $this->assertCount(1, $this->client->findElements(WebDriverBy::cssSelector('.ship-family-detail-variant-ownerlist .fa-hands-helping')));
+            $this->assertCount(1, $this->client->findElements(WebDriverBy::cssSelector('.ship-family-detail-variant-ownerlist .supporter-badge')));
 
             $this->client->request('GET', '/organization-fleet/not_exist'); // inexistent orga
             $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
@@ -570,7 +573,8 @@ class SpaControllerTest extends PantherTestCase
             $this->client->request('GET', '/logout');
             $this->client->request('GET', '/organization-fleet/gardiens'); // orga public
             $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
-                return (int) $driver->executeScript('return document.querySelectorAll(".card-ship").length;') > 0;
+                return (int) $driver->executeScript('return document.querySelectorAll(".card-ship").length;') > 0
+                    && stripos($driver->findElement(WebDriverBy::cssSelector('h4 a'))->getText(), 'Les Gardiens') !== false;
             });
             $this->assertCount(6, $this->client->findElements(WebDriverBy::className('card-ship')));
             $this->assertFalse($this->client->executeScript('return !!document.getElementById("select-orga");'), 'There must not be the orga selector.');
@@ -655,7 +659,7 @@ class SpaControllerTest extends PantherTestCase
             $this->assertSame('100', $this->client->findElement(WebDriverBy::cssSelector('#backings-table tbody tr:nth-child(2) td:nth-child(4)'))->getText());
             $this->assertSame('0', $this->client->findElement(WebDriverBy::cssSelector('#backings-table tbody tr:nth-child(2) td:nth-child(5)'))->getText());
 
-            $this->assertCount(1, $this->client->findElements(WebDriverBy::cssSelector('.navbar-text .fa-hands-helping')));
+            $this->assertCount(1, $this->client->findElements(WebDriverBy::cssSelector('.navbar-text .supporter-badge')));
 
             $this->login('14203774-91fa-4300-b464-bcda42697b10');
             $this->client->request('GET', '/supporters');

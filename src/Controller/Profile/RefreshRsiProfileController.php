@@ -14,10 +14,10 @@ use Symfony\Component\Security\Core\Security;
 
 class RefreshRsiProfileController extends AbstractController
 {
-    private $security;
-    private $citizenInfosProvider;
-    private $citizenRefresher;
-    private $entityManager;
+    private Security $security;
+    private CitizenInfosProviderInterface $citizenInfosProvider;
+    private CitizenRefresher $citizenRefresher;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(
         Security $security,

@@ -19,12 +19,12 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ResolveConflictConnectController extends AbstractController
 {
-    private $security;
-    private $validator;
-    private $serializer;
-    private $entityManager;
-    private $userRepository;
-    private $eventDispatcher;
+    private Security $security;
+    private ValidatorInterface $validator;
+    private SerializerInterface $serializer;
+    private EntityManagerInterface $entityManager;
+    private UserRepository $userRepository;
+    private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
         Security $security,

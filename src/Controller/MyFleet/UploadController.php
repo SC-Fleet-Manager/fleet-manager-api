@@ -20,12 +20,15 @@ use Symfony\Component\Security\Core\Security;
 
 class UploadController extends AbstractController
 {
-    private $security;
-    private $fleetUploadHandler;
-    private $logger;
+    private Security $security;
+    private FleetUploadHandler $fleetUploadHandler;
+    private LoggerInterface $logger;
 
-    public function __construct(Security $security, FleetUploadHandler $fleetUploadHandler, LoggerInterface $myFleetLogger)
-    {
+    public function __construct(
+        Security $security,
+        FleetUploadHandler $fleetUploadHandler,
+        LoggerInterface $myFleetLogger
+    ) {
         $this->security = $security;
         $this->fleetUploadHandler = $fleetUploadHandler;
         $this->logger = $myFleetLogger;

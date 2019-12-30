@@ -15,8 +15,8 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class ExportMembersController extends AbstractController
 {
-    private $security;
-    private $organizationRepository;
+    private Security $security;
+    private OrganizationRepository $organizationRepository;
 
     public function __construct(Security $security, OrganizationRepository $organizationRepository)
     {

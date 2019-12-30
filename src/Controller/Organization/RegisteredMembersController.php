@@ -15,13 +15,17 @@ use Symfony\Component\Security\Core\Security;
 
 class RegisteredMembersController extends AbstractController
 {
-    private $security;
-    private $organizationMembersInfosProvider;
-    private $organizationMembersUtil;
-    private $organizationRepository;
+    private Security $security;
+    private OrganizationMembersInfosProviderInterface $organizationMembersInfosProvider;
+    private OrganizationMembersUtil $organizationMembersUtil;
+    private OrganizationRepository $organizationRepository;
 
-    public function __construct(Security $security, OrganizationMembersInfosProviderInterface $organizationMembersInfosProvider, OrganizationMembersUtil $organizationMembersUtil, OrganizationRepository $organizationRepository)
-    {
+    public function __construct(
+        Security $security,
+        OrganizationMembersInfosProviderInterface $organizationMembersInfosProvider,
+        OrganizationMembersUtil $organizationMembersUtil,
+        OrganizationRepository $organizationRepository
+    ) {
         $this->security = $security;
         $this->organizationMembersInfosProvider = $organizationMembersInfosProvider;
         $this->organizationMembersUtil = $organizationMembersUtil;
