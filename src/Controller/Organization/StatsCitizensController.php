@@ -3,21 +3,31 @@
 namespace App\Controller\Organization;
 
 use App\Domain\SpectrumIdentification;
+use App\Entity\Citizen;
+use App\Entity\CitizenOrganization;
+use App\Entity\User;
 use App\Repository\CitizenRepository;
 use App\Service\Organization\Fleet\FleetOrganizationGuard;
 use App\Service\Organization\MembersInfosProvider\OrganizationMembersInfosProviderInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Security;
 
 class StatsCitizensController extends AbstractController
 {
-    private $organizationMembersInfosProvider;
-    private $fleetOrganizationGuard;
-    private $citizenRepository;
+    private Security $security;
+    private OrganizationMembersInfosProviderInterface $organizationMembersInfosProvider;
+    private FleetOrganizationGuard $fleetOrganizationGuard;
+    private CitizenRepository $citizenRepository;
 
-    public function __construct(OrganizationMembersInfosProviderInterface $organizationMembersInfosProvider, FleetOrganizationGuard $fleetOrganizationGuard, CitizenRepository $citizenRepository)
-    {
+    public function __construct(
+        Security $security,
+        OrganizationMembersInfosProviderInterface $organizationMembersInfosProvider,
+        FleetOrganizationGuard $fleetOrganizationGuard,
+        CitizenRepository $citizenRepository
+    ) {
+        $this->security = $security;
         $this->organizationMembersInfosProvider = $organizationMembersInfosProvider;
         $this->fleetOrganizationGuard = $fleetOrganizationGuard;
         $this->citizenRepository = $citizenRepository;
@@ -40,7 +50,32 @@ class StatsCitizensController extends AbstractController
 
         // Citizen with most Ships
         $citizenMostShips = $this->citizenRepository->statCitizenWithMostShipsByOrga(new SpectrumIdentification($organizationSid));
-        $maxCountShips = $citizenMostShips !== null ? $citizenMostShips['maxShip'] : 0;
+        $maxCountShips = 0;
+        $viewBestCitizen = null;
+        if ($citizenMostShips !== null) {
+            $maxCountShips = $citizenMostShips['maxShip'];
+            /** @var Citizen $bestCitizen */
+            $bestCitizen = $citizenMostShips[0];
+            $viewBestCitizen = [
+                'id' => $bestCitizen->getId(),
+                'handle' => $bestCitizen->getActualHandle()->getHandle(),
+            ];
+            $orga = $bestCitizen->getOrgaBySid($organizationSid);
+            if ($orga !== null) {
+                $myself = false;
+                /** @var User $user */
+                $user = $this->security->getUser();
+                if ($user !== null && $user->getCitizen() !== null && $user->getCitizen()->getId()->equals($bestCitizen->getId())) {
+                    $myself = true;
+                }
+                if (!$myself && $orga->getVisibility() === CitizenOrganization::VISIBILITY_PRIVATE) {
+                    $viewBestCitizen['handle'] = 'Anonymous';
+                } elseif ($orga->getVisibility() === CitizenOrganization::VISIBILITY_ADMIN
+                    && !$this->security->isGranted('IS_ADMIN_MANAGEABLE', new SpectrumIdentification($organizationSid))) {
+                    $viewBestCitizen['handle'] = 'Anonymous';
+                }
+            }
+        }
 
         // Column bars of number of owned ships per citizens : x Number of Ships y number of citizens.
         $shipsPerCitizen = $this->citizenRepository->statShipsPerCitizenByOrga(new SpectrumIdentification($organizationSid));
@@ -61,7 +96,7 @@ class StatsCitizensController extends AbstractController
             'totalMembers' => $totalMembers,
             'averageShipsPerCitizen' => $averageShipsPerCitizen,
             'citizenMostShips' => [
-                'citizen' => $citizenMostShips[0] ?? null,
+                'citizen' => $viewBestCitizen,
                 'countShips' => $maxCountShips,
             ],
             'chartShipsPerCitizen' => [
