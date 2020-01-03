@@ -14,13 +14,17 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class ExportFleetController extends AbstractController
 {
-    private $security;
-    private $fleetOrganizationGuard;
-    private $organizationFleetExporter;
-    private $serializer;
+    private Security $security;
+    private FleetOrganizationGuard $fleetOrganizationGuard;
+    private OrganizationFleetExporter $organizationFleetExporter;
+    private SerializerInterface $serializer;
 
-    public function __construct(Security $security, FleetOrganizationGuard $fleetOrganizationGuard, OrganizationFleetExporter $organizationFleetExporter, SerializerInterface $serializer)
-    {
+    public function __construct(
+        Security $security,
+        FleetOrganizationGuard $fleetOrganizationGuard,
+        OrganizationFleetExporter $organizationFleetExporter,
+        SerializerInterface $serializer
+    ) {
         $this->security = $security;
         $this->fleetOrganizationGuard = $fleetOrganizationGuard;
         $this->organizationFleetExporter = $organizationFleetExporter;

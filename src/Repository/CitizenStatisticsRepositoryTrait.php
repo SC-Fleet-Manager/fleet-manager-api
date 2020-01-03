@@ -24,7 +24,7 @@ trait CitizenStatisticsRepositoryTrait
             INNER JOIN citizenOrga.organization orga WITH orga.organizationSid = :sid
         ';
         $query = $this->_em->createQuery($dql);
-        $query->setParameter('sid', mb_strtolower($sid->getSid()));
+        $query->setParameter('sid', $sid->getSid());
         $query->enableResultCache(300);
 
         return $query->getSingleScalarResult();
@@ -52,7 +52,7 @@ trait CitizenStatisticsRepositoryTrait
         $rsm = new ResultSetMapping();
         $rsm->addScalarResult('avgShips', 'avgShips');
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
-        $stmt->setParameter('sid', mb_strtolower($sid->getSid()));
+        $stmt->setParameter('sid', $sid->getSid());
         $stmt->enableResultCache(300);
 
         return $stmt->getSingleScalarResult();
@@ -70,7 +70,7 @@ trait CitizenStatisticsRepositoryTrait
             ORDER BY maxShip DESC
         ';
         $query = $this->_em->createQuery($dql);
-        $query->setParameter('sid', mb_strtolower($sid->getSid()));
+        $query->setParameter('sid', $sid->getSid());
         $query->enableResultCache(300);
         $query->setMaxResults(1);
 
@@ -90,7 +90,7 @@ trait CitizenStatisticsRepositoryTrait
             GROUP BY c.id, citizenOrga.id
         ';
         $query = $this->_em->createQuery($dql);
-        $query->setParameter('sid', mb_strtolower($sid->getSid()));
+        $query->setParameter('sid', $sid->getSid());
         $query->enableResultCache(300);
 
         return $query->getResult();

@@ -9,6 +9,8 @@ use App\Entity\User;
 use App\Exception\NotFoundHandleSCException;
 use App\Form\Dto\LinkAccount;
 use App\Form\LinkAccountForm;
+use App\Repository\CitizenRepository;
+use App\Repository\UserRepository;
 use App\Service\Citizen\CitizenRefresher;
 use App\Service\Citizen\InfosProvider\CitizenInfosProviderInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -24,15 +26,15 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class LinkAccountController extends AbstractController
 {
-    private $formFactory;
-    private $security;
-    private $serializer;
-    private $entityManager;
-    private $citizenRepository;
-    private $userRepository;
-    private $citizenRefresher;
-    private $citizenInfosProvider;
-    private $profileLinkAccountLogger;
+    private FormFactoryInterface $formFactory;
+    private Security $security;
+    private SerializerInterface $serializer;
+    private EntityManagerInterface $entityManager;
+    private CitizenRepository $citizenRepository;
+    private UserRepository $userRepository;
+    private CitizenRefresher $citizenRefresher;
+    private CitizenInfosProviderInterface $citizenInfosProvider;
+    private LoggerInterface $profileLinkAccountLogger;
 
     public function __construct(
         FormFactoryInterface $formFactory,

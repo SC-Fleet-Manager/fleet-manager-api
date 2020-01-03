@@ -18,12 +18,12 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class LinkEmailPasswordController extends AbstractController
 {
-    private $security;
-    private $entityManager;
-    private $serializer;
-    private $validator;
-    private $bus;
-    private $passwordEncoder;
+    private Security $security;
+    private EntityManagerInterface $entityManager;
+    private SerializerInterface $serializer;
+    private ValidatorInterface $validator;
+    private MessageBusInterface $bus;
+    private UserPasswordEncoderInterface $passwordEncoder;
 
     public function __construct(
         Security $security,

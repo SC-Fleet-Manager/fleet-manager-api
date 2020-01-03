@@ -6,6 +6,8 @@ use App\Domain\SpectrumIdentification;
 use App\Entity\Citizen;
 use App\Entity\Organization;
 use App\Entity\User;
+use App\Repository\CitizenRepository;
+use App\Repository\OrganizationRepository;
 use App\Service\Citizen\CitizenRefresher;
 use App\Service\Citizen\InfosProvider\CitizenInfosProviderInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -16,12 +18,12 @@ use Symfony\Component\Security\Core\Security;
 
 class RefreshMemberController extends AbstractController
 {
-    private $security;
-    private $citizenInfosProvider;
-    private $citizenRefresher;
-    private $entityManager;
-    private $organizationRepository;
-    private $citizenRepository;
+    private Security $security;
+    private CitizenInfosProviderInterface $citizenInfosProvider;
+    private CitizenRefresher $citizenRefresher;
+    private EntityManagerInterface $entityManager;
+    private OrganizationRepository $organizationRepository;
+    private CitizenRepository $citizenRepository;
 
     public function __construct(
         Security $security,

@@ -13,9 +13,9 @@
     <link rel="preload" href="{{ preload(asset('build/fonts/josefin.woff2'), {'as': 'font'}) }}" as="font" type="font/woff2">
     <link rel="preload" href="{{ preload(asset('build/fonts/fa-brands-400.woff2'), {'as': 'font'}) }}" as="font" type="font/woff2">
     <link rel="preload" href="{{ preload(asset('build/fonts/fa-solid-900.woff2'), {'as': 'font'}) }}" as="font" type="font/woff2">
-    <link rel="stylesheet" href="{{ preload(asset('build/home.css'), {'as': 'style'}) }}">
+    {{ encore_entry_link_tags('home') }}
 {% endblock %}
 
 {% block javascripts %}
-    <script src="{{ preload(asset('build/home.js'), {'as': 'script'}) }}"></script>
+    {{ encore_entry_script_tags('home') }}
 {% endblock %}

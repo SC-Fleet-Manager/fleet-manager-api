@@ -28,6 +28,9 @@ class AdminManageableVoter extends Voter
      */
     protected function voteOnAttribute($attribute, $organizationSid, TokenInterface $token): bool
     {
+        if (!$organizationSid instanceof SpectrumIdentification) {
+            throw new \InvalidArgumentException('Argument $organizationSid must be a '.SpectrumIdentification::class);
+        }
         /** @var User $me */
         $me = $token->getUser();
         if (!$me instanceof User) {

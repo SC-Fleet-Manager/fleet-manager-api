@@ -24,8 +24,13 @@ class PaypalCheckout implements PaypalCheckoutInterface
     private ApiContext $apiContext;
     private VerifyWebhookSignatureFactory $verifyWebhookSignatureFactory;
 
-    public function __construct(/*UrlGeneratorInterface $urlGenerator, */ LoggerInterface $fundingLogger, PayPalHttpClient $client, ApiContext $apiContext, VerifyWebhookSignatureFactory $verifyWebhookSignatureFactory)
-    {
+    public function __construct(
+        /*UrlGeneratorInterface $urlGenerator, */
+        LoggerInterface $fundingLogger,
+        PayPalHttpClient $client,
+        ApiContext $apiContext,
+        VerifyWebhookSignatureFactory $verifyWebhookSignatureFactory
+    ) {
 //        $this->urlGenerator = $urlGenerator;
         $this->fundingLogger = $fundingLogger;
         $this->client = $client;
@@ -35,6 +40,8 @@ class PaypalCheckout implements PaypalCheckoutInterface
 
     public function create(Funding $funding, User $user, string $locale): void
     {
+        $amountValue = bcdiv($funding->getAmount(), 100, 2);
+
         /** @see https://developer.paypal.com/docs/api/orders/v2/#orders_create */
         $orderRequest = new OrdersCreateRequest();
         $orderRequest->prefer('return=representation');
@@ -46,7 +53,7 @@ class PaypalCheckout implements PaypalCheckoutInterface
             'application_context' => [
                 'locale' => str_replace('_', '-', $locale),
                 'landing_page' => 'BILLING',
-                'shipping_preferences' => 'NO_SHIPPING', // digital purchase
+                'shipping_preferences' => 'NO_SHIPPING', // for digital purchases
                 'user_action' => 'PAY_NOW',
 //                'return_url' => $this->urlGenerator->generate('funding_paypal_return', [], UrlGeneratorInterface::ABSOLUTE_URL),
 //                'cancel_url' => $this->urlGenerator->generate('funding_paypal_cancel', [], UrlGeneratorInterface::ABSOLUTE_URL),
@@ -58,7 +65,24 @@ class PaypalCheckout implements PaypalCheckoutInterface
                     'custom_id' => $funding->getId()->toString() ?? '',
                     'amount' => [
                         'currency_code' => 'USD',
-                        'value' => bcdiv($funding->getAmount(), 100, 2),
+                        'value' => $amountValue,
+                        'breakdown' => [
+                            'item_total' => [
+                                'currency_code' => 'USD',
+                                'value' => $amountValue,
+                            ],
+                        ],
+                    ],
+                    'items' => [
+                        [
+                            'name' => 'Fleet Manager backing',
+                            'unit_amount' => [
+                                'currency_code' => 'USD',
+                                'value' => $amountValue,
+                            ],
+                            'quantity' => 1,
+                            'category' => 'DIGITAL_GOODS',
+                        ],
                     ],
                 ],
             ],
@@ -140,108 +164,85 @@ class PaypalCheckout implements PaypalCheckoutInterface
 
     public function complete(Funding $funding): void
     {
-        $orderRequest = new OrdersGetRequest($funding->getPaypalOrderId());
-        $response = $this->client->execute($orderRequest);
+        $this->refreshOrder($funding);
 
-        if ($response->statusCode >= 400) {
-            // TODO : use MOM!
-            $this->fundingLogger->error('[Get Order] Unable to get the order from PayPal.', ['response' => $response]);
+        if ($funding->getPaypalStatus() === 'COMPLETED') {
+            $this->fundingLogger->info('[Capture Order] An order has been completed.', ['fundingId' => $funding->getId()]);
 
-            return;
+            // TODO : send email with $response->payer->email_address
         }
-
-        $this->fundingLogger->info('[Capture Order] An order has been completed.', ['response' => $response, 'fundingId' => $funding->getId()]);
-
-        foreach ($response->result->purchase_units as $purchaseUnit) {
-            if ($purchaseUnit->reference_id !== self::BACKING_REFID) {
-                continue;
-            }
-            $funding->setPaypalPurchase($this->transformPurchase($purchaseUnit));
-            foreach ($purchaseUnit->payments->captures as $paymentCapture) {
-                if ($paymentCapture->custom_id !== $funding->getId()->toString()) {
-                    continue;
-                }
-                $funding->setPaypalStatus($paymentCapture->status);
-                $netAmount = $paymentCapture->seller_receivable_breakdown->net_amount->value ?? null;
-                if ($netAmount !== null) {
-                    $netAmount = (int) bcmul($netAmount, 100);
-                }
-                $funding->setNetAmount($netAmount ?? $funding->getAmount());
-            }
-        }
-
-        // TODO : send email with $response->payer->email_address
     }
 
     public function refund(Funding $funding): void
     {
-        $orderRequest = new OrdersGetRequest($funding->getPaypalOrderId());
-        $response = $this->client->execute($orderRequest);
+        $this->refreshOrder($funding);
 
-        if ($response->statusCode >= 400) {
-            // TODO : use MOM!
-            $this->fundingLogger->error('[Get Order] Unable to get the order from PayPal.', ['response' => $response]);
+        if ($funding->getPaypalStatus() === 'REFUNDED' || $funding->getPaypalStatus() === 'PARTIALLY_REFUNDED') {
+            $this->fundingLogger->info('[Capture Order] An order has been (partially) refunded.', ['fundingId' => $funding->getId()]);
 
-            return;
+            // TODO : send email with $response->payer->email_address
         }
-
-        foreach ($response->result->purchase_units as $purchaseUnit) {
-            if ($purchaseUnit->reference_id !== self::BACKING_REFID) {
-                continue;
-            }
-            $funding->setPaypalPurchase($this->transformPurchase($purchaseUnit));
-            foreach ($purchaseUnit->payments->captures as $paymentCapture) {
-                if ($paymentCapture->custom_id !== $funding->getId()->toString()) {
-                    continue;
-                }
-                $funding->setPaypalStatus($paymentCapture->status);
-            }
-            $refundedAmount = 0;
-            $refundedNetAmount = 0;
-            $refundedAt = null;
-            foreach ($purchaseUnit->payments->refunds as $paymentRefund) {
-                $refundedAmount += (int) bcmul($paymentRefund->seller_payable_breakdown->gross_amount->value, 100);
-                $refundedNetAmount += (int) bcmul($paymentRefund->seller_payable_breakdown->net_amount->value, 100);
-                $createTime = new \DateTimeImmutable($paymentRefund->create_time);
-                if ($refundedAt === null || $createTime < $refundedAt) {
-                    $refundedAt = $createTime;
-                }
-            }
-            $funding->setRefundedAmount($refundedAmount);
-            $funding->setRefundedNetAmount($refundedNetAmount);
-            $funding->setRefundedAt($refundedAt);
-        }
-
-        // TODO : send email with $response->payer->email_address
     }
 
     public function deny(Funding $funding): void
     {
-        $orderRequest = new OrdersGetRequest($funding->getPaypalOrderId());
-        $response = $this->client->execute($orderRequest);
+        $this->refreshOrder($funding);
 
-        if ($response->statusCode >= 400) {
+        if ($funding->getPaypalStatus() === 'DENIED') {
+            $this->fundingLogger->info('[Capture Order] An order has been denied.', ['fundingId' => $funding->getId()]);
+
+            // TODO : send email with $response->payer->email_address
+        }
+    }
+
+    public function refreshOrder(Funding $funding): void
+    {
+        $orderRequest = new OrdersGetRequest($funding->getPaypalOrderId());
+
+        try {
+            $response = $this->client->execute($orderRequest);
+        } catch (HttpException $exception) {
             // TODO : use MOM!
-            $this->fundingLogger->error('[Deny Order] Unable to get the order from PayPal.', ['response' => $response]);
+            $this->fundingLogger->error('[Get Order] Unable to get the order from PayPal.', ['body' => $exception->getMessage(), 'statusCode' => $exception->statusCode, 'exception' => $exception]);
 
             return;
         }
 
-        $funding->setPaypalStatus('DENIED');
         foreach ($response->result->purchase_units as $purchaseUnit) {
             if ($purchaseUnit->reference_id !== self::BACKING_REFID) {
                 continue;
             }
             $funding->setPaypalPurchase($this->transformPurchase($purchaseUnit));
-            foreach ($purchaseUnit->payments->captures as $paymentCapture) {
-                if ($paymentCapture->custom_id !== $funding->getId()->toString()) {
-                    continue;
+            if (isset($purchaseUnit->payments->captures)) {
+                foreach ($purchaseUnit->payments->captures as $paymentCapture) {
+                    if ($paymentCapture->custom_id !== $funding->getId()->toString()) {
+                        continue;
+                    }
+                    $funding->setPaypalStatus($paymentCapture->status);
+                    $netAmount = $paymentCapture->seller_receivable_breakdown->net_amount->value ?? null;
+                    if ($netAmount !== null) {
+                        $netAmount = (int) bcmul($netAmount, 100);
+                    }
+                    $funding->setNetAmount($netAmount ?? $funding->getAmount());
                 }
-                $funding->setPaypalStatus($paymentCapture->status);
+            }
+            if (isset($purchaseUnit->payments->refunds)) {
+                $refundedAmount = 0;
+                $refundedNetAmount = 0;
+                $refundedAt = null;
+                foreach ($purchaseUnit->payments->refunds as $paymentRefund) {
+                    $refundedAmount += (int) bcmul($paymentRefund->seller_payable_breakdown->gross_amount->value, 100);
+                    $refundedNetAmount += (int) bcmul($paymentRefund->seller_payable_breakdown->net_amount->value, 100);
+                    $createTime = new \DateTimeImmutable($paymentRefund->create_time);
+                    if ($refundedAt === null || $createTime < $refundedAt) {
+                        $refundedAt = $createTime;
+                    }
+                }
+                $funding->setRefundedAmount($refundedAmount);
+                $funding->setRefundedNetAmount($refundedNetAmount);
+                $funding->setRefundedAt($refundedAt);
             }
         }
-
-        // TODO : send email with $response->payer->email_address
     }
 
     public function verifySignature(Request $request): bool

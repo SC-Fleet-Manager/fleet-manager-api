@@ -5,6 +5,7 @@ namespace App\Controller\Organization;
 use App\Domain\SpectrumIdentification;
 use App\Entity\Organization;
 use App\Entity\User;
+use App\Repository\OrganizationRepository;
 use App\Service\Organization\MembersInfosProvider\OrganizationMembersInfosProviderInterface;
 use App\Service\Organization\OrganizationMembersUtil;
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,11 +16,11 @@ use Symfony\Component\Security\Core\Security;
 
 class RefreshOrganizationController extends AbstractController
 {
-    private $security;
-    private $organizationMembersInfosProvider;
-    private $organizationMembersUtil;
-    private $entityManager;
-    private $organizationRepository;
+    private Security $security;
+    private OrganizationMembersInfosProviderInterface $organizationMembersInfosProvider;
+    private OrganizationMembersUtil $organizationMembersUtil;
+    private EntityManagerInterface $entityManager;
+    private OrganizationRepository $organizationRepository;
 
     public function __construct(
         Security $security,
