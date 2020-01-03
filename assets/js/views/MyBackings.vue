@@ -132,10 +132,10 @@
                 let coinsBalance = 0;
                 this.totalEffectiveAmount = 0;
                 for (let b of backings) {
-                    this.totalEffectiveAmount += b.effectiveAmount;
-                    b.coins = b.effectiveAmount;
                     if (b.paypalStatus === 'COMPLETED' || b.paypalStatus === 'REFUNDED' || b.paypalStatus === 'PARTIALLY_REFUNDED') {
+                        b.coins = b.effectiveAmount;
                         coinsBalance += b.coins;
+                        this.totalEffectiveAmount += b.effectiveAmount;
                     }
                     b.coinsBalance = coinsBalance;
                 }
