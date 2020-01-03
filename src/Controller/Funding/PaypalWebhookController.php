@@ -69,7 +69,11 @@ class PaypalWebhookController extends AbstractController implements LoggerAwareI
                 $this->handlePaymentCaptureDenied($payload);
                 break;
             case 'PAYMENT.CAPTURE.COMPLETED':
+            case 'CHECKOUT.ORDER.APPROVED':
                 $this->handlePaymentCaptureCompleted($payload);
+                break;
+            case 'PAYMENT.SALE.COMPLETED':
+                $this->handlePaymentSaleCompleted($payload);
                 break;
             default:
                 $this->logger->warning('[PayPal Webhook] the event {event} is not implemented.', ['event' => $payload['event_type'], 'payload' => $payload]);
@@ -84,16 +88,42 @@ class PaypalWebhookController extends AbstractController implements LoggerAwareI
     {
         $this->entityManager->clear();
 
+        $fundingId = $payload['resource']['custom_id'] ?? null;
+
         /** @var Funding $funding */
         $funding = $this->fundingRepository->find($payload['resource']['custom_id']);
         if ($funding === null) {
-            $this->logger->error('Funding {id} not found.', ['id' => $payload['resource']['custom_id'], 'payload' => $payload]);
+            $this->logger->error('Funding {id} not found.', ['id' => $fundingId, 'payload' => $payload]);
 
-            throw new NotFoundHttpException(sprintf('Funding %s not found.', $payload['resource']['custom_id']));
+            throw new NotFoundHttpException(sprintf('Funding %s not found.', $fundingId));
         }
 
         // search if we have already handled
-        if (!in_array($funding->getPaypalStatus(), ['CREATED', 'PENDING'], true)) {
+        if (in_array($funding->getPaypalStatus(), ['CREATED', 'PENDING'], true)) {
+            return;
+        }
+
+        $this->paypalCheckout->complete($funding);
+        $this->entityManager->flush();
+        $this->eventDispatcher->dispatch(new FundingUpdatedEvent($funding));
+    }
+
+    private function handlePaymentSaleCompleted(array $payload): void
+    {
+        $this->entityManager->clear();
+
+        $fundingId = $payload['resource']['custom'] ?? null;
+
+        /** @var Funding $funding */
+        $funding = $this->fundingRepository->find($fundingId);
+        if ($funding === null) {
+            $this->logger->error('Funding {id} not found.', ['id' => $fundingId, 'payload' => $payload]);
+
+            throw new NotFoundHttpException(sprintf('Funding %s not found.', $fundingId));
+        }
+
+        // search if we have already handled
+        if (in_array($funding->getPaypalStatus(), ['CREATED', 'PENDING'], true)) {
             return;
         }
 
@@ -106,12 +136,14 @@ class PaypalWebhookController extends AbstractController implements LoggerAwareI
     {
         $this->entityManager->clear();
 
-        /** @var Funding $funding */
-        $funding = $this->fundingRepository->find($payload['resource']['custom_id']);
-        if ($funding === null) {
-            $this->logger->error('Funding {id} not found.', ['id' => $payload['resource']['custom_id'], 'payload' => $payload]);
+        $fundingId = $payload['resource']['custom_id'] ?? null;
 
-            throw new NotFoundHttpException(sprintf('Funding %s not found.', $payload['resource']['custom_id']));
+        /** @var Funding $funding */
+        $funding = $this->fundingRepository->find($fundingId);
+        if ($funding === null) {
+            $this->logger->error('Funding {id} not found.', ['id' => $fundingId, 'payload' => $payload]);
+
+            throw new NotFoundHttpException(sprintf('Funding %s not found.', $fundingId));
         }
 
         // search if we have already handled this Refund by checking its ID
@@ -136,12 +168,14 @@ class PaypalWebhookController extends AbstractController implements LoggerAwareI
     {
         $this->entityManager->clear();
 
-        /** @var Funding $funding */
-        $funding = $this->fundingRepository->find($payload['resource']['custom_id']);
-        if ($funding === null) {
-            $this->logger->error('Funding {id} not found.', ['id' => $payload['resource']['custom_id'], 'payload' => $payload]);
+        $fundingId = $payload['resource']['custom_id'] ?? null;
 
-            throw new NotFoundHttpException(sprintf('Funding %s not found.', $payload['resource']['custom_id']));
+        /** @var Funding $funding */
+        $funding = $this->fundingRepository->find($fundingId);
+        if ($funding === null) {
+            $this->logger->error('Funding {id} not found.', ['id' => $fundingId, 'payload' => $payload]);
+
+            throw new NotFoundHttpException(sprintf('Funding %s not found.', $fundingId));
         }
 
         if ($funding->getPaypalStatus() === 'DENIED') {

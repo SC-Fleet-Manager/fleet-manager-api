@@ -543,6 +543,7 @@ class SpaControllerTest extends PantherTestCase
             $this->client->request('GET', '/logout');
             $this->login('d92e229e-e743-4583-905a-e02c57eacfe0'); // orga flk
             $this->client->request('GET', '/organization-fleet/gardiens'); // orga public + not my orga
+            $this->client->refreshCrawler();
             $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
                 return (int) $driver->executeScript('return document.querySelectorAll(".card-ship").length;') > 0
                     && !$driver->executeScript('return !!document.getElementById("select-orga");');
@@ -645,13 +646,11 @@ class SpaControllerTest extends PantherTestCase
             $this->assertSame("$\n52.33", $this->client->findElement(WebDriverBy::id('total-backed'))->getText());
             $this->assertSame('5133', $this->client->findElement(WebDriverBy::id('count-fm-coins'))->getText());
 
-            $this->assertSame('November 17, 2019 12:00 AM', $this->client->findElement(WebDriverBy::cssSelector('#backings-table tbody tr:nth-child(1) td:nth-child(1)'))->getText());
             $this->assertSame('Completed', $this->client->findElement(WebDriverBy::cssSelector('#backings-table tbody tr:nth-child(1) td:nth-child(2)'))->getText());
             $this->assertSame('$51.33', $this->client->findElement(WebDriverBy::cssSelector('#backings-table tbody tr:nth-child(1) td:nth-child(3)'))->getText());
             $this->assertSame('5133', $this->client->findElement(WebDriverBy::cssSelector('#backings-table tbody tr:nth-child(1) td:nth-child(4)'))->getText());
             $this->assertSame('5133', $this->client->findElement(WebDriverBy::cssSelector('#backings-table tbody tr:nth-child(1) td:nth-child(5)'))->getText());
 
-            $this->assertSame('November 15, 2019 11:22 AM', $this->client->findElement(WebDriverBy::cssSelector('#backings-table tbody tr:nth-child(2) td:nth-child(1)'))->getText());
             $this->assertSame('Created', $this->client->findElement(WebDriverBy::cssSelector('#backings-table tbody tr:nth-child(2) td:nth-child(2)'))->getText());
             $this->assertSame('$1.00', $this->client->findElement(WebDriverBy::cssSelector('#backings-table tbody tr:nth-child(2) td:nth-child(3)'))->getText());
             $this->assertSame('100', $this->client->findElement(WebDriverBy::cssSelector('#backings-table tbody tr:nth-child(2) td:nth-child(4)'))->getText());

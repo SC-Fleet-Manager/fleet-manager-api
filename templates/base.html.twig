@@ -36,7 +36,7 @@
             <link rel="preload" href="{{ preload(asset('build/fonts/josefin.woff2'), {'as': 'font'}) }}" as="font" type="font/woff2">
             <link rel="preload" href="{{ preload(asset('build/fonts/fa-brands-400.woff2'), {'as': 'font'}) }}" as="font" type="font/woff2">
             <link rel="preload" href="{{ preload(asset('build/fonts/fa-solid-900.woff2'), {'as': 'font'}) }}" as="font" type="font/woff2">
-            <link rel="stylesheet" href="{{ preload(asset('build/main.css'), {'as': 'style'}) }}">
+            {{ encore_entry_link_tags('main') }}
         {% endblock %}
     </head>
 
@@ -45,9 +45,8 @@
             <div id="app"></div>
         {% endblock %}
 
-        <script src="{{ preload(asset('build/runtime.js'), {'as': 'script'}) }}"></script>
         {% block javascripts %}
-            <script src="{{ preload(asset('build/main.js'), {'as': 'script'}) }}"></script>
+            {{ encore_entry_script_tags('main') }}
         {% endblock %}
         {% if app.environment == 'prod' %}
             {% block gtag %}

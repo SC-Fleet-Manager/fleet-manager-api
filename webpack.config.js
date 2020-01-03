@@ -12,8 +12,10 @@ Encore
     .cleanupOutputBeforeBuild()
     .enableSingleRuntimeChunk()
     .enableBuildNotifications()
+    .splitEntryChunks()
     .enableSourceMaps(!Encore.isProduction())
     .enableVersioning(Encore.isProduction())
+    .enableIntegrityHashes(Encore.isProduction())
 
     .enableSassLoader()
     .enablePostCssLoader()
