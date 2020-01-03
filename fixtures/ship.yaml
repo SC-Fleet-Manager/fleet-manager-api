@@ -174,3 +174,20 @@ App\Entity\Ship:
         cost: 45
         insured: true
         fleet: '@fleet_pulsar42_member2_v1'
+    ship_orgastats1_auroramr:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("0b4e0af9-fcbd-48fb-8a76-c3bd4342178e"))>']
+        rawData:
+            manufacturer: "RSI"
+            name: "Aurora MR"
+            lti: true
+            warbond: false
+            package_id: "12345678"
+            pledge: "Aurora MR Standalone"
+            pledge_date: "May 14, 2019"
+            cost: "<('$45.00 USD')>"
+        name: 'Aurora MR'
+        manufacturer: 'RSI'
+        pledgeDate: '<(new \DateTimeImmutable("2019-05-14"))>'
+        cost: 45
+        insured: true
+        fleet: '@fleet_orgastats1'

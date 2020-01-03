@@ -36,10 +36,7 @@ class StatsCitizensControllerTest extends WebTestCase
             'citizenMostShips' => [
                 'citizen' => [
                     'id' => '08cc11ec-26ac-4638-8e03-c40b857d32bd',
-                    'nickname' => 'I Have Ships',
-                    'actualHandle' => [
-                        'handle' => 'ihaveships',
-                    ],
+                    'handle' => 'ihaveships',
                 ],
                 'countShips' => '6',
             ],
@@ -68,6 +65,35 @@ class StatsCitizensControllerTest extends WebTestCase
                     8 => 0,
                     9 => 0,
                 ],
+            ],
+        ], $json);
+    }
+
+    /**
+     * @group functional
+     * @group organization
+     */
+    public function testCitizenWithMostShipsAnonymous(): void
+    {
+        /** @var User $user */
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'orgaStats2']);
+        $this->logIn($user);
+        $this->client->xmlHttpRequest('GET', '/api/organization/orgastats/stats/citizens', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+        ]);
+
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+        $json = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertArraySubset([
+            'countCitizens' => 2,
+            'totalMembers' => 5,
+            'averageShipsPerCitizen' => 0.5,
+            'citizenMostShips' => [
+                'citizen' => [
+                    'id' => '79245ea3-73c8-4d34-83e6-2adff81f417d',
+                    'handle' => 'Anonymous', // orgaStats1 with visibility=private
+                ],
+                'countShips' => '1',
             ],
         ], $json);
     }

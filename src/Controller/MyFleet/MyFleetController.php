@@ -11,8 +11,8 @@ use Symfony\Component\Security\Core\Security;
 
 class MyFleetController extends AbstractController
 {
-    private $security;
-    private $shipInfosProvider;
+    private Security $security;
+    private ShipInfosProviderInterface $shipInfosProvider;
 
     public function __construct(Security $security, ShipInfosProviderInterface $shipInfosProvider)
     {

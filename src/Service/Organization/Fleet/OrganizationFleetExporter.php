@@ -12,12 +12,15 @@ use Symfony\Component\Security\Core\Security;
 
 class OrganizationFleetExporter
 {
-    private $citizenRepository;
-    private $security;
-    private $organizationMembersInfosProvider;
+    private CitizenRepository $citizenRepository;
+    private Security $security;
+    private OrganizationMembersInfosProviderInterface $organizationMembersInfosProvider;
 
-    public function __construct(CitizenRepository $citizenRepository, Security $security, OrganizationMembersInfosProviderInterface $organizationMembersInfosProvider)
-    {
+    public function __construct(
+        CitizenRepository $citizenRepository,
+        Security $security,
+        OrganizationMembersInfosProviderInterface $organizationMembersInfosProvider
+    ) {
         $this->citizenRepository = $citizenRepository;
         $this->security = $security;
         $this->organizationMembersInfosProvider = $organizationMembersInfosProvider;

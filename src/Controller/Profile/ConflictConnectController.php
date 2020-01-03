@@ -12,8 +12,8 @@ use Symfony\Component\Security\Core\Security;
 
 class ConflictConnectController extends AbstractController
 {
-    private $security;
-    private $userRepository;
+    private Security $security;
+    private UserRepository $userRepository;
 
     public function __construct(Security $security, UserRepository $userRepository)
     {

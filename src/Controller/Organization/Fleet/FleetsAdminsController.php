@@ -12,12 +12,15 @@ use Symfony\Component\Security\Core\Security;
 
 class FleetsAdminsController extends AbstractController
 {
-    private $security;
-    private $fleetOrganizationGuard;
-    private $citizenRepository;
+    private Security $security;
+    private FleetOrganizationGuard $fleetOrganizationGuard;
+    private CitizenRepository $citizenRepository;
 
-    public function __construct(Security $security, FleetOrganizationGuard $fleetOrganizationGuard, CitizenRepository $citizenRepository)
-    {
+    public function __construct(
+        Security $security,
+        FleetOrganizationGuard $fleetOrganizationGuard,
+        CitizenRepository $citizenRepository
+    ) {
         $this->security = $security;
         $this->fleetOrganizationGuard = $fleetOrganizationGuard;
         $this->citizenRepository = $citizenRepository;

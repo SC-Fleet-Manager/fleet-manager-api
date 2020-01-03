@@ -12,8 +12,8 @@ use Symfony\Component\Security\Core\Security;
 
 class CreateCitizenFleetFileController extends AbstractController
 {
-    private $security;
-    private $citizenFleetGenerator;
+    private Security $security;
+    private CitizenFleetGenerator $citizenFleetGenerator;
 
     public function __construct(Security $security, CitizenFleetGenerator $citizenFleetGenerator)
     {

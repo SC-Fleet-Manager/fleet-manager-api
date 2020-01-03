@@ -12,12 +12,15 @@ use Symfony\Component\Security\Core\Security;
 
 class FleetOrganizationGuard
 {
-    private $organizationRepository;
-    private $citizenRepository;
-    private $security;
+    private OrganizationRepository $organizationRepository;
+    private CitizenRepository $citizenRepository;
+    private Security $security;
 
-    public function __construct(OrganizationRepository $organizationRepository, CitizenRepository $citizenRepository, Security $security)
-    {
+    public function __construct(
+        OrganizationRepository $organizationRepository,
+        CitizenRepository $citizenRepository,
+        Security $security
+    ) {
         $this->organizationRepository = $organizationRepository;
         $this->citizenRepository = $citizenRepository;
         $this->security = $security;

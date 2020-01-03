@@ -17,11 +17,11 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ChangePasswordController extends AbstractController
 {
-    private $security;
-    private $entityManager;
-    private $passwordEncoder;
-    private $serializer;
-    private $validator;
+    private Security $security;
+    private EntityManagerInterface $entityManager;
+    private UserPasswordEncoderInterface $passwordEncoder;
+    private SerializerInterface $serializer;
+    private ValidatorInterface $validator;
 
     public function __construct(
         Security $security,

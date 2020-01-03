@@ -4,14 +4,14 @@ namespace App\Listener;
 
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpKernel\Event\ControllerEvent;
+use Symfony\Component\HttpKernel\Event\TerminateEvent;
 use Symfony\Component\Security\Core\Authentication\Token\SwitchUserToken;
 use Symfony\Component\Security\Core\Security;
 
 class TrackConnectionListener
 {
-    private $entityManager;
-    private $security;
+    private EntityManagerInterface $entityManager;
+    private Security $security;
 
     public function __construct(EntityManagerInterface $entityManager, Security $security)
     {
@@ -19,7 +19,7 @@ class TrackConnectionListener
         $this->security = $security;
     }
 
-    public function onController(ControllerEvent $event): void
+    public function onTerminate(TerminateEvent $event): void
     {
         $token = $this->security->getToken();
         if ($token === null || $token instanceof SwitchUserToken) {
@@ -37,6 +37,7 @@ class TrackConnectionListener
         }
 
         $user->setLastConnectedAt(new \DateTimeImmutable());
+
         $this->entityManager->flush();
     }
 }

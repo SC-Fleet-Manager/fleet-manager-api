@@ -19,11 +19,11 @@ use Symfony\Component\Security\Core\Security;
 
 class UpdateHandleController extends AbstractController
 {
-    private $security;
-    private $formFactory;
-    private $citizenInfosProvider;
-    private $citizenRefresher;
-    private $entityManager;
+    private Security $security;
+    private FormFactoryInterface $formFactory;
+    private CitizenInfosProviderInterface $citizenInfosProvider;
+    private CitizenRefresher $citizenRefresher;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(
         Security $security,

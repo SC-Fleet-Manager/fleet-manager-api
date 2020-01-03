@@ -32,6 +32,19 @@ App\Entity\CitizenOrganization:
         organization: '@orga_gardiens'
         rank: 4
         rankName: 'Lord'
+    orgastats1_orga_orgastats:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("f6308529-0bec-4e27-9f0d-a8d425f1d132"))>']
+        organizationSid: 'orgastats'
+        organization: '@orga_orgastats'
+        rank: 5
+        rankName: 'Boss'
+        visibility: 'private'
+    orgastats2_orga_orgastats:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("2fc90180-3a5e-4f5f-a07b-0feac475b810"))>']
+        organizationSid: 'orgastats'
+        organization: '@orga_orgastats'
+        rank: 1
+        rankName: 'Noob'
     pulsar42_admin_orga_pulsar42:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("65667680-5ce0-4e99-9767-8942bc5723e1"))>']
         organizationSid: 'pulsar42'

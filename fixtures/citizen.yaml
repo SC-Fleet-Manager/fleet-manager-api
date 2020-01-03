@@ -38,6 +38,24 @@ App\Entity\Citizen:
         mainOrga: '@ihaveships_orga_gardiens'
         fleets: ['@fleet_ihaveships_v1']
         lastFleet: '@fleet_ihaveships_v1'
+    citizen_orgastats1:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("79245ea3-73c8-4d34-83e6-2adff81f417d"))>']
+        number: '<(new \App\Domain\CitizenNumber("4554298918"))>'
+        nickname: 'orga Stats 1'
+        actualHandle: '<(new \App\Domain\HandleSC("orgastats1"))>'
+        organizations: ['@orgastats1_orga_orgastats']
+        mainOrga: '@orgastats1_orga_orgastats'
+        fleets: ['@fleet_orgastats1']
+        lastFleet: '@fleet_orgastats1'
+    citizen_orgastats2:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("512c7bc2-8d01-44da-9857-8cd0667984af"))>']
+        number: '<(new \App\Domain\CitizenNumber("81787818271"))>'
+        nickname: 'orga Stats 2'
+        actualHandle: '<(new \App\Domain\HandleSC("orgastats2"))>'
+        organizations: ['@orgastats2_orga_orgastats']
+        mainOrga: '@orgastats2_orga_orgastats'
+        fleets: ['@fleet_orgastats2']
+        lastFleet: '@fleet_orgastats2'
     citizen_need_refresh:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("4498ab8d-39ba-4bf3-bea9-77bf7464feae"))>']
         number: '<(new \App\Domain\CitizenNumber("45224582"))>'

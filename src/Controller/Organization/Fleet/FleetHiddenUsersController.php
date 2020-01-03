@@ -14,11 +14,11 @@ use Symfony\Component\Security\Core\Security;
 
 class FleetHiddenUsersController extends AbstractController
 {
-    private $security;
-    private $fleetOrganizationGuard;
-    private $shipInfosProvider;
-    private $logger;
-    private $citizenRepository;
+    private Security $security;
+    private FleetOrganizationGuard $fleetOrganizationGuard;
+    private ShipInfosProviderInterface $shipInfosProvider;
+    private LoggerInterface $logger;
+    private CitizenRepository $citizenRepository;
 
     public function __construct(
         Security $security,

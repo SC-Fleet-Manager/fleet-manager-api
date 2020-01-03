@@ -69,7 +69,7 @@
                             <b-card-body class="p-0 clearfix">
                                 <i class="fas fa-medal bg-danger p-4 font-2xl mr-3 float-left"></i>
                                 <div class="h5 text-primary mb-0 pt-3">
-                                    <template v-if="citizenMostShips.citizen != null">{{ citizenMostShips.citizen.actualHandle.handle }} ({{ citizenMostShips.countShips }})</template>
+                                    <template v-if="citizenMostShips.citizen != null">{{ citizenMostShips.citizen.handle }} ({{ citizenMostShips.countShips }})</template>
                                     <template v-else><i>None</i></template>
                                 </div>
                                 <div class="text-muted text-uppercase font-weight-bold font-xs">Citizen with most ships</div>

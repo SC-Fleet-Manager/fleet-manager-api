@@ -70,6 +70,31 @@ App\Entity\User:
         publicChoice: 'public'
         createdAt: '<(new \DateTimeImmutable("2019-04-06 11:22:33"))>'
         lastConnectedAt: '<(new \DateTimeImmutable("2019-04-07 22:33:44"))>'
+        coins: 90
+    user_orgastats1:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("f2ab3ea1-315e-4a72-b03c-add203335acb"))>']
+        username: 'orgaStats1'
+        nickname: 'orgaStats1'
+        discordId: '1234567890051'
+        discordTag: '1005'
+        token: '2b5d7082-adb6-413a-8a4c-8fd493556671'
+        apiToken: '6d9c3497-b38a-406f-b07e-41e54789030f'
+        citizen: '@citizen_orgastats1'
+        publicChoice: 'public'
+        createdAt: '<(new \DateTimeImmutable("2019-05-06 11:22:33"))>'
+        lastConnectedAt: '<(new \DateTimeImmutable("2019-05-07 22:33:44"))>'
+    user_orgastats2:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("9dfbd543-cd2c-4262-8ae2-03904ddbadef"))>']
+        username: 'orgaStats2'
+        nickname: 'orgaStats2'
+        discordId: '1234567890052'
+        discordTag: '2005'
+        token: '2354d268-a861-4b97-ae53-754ed23928c9'
+        apiToken: '51d4e93a-8b4d-4dca-b5e3-f2b2b67a23d5'
+        citizen: '@citizen_orgastats2'
+        publicChoice: 'public'
+        createdAt: '<(new \DateTimeImmutable("2019-06-06 11:22:33"))>'
+        lastConnectedAt: '<(new \DateTimeImmutable("2019-06-07 22:33:44"))>'
     user_need_refresh:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("9a634812-97dd-4c10-892f-6b7a9b7a2921"))>']
         username: 'needRefresh'

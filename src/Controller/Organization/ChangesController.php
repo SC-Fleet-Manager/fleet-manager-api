@@ -15,9 +15,9 @@ use Symfony\Component\Security\Core\Security;
 
 class ChangesController extends AbstractController
 {
-    private $security;
-    private $organizationRepository;
-    private $entityManager;
+    private Security $security;
+    private OrganizationRepository $organizationRepository;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(Security $security, OrganizationRepository $organizationRepository, EntityManagerInterface $entityManager)
     {

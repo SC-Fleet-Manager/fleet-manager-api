@@ -2,6 +2,7 @@
 
 namespace App\Controller\WebExtension;
 
+use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,6 +34,9 @@ class MeController extends AbstractController
 
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
 
-        return $this->json($this->security->getUser(), 200, [], ['groups' => 'me:read']);
+        /** @var User $user */
+        $user = $this->security->getUser();
+
+        return $this->json($user, 200, [], ['groups' => 'me:read']);
     }
 }
