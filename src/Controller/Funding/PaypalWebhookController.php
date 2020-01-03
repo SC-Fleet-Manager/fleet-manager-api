@@ -99,7 +99,7 @@ class PaypalWebhookController extends AbstractController implements LoggerAwareI
         }
 
         // search if we have already handled
-        if (in_array($funding->getPaypalStatus(), ['CREATED', 'PENDING'], true)) {
+        if (!in_array($funding->getPaypalStatus(), ['CREATED', 'PENDING'], true)) {
             return;
         }
 
@@ -123,7 +123,7 @@ class PaypalWebhookController extends AbstractController implements LoggerAwareI
         }
 
         // search if we have already handled
-        if (in_array($funding->getPaypalStatus(), ['CREATED', 'PENDING'], true)) {
+        if (!in_array($funding->getPaypalStatus(), ['CREATED', 'PENDING'], true)) {
             return;
         }
 
