@@ -18,6 +18,20 @@ class FundingRepository extends ServiceEntityRepository
         parent::__construct($registry, Funding::class);
     }
 
+    public function deleteOldCreated(\DateTimeInterface $beforeDate): void
+    {
+        $dql = <<<DQL
+            DELETE App\Entity\Funding f
+            WHERE f.paypalStatus = 'CREATED' AND f.createdAt < :beforeDate
+            DQL;
+
+        $query = $this->_em->createQuery($dql);
+        $query->setParameters([
+            'beforeDate' => $beforeDate,
+        ]);
+        $query->execute();
+    }
+
     public function getCurrentProgressCostCoverage(): int
     {
         return $this->getProgressCostCoverageByMonth(new \DateTimeImmutable('first day of'));
