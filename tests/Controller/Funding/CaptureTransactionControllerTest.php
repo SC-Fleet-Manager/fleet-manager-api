@@ -38,7 +38,9 @@ class CaptureTransactionControllerTest extends WebTestCase
             'orderID' => 'cf42c65f',
         ]));
 
-        $this->assertSame(204, $this->client->getResponse()->getStatusCode());
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+        $json = \json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertSame('COMPLETED', $json['funding']['paypalStatus']);
         /** @var Funding $funding */
         $funding = $this->doctrine->getRepository(Funding::class)->find('618c4d07-6e1d-49e3-91e9-d269944de266');
         $this->assertSame('COMPLETED', $funding->getPaypalStatus());
@@ -120,7 +122,7 @@ class CaptureTransactionControllerTest extends WebTestCase
             'orderID' => 'e39b153c', // COMPLETED funding
         ]));
 
-        $this->assertSame(204, $this->client->getResponse()->getStatusCode());
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
     }
 
     /**
