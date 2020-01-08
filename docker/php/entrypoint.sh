@@ -9,7 +9,7 @@ fi
 if [[ "$1" = 'php-fpm' ]] || [[ "$1" = 'bin/console' ]]; then
 	# Permissions hack because setfacl does not work on Mac and Windows
 	mkdir -p var
-	chown -R www-data var
+#	chown -R www-data var
 fi
 
 exec "$@"
