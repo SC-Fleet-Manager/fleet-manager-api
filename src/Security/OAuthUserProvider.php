@@ -23,13 +23,17 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class OAuthUserProvider extends BaseProvider implements AccountConnectorInterface
 {
-    private $userRepository;
-    private $entityManager;
-    private $eventDispatcher;
-    private $requestStack;
+    private UserRepository $userRepository;
+    private EntityManagerInterface $entityManager;
+    private EventDispatcherInterface $eventDispatcher;
+    private RequestStack $requestStack;
 
-    public function __construct(UserRepository $userRepository, EntityManagerInterface $entityManager, EventDispatcherInterface $eventDispatcher, RequestStack $requestStack)
-    {
+    public function __construct(
+        UserRepository $userRepository,
+        EntityManagerInterface $entityManager,
+        EventDispatcherInterface $eventDispatcher,
+        RequestStack $requestStack
+    ) {
         $this->userRepository = $userRepository;
         $this->entityManager = $entityManager;
         $this->eventDispatcher = $eventDispatcher;

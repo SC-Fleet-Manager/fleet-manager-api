@@ -80,7 +80,7 @@ App\Entity\User:
         token: '2b5d7082-adb6-413a-8a4c-8fd493556671'
         apiToken: '6d9c3497-b38a-406f-b07e-41e54789030f'
         citizen: '@citizen_orgastats1'
-        publicChoice: 'public'
+        publicChoice: 'orga'
         createdAt: '<(new \DateTimeImmutable("2019-05-06 11:22:33"))>'
         lastConnectedAt: '<(new \DateTimeImmutable("2019-05-07 22:33:44"))>'
     user_orgastats2:

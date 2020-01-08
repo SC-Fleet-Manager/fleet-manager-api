@@ -12,8 +12,8 @@ use Symfony\Component\Security\Core\Security;
 
 class AccessibleUserFleetVoter extends Voter
 {
-    private $security;
-    private $citizenRepository;
+    private Security $security;
+    private CitizenRepository $citizenRepository;
 
     public function __construct(Security $security, CitizenRepository $citizenRepository)
     {

@@ -4,9 +4,8 @@ namespace App\Controller\Organization;
 
 use App\Domain\SpectrumIdentification;
 use App\Entity\Citizen;
-use App\Entity\CitizenOrganization;
-use App\Entity\User;
 use App\Repository\CitizenRepository;
+use App\Repository\UserRepository;
 use App\Service\Organization\Fleet\FleetOrganizationGuard;
 use App\Service\Organization\MembersInfosProvider\OrganizationMembersInfosProviderInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,17 +19,20 @@ class StatsCitizensController extends AbstractController
     private OrganizationMembersInfosProviderInterface $organizationMembersInfosProvider;
     private FleetOrganizationGuard $fleetOrganizationGuard;
     private CitizenRepository $citizenRepository;
+    private UserRepository $userRepository;
 
     public function __construct(
         Security $security,
         OrganizationMembersInfosProviderInterface $organizationMembersInfosProvider,
         FleetOrganizationGuard $fleetOrganizationGuard,
-        CitizenRepository $citizenRepository
+        CitizenRepository $citizenRepository,
+        UserRepository $userRepository
     ) {
         $this->security = $security;
         $this->organizationMembersInfosProvider = $organizationMembersInfosProvider;
         $this->fleetOrganizationGuard = $fleetOrganizationGuard;
         $this->citizenRepository = $citizenRepository;
+        $this->userRepository = $userRepository;
     }
 
     /**
@@ -62,16 +64,8 @@ class StatsCitizensController extends AbstractController
             ];
             $orga = $bestCitizen->getOrgaBySid($organizationSid);
             if ($orga !== null) {
-                $myself = false;
-                /** @var User $user */
-                $user = $this->security->getUser();
-                if ($user !== null && $user->getCitizen() !== null && $user->getCitizen()->getId()->equals($bestCitizen->getId())) {
-                    $myself = true;
-                }
-                if (!$myself && $orga->getVisibility() === CitizenOrganization::VISIBILITY_PRIVATE) {
-                    $viewBestCitizen['handle'] = 'Anonymous';
-                } elseif ($orga->getVisibility() === CitizenOrganization::VISIBILITY_ADMIN
-                    && !$this->security->isGranted('IS_ADMIN_MANAGEABLE', new SpectrumIdentification($organizationSid))) {
+                $bestUser = $this->userRepository->findOneBy(['citizen' => $bestCitizen]);
+                if (!$this->security->isGranted('ACCESS_USER_FLEET', $bestUser)) {
                     $viewBestCitizen['handle'] = 'Anonymous';
                 }
             }

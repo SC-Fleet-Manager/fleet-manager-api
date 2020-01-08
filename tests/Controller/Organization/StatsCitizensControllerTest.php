@@ -73,7 +73,7 @@ class StatsCitizensControllerTest extends WebTestCase
      * @group functional
      * @group organization
      */
-    public function testCitizenWithMostShipsAnonymous(): void
+    public function testCitizenWithMostShipsAnonymousOrga(): void
     {
         /** @var User $user */
         $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'orgaStats2']);
@@ -91,9 +91,46 @@ class StatsCitizensControllerTest extends WebTestCase
             'citizenMostShips' => [
                 'citizen' => [
                     'id' => '79245ea3-73c8-4d34-83e6-2adff81f417d',
-                    'handle' => 'Anonymous', // orgaStats1 with visibility=private
+                    'handle' => 'Anonymous', // orgaStats1 with orga visibility=private
                 ],
                 'countShips' => '1',
+            ],
+        ], $json);
+    }
+
+    /**
+     * @group functional
+     * @group organization
+     */
+    public function testCitizenWithMostShipsAnonymousPrivate(): void
+    {
+        $this->doctrine->getRepository(User::class)->createQueryBuilder('u')
+            ->update('App:User', 'u')
+            ->set('u.publicChoice', ':publicChoice')
+            ->where('u.username = :username')
+            ->setParameters([
+                'username' => 'orgaStats1',
+                'publicChoice' => User::PUBLIC_CHOICE_PRIVATE,
+            ])
+            ->getQuery()
+            ->execute();
+        $this->doctrine->getManager()->refresh($this->doctrine->getRepository(User::class)->findOneBy(['username' => 'orgaStats1']));
+
+        /** @var User $user */
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'orgaStats2']);
+        $this->logIn($user);
+        $this->client->xmlHttpRequest('GET', '/api/organization/orgastats/stats/citizens', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+        ]);
+
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+        $json = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertArraySubset([
+            'citizenMostShips' => [
+                'citizen' => [
+                    'id' => '79245ea3-73c8-4d34-83e6-2adff81f417d',
+                    'handle' => 'Anonymous', // orgaStats1 with publicChoice=private
+                ],
             ],
         ], $json);
     }
