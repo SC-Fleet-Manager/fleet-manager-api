@@ -13,7 +13,6 @@ use App\Service\Funding\PaypalCheckoutInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -72,7 +71,9 @@ class CaptureTransactionController extends AbstractController
         }
 
         if (!in_array($funding->getPaypalStatus(), ['CREATED', 'PENDING'], true)) {
-            return new JsonResponse(null, 204);
+            return $this->json([
+                'funding' => $funding,
+            ], 200, [], ['groups' => 'supporter']);
         }
 
         try {
@@ -89,6 +90,8 @@ class CaptureTransactionController extends AbstractController
 
         $this->bus->dispatch(new SendOrderCaptureSummaryMail($funding->getId()));
 
-        return new JsonResponse(null, 204);
+        return $this->json([
+            'funding' => $funding,
+        ], 200, [], ['groups' => 'supporter']);
     }
 }

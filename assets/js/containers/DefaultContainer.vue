@@ -30,7 +30,8 @@
                 <a href="/">Fleet Manager</a>
                 <a href="https://blog.fleet-manager.space/tag/change-logs/" target="_blank">{{ lastVersion }}</a>
                 <span class="ml-1">&copy; 2018 - {{ actualYear }}</span>
-                - <a href="/privacy-policy">Privacy policy</a>
+                - <a href="/privacy-policy">Privacy policy</a>.
+                Star Citizen is a product of Cloud Imperium Rights LLC and Cloud Imperium Rights Ltd.
             </div>
             <b-nav class="ml-auto">
                 <b-nav-item link-classes="p-2" href="https://ext.fleet-manager.space/fleet_manager_extension-latest.xpi"><i style="font-size: 1.4rem;" class="fab fa-firefox"></i></b-nav-item>

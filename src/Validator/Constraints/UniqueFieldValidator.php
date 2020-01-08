@@ -9,7 +9,7 @@ use Symfony\Component\Validator\ConstraintValidator;
 
 class UniqueFieldValidator extends ConstraintValidator
 {
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
     {

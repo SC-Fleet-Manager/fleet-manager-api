@@ -65,9 +65,12 @@
 
         <b-modal id="modal-funding" ref="modalFunding" size="md" centered title="Support Us" hide-footer @shown="onModalShown">
             <b-form>
-                <b-alert variant="danger" :show="errorMessage != null" v-html="errorMessage"></b-alert>
                 <b-alert variant="success" :show="captureSuccessMessage != null" v-html="captureSuccessMessage"></b-alert>
-
+                <b-alert variant="warning" :show="capturePendingStatus">
+                    It seems your awesome backing is in "Pending" status by PayPal.<br/>
+                    To confirm, you should mark the transaction as item received on PayPal.<br/>We apologize for the inconvenience.<br/>
+                    If you have any problems, please join <a target="_blank" href="https://discord.gg/f6mrA3Y">our Discord</a> or send us an email to <a href="mailto:fleet-manager@protonmail.com">fleet-manager@protonmail.com</a>.</b-alert>
+                <b-alert variant="danger" :show="errorMessage != null" v-html="errorMessage"></b-alert>
                 <b-row>
                     <b-col class="mb-2">
                         <b-btn type="button" block variant="primary" @click="changeAmount(2)">$2</b-btn>
@@ -140,6 +143,7 @@
                 formViolations: {amount: null},
                 errorMessage: null,
                 captureSuccessMessage: null,
+                capturePendingStatus: false,
                 spinner: false,
                 monthlyLadderErrorMessage: null,
                 alltimeLadderErrorMessage: null,
@@ -265,6 +269,7 @@
                         this.captureSuccessMessage = null;
                         this.errorMessage = null;
                         this.spinner = true;
+                        this.capturePendingStatus = false;
 
                         return axios({
                             method: 'post',
@@ -273,6 +278,7 @@
                         }).then(response => {
                             this.spinner = false;
                             this.captureSuccessMessage = 'Thank you very much for your backing!<br/>You can review it in <a href="/my-backings">My backings</a>.';
+                            this.capturePendingStatus = response.data.funding.paypalStatus === 'PENDING';
                         }).catch(err => {
                             this.spinner = false;
                             if (err.response.data.errorMessage) {

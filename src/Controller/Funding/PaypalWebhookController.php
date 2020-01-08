@@ -6,6 +6,7 @@ use App\Entity\Funding;
 use App\Event\FundingUpdatedEvent;
 use App\Message\Funding\SendOrderRefundMail;
 use App\Repository\FundingRepository;
+use App\Service\Funding\PaypalCheckout;
 use App\Service\Funding\PaypalCheckoutInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerAwareInterface;
@@ -69,8 +70,10 @@ class PaypalWebhookController extends AbstractController implements LoggerAwareI
                 $this->handlePaymentCaptureDenied($payload);
                 break;
             case 'PAYMENT.CAPTURE.COMPLETED':
-            case 'CHECKOUT.ORDER.APPROVED':
                 $this->handlePaymentCaptureCompleted($payload);
+                break;
+            case 'CHECKOUT.ORDER.APPROVED':
+                $this->handleCheckoutOrderApproved($payload);
                 break;
             case 'PAYMENT.SALE.COMPLETED':
                 $this->handlePaymentSaleCompleted($payload);
@@ -91,7 +94,37 @@ class PaypalWebhookController extends AbstractController implements LoggerAwareI
         $fundingId = $payload['resource']['custom_id'] ?? null;
 
         /** @var Funding $funding */
-        $funding = $this->fundingRepository->find($payload['resource']['custom_id']);
+        $funding = $this->fundingRepository->find($fundingId);
+        if ($funding === null) {
+            $this->logger->error('Funding {id} not found.', ['id' => $fundingId, 'payload' => $payload]);
+
+            throw new NotFoundHttpException(sprintf('Funding %s not found.', $fundingId));
+        }
+
+        // search if we have already handled
+        if (!in_array($funding->getPaypalStatus(), ['CREATED', 'PENDING'], true)) {
+            return;
+        }
+
+        $this->paypalCheckout->complete($funding);
+        $this->entityManager->flush();
+        $this->eventDispatcher->dispatch(new FundingUpdatedEvent($funding));
+    }
+
+    private function handleCheckoutOrderApproved(array $payload): void
+    {
+        $this->entityManager->clear();
+
+        $fundingId = null;
+        foreach ($payload['resource']['purchase_units'] as $purchaseUnit) {
+            if ($purchaseUnit['reference_id'] === PaypalCheckout::BACKING_REFID) {
+                $fundingId = $purchaseUnit['custom_id'] ?? null;
+                break;
+            }
+        }
+
+        /** @var Funding $funding */
+        $funding = $this->fundingRepository->find($fundingId);
         if ($funding === null) {
             $this->logger->error('Funding {id} not found.', ['id' => $fundingId, 'payload' => $payload]);
 

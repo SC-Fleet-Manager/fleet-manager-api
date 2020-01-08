@@ -631,6 +631,8 @@ class SpaControllerTest extends PantherTestCase
      * @group end2end
      * @group spa
      * @group funding
+     *
+     * @group toto
      */
     public function testFunding(): void
     {
@@ -643,7 +645,7 @@ class SpaControllerTest extends PantherTestCase
             });
             $this->client->refreshCrawler();
 
-            $this->assertSame("$\n52.33", $this->client->findElement(WebDriverBy::id('total-backed'))->getText());
+            $this->assertSame("$\n51.33", $this->client->findElement(WebDriverBy::id('total-backed'))->getText());
             $this->assertSame('5133', $this->client->findElement(WebDriverBy::id('count-fm-coins'))->getText());
 
             $this->assertSame('Completed', $this->client->findElement(WebDriverBy::cssSelector('#backings-table tbody tr:nth-child(1) td:nth-child(2)'))->getText());
@@ -653,7 +655,7 @@ class SpaControllerTest extends PantherTestCase
 
             $this->assertSame('Created', $this->client->findElement(WebDriverBy::cssSelector('#backings-table tbody tr:nth-child(2) td:nth-child(2)'))->getText());
             $this->assertSame('$1.00', $this->client->findElement(WebDriverBy::cssSelector('#backings-table tbody tr:nth-child(2) td:nth-child(3)'))->getText());
-            $this->assertSame('100', $this->client->findElement(WebDriverBy::cssSelector('#backings-table tbody tr:nth-child(2) td:nth-child(4)'))->getText());
+            $this->assertSame('', $this->client->findElement(WebDriverBy::cssSelector('#backings-table tbody tr:nth-child(2) td:nth-child(4)'))->getText());
             $this->assertSame('0', $this->client->findElement(WebDriverBy::cssSelector('#backings-table tbody tr:nth-child(2) td:nth-child(5)'))->getText());
 
             $this->assertCount(1, $this->client->findElements(WebDriverBy::cssSelector('.navbar-text .supporter-badge')));
@@ -679,12 +681,12 @@ class SpaControllerTest extends PantherTestCase
             });
             $this->client->findElement(WebDriverBy::cssSelector('#modal-funding button.close'))->click();
             $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
-                return count($driver->findElements(WebDriverBy::cssSelector('#modal-funding button.close'))) === 0;
+                return count($driver->findElements(WebDriverBy::cssSelector('#modal-funding'))) === 0;
             });
 
             $this->client->findElement(WebDriverBy::xpath('//label[contains(text(), "Organizations Tops")]'))->click();
             $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
-                return strpos($driver->findElement(WebDriverBy::cssSelector('#ladder-all-time'))->getText(), 'Anonymous') !== false;
+                return strpos($driver->findElement(WebDriverBy::cssSelector('#ladder-all-time'))->getText(), 'Les Gardiens') !== false;
             });
             $this->assertSame('1. Anonymous $ 58.33', preg_replace('~\s+~', ' ', $this->client->findElement(WebDriverBy::cssSelector('#ladder-all-time .row:nth-child(1)'))->getText())); // FallKrom /w supporterVisible==false
             $this->assertSame('2. Les Gardiens $ 0.90', preg_replace('~\s+~', ' ', $this->client->findElement(WebDriverBy::cssSelector('#ladder-all-time .row:nth-child(2)'))->getText()));
