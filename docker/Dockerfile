@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     libxslt-dev \
     libgcrypt-dev \
-    && docker-php-ext-install intl zip pdo_mysql xml xsl bcmath \
+    && docker-php-ext-install -j$(nproc) intl zip pdo_mysql xml xsl bcmath \
     && pecl install redis \
     && apt-get remove -y libzip-dev libxml2-dev libxslt-dev libgcrypt-dev \
     && rm -rf /var/lib/apt/lists/* \
@@ -126,6 +126,7 @@ USER root
 COPY --from=composer:1.9.1 /usr/bin/composer /usr/local/bin/composer
 ENV COMPOSER_MEMORY_LIMIT -1
 ENV COMPOSER_ALLOW_SUPERUSER 1
+ENV COMPOSER_HOME /.composer
 
 # Xdebug install
 ARG XDEBUG_VERSION=2.9.0
