@@ -15,7 +15,7 @@
         "babel-loader": "^8.0",
         "babel-plugin-syntax-dynamic-import": "^6.18",
         "bootstrap": "^4.4",
-        "bootstrap-vue": "^2.1",
+        "bootstrap-vue": "^2.2",
         "chart.js": "^2.7",
         "core-js": "^3.6",
         "css-vars-ponyfill": "^1.11",

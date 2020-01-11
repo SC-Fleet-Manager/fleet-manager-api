@@ -7,7 +7,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class CitizenDeletedEvent extends Event
 {
-    private $deletedCitizen;
+    private Citizen $deletedCitizen;
 
     public function __construct(Citizen $deletedCitizen)
     {

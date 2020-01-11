@@ -8,25 +8,12 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class OrganizationPolicyChangedEvent extends Event
 {
-    /**
-     * @var Citizen
-     */
-    private $author;
-
-    /**
-     * @var Organization
-     */
-    private $organization;
-
-    /**
-     * @var string Organization::PUBLIC_CHOICES
-     */
-    private $oldPolicy;
-
-    /**
-     * @var string Organization::PUBLIC_CHOICES
-     */
-    private $newPolicy;
+    private Citizen $author;
+    private Organization $organization;
+    /** @see Organization::PUBLIC_CHOICES */
+    private string $oldPolicy;
+    /** @see Organization::PUBLIC_CHOICES */
+    private string $newPolicy;
 
     public function __construct(Citizen $author, Organization $organization, string $oldPolicy, string $newPolicy)
     {
