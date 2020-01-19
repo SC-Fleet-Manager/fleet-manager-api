@@ -100,24 +100,36 @@ ENTRYPOINT ["docker-app-entrypoint"]
 CMD ["php-fpm"]
 
 ##############################
-FROM httpd:2.4-alpine as build_apache
+FROM httpd:2.4 as build_apache
+
+ENV APACHE_RUN_USER www-data
+ENV APACHE_RUN_GROUP www-data
+
+RUN apt-get update && apt-get install -y curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /tmp/*
 
 COPY docker/apache/httpd.conf /usr/local/apache2/conf/httpd.conf
 
-RUN mkdir -p /app
+USER www-data
 WORKDIR /app
-COPY public/favicon.ico public/robots.txt public/
-COPY public/icons public/icons
-COPY --from=node_deps /app/public/build public/build
-COPY --from=build_php /app/public/bundles public/bundles
+COPY --chown=www-data:www-data public/favicon.ico public/robots.txt public/
+COPY --chown=www-data:www-data public/icons public/icons
+COPY --chown=www-data:www-data --from=node_deps /app/public/build public/build
+COPY --chown=www-data:www-data --from=build_php /app/public/bundles public/bundles
 RUN touch public/index.php
+
+USER root
 
 ##############################
 FROM build_apache as build_apache_test
 
 COPY docker/apache/httpd_test.conf /usr/local/apache2/conf/httpd.conf
 
+USER www-data
 RUN touch public/index_test.php
+
+USER root
 
 ###############################
 FROM build_php as build_php_dev
