@@ -31,7 +31,7 @@ new Vue({
     render(h) {
         return h(Home, {
             props: {
-                discordLoginUrl: this.$el.dataset.discordLoginUrl,
+                // discordLoginUrl: this.$el.dataset.discordLoginUrl,
             }
         })
     }

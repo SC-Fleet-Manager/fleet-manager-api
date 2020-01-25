@@ -10,6 +10,7 @@
         "@symfony/webpack-encore": "^0.28",
         "@vue/babel-preset-app": "^4.1.1",
         "animated-number-vue": "^0.1.5",
+        "animejs": "^3.1.0",
         "autoprefixer": "^9.3.1",
         "axios": "^0.19",
         "babel-loader": "^8.0",
