@@ -29,20 +29,20 @@
             </section>
             <section class="main">
                 <div class="gradient-up"></div>
+                <img id="sprite-ship-right-1" class="vaisseau_right" src="../img/frontpage/illustrations/vaisseau-1.png" alt="">
                 <div id="more"></div>
                 <div class="container">
-                    <img class="vaisseau_right" src="../img/frontpage/illustrations/vaisseau-1.png" alt="">
-                    <h2>Join thousands of citizens !</h2>
-                    <div class="row row-stats">
-                        <div class="col-3">
+                    <h2>Join thousands of citizens!</h2>
+                    <div class="row-stats">
+                        <div class="col">
                             <h4>919</h4>
                             <p>Organization Fleets</p>
                         </div>
-                        <div class="col-3">
+                        <div class="col">
                             <h4>2141</h4>
                             <p>Citizens Registered</p>
                         </div>
-                        <div class="col-3">
+                        <div class="col">
                             <h4>15595</h4>
                             <p>Ships Managed</p>
                         </div>
@@ -52,35 +52,35 @@
                     <div class="container">
                         <div class="row">
                             <div class="col-2">
-                                <img src="../img/frontpage/illustrations/screen-1.jpg">
+                                <div class="screens-aside-media">
+                                    <img src="../img/frontpage/illustrations/screen-1.jpg" alt="">
+                                </div>
                             </div>
                             <div class="col-2">
-                                <h2>Manage your Organization's fleet</h2>
+                                <h2 class="screens-title">Manage your Organization's fleet</h2>
+                                <div class="screens-aside-media">
+                                    <img src="../img/frontpage/illustrations/screen-1.jpg" alt="">
+                                </div>
                                 <ul>
                                     <li>
-                                        <span>1</span> <p>Review your Organization's fleet at a glance with easy access to who owns what</p>
+                                        <span class="screens-ship">1</span>
+                                        <p>Review your Organization's fleet at a glance with easy access to who owns what</p>
                                     </li>
-
                                     <li>
-                                        <span>4</span> <p>Many filters to quickly find what you are looking for
-                                    </p>
+                                        <span class="screens-ship">2</span>
+                                        <p>Many filters to quickly find what you are looking for</p>
                                     </li>
-
-
                                     <li>
-                                        <span>2</span> <p>Share your Organization’s page with the world or hide it event to your citizens</p>
+                                        <span class="screens-ship">3</span>
+                                        <p>Share your Organization’s page with the world or hide it event to your citizens</p>
                                     </li>
-
-
                                     <li>
-                                        <span>5</span> <p>Export your fleet for other tools like Fleet Viewer
-                                    </p>
+                                        <span class="screens-ship">4</span>
+                                        <p>Export your fleet for other tools like Fleet Viewer</p>
                                     </li>
-
-
                                     <li>
-                                        <span>3</span> <p>Get in depth statistics about your organization. Track changes and informations about your citizens
-                                    </p>
+                                        <span class="screens-ship">5</span>
+                                        <p>Get in depth statistics about your organization. Track changes and informations about your citizens</p>
                                     </li>
                                 </ul>
                             </div>
@@ -93,8 +93,7 @@
                                 <img src="../img/frontpage/illustrations/screen-2.jpg">
                             </div>
                             <div class="col-2">
-                                <h2>Review your personal fleet
-                                </h2>
+                                <h2 class="screens-title">Review your personal fleet</h2>
                                 <ul>
                                     <li>
                                         <span>1</span> <p>Get a better overview of your fleet than in “My Hangar”
@@ -121,8 +120,7 @@
                                 <img src="../img/frontpage/illustrations/screen-3.jpg">
                             </div>
                             <div class="col-2">
-                                <h2>Fleet Manager Official Browser Extension
-                                </h2>
+                                <h2 class="screens-title">Fleet Manager Official Browser Extension</h2>
                                 <ul>
                                     <li>
                                         <span>1</span>
@@ -376,6 +374,13 @@ export default {
                 duration: 1500,
                 easing: 'cubicBezier(0.165, 0.840, 0.440, 1.000)', // easeOutQuart https://matthewlein.com/tools/ceaser
             });
+            anime({
+                targets: '#sprite-ship-right-1',
+                right: '23%',
+                opacity: 1,
+                duration: 1500,
+                easing: 'cubicBezier(0.165, 0.840, 0.440, 1.000)', // easeOutQuart https://matthewlein.com/tools/ceaser
+            });
         }, 1000);
     },
     methods: {
@@ -388,12 +393,5 @@ export default {
     @import '~@fortawesome/fontawesome-free/scss/fontawesome';
     @import '~@fortawesome/fontawesome-free/scss/solid';
     @import '~@fortawesome/fontawesome-free/scss/brands';
-    /*@import '~bootstrap-vue/dist/bootstrap-vue.css';*/
     @import '../css/frontpage/screen.scss';
-/*
-    @include media-breakpoint-down(sm) {
-        padding: 5rem 1rem;
-    }
-
- */
 </style>
