@@ -120,26 +120,32 @@
                     <div class="container">
                         <div class="row">
                             <div class="col-2">
-                                <img class="vaisseau_left_bottom" src="../img/frontpage/illustrations/vaisseau-3.png">
-                                <img src="../img/frontpage/illustrations/screen-3.jpg">
+                                <div class="screens-aside-media">
+                                    <img src="../img/frontpage/illustrations/screen-3.jpg" alt="">
+                                    <img id="sprite-ship-left-bottom-1" src="../img/frontpage/illustrations/vaisseau-3.png" alt="">
+                                </div>
                             </div>
                             <div class="col-2">
                                 <h2 class="screens-title">Fleet Manager Official Browser Extension</h2>
+                                <div class="screens-aside-media">
+                                    <img src="../img/frontpage/illustrations/screen-3.jpg" alt="">
+                                    <img id="sprite-ship-left-bottom-1-reduced" src="../img/frontpage/illustrations/vaisseau-3.png" alt="">
+                                </div>
                                 <ul>
                                     <li>
-                                        <span>1</span>
+                                        <span class="screens-ship">1</span>
                                         <p>Update your fleet with a simple click and forget about updating your checklist or xml shared files</p>
                                     </li>
                                     <li>
-                                        <span>3</span>
-                                        <p>Export your fleet as a Json and use it anywhere</p>
+                                        <span class="screens-ship">2</span>
+                                        <p>Export your fleet as JSON and use it on popular tools like <a target="_blank" href="https://www.starship42.com/fleetview/">FleetView</a>.</p>
                                     <li>
-                                        <span>2</span>
+                                        <span class="screens-ship">3</span>
                                         <p>Available on Chrome and Firefox</p>
                                     </li>
                                     <li>
-                                        <span>4</span>
-                                        <p>Download extension <a href="#"><i class="fab fa-firefox"></i></a> <a href="#"><i class="fab fa-chrome"></i></a></p>
+                                        <span class="screens-ship">4</span>
+                                        <p>Download extension<br/><a href="#" title="Firefox"><i class="fab fa-firefox"></i></a>&nbsp;<a href="#" title="Chrome"><i class="fab fa-chrome"></i></a></p>
                                     </li>
                                 </ul>
                             </div>
@@ -147,26 +153,26 @@
                     </div>
                 </section>
                 <div class="gradient-blue">
-                    <div class="container">
-                        <div class="row ">
-                            <img class="character-left" src="../img/frontpage/illustrations/character-2.png">
-                            <div class="col-1">
+                    <div class="container" id="use-it-now">
+                        <div class="row">
+                            <img id="sprite-useitnow-character-left" src="../img/frontpage/illustrations/character-2.png" alt="">
+                            <div class="col">
                                 <h2>Use it now</h2>
                                 <p>Fleet Manager is an online app to help you keep your organization’s fleet updated and get more insights about it. So you can better prepare your next operations and have fun all together.</p>
-                                <a href="#" class="btn">Start Using Fleet Manager</a>
-                                <img class="character-right" src="../img/frontpage/illustrations/character-3.png">
+                                <a href="#" class="btn">Start using Fleet Manager</a>
                             </div>
+                            <img id="sprite-useitnow-character-right" src="../img/frontpage/illustrations/character-3.png" alt="">
                         </div>
                     </div>
                 </div>
-                <div class="container">
+                <div class="container" id="meet-the-team">
                     <h2>Meet the Team</h2>
-                    <div class="row row-team">
-                        <div class="col-3">
+                    <div class="row">
+                        <div class="col">
                             <img src="../img/frontpage/illustrations/ioni.jpg">
                             <div class="meta">
                                 <h4 class="name">
-                                    Ioni
+                                    Thomas Talbot
                                 </h4>
                                 <div class="description">
                                     Lead Developer - Solution Architect
@@ -175,14 +181,17 @@
                                     <a href="#">
                                         <i class="fab fa-github"></i>
                                     </a>
+                                    <a href="#">
+                                        <i class="fab fa-linkedin"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-3">
+                        <div class="col">
                             <img src="../img/frontpage/illustrations/synthese.jpg">
                             <div class="meta">
                                 <h4 class="name">
-                                    Vyrtual Synthese
+                                    Valentin Ronteix
                                 </h4>
                                 <div class="description">
                                     Community Manager - Project Manager
@@ -200,7 +209,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-3">
+                        <div class="col">
                             <img src="../img/frontpage/illustrations/arnaud.jpg">
                             <div class="meta">
                                 <h4 class="name">
@@ -217,7 +226,7 @@
                                         <i class="fab fa-linkedin"></i>
                                     </a>
                                     <a href="#">
-                                        <i class="fa fa-link"></i>
+                                        <i class="fa fa-globe"></i>
                                     </a>
                                 </div>
                             </div>
@@ -388,6 +397,27 @@ export default {
             anime({
                 targets: ['#sprite-ship-right-top-1', '#sprite-ship-right-top-1-reduced'],
                 right: '12%',
+                opacity: 1,
+                duration: 1500,
+                easing: 'cubicBezier(0.165, 0.840, 0.440, 1.000)', // easeOutQuart https://matthewlein.com/tools/ceaser
+            });
+            anime({
+                targets: ['#sprite-ship-left-bottom-1', '#sprite-ship-left-bottom-1-reduced'],
+                left: '7%',
+                opacity: 1,
+                duration: 1500,
+                easing: 'cubicBezier(0.165, 0.840, 0.440, 1.000)', // easeOutQuart https://matthewlein.com/tools/ceaser
+            });
+            anime({
+                targets: '#sprite-useitnow-character-left',
+                left: '16%',
+                opacity: 1,
+                duration: 1500,
+                easing: 'cubicBezier(0.165, 0.840, 0.440, 1.000)', // easeOutQuart https://matthewlein.com/tools/ceaser
+            });
+            anime({
+                targets: '#sprite-useitnow-character-right',
+                right: '18%',
                 opacity: 1,
                 duration: 1500,
                 easing: 'cubicBezier(0.165, 0.840, 0.440, 1.000)', // easeOutQuart https://matthewlein.com/tools/ceaser
