@@ -72,13 +72,15 @@ i{
 
 @media screen and (min-width: 768px) {
 	.container{
-		width: 750px;
+		//width: 750px;
+		width: 100%;
 	}
 }
 
 @media screen and (min-width: 992px) {
 	.container{
-		width: 970px;
+		//width: 970px;
+		width: 100%;
 	}
 }
 

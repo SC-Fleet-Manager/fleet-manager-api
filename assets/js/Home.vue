@@ -89,25 +89,29 @@
                     <div class="container">
                         <div class="row">
                             <div class="col-2">
-                                <img class="vaisseau_right_top" src="../img/frontpage/illustrations/vaisseau-2.png">
-                                <img src="../img/frontpage/illustrations/screen-2.jpg">
+                                <div class="screens-aside-media">
+                                    <img src="../img/frontpage/illustrations/screen-2.jpg" alt="">
+                                    <img id="sprite-ship-right-top-1" src="../img/frontpage/illustrations/vaisseau-2.png" alt="">
+                                </div>
                             </div>
                             <div class="col-2">
                                 <h2 class="screens-title">Review your personal fleet</h2>
+                                <div class="screens-aside-media">
+                                    <img src="../img/frontpage/illustrations/screen-2.jpg" alt="">
+                                    <img id="sprite-ship-right-top-1-reduced" src="../img/frontpage/illustrations/vaisseau-2.png" alt="">
+                                </div>
                                 <ul>
                                     <li>
-                                        <span>1</span> <p>Get a better overview of your fleet than in “My Hangar”
-                                    </p>
+                                        <span class="screens-ship">1</span>
+                                        <p>Get a better overview of your fleet than in “My Hangar”</p>
                                     </li>
-
                                     <li>
-                                        <span>3</span> <p>Control who can see your fleet. The world, your orga or no one (even your orgas)
-                                    </p>
+                                        <span class="screens-ship">2</span>
+                                        <p>Control who can see your fleet. The world, your orga or no one (even your orgas)</p>
                                     </li>
-
                                     <li>
-                                        <span>2</span> <p>Upload your fleet Automatically with our dedicated browser extension or Manually
-                                    </p>
+                                        <span class="screens-ship">3</span>
+                                        <p>Upload your fleet Automatically with our dedicated browser extension or Manually</p>
                                     </li>
                                 </ul>
                             </div>
@@ -376,7 +380,14 @@ export default {
             });
             anime({
                 targets: '#sprite-ship-right-1',
-                right: '23%',
+                right: '19%',
+                opacity: 1,
+                duration: 1500,
+                easing: 'cubicBezier(0.165, 0.840, 0.440, 1.000)', // easeOutQuart https://matthewlein.com/tools/ceaser
+            });
+            anime({
+                targets: ['#sprite-ship-right-top-1', '#sprite-ship-right-top-1-reduced'],
+                right: '12%',
                 opacity: 1,
                 duration: 1500,
                 easing: 'cubicBezier(0.165, 0.840, 0.440, 1.000)', // easeOutQuart https://matthewlein.com/tools/ceaser
