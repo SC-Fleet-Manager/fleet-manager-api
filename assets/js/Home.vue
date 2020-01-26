@@ -6,11 +6,12 @@
             </div>
             <nav>
                 <div class="links">
-                    <a href="#" aria-label="Blog"><i class="fas fa-blog"></i></a>
-                    <a href="#" aria-label="Github"><i class="fab fa-github"></i></a>
-                    <a href="#" aria-label="Discord"><i class="fab fa-discord"></i></a>
+                    <a target="_blank" href="https://blog.fleet-manager.space" aria-label="Blog"><i class="fas fa-blog"></i></a>
+                    <a target="_blank" href="https://github.com/Ioni14/starcitizen-fleet-manager" aria-label="Github"><i class="fab fa-github"></i></a>
+                    <a target="_blank" href="https://discord.gg/5EyFpVP" aria-label="Discord"><i class="fab fa-discord"></i></a>
                 </div>
-                <a href="#" class="btn"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <button v-if="this.user === null" v-once class="btn" type="button"><i class="fas fa-sign-in-alt"></i> Login</button>
+                <a v-else v-once class="btn" href="/profile"><i class="fas fa-space-shuttle"></i> Dashboard</a>
             </nav>
         </header>
         <main id="pg-main">
@@ -21,14 +22,14 @@
                     <h1>Fleet Manager</h1>
                     <h3>For Star Citizen</h3>
                     <p>Best tool in the verse to manage and share your Organization's and personal fleet</p>
-                    <a href="#" class="btn">Use Now</a>
-                    <a href="#more" class="anchor">learn more <i class="fas fa-angle-down"></i></a>
+                    <button v-if="this.user === null" v-once class="btn" type="button">Use Now</button>
+                    <a v-else v-once class="btn" href="/profile">Use Now</a>
+                    <span class="learn-more" @click="smoothScroll('#join-citizens')">learn more <i class="fas fa-angle-down"></i></span>
                 </div>
             </section>
             <section class="main">
                 <div class="gradient-up"></div>
                 <img @load="onLoad('join-citizens')" id="sprite-ship-right-1" src="../img/frontpage/illustrations/vaisseau-1.png" alt="">
-                <div id="more"></div>
                 <div class="container" id="join-citizens">
                     <h2>Join thousands of citizens!</h2>
                     <div class="row-stats">
@@ -94,20 +95,21 @@
                             </div>
                         </div>
                     </div>
-                    <div class="container">
+                    <div class="container" id="review-personal-fleet">
                         <div class="row">
                             <div class="col-2">
                                 <div class="screens-aside-media">
-                                    <svg v-show="!this.screenshots['sprite-ship-right-top-1']" viewBox="0 0 750 422"><rect width="750" height="422" style="fill:#031217"></rect></svg>
-                                    <img v-show="this.screenshots['sprite-ship-right-top-1']" @load="onLoad('sprite-ship-right-top-1', true)" src="../img/frontpage/illustrations/screen-2.jpg" alt="">
-                                    <img @load="onLoad('sprite-ship-right-top-1')" id="sprite-ship-right-top-1" src="../img/frontpage/illustrations/vaisseau-2.png" alt="">
+                                    <svg v-show="!this.screenshots['review-personal-fleet']" viewBox="0 0 750 422"><rect width="750" height="422" style="fill:#031217"></rect></svg>
+                                    <img v-show="this.screenshots['review-personal-fleet']" @load="onLoad('review-personal-fleet', true)" src="../img/frontpage/illustrations/screen-2.jpg" alt="">
+                                    <img @load="onLoad('review-personal-fleet')" id="sprite-ship-right-top-1" src="../img/frontpage/illustrations/vaisseau-2.png" alt="">
                                 </div>
                             </div>
                             <div class="col-2">
                                 <h2 class="screens-title">Review your personal fleet</h2>
                                 <div class="screens-aside-media">
-                                    <img src="../img/frontpage/illustrations/screen-2.jpg" alt="">
-                                    <img id="sprite-ship-right-top-1-reduced" src="../img/frontpage/illustrations/vaisseau-2.png" alt="">
+                                    <svg v-show="!this.screenshots['review-personal-fleet']" viewBox="0 0 750 422"><rect width="750" height="422" style="fill:#031217"></rect></svg>
+                                    <img v-show="this.screenshots['review-personal-fleet']" @load="onLoad('review-personal-fleet', true)" src="../img/frontpage/illustrations/screen-2.jpg" alt="">
+                                    <img @load="onLoad('review-personal-fleet')" id="sprite-ship-right-top-1-reduced" src="../img/frontpage/illustrations/vaisseau-2.png" alt="">
                                 </div>
                                 <ul class="list-ships">
                                     <li>
@@ -126,20 +128,21 @@
                             </div>
                         </div>
                     </div>
-                    <div class="container">
+                    <div class="container" id="official-extension">
                         <div class="row">
                             <div class="col-2">
                                 <div class="screens-aside-media">
-                                    <svg v-show="!this.screenshots['sprite-ship-left-bottom-1']" viewBox="0 0 750 422"><rect width="750" height="422" style="fill:#031217"></rect></svg>
-                                    <img v-show="this.screenshots['sprite-ship-left-bottom-1']" @load="onLoad('sprite-ship-left-bottom-1', true)" src="../img/frontpage/illustrations/screen-3.jpg" alt="">
-                                    <img @load="onLoad('sprite-ship-left-bottom-1')" id="sprite-ship-left-bottom-1" src="../img/frontpage/illustrations/vaisseau-3.png" alt="">
+                                    <svg v-show="!this.screenshots['official-extension']" viewBox="0 0 750 422"><rect width="750" height="422" style="fill:#031217"></rect></svg>
+                                    <img v-show="this.screenshots['official-extension']" @load="onLoad('official-extension', true)" src="../img/frontpage/illustrations/screen-3.jpg" alt="">
+                                    <img @load="onLoad('official-extension')" id="sprite-ship-left-bottom-1" src="../img/frontpage/illustrations/vaisseau-3.png" alt="">
                                 </div>
                             </div>
                             <div class="col-2">
                                 <h2 class="screens-title">Official Browser Extension</h2>
                                 <div class="screens-aside-media">
-                                    <img src="../img/frontpage/illustrations/screen-3.jpg" alt="">
-                                    <img id="sprite-ship-left-bottom-1-reduced" src="../img/frontpage/illustrations/vaisseau-3.png" alt="">
+                                    <svg v-show="!this.screenshots['official-extension']" viewBox="0 0 750 422"><rect width="750" height="422" style="fill:#031217"></rect></svg>
+                                    <img v-show="this.screenshots['official-extension']" @load="onLoad('official-extension', true)" src="../img/frontpage/illustrations/screen-3.jpg" alt="">
+                                    <img @load="onLoad('official-extension')" id="sprite-ship-left-bottom-1-reduced" src="../img/frontpage/illustrations/vaisseau-3.png" alt="">
                                 </div>
                                 <ul class="list-ships">
                                     <li>
@@ -155,7 +158,7 @@
                                     </li>
                                     <li>
                                         <span class="screens-ship">4</span>
-                                        <p>Download extension<br/><a href="#" title="Firefox"><i class="fab fa-firefox"></i></a>&nbsp;<a href="#" title="Chrome"><i class="fab fa-chrome"></i></a></p>
+                                        <p>Download extension<br/><a href="https://ext.fleet-manager.space/fleet_manager_extension-latest.xpi" title="Firefox"><i class="fab fa-firefox"></i></a>&nbsp;<a target="_blank" href="https://chrome.google.com/webstore/detail/fleet-manager-extension/hbbadomkekhkhemjjmhkhgiokjhpobhk" title="Chrome"><i class="fab fa-chrome"></i></a></p>
                                     </li>
                                 </ul>
                             </div>
@@ -169,7 +172,8 @@
                             <div class="col">
                                 <h2>Use it now</h2>
                                 <p>Fleet Manager is an online app to help you keep your organization’s fleet updated and get more insights about it. So you can better prepare your next operations and have fun all together.</p>
-                                <a href="#" class="btn">Start using Fleet Manager</a>
+                                <button v-if="this.user === null" v-once class="btn" type="button">Start using Fleet Manager</button>
+                                <a v-else v-once class="btn" href="/profile">Start using Fleet Manager</a>
                             </div>
                             <img @load="onLoad('use-it-now')" id="sprite-useitnow-character-right" src="../img/frontpage/illustrations/character-3.png" alt="">
                         </div>
@@ -179,7 +183,7 @@
                     <h2>Meet the Team</h2>
                     <div class="row">
                         <div class="col">
-                            <img src="../img/frontpage/illustrations/ioni.jpg">
+                            <img src="../img/frontpage/illustrations/ioni.jpg" alt="photo">
                             <div class="meta">
                                 <h4 class="name">
                                     Thomas Talbot
@@ -188,17 +192,13 @@
                                     Lead Developer - Solution Architect
                                 </div>
                                 <div class="links">
-                                    <a href="#">
-                                        <i class="fab fa-github"></i>
-                                    </a>
-                                    <a href="#">
-                                        <i class="fab fa-linkedin"></i>
-                                    </a>
+                                    <a target="_blank" href="https://github.com/ioni14"><i class="fab fa-github"></i></a>
+                                    <a target="_blank" href="https://www.linkedin.com/in/thomas-talbot/"><i class="fab fa-linkedin"></i></a>
                                 </div>
                             </div>
                         </div>
                         <div class="col">
-                            <img src="../img/frontpage/illustrations/synthese.jpg">
+                            <img src="../img/frontpage/illustrations/synthese.jpg" alt="photo">
                             <div class="meta">
                                 <h4 class="name">
                                     Valentin Ronteix
@@ -207,20 +207,14 @@
                                     Community Manager - Project Manager
                                 </div>
                                 <div class="links">
-                                    <a href="#">
-                                        <i class="fab fa-github"></i>
-                                    </a>
-                                    <a href="#">
-                                        <i class="fab fa-twitch"></i>
-                                    </a>
-                                    <a href="#">
-                                        <i class="fab fa-youtube"></i>
-                                    </a>
+                                    <a target="_blank" href="https://github.com/vyrtualsynthese"><i class="fab fa-github"></i></a>
+                                    <a target="_blank" href="https://twitch.tv/ashuvidz/"><i class="fab fa-twitch"></i></a>
+                                    <a target="_blank" href="https://youtube.com/ashuvidz/"><i class="fab fa-youtube"></i></a>
                                 </div>
                             </div>
                         </div>
                         <div class="col">
-                            <img src="../img/frontpage/illustrations/arnaud.jpg">
+                            <img src="../img/frontpage/illustrations/arnaud.jpg" alt="photo">
                             <div class="meta">
                                 <h4 class="name">
                                     Arnaud Cantaloube
@@ -229,15 +223,9 @@
                                     Designer
                                 </div>
                                 <div class="links">
-                                    <a href="#">
-                                        <i class="fab fa-twitter"></i>
-                                    </a>
-                                    <a href="#">
-                                        <i class="fab fa-linkedin"></i>
-                                    </a>
-                                    <a href="#">
-                                        <i class="fa fa-globe"></i>
-                                    </a>
+                                    <a target="_blank" href="#"><i class="fab fa-twitter"></i></a>
+                                    <a target="_blank" href="#"><i class="fab fa-linkedin"></i></a>
+                                    <a target="_blank" href="#"><i class="fa fa-globe"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -254,89 +242,13 @@
                             </div>
                         </div>
                         <div class="row" id="supporters-backers">
-                            <div class="col">
-                                <div class="img-round">
-                                    <img src="../img/frontpage/illustrations/ioni.jpg" alt="avatar">
-                                </div>
-                                <div class="supporter-content">
-                                    <div class="supporter">Name</div>
-                                    <p>Org Name</p>
+                            <div class="col" v-for="supporter in topSupporters" :key="supporter.name">
+                                <img :src="supporter.avatarUrl" alt="avatar">
+                                <div class="supporter-description">
+                                    <div class="supporter-name">{{ supporter.name }}</div>
+                                    <p>{{ supporter.mainOrgaName }}</p>
                                 </div>
                             </div>
-                            <div class="col">
-                                <div class="img-round">
-                                    <img src="../img/frontpage/illustrations/ioni.jpg" alt="avatar">
-                                </div>
-                                <div class="supporter-content">
-                                    <div class="supporter">Name</div>
-                                    <p>Org Name</p>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="img-round">
-                                    <img src="../img/frontpage/illustrations/ioni.jpg" alt="avatar">
-                                </div>
-                                <div class="supporter-content">
-                                    <div class="supporter">Name</div>
-                                    <p>Org Name</p>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="img-round">
-                                    <img src="../img/frontpage/illustrations/ioni.jpg" alt="avatar">
-                                </div>
-                                <div class="supporter-content">
-                                    <div class="supporter">Name</div>
-                                    <p>Org Name</p>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="img-round">
-                                    <img src="../img/frontpage/illustrations/ioni.jpg" alt="avatar">
-                                </div>
-                                <div class="supporter-content">
-                                    <div class="supporter">Name</div>
-                                    <p>Org Name</p>
-                                </div>
-                            </div>
-
-                            <div class="col">
-                                <div class="img-round">
-                                    <img src="../img/frontpage/illustrations/ioni.jpg" alt="avatar">
-                                </div>
-                                <div class="supporter-content">
-                                    <div class="supporter">Name</div>
-                                    <p>Org Name</p>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="img-round">
-                                    <img src="../img/frontpage/illustrations/ioni.jpg" alt="avatar">
-                                </div>
-                                <div class="supporter-content">
-                                    <div class="supporter">Name</div>
-                                    <p>Org Name</p>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="img-round">
-                                    <img src="../img/frontpage/illustrations/ioni.jpg" alt="avatar">
-                                </div>
-                                <div class="supporter-content">
-                                    <div class="supporter">Name</div>
-                                    <p>Org Name</p>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="img-round">
-                                    <img src="../img/frontpage/illustrations/ioni.jpg" alt="avatar">
-                                </div>
-                                <div class="supporter-content">
-                                    <div class="supporter">Name</div>
-                                    <p>Org Name</p>
-                                </div>
-                            </div>
-                            <div class="col"></div>
                         </div>
                     </div>
                 </div>
@@ -349,11 +261,11 @@
                     <img src="../img/logo_fm_white.svg" alt="Logo Fleet Manager">
                 </div>
                 <nav>
-                    <div class="policy"><a href="#">Privacy Policy</a><!-- - <a href="#">FAQ</a>--></div>
+                    <div class="policy"><a href="/privacy-policy">Privacy Policy</a><!-- - <a href="#">FAQ</a>--></div>
                     <div class="links">
-                        <a target="_blank" href="#"><i class="fas fa-blog"></i></a>
-                        <a target="_blank" href="#"><i class="fab fa-github"></i></a>
-                        <a target="_blank" href="#"><i class="fab fa-discord"></i></a>
+                        <a target="_blank" href="https://blog.fleet-manager.space"><i class="fas fa-blog"></i></a>
+                        <a target="_blank" href="https://github.com/Ioni14/starcitizen-fleet-manager"><i class="fab fa-github"></i></a>
+                        <a target="_blank" href="https://discord.gg/5EyFpVP"><i class="fab fa-discord"></i></a>
                     </div>
                 </nav>
             </section>
@@ -362,6 +274,8 @@
                 <p>All game content and materials are copyright of Cloud Imperium Rights LLC and Cloud Imperium Rights Ltd. Star Citizen®, Roberts Space Industries®, and Cloud Imperium® are registered trademarks of Cloud Imperium Rights LLC. All rights reserved.</p>
             </section>
         </footer>
+
+<!--        <RegistrationAndLoginModal discord-login-url="/connect/discord"></RegistrationAndLoginModal>-->
     </div>
 </template>
 
@@ -369,22 +283,25 @@
 import anime from 'animejs/lib/anime.es.js';
 import axios from 'axios';
 import AnimatedNumber from 'animated-number-vue';
+// import RegistrationAndLoginModal from "./views/RegistrationAndLoginModal";
 
 export default {
     name: 'Home',
-    props: [],
-    components: {AnimatedNumber},
+    components: {AnimatedNumber/*, RegistrationAndLoginModal*/},
     data() {
         return {
+            topSupporters: [],
             countOrga: 0,
             countUsers: 0,
             countShips: 0,
             canCountStatistics: false,
+            user: null,
+            userStated: false,
             animateEls: {
                 'sprite-character-1': false,
                 'join-citizens': false,
-                'sprite-ship-right-top-1': false,
-                'sprite-ship-left-bottom-1': false,
+                'review-personal-fleet': false,
+                'official-extension': false,
                 'use-it-now': false,
                 'list-ships-0': false,
                 'list-ships-1': false,
@@ -394,14 +311,14 @@ export default {
             loaded: {
                 'sprite-character-1': 0,
                 'join-citizens': 0,
-                'sprite-ship-right-top-1': 0,
-                'sprite-ship-left-bottom-1': 0,
+                'review-personal-fleet': 0,
+                'official-extension': 0,
                 'use-it-now': 0,
             },
             screenshots: {
                 'sprite-first-screenshot': false,
-                'sprite-ship-right-top-1': false,
-                'sprite-ship-left-bottom-1': false,
+                'review-personal-fleet': false,
+                'official-extension': false,
             }
         };
     },
@@ -410,6 +327,18 @@ export default {
             this.countOrga = response.data.organizations;
             this.countUsers = response.data.users;
             this.countShips = response.data.ships;
+        });
+        axios.get('/api/funding/ladder-alltime').then(response => {
+            this.topSupporters = response.data.topFundings.slice(0, 12);
+            this.$nextTick(() => {
+                this.onScroll();
+            });
+        });
+        axios.get('/api/me').then(response => {
+            this.user = response.data;
+        }).catch(response => {
+        }).then(_ => {
+            this.userStated = true;
         });
         window.addEventListener('scroll', this.onScroll);
     },
@@ -427,15 +356,19 @@ export default {
             }
             this.onScroll();
         },
-        getPosition(el) {
+        getPosition(el, withoutScroll) {
             let xPos = 0;
             let yPos = 0;
 
             while (el) {
                 if (el.tagName == "BODY") {
-                    // deal with browser quirks with body/window/document and page scroll
-                    const xScroll = el.scrollLeft || document.documentElement.scrollLeft;
-                    const yScroll = el.scrollTop || document.documentElement.scrollTop;
+                    let xScroll = 0;
+                    let yScroll = 0;
+                    if (!withoutScroll) {
+                        // deal with browser quirks with body/window/document and page scroll
+                        xScroll = el.scrollLeft || document.documentElement.scrollLeft;
+                        yScroll = el.scrollTop || document.documentElement.scrollTop;
+                    }
 
                     xPos += (el.offsetLeft - xScroll + el.clientLeft);
                     yPos += (el.offsetTop - yScroll + el.clientTop);
@@ -463,13 +396,15 @@ export default {
                 const elBottomScreenY = pos.y + el.clientHeight;
                 if (elBottomScreenY >= thresholdFromBottom && elTopScreenY <= thresholdFromTop) {
                     this.animateEls['sprite-character-1'] = true;
-                    anime({
-                        targets: '#sprite-character-1',
-                        left: '18%',
-                        opacity: 1,
-                        duration: 1500,
-                        easing: 'easeOutQuart', // https://matthewlein.com/tools/ceaser
-                    });
+                    setTimeout(() => { // delay a bit because it's the "first" sprite. otherwise may be too fast for "new" users.
+                        anime({
+                            targets: '#sprite-character-1',
+                            left: '18%',
+                            opacity: 1,
+                            duration: 1500,
+                            easing: 'easeOutQuart', // https://matthewlein.com/tools/ceaser
+                        });
+                    }, 250);
                 }
             }
             if (!this.animateEls['join-citizens'] && this.loaded['join-citizens'] === 1) {
@@ -489,13 +424,13 @@ export default {
                     });
                 }
             }
-            if (!this.animateEls['sprite-ship-right-top-1'] && this.loaded['sprite-ship-right-top-1'] === 2) {
-                const el = document.getElementById('sprite-ship-right-top-1');
+            if (!this.animateEls['review-personal-fleet'] && this.loaded['review-personal-fleet'] === 4) {
+                const el = document.getElementById('review-personal-fleet');
                 const pos = this.getPosition(el);
                 const elTopScreenY = pos.y;
                 const elBottomScreenY = pos.y + el.clientHeight;
                 if (elBottomScreenY >= thresholdFromBottom && elTopScreenY <= thresholdFromTop) {
-                    this.animateEls['sprite-ship-right-top-1'] = true;
+                    this.animateEls['review-personal-fleet'] = true;
                     anime({
                         targets: ['#sprite-ship-right-top-1', '#sprite-ship-right-top-1-reduced'],
                         right: '12%',
@@ -505,13 +440,13 @@ export default {
                     });
                 }
             }
-            if (!this.animateEls['sprite-ship-left-bottom-1'] && this.loaded['sprite-ship-left-bottom-1'] === 2) {
-                const el = document.getElementById('sprite-ship-left-bottom-1');
+            if (!this.animateEls['official-extension'] && this.loaded['official-extension'] === 4) {
+                const el = document.getElementById('official-extension');
                 const pos = this.getPosition(el);
                 const elTopScreenY = pos.y;
                 const elBottomScreenY = pos.y + el.clientHeight;
                 if (elBottomScreenY >= thresholdFromBottom && elTopScreenY <= thresholdFromTop) {
-                    this.animateEls['sprite-ship-left-bottom-1'] = true;
+                    this.animateEls['official-extension'] = true;
                     anime({
                         targets: ['#sprite-ship-left-bottom-1', '#sprite-ship-left-bottom-1-reduced'],
                         left: '7%',
@@ -568,7 +503,7 @@ export default {
                 }
             });
 
-            if (!this.animateEls['supporters-backers']) {
+            if (!this.animateEls['supporters-backers'] && this.topSupporters.length > 0) {
                 const el = document.getElementById('supporters-backers');
                 const pos = this.getPosition(el);
                 const elTopScreenY = pos.y;
@@ -582,13 +517,22 @@ export default {
                         targets: '#supporters-backers .col',
                         opacity: 1,
                         translateY: '-=50',
-                        easing: 'easeOutQuart',
+                        easing: 'easeInOutQuad',
                         delay: function(el, i) {
-                            return i * 100;
+                            return i * 75;
                         },
                     });
                 }
             }
+        },
+        smoothScroll(cssSelector) {
+            const el = document.querySelector(cssSelector);
+            anime({
+                targets: 'html, body',
+                scrollTop: this.getPosition(el, true).y,
+                duration: 1500,
+                easing: 'easeOutQuart',
+            });
         },
         computePercent(topY, bottomY, windowTopY, windowBottomY) {
             let percent = 0;

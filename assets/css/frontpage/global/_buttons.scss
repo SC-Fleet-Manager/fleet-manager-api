@@ -3,12 +3,14 @@ a.btn,
 .btn {
 	@include transitionDefault;
 	outline: 0;
+    border: 0;
 	padding: $gridGutter/2 $gridGutter*2;
 	border-radius: $borderRadius;
 	background-color: $blue;
 	white-space: normal;
 	font-size: 1rem;
 	font-weight: 400;
+    cursor: pointer;
 	color: $white;
 
 	&:hover{

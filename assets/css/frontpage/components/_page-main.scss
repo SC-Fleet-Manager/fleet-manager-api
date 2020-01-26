@@ -57,25 +57,17 @@
                     text-shadow: $shadow;
                 }
 
-                a {
-                    &.btn {
-                        display: inline-block;
-                        width: max-content;
-                        margin: $gridGutter*2 auto $gridGutter/3 auto;
-                        padding: $gridGutter*1.5 $gridGutter*3;
-                        font-size: $fontH3/1.2;
-                    }
-
-                    &.anchor {
-                        width: max-content;
-                        margin: auto;
-                    }
-
-                    &.anchor, i {
-                        font-size: $fontCircle;
-                        text-shadow: $shadow;
-                    }
-
+                .btn {
+                    display: inline-block;
+                    width: max-content;
+                    margin: $gridGutter*2 auto $gridGutter/3 auto;
+                    padding: $gridGutter*1.5 $gridGutter*3;
+                    font-size: $fontH3/1.2;
+                }
+                .learn-more {
+                    cursor: pointer;
+                    font-size: $fontCircle;
+                    text-shadow: $shadow;
                     i {
                         animation-name: bounce;
                         animation-timing-function: linear;
@@ -83,7 +75,6 @@
                         animation-iteration-count: infinite;
                         transform-origin: bottom;
                     }
-
                     @keyframes bounce {
                         0% {
                             transform: translateY(2px);
@@ -301,6 +292,7 @@
 
                     .col {
                         width: 20%;
+                        margin-top: 20px;
 
                         h4 {
                             font-size: $fontTitle;
@@ -325,28 +317,6 @@
                     display: flex;
                     flex-flow: wrap row;
                     justify-content: center;
-
-                    //&.support {
-                    //    margin-top: $gridGutter*3;
-                    //}
-
-                    //&:nth-child(2) > div {
-                    //    margin: 0;
-                    //}
-
-                    //.col-1 {
-                    //    width: 40%;
-                    //    margin-left: auto;
-                    //    margin-right: auto;
-                    //    display: flex;
-                    //    flex-flow: wrap column;
-                    //    align-items: center;
-                    //
-                    //    a.btn {
-                    //        margin-top: $gridGutter*3;
-                    //    }
-                    //}
-
 
                     .col-2 {
                         display: flex;
@@ -398,19 +368,12 @@
                         }
                     }
                 }
+            }
 
-                .col {
-                    .supporter-content {
-                        text-align: left;
-                        margin-left: $gridGutter;
-                        margin-bottom: $gridGutter*3;
-
-                        .supporter {
-                            @include fontHeadings;
-                            font-size: $fontCircle;
-                            font-weight: 700;
-                        }
-                    }
+            #join-citizens {
+                h2 {
+                    margin-bottom: calc(10vw + 20px);
+                    width: 60%;
                 }
             }
 
@@ -431,12 +394,6 @@
                         margin-bottom: 20px;
                         padding: $gridGutter*1.5 $gridGutter*3;
                         font-size: $fontH3/1.2;
-                    }
-
-                    @media screen and (max-width: 991px) {
-                        & {
-                            width: 80%;
-                        }
                     }
                 }
             }
@@ -513,19 +470,47 @@
                     .col {
                         opacity: 0;
                         display: flex;
-                        flex-flow: wrap row;
-                        justify-content: center;
+                        flex-flow: nowrap row;
+                        justify-content: left;
                         align-items: center;
-                        width: 20%; // 5 per row
+                        text-align: left;
+                        width: 25%; // 5 per row
                         padding: 0 10px;
                         margin-top: 30px;
+
+                        .supporter-description {
+                            margin-left: 0.8rem;
+                            @include fontHeadings;
+                            font-size: $fontCircle;
+
+                            .supporter-name {
+                                font-weight: 700;
+                            }
+                        }
                     }
 
                     img {
                         flex-shrink: 0; // prevent change width
+                        flex-grow: 0; // prevent change width
                         display: inline-block;
                         border-radius: 50%;
                         width: 6.5rem;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 1440px) {
+    #pg {
+        main#pg-main {
+            section.main {
+                #supporters {
+                    #supporters-backers {
+                        .col {
+                            width: 33.33333%;
+                        }
                     }
                 }
             }
@@ -562,6 +547,16 @@
                     }
                 }
 
+                #join-citizens {
+
+                }
+
+                #use-it-now {
+                    .col {
+                        width: 80%;
+                    }
+                }
+
                 #meet-the-team {
                     .col {
                         width: 50%;
@@ -569,9 +564,10 @@
                 }
 
                 #supporters {
+                    .row .col {
+                        width: 80%;
+                    }
                     #supporters-backers {
-                        width: 100%;
-
                         .col {
                             width: 50%;
                         }
@@ -592,6 +588,16 @@
 
                 .container p {
                     width: 70%;
+                }
+            }
+
+            section.main {
+                #supporters {
+                    #supporters-backers {
+                        .col {
+                            width: 60%;
+                        }
+                    }
                 }
             }
         }
@@ -649,14 +655,6 @@
                 #meet-the-team {
                     .col {
                         width: 90%;
-                    }
-                }
-
-                #supporters {
-                    #supporters-backers {
-                        .col {
-                            width: 100%;
-                        }
                     }
                 }
             }

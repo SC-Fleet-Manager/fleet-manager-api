@@ -1,44 +1,47 @@
 @import '../setup/variables/variables';
 
-#pg header#pg-hdr{
-	display: flex;
-	justify-content: space-between;
-	padding: $gridGutter*3 $gridGutter*6;
-	position: absolute;
-	z-index: 5;
-	width: 100%;
+#pg header#pg-hdr {
+    display: flex;
+    justify-content: space-between;
+    padding: $gridGutter*3 $gridGutter*6;
+    position: absolute;
+    z-index: 5;
+    width: 100%;
 
-	.logo{
-		width: 200px;
-		height: auto;
-	}
+    .logo {
+        width: 200px;
+        height: auto;
+    }
 
-	nav{
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		justify-content: flex-end;
+    nav {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-end;
 
-		i{
-			text-shadow: $shadow-i;
-		}
-		a{
-			margin-left: $gridGutter;
-			&.btn{
-				margin-left: $gridGutter*3;
-                padding: $gridGutter $gridGutter*3 $gridGutter $gridGutter*1.5;
-            }
-		}
-	}
+        i {
+            text-shadow: $shadow-i;
+        }
+
+        a {
+            margin-left: $gridGutter;
+        }
+
+        .btn {
+            margin-left: $gridGutter*3;
+            padding: $gridGutter $gridGutter*3 $gridGutter $gridGutter*1.5;
+        }
+    }
 }
 
 @media screen and (max-width: 575px) {
-	#pg header#pg-hdr {
-		padding: $gridGutter*3 $gridGutter*2;
-		nav{
-			& > a{
-				margin-top: $gridGutter;
-			}
-		}
-	}
+    #pg header#pg-hdr {
+        padding: $gridGutter*3 $gridGutter*2;
+
+        nav {
+            & > a {
+                margin-top: $gridGutter;
+            }
+        }
+    }
 }

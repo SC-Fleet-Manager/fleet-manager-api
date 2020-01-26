@@ -204,6 +204,8 @@ class FundingRepository extends ServiceEntityRepository
         $fundingMetadata = $this->_em->getClassMetadata(Funding::class);
         $userMetadata = $this->_em->getClassMetadata(User::class);
         $citizenMetadata = $this->_em->getClassMetadata(Citizen::class);
+        $orgaMetadata = $this->_em->getClassMetadata(Organization::class);
+        $citizenOrgaMetadata = $this->_em->getClassMetadata(CitizenOrganization::class);
 
         $monthSqlCondition = $month !== null ? '
             f.created_at >= :beginDate
@@ -212,10 +214,12 @@ class FundingRepository extends ServiceEntityRepository
         ' : '';
 
         $sql = <<<SQL
-                SELECT u.id, u.supporter_visible, u.nickname, u.username, c.actual_handle, SUM(f.amount - f.refunded_amount) as total_amount
+                SELECT u.id, u.supporter_visible, u.nickname, u.username, o.name as orgaName, c.actual_handle, c.avatar_url, SUM(f.amount - f.refunded_amount) as total_amount
                 FROM {$fundingMetadata->getTableName()} f
                 INNER JOIN {$userMetadata->getTableName()} u ON u.id = f.user_id
                 LEFT JOIN {$citizenMetadata->getTableName()} c ON c.id = u.citizen_id
+                LEFT JOIN {$citizenOrgaMetadata->getTableName()} co on c.main_orga_id = co.id
+                LEFT JOIN {$orgaMetadata->getTableName()} o on co.organization_id = o.id
                 WHERE ${monthSqlCondition} f.paypal_status IN ('COMPLETED', 'PARTIALLY_REFUNDED', 'REFUNDED')
                 GROUP BY f.user_id
                 ORDER BY total_amount DESC, u.username ASC
@@ -229,6 +233,8 @@ class FundingRepository extends ServiceEntityRepository
         $rsm->addScalarResult('nickname', 'nickname');
         $rsm->addScalarResult('actual_handle', 'actualHandle');
         $rsm->addScalarResult('total_amount', 'totalAmount', 'integer');
+        $rsm->addScalarResult('orgaName', 'orgaName');
+        $rsm->addScalarResult('avatar_url', 'avatarUrl');
 
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
         if ($month !== null) {

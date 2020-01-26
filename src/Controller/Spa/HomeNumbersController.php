@@ -14,8 +14,8 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class HomeNumbersController
 {
-    private $entityManager;
-    private $serializer;
+    private EntityManagerInterface $entityManager;
+    private SerializerInterface $serializer;
 
     public function __construct(EntityManagerInterface $entityManager, SerializerInterface $serializer)
     {
