@@ -2,7 +2,7 @@
     <div id="pg">
         <header id="pg-hdr">
             <div class="logo">
-                <a href="/"><img src="../img/frontpage/logo/logo_white.png" alt="Logo Fleet Manager"></a>
+                <a href="/"><img src="../img/logo_fm_white.svg" alt="Logo Fleet Manager"></a>
             </div>
             <nav>
                 <div class="links">
@@ -61,7 +61,7 @@
                                 <div class="screens-aside-media">
                                     <img src="../img/frontpage/illustrations/screen-1.jpg" alt="">
                                 </div>
-                                <ul>
+                                <ul class="list-ships">
                                     <li>
                                         <span class="screens-ship">1</span>
                                         <p>Review your Organization's fleet at a glance with easy access to who owns what</p>
@@ -100,7 +100,7 @@
                                     <img src="../img/frontpage/illustrations/screen-2.jpg" alt="">
                                     <img id="sprite-ship-right-top-1-reduced" src="../img/frontpage/illustrations/vaisseau-2.png" alt="">
                                 </div>
-                                <ul>
+                                <ul class="list-ships">
                                     <li>
                                         <span class="screens-ship">1</span>
                                         <p>Get a better overview of your fleet than in “My Hangar”</p>
@@ -131,7 +131,7 @@
                                     <img src="../img/frontpage/illustrations/screen-3.jpg" alt="">
                                     <img id="sprite-ship-left-bottom-1-reduced" src="../img/frontpage/illustrations/vaisseau-3.png" alt="">
                                 </div>
-                                <ul>
+                                <ul class="list-ships">
                                     <li>
                                         <span class="screens-ship">1</span>
                                         <p>Update your fleet with a simple click and forget about updating your checklist or xml shared files</p>
@@ -234,19 +234,19 @@
                     </div>
                 </div>
                 <div class="gradient-blue">
-                    <div class="container">
-                        <div class="row ">
-                            <div class="col-1">
+                    <div class="container" id="supporters">
+                        <div class="row">
+                            <div class="col">
                                 <h2>They supported us</h2>
                                 <p>
-                                    These Citizens are our top backers, they help us cover the cost of hosting and maintenance while being active and invested members of the community.
+                                    These Citizens are our top backers, they helped us cover the cost of hosting and maintenance while being active and invested members of the community.
                                 </p>
                             </div>
                         </div>
-                        <div class="row support">
+                        <div class="row" id="supporters-backers">
                             <div class="col">
                                 <div class="img-round">
-                                    <img src="../img/frontpage/illustrations/ioni.jpg">
+                                    <img src="../img/frontpage/illustrations/ioni.jpg" alt="avatar">
                                 </div>
                                 <div class="supporter-content">
                                     <div class="supporter">Name</div>
@@ -255,7 +255,7 @@
                             </div>
                             <div class="col">
                                 <div class="img-round">
-                                    <img src="../img/frontpage/illustrations/ioni.jpg">
+                                    <img src="../img/frontpage/illustrations/ioni.jpg" alt="avatar">
                                 </div>
                                 <div class="supporter-content">
                                     <div class="supporter">Name</div>
@@ -264,7 +264,7 @@
                             </div>
                             <div class="col">
                                 <div class="img-round">
-                                    <img src="../img/frontpage/illustrations/ioni.jpg">
+                                    <img src="../img/frontpage/illustrations/ioni.jpg" alt="avatar">
                                 </div>
                                 <div class="supporter-content">
                                     <div class="supporter">Name</div>
@@ -273,7 +273,7 @@
                             </div>
                             <div class="col">
                                 <div class="img-round">
-                                    <img src="../img/frontpage/illustrations/ioni.jpg">
+                                    <img src="../img/frontpage/illustrations/ioni.jpg" alt="avatar">
                                 </div>
                                 <div class="supporter-content">
                                     <div class="supporter">Name</div>
@@ -282,7 +282,7 @@
                             </div>
                             <div class="col">
                                 <div class="img-round">
-                                    <img src="../img/frontpage/illustrations/ioni.jpg">
+                                    <img src="../img/frontpage/illustrations/ioni.jpg" alt="avatar">
                                 </div>
                                 <div class="supporter-content">
                                     <div class="supporter">Name</div>
@@ -292,7 +292,7 @@
 
                             <div class="col">
                                 <div class="img-round">
-                                    <img src="../img/frontpage/illustrations/ioni.jpg">
+                                    <img src="../img/frontpage/illustrations/ioni.jpg" alt="avatar">
                                 </div>
                                 <div class="supporter-content">
                                     <div class="supporter">Name</div>
@@ -301,7 +301,7 @@
                             </div>
                             <div class="col">
                                 <div class="img-round">
-                                    <img src="../img/frontpage/illustrations/ioni.jpg">
+                                    <img src="../img/frontpage/illustrations/ioni.jpg" alt="avatar">
                                 </div>
                                 <div class="supporter-content">
                                     <div class="supporter">Name</div>
@@ -310,7 +310,7 @@
                             </div>
                             <div class="col">
                                 <div class="img-round">
-                                    <img src="../img/frontpage/illustrations/ioni.jpg">
+                                    <img src="../img/frontpage/illustrations/ioni.jpg" alt="avatar">
                                 </div>
                                 <div class="supporter-content">
                                     <div class="supporter">Name</div>
@@ -319,48 +319,40 @@
                             </div>
                             <div class="col">
                                 <div class="img-round">
-                                    <img src="../img/frontpage/illustrations/ioni.jpg">
+                                    <img src="../img/frontpage/illustrations/ioni.jpg" alt="avatar">
                                 </div>
                                 <div class="supporter-content">
                                     <div class="supporter">Name</div>
                                     <p>Org Name</p>
                                 </div>
                             </div>
-                            <div class="col">
-                                <div class="img-round">
-                                    <img src="../img/frontpage/illustrations/ioni.jpg">
-                                </div>
-                                <div class="supporter-content">
-                                    <div class="supporter">Name</div>
-                                    <p>Org Name</p>
-                                </div>
-                            </div>
+                            <div class="col"></div>
                         </div>
                     </div>
                 </div>
             </section>
-
-        </main><!-- /#pg-main -->
+        </main>
 
         <footer id="pg-ftr">
             <section class="footer">
                 <div class="logo">
-                    <img src="../img/frontpage/logo/logo_white.png" alt="Logo Fleet Manager">
+                    <img src="../img/logo_fm_white.svg" alt="Logo Fleet Manager">
                 </div>
                 <nav>
-                    <div class="policy"><a href="#">Private Policy</a> - <a href="#">FAQ</a></div>
+                    <div class="policy"><a href="#">Privacy Policy</a><!-- - <a href="#">FAQ</a>--></div>
                     <div class="links">
-                        <a href="#"><i class="fas fa-blog"></i></a>
-                        <a href="#"><i class="fab fa-github"></i></a>
-                        <a href="#"><i class="fab fa-discord"></i></a>
+                        <a target="_blank" href="#"><i class="fas fa-blog"></i></a>
+                        <a target="_blank" href="#"><i class="fab fa-github"></i></a>
+                        <a target="_blank" href="#"><i class="fab fa-discord"></i></a>
                     </div>
                 </nav>
             </section>
             <section class="copyright">
-                <p>Copyright Fleet Manager© - 2019 | Star Citizen is a product of Cloud Imperium Rights LLC and Cloud Imperium Rights Ltd.</p>
+                <p>Fleet Manager © 2018 - 2020</p>
+                <p>All game content and materials are copyright of Cloud Imperium Rights LLC and Cloud Imperium Rights Ltd. Star Citizen®, Roberts Space Industries®, and Cloud Imperium® are registered trademarks of Cloud Imperium Rights LLC. All rights reserved.</p>
             </section>
-        </footer><!-- /#pg-ftr -->
-    </div><!-- /#pg -->
+        </footer>
+    </div>
 </template>
 
 <script>
@@ -423,6 +415,35 @@ export default {
                 easing: 'cubicBezier(0.165, 0.840, 0.440, 1.000)', // easeOutQuart https://matthewlein.com/tools/ceaser
             });
         }, 1000);
+
+        setTimeout(() => {
+            document.querySelectorAll('.list-ships').forEach((el) => {
+                el.querySelectorAll('li').forEach((el) => {
+                    el.style.transform = 'translateY(50px)';
+                });
+                anime({
+                    targets: el.querySelectorAll('li'),
+                    opacity: 1,
+                    translateY: '-=50',
+                    easing: 'cubicBezier(0.165, 0.840, 0.440, 1.000)', // easeOutQuart https://matthewlein.com/tools/ceaser
+                    delay: function(el, i, l) {
+                        return i * 150;
+                    },
+                });
+            });
+            document.querySelectorAll('#supporters-backers .col').forEach((el) => {
+                el.style.transform = 'translateY(50px)';
+            });
+            anime({
+                targets: '#supporters-backers .col',
+                opacity: 1,
+                translateY: '-=50',
+                easing: 'cubicBezier(0.165, 0.840, 0.440, 1.000)', // easeOutQuart https://matthewlein.com/tools/ceaser
+                delay: function(el, i, l) {
+                    return i * 100;
+                },
+            });
+        }, 500);
     },
     methods: {
     }

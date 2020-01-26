@@ -1,5 +1,4 @@
 #pg footer#pg-ftr{
-
 	section.footer{
 		padding: $gridGutter*5 $gridGutter*6;
 		display: flex;
@@ -22,7 +21,7 @@
 				margin-right: $gridGutter*2;
 				a{
 					@include font;
-					font-size: 15px;
+					font-size: $fontP;
 					font-weight: 300;
 					padding: 0 $gridGutter/2;
 					margin: 0;
@@ -41,23 +40,30 @@
 	section.copyright{
 		padding: $gridGutter $gridGutter*3;
 		text-align: center;
-		width: 100%;
+		width: 60%;
+        margin: auto;
 		background-color: $darkest-blue;
 
 		p{
 			color: $light-blue;
 			font-weight: 300;
-			font-size: 15px;
+			font-size: 16px;
+            margin-top: 10px;
 		}
-
 	}
+}
+
+@media screen and (max-width: 991px){
+	#pg footer#pg-ftr {
+        section.copyright {
+            width: 100%;
+        }
+    }
 }
 
 @media screen and (max-width: 575px){
 	#pg footer#pg-ftr{
-
 		section.footer{
-
 			padding: $gridGutter*5 $gridGutter*2;
 
 			nav .policy{
