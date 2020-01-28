@@ -1,15 +1,22 @@
 #pg {
-    background: url("../../../img/frontpage/backgrounds/background.jpg") repeat-y center bottom;
+    background: url("../../../img/background_1920.jpg") repeat-y center bottom;
+    @media screen and (max-width: 767px) {
+        background-image: url("../../../img/background_767.jpg");
+    }
 
     .fab, .fas {
-        text-shadow: $shadow;
+        text-shadow: 0 0 7px rgba(0, 0, 0, 0.5);
     }
 
     main#pg-main {
         section.header {
             display: flex;
             align-items: center;
-            background: url("../../../img/frontpage/backgrounds/wallpaper.jpg") no-repeat center top;
+            background: url("../../../img/wallpaper_1920.jpg") no-repeat center top;
+            @media screen and (max-width: 767px) {
+                background-image: url("../../../img/wallpaper_767.jpg");
+            }
+
             background-size: cover;
             min-height: 100vh;
             padding-top: 120px;
@@ -91,7 +98,7 @@
         }
 
         section.main {
-            background: url("../../../img/frontpage/illustrations/ornement.png") repeat center top;
+            background: url("../../../img/grid.png") repeat center top;
             position: relative;
 
             section.screens {
@@ -261,7 +268,7 @@
                         content: "";
                         position: absolute;
                         height: 1px;
-                        bottom: -5px;
+                        bottom: -15px;
                         left: 50%;
                         transform: translateX(-50%);
                         width: 50px;
@@ -418,10 +425,6 @@
                     h4 {
                         font-size: $fontTitle;
                         padding-bottom: $gridGutter;
-                    }
-
-                    img {
-                        width: 100%;
                     }
 
                     .meta {

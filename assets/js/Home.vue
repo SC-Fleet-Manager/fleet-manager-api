@@ -16,7 +16,7 @@
         </header>
         <main id="pg-main">
             <section class="header">
-                <img @load="onLoad('sprite-character-1')" id="sprite-character-1" src="../img/frontpage/illustrations/character-1.png" alt="">
+                <img @load="onLoad('sprite-character-1')" id="sprite-character-1" src="../img/character-1.png" alt="Sprite citizen">
                 <div class="gradient-down"></div>
                 <div class="container">
                     <h1>Fleet Manager</h1>
@@ -29,7 +29,7 @@
             </section>
             <section class="main">
                 <div class="gradient-up"></div>
-                <img @load="onLoad('join-citizens')" id="sprite-ship-right-1" src="../img/frontpage/illustrations/vaisseau-1.png" alt="">
+                <img @load="onLoad('join-citizens')" id="sprite-ship-right-1" src="../img/vaisseau-1.png" alt="300i Origin">
                 <div class="container" id="join-citizens">
                     <h2>Join thousands of citizens!</h2>
                     <div class="row-stats">
@@ -62,13 +62,13 @@
                             <div class="col-2">
                                 <div class="screens-aside-media">
                                     <svg v-show="!this.screenshots['sprite-first-screenshot']" viewBox="0 0 750 422"><rect width="750" height="422" style="fill:#031217"></rect></svg>
-                                    <img v-show="this.screenshots['sprite-first-screenshot']" @load="onLoad('sprite-first-screenshot', true)" src="../img/frontpage/illustrations/screen-1.jpg" alt="">
+                                    <img v-show="this.screenshots['sprite-first-screenshot']" @load="onLoad('sprite-first-screenshot', true)" src="../img/screen-1.jpg" alt="Screenshot Orga's fleet">
                                 </div>
                             </div>
                             <div class="col-2">
                                 <h2 class="screens-title">Manage your Organization's fleet</h2>
                                 <div class="screens-aside-media">
-                                    <img src="../img/frontpage/illustrations/screen-1.jpg" alt="">
+                                    <img src="../img/screen-1.jpg" alt="Screenshot Orga's fleet">
                                 </div>
                                 <ul class="list-ships">
                                     <li>
@@ -100,16 +100,16 @@
                             <div class="col-2">
                                 <div class="screens-aside-media">
                                     <svg v-show="!this.screenshots['review-personal-fleet']" viewBox="0 0 750 422"><rect width="750" height="422" style="fill:#031217"></rect></svg>
-                                    <img v-show="this.screenshots['review-personal-fleet']" @load="onLoad('review-personal-fleet', true)" src="../img/frontpage/illustrations/screen-2.jpg" alt="">
-                                    <img @load="onLoad('review-personal-fleet')" id="sprite-ship-right-top-1" src="../img/frontpage/illustrations/vaisseau-2.png" alt="">
+                                    <img v-show="this.screenshots['review-personal-fleet']" @load="onLoad('review-personal-fleet', true)" src="../img/screen-2.jpg" alt="Screenshot My Fleet">
+                                    <img @load="onLoad('review-personal-fleet')" id="sprite-ship-right-top-1" src="../img/vaisseau-2.png" alt="Ship sprite">
                                 </div>
                             </div>
                             <div class="col-2">
                                 <h2 class="screens-title">Review your personal fleet</h2>
                                 <div class="screens-aside-media">
                                     <svg v-show="!this.screenshots['review-personal-fleet']" viewBox="0 0 750 422"><rect width="750" height="422" style="fill:#031217"></rect></svg>
-                                    <img v-show="this.screenshots['review-personal-fleet']" @load="onLoad('review-personal-fleet', true)" src="../img/frontpage/illustrations/screen-2.jpg" alt="">
-                                    <img @load="onLoad('review-personal-fleet')" id="sprite-ship-right-top-1-reduced" src="../img/frontpage/illustrations/vaisseau-2.png" alt="">
+                                    <img v-show="this.screenshots['review-personal-fleet']" @load="onLoad('review-personal-fleet', true)" src="../img/screen-2.jpg" alt="Screenshot My Fleet">
+                                    <img @load="onLoad('review-personal-fleet')" id="sprite-ship-right-top-1-reduced" src="../img/vaisseau-2.png" alt="Ship sprite">
                                 </div>
                                 <ul class="list-ships">
                                     <li>
@@ -133,16 +133,16 @@
                             <div class="col-2">
                                 <div class="screens-aside-media">
                                     <svg v-show="!this.screenshots['official-extension']" viewBox="0 0 750 422"><rect width="750" height="422" style="fill:#031217"></rect></svg>
-                                    <img v-show="this.screenshots['official-extension']" @load="onLoad('official-extension', true)" src="../img/frontpage/illustrations/screen-3.jpg" alt="">
-                                    <img @load="onLoad('official-extension')" id="sprite-ship-left-bottom-1" src="../img/frontpage/illustrations/vaisseau-3.png" alt="">
+                                    <img v-show="this.screenshots['official-extension']" @load="onLoad('official-extension', true)" src="../img/screen-3.jpg" alt="Screenshot web extension">
+                                    <img @load="onLoad('official-extension')" id="sprite-ship-left-bottom-1" src="../img/vaisseau-3.png" alt="Ship sprite">
                                 </div>
                             </div>
                             <div class="col-2">
                                 <h2 class="screens-title">Official Browser Extension</h2>
                                 <div class="screens-aside-media">
                                     <svg v-show="!this.screenshots['official-extension']" viewBox="0 0 750 422"><rect width="750" height="422" style="fill:#031217"></rect></svg>
-                                    <img v-show="this.screenshots['official-extension']" @load="onLoad('official-extension', true)" src="../img/frontpage/illustrations/screen-3.jpg" alt="">
-                                    <img @load="onLoad('official-extension')" id="sprite-ship-left-bottom-1-reduced" src="../img/frontpage/illustrations/vaisseau-3.png" alt="">
+                                    <img v-show="this.screenshots['official-extension']" @load="onLoad('official-extension', true)" src="../img/screen-3.jpg" alt="Screenshot web extension">
+                                    <img @load="onLoad('official-extension')" id="sprite-ship-left-bottom-1-reduced" src="../img/vaisseau-3.png" alt="Ship sprite">
                                 </div>
                                 <ul class="list-ships">
                                     <li>
@@ -168,14 +168,14 @@
                 <div class="gradient-blue">
                     <div class="container" id="use-it-now">
                         <div class="row">
-                            <img @load="onLoad('use-it-now')" id="sprite-useitnow-character-left" src="../img/frontpage/illustrations/character-2.png" alt="">
+                            <img @load="onLoad('use-it-now')" id="sprite-useitnow-character-left" src="../img/character-2.png" alt="Sprite character">
                             <div class="col">
                                 <h2>Use it now</h2>
                                 <p>Fleet Manager is an online app to help you keep your organization’s fleet updated and get more insights about it. So you can better prepare your next operations and have fun all together.</p>
                                 <button v-if="this.user === null" v-once class="btn" type="button">Start using Fleet Manager</button>
                                 <a v-else v-once class="btn" href="/profile">Start using Fleet Manager</a>
                             </div>
-                            <img @load="onLoad('use-it-now')" id="sprite-useitnow-character-right" src="../img/frontpage/illustrations/character-3.png" alt="">
+                            <img @load="onLoad('use-it-now')" id="sprite-useitnow-character-right" src="../img/character-3.png" alt="Sprite character with bike">
                         </div>
                     </div>
                 </div>
@@ -183,14 +183,16 @@
                     <h2>Meet the Team</h2>
                     <div class="row">
                         <div class="col">
-                            <img src="../img/frontpage/illustrations/ioni.jpg" alt="photo">
+                            <img
+                                src="../img/thomas_400x400.jpg" alt="Thomas photo"
+                                srcset="
+                                    ../img/thomas_400x400.jpg 1x,
+                                    ../img/thomas_800x800.jpg 2x
+                                "
+                                width="400">
                             <div class="meta">
-                                <h4 class="name">
-                                    Thomas Talbot
-                                </h4>
-                                <div class="description">
-                                    Lead Developer - Solution Architect
-                                </div>
+                                <h4 class="name">Thomas Talbot</h4>
+                                <div class="description">Lead Developer - Solution Architect</div>
                                 <div class="links">
                                     <a target="_blank" href="https://github.com/ioni14"><i class="fab fa-github"></i></a>
                                     <a target="_blank" href="https://www.linkedin.com/in/thomas-talbot/"><i class="fab fa-linkedin"></i></a>
@@ -198,14 +200,16 @@
                             </div>
                         </div>
                         <div class="col">
-                            <img src="../img/frontpage/illustrations/synthese.jpg" alt="photo">
+                            <img
+                                src="../img/valentin_400x400.jpg" alt="Valentin photo"
+                                srcset="
+                                    ../img/valentin_400x400.jpg 1x,
+                                    ../img/valentin_800x800.jpg 2x
+                                "
+                                width="400">
                             <div class="meta">
-                                <h4 class="name">
-                                    Valentin Ronteix
-                                </h4>
-                                <div class="description">
-                                    Community Manager - Project Manager
-                                </div>
+                                <h4 class="name">Valentin Ronteix</h4>
+                                <div class="description">Community Manager - Project Manager</div>
                                 <div class="links">
                                     <a target="_blank" href="https://github.com/vyrtualsynthese"><i class="fab fa-github"></i></a>
                                     <a target="_blank" href="https://twitch.tv/ashuvidz/"><i class="fab fa-twitch"></i></a>
@@ -214,18 +218,20 @@
                             </div>
                         </div>
                         <div class="col">
-                            <img src="../img/frontpage/illustrations/arnaud.jpg" alt="photo">
+                            <img
+                                src="../img/arnaud_400x400.jpg" alt="Arnaud photo"
+                                srcset="
+                                    ../img/arnaud_400x400.jpg 1x,
+                                    ../img/arnaud_800x800.jpg 2x
+                                "
+                                width="400">
                             <div class="meta">
-                                <h4 class="name">
-                                    Arnaud Cantaloube
-                                </h4>
-                                <div class="description">
-                                    Designer
-                                </div>
+                                <h4 class="name">Arnaud Cantaloube</h4>
+                                <div class="description">Designer</div>
                                 <div class="links">
-                                    <a target="_blank" href="#"><i class="fab fa-twitter"></i></a>
-                                    <a target="_blank" href="#"><i class="fab fa-linkedin"></i></a>
-                                    <a target="_blank" href="#"><i class="fa fa-globe"></i></a>
+                                    <a target="_blank" href="https://twitter.com/a_cantaloube"><i class="fab fa-twitter"></i></a>
+                                    <a target="_blank" href="https://www.linkedin.com/in/arnaudcantaloube/"><i class="fab fa-linkedin"></i></a>
+                                    <a target="_blank" href="https://www.arnaudcantaloube.fr/"><i class="fas fa-globe"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -243,7 +249,7 @@
                         </div>
                         <div class="row" id="supporters-backers">
                             <div class="col" v-for="supporter in topSupporters" :key="supporter.name">
-                                <img :src="supporter.avatarUrl" alt="avatar">
+                                <img :src="supporter.avatarUrl" :alt="'avatar '+supporter.name">
                                 <div class="supporter-description">
                                     <div class="supporter-name">{{ supporter.name }}</div>
                                     <p>{{ supporter.mainOrgaName }}</p>
@@ -401,7 +407,7 @@ export default {
                             targets: '#sprite-character-1',
                             left: '18%',
                             opacity: 1,
-                            duration: 1500,
+                            duration: 2000,
                             easing: 'easeOutQuart', // https://matthewlein.com/tools/ceaser
                         });
                     }, 250);
