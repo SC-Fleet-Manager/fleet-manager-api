@@ -10,7 +10,7 @@
                     <a target="_blank" href="https://github.com/Ioni14/starcitizen-fleet-manager" aria-label="Github"><i class="fab fa-github"></i></a>
                     <a target="_blank" href="https://discord.gg/5EyFpVP" aria-label="Discord"><i class="fab fa-discord"></i></a>
                 </div>
-                <button v-if="this.user === null" v-once class="btn" type="button"><i class="fas fa-sign-in-alt"></i> Login</button>
+                <button v-if="this.user === null" v-once class="btn" type="button" @click="showModal"><i class="fas fa-sign-in-alt"></i> Login</button>
                 <a v-else v-once class="btn" href="/profile"><i class="fas fa-space-shuttle"></i> Dashboard</a>
             </nav>
         </header>
@@ -281,7 +281,7 @@
             </section>
         </footer>
 
-<!--        <RegistrationAndLoginModal discord-login-url="/connect/discord"></RegistrationAndLoginModal>-->
+        <RegistrationAndLoginModal ref="modal"></RegistrationAndLoginModal>
     </div>
 </template>
 
@@ -289,11 +289,11 @@
 import anime from 'animejs/lib/anime.es.js';
 import axios from 'axios';
 import AnimatedNumber from 'animated-number-vue';
-// import RegistrationAndLoginModal from "./views/RegistrationAndLoginModal";
+import RegistrationAndLoginModal from "./views/RegistrationAndLoginModal";
 
 export default {
     name: 'Home',
-    components: {AnimatedNumber/*, RegistrationAndLoginModal*/},
+    components: {AnimatedNumber, RegistrationAndLoginModal},
     data() {
         return {
             topSupporters: [],
@@ -350,8 +350,12 @@ export default {
     },
     mounted() {
         this.onScroll();
+        this.showModal();
     },
     methods: {
+        showModal() {
+            this.$refs['modal'].show();
+        },
         formatSatistics(value) {
             return Math.round(value);
         },

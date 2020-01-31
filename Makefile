@@ -7,7 +7,7 @@ PHPUNIT=bin/phpunit
 PHP_CS_FIXER=vendor/bin/php-cs-fixer
 EXEC_PHP=$(DOCKER_COMPOSE) exec -u ${UID}:${GID} php
 EXEC_PHP_NOTTY=$(DOCKER_COMPOSE) exec -T -u ${UID}:${GID} php
-EXEC_PHP_ROOT=$(DOCKER_COMPOSE) exec php
+EXEC_PHP_ROOT=$(DOCKER_COMPOSE) exec -u 0 php
 EXEC_MYSQL=$(DOCKER_COMPOSE) exec -T mysql
 EXEC_COMPOSER=$(EXEC_PHP) composer
 EXEC_CONSOLE=$(EXEC_PHP) $(CONSOLE)
@@ -60,9 +60,9 @@ up: 										## launch all containers
 down: 										## destroy all containers (without volumes)
 	$(DOCKER_COMPOSE) down
 tty: 										## get a shell
-	$(EXEC_PHP) sh
+	$(EXEC_PHP) bash
 tty-root:									## get a root shell
-	$(EXEC_PHP_ROOT) sh
+	$(EXEC_PHP_ROOT) bash
 
 clear:										## remove all the cache, the logs, the sessions and the built assets
 	-$(EXEC_PHP_ROOT) rm -rf var/cache/* var/sessions/* var/log/*
