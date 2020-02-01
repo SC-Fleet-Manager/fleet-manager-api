@@ -6,6 +6,7 @@ use App\Domain\SpectrumIdentification;
 use App\Entity\Citizen;
 use App\Entity\Organization;
 use App\Entity\User;
+use App\Exception\NotFoundHandleSCException;
 use App\Repository\CitizenRepository;
 use App\Repository\OrganizationRepository;
 use App\Service\Citizen\CitizenRefresher;
@@ -67,7 +68,7 @@ class RefreshMemberController extends AbstractController
         if (!$this->isGranted('IS_ADMIN_MANAGEABLE', new SpectrumIdentification($organizationSid))) {
             return $this->json([
                 'error' => 'not_enough_rights',
-                'errorMessage' => sprintf('You must be an admin of %s to view these stats. Try to refresh your RSI profile in your <a href="/profile">profile page</a>.', $organization->getName()),
+                'errorMessage' => sprintf('You must be an admin of %s to refresh a member. Try to refresh your RSI profile in your <a href="/profile">profile page</a>.', $organization->getName()),
             ], 403);
         }
 
@@ -80,8 +81,12 @@ class RefreshMemberController extends AbstractController
             ], 404);
         }
 
-        $citizenInfos = $this->citizenInfosProvider->retrieveInfos(clone $targetCitizen->getActualHandle(), false);
-        if (!$citizenInfos->numberSC->equals($targetCitizen->getNumber())) {
+        try {
+            $citizenInfos = $this->citizenInfosProvider->retrieveInfos(clone $targetCitizen->getActualHandle(), false);
+        } catch (NotFoundHandleSCException $e) {
+            $citizenInfos = null;
+        }
+        if ($citizenInfos === null || !$citizenInfos->numberSC->equals($targetCitizen->getNumber())) {
             return $this->json([
                 'error' => 'bad_citizen',
                 'errorMessage' => sprintf('The SC handle of %s has probably changed. He should update it in its Profile.', $targetCitizen->getActualHandle()->getHandle()),

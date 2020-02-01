@@ -7,7 +7,7 @@ monolog:
             type: fingers_crossed
             action_level: error
             handler: grouped
-            excluded_http_codes: [404]
+            excluded_http_codes: [404, 405]
         grouped:
             type:    group
             members: [streamed_error, deduplicated]
@@ -41,7 +41,7 @@ monolog:
             type: fingers_crossed
             action_level: warning
             handler: deduplicated
-            excluded_http_codes: [403, 404]
+            excluded_http_codes: [403, 404, 405]
         deduplicated:
             type: deduplication
             time: 60 # no duplicated messages within 60 seconds

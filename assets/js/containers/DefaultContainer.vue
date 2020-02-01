@@ -58,7 +58,7 @@
         Footer as TheFooter
     } from '@coreui/vue';
     import { mapMutations } from 'vuex';
-    import RegistrationAndLoginModal from "../views/RegistrationAndLoginModal";
+    import RegistrationAndLoginModal from "../views/RegistrationAndLoginModal_old";
 
     export default {
         name: 'DefaultContainer',

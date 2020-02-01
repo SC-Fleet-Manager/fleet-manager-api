@@ -1,4 +1,5 @@
 const Encore = require('@symfony/webpack-encore');
+const NormalModuleReplacementPlugin = require('webpack/lib/NormalModuleReplacementPlugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
 
@@ -9,10 +10,11 @@ Encore
     .addEntry('main', './assets/js/main.js')
     .addEntry('home', './assets/js/home.js')
 
-    .cleanupOutputBeforeBuild()
-    .enableSingleRuntimeChunk()
-    .enableBuildNotifications()
     .splitEntryChunks()
+    .enableSingleRuntimeChunk()
+
+    .cleanupOutputBeforeBuild()
+    .enableBuildNotifications()
     .enableSourceMaps(!Encore.isProduction())
     .enableVersioning(Encore.isProduction())
     .enableIntegrityHashes(Encore.isProduction())
@@ -40,6 +42,10 @@ Encore
     .addPlugin(new MomentLocalesPlugin({
         localesToKeep: ['en'],
     }))
+    .addPlugin(new NormalModuleReplacementPlugin(
+        /moment-timezone\/data\/packed\/latest\.json/,
+        require.resolve('./assets/js/timezones.json')
+    ))
 ;
 
 module.exports = Encore.getWebpackConfig();

@@ -3,26 +3,27 @@
 use App\Kernel;
 use Symfony\Component\Debug\Debug;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Dotenv\Dotenv;
 
-require dirname(__DIR__).'/vendor/autoload.php';
+require dirname(__DIR__).'/config/bootstrap.php';
 
 $_SERVER['APP_ENV'] = 'test';
 $_SERVER['APP_DEBUG'] = true;
 $_SERVER['TESTING_WITH_SESSION'] = true;
 
-if (is_array($env = @include dirname(__DIR__).'/.env.local.php')) {
-    $_SERVER += $env;
-    $_ENV += $env;
-} elseif (!class_exists(Dotenv::class)) {
-    throw new RuntimeException('Please run "composer require symfony/dotenv" to load the ".env" files configuring the application.');
-} else {
-    (new Dotenv(true))->loadEnv(dirname(__DIR__).'/.env');
+if ($_SERVER['APP_DEBUG']) {
+    umask(0000);
+    Debug::enable();
 }
 
-Debug::enable();
+if ($trustedProxies = $_SERVER['TRUSTED_PROXIES'] ?? $_ENV['TRUSTED_PROXIES'] ?? false) {
+    Request::setTrustedProxies(explode(',', $trustedProxies), Request::HEADER_X_FORWARDED_ALL ^ Request::HEADER_X_FORWARDED_HOST);
+}
 
-$kernel = new Kernel($_SERVER['APP_ENV'], $_SERVER['APP_DEBUG']);
+if ($trustedHosts = $_SERVER['TRUSTED_HOSTS'] ?? $_ENV['TRUSTED_HOSTS'] ?? false) {
+    Request::setTrustedHosts([$trustedHosts]);
+}
+
+$kernel = new Kernel($_SERVER['APP_ENV'], (bool) $_SERVER['APP_DEBUG']);
 $request = Request::createFromGlobals();
 $response = $kernel->handle($request);
 $response->send();

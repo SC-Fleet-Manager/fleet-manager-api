@@ -8,8 +8,8 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class CitizenRefreshedEvent extends Event
 {
-    private $citizenBeforeChange;
-    private $citizenInfos;
+    private Citizen $citizenBeforeChange;
+    private CitizenInfos $citizenInfos;
 
     public function __construct(Citizen $citizenBeforeChange, CitizenInfos $citizenInfos)
     {

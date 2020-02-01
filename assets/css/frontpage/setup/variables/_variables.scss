@@ -1,0 +1,35 @@
+/* ------------ PAGE ------------ */
+$gridGutter: 11px;
+
+$borderRadius: 5px;
+$borderSize: 1px;
+
+/* ------------ BUTTONS & FORMS ------------ */
+$formElemHeight: 44px;
+$formElemLineHeight: 32px;
+
+//$fontButton: 15px;
+//$fontH3: 20px;
+//$fontP: 12px;
+//$fontName: 20px;
+//$fontCircle: 12px;
+//$fontH1: 50px;
+//$fontTitle: 30px;
+
+$fontButton: 15px * 1.5;
+$fontH3: 18px * 1.5;
+$fontP: 12px * 1.5;
+$fontName: 20px * 1.5;
+$fontCircle: 12px * 1.5;
+$fontH1: 50px * 1.5;
+$fontTitle: 30px * 1.5;
+
+$shadow:
+  0 1px 1px rgba(0, 0, 0, 1), 0 1px 5px rgba(0, 0, 0, 1)
+;
+$shadow-title:
+  0 1px 1px rgba(0, 0, 0, 1), 0 1px 10px rgba(0, 0, 0, 1)
+;
+$shadow-i:
+  0 1px 1px rgba(0, 0, 0, 0.5), 0 1px 10px rgba(0, 0, 0, 0.5)
+;
