@@ -1,5 +1,5 @@
 <template>
-    <modal name="hello-world" id="modal-registration-login" height="auto">
+    <modal name="modal-registration-login" id="modal-registration-login" height="auto" :adaptive="true" overlayTransition="nice-modal-fade">
         <header class="header">
             <i class="fas fa-sign-in-alt"></i> Connect to Fleet Manager
             <i class="fas fa-times" @click="$modal.hide('hello-world')"></i>
@@ -8,7 +8,7 @@
             <a class="btn btn-discord" href="/connect/discord"><i class="fab fa-discord"></i> Log in with Discord</a>
             <div class="alert alert-success" v-if="registrationFormSuccessMessage">{{ registrationFormSuccessMessage }}</div>
             <div class="alert alert-success" v-if="lostPasswordFormSuccessMessage">{{ lostPasswordFormSuccessMessage }}</div>
-            <div class="collapse" id="collapse-login-form" style="height: 0; overflow: hidden;">
+            <div class="collapse" id="collapse-login-form" style="overflow: hidden;">
                 <form @submit="onSubmitLoginForm">
                     <div v-if="loginFormErrorsGlobal" class="alert alert-danger">
                         {{ loginFormErrorsGlobal }}
@@ -27,13 +27,13 @@
                                 <label>Remember me</label>
                             </div>
                         </div>
-                        <div class="link">lost your password?</div>
+                        <div class="link" @click="showCollapse('collapse-lost-password-form')">lost your password?</div>
                     </div>
                     <button type="submit" class="btn"><i class="fas fa-sign-in-alt"></i> Log in</button>
-                    <p class="no-account">Don't have an account? <span class="link" @click="showSignup">Sign up</span></p>
+                    <p class="bottom-line">Don't have an account? <span class="link" @click="showCollapse('collapse-registration-form')">Sign up</span></p>
                 </form>
             </div>
-            <div class="collapse" id="collapse-registration-form" style="overflow: hidden;">
+            <div class="collapse" id="collapse-registration-form" style="height: 0; overflow: hidden;">
                 <form @submit="onSubmitRegistrationForm">
                     <div v-if="registrationFormErrorsGlobal" class="alert alert-danger">
                         {{ registrationFormErrorsGlobal }}
@@ -50,7 +50,20 @@
                         </div>
                     </div>
                     <button type="submit" class="btn"><i class="fas fa-id-card"></i> Register</button>
-                    <p class="no-account link" @click="showLogin">I'm already registered.</p>
+                    <p class="bottom-line link" @click="showCollapse('collapse-login-form')">I'm already registered.</p>
+                </form>
+            </div>
+            <div class="collapse" id="collapse-lost-password-form" style="height: 0; overflow: hidden;">
+                <form @submit="onSubmitLostPasswordForm">
+                    <div v-if="lostPasswordFormErrorsGlobal" class="alert alert-danger">
+                        {{ lostPasswordFormErrorsGlobal }}
+                    </div>
+                    <div :class="{'has-errors': lostPasswordFormErrorsViolations.email !== null}">
+                        <input type="email" class="form-control" id="input-lost-password-email" v-model="lostPasswordForm.email" required placeholder="Email">
+                        <p class="form-errors" v-if="lostPasswordFormErrorsViolations.email">{{ lostPasswordFormErrorsViolations.email }}</p>
+                    </div>
+                    <button type="submit" class="btn"><i class="fas fa-envelope"></i> Send me a new password</button>
+                    <p class="bottom-line">You remember your password? <span class="link" @click="showCollapse('collapse-login-form')">Log in</span></p>
                 </form>
             </div>
         </section>
@@ -85,55 +98,42 @@
             };
         },
         methods: {
-            showLogin() {
-                document.getElementById('collapse-registration-form').style.height = document.getElementById('collapse-registration-form').clientHeight+'px';
-                anime({
-                    targets: '#collapse-registration-form',
-                    height: 0,
-                    duration: 300,
-                    easing: 'linear',
-                    complete: () => {
-                        document.getElementById('collapse-registration-form').style.display = 'none';
+            closeCollapses(exceptElement) {
+                document.querySelectorAll('.collapse').forEach((el) => {
+                    if (el == exceptElement) {
+                        return;
                     }
-                });
-                document.getElementById('collapse-login-form').style.display = 'block';
-                anime({
-                    targets: '#collapse-login-form',
-                    height: document.getElementById('collapse-login-form').scrollHeight,
-                    duration: 300,
-                    easing: 'linear',
-                    complete: () => {
-                        document.getElementById('collapse-login-form').style.height = 'auto';
-                    }
+                    el.style.height = el.clientHeight+'px';
+                    anime({
+                        targets: el,
+                        height: 0,
+                        duration: 300,
+                        easing: 'linear',
+                        complete: () => {
+                            el.style.display = 'none';
+                        }
+                    });
                 });
             },
-            showSignup() {
-                document.getElementById('collapse-login-form').style.height = document.getElementById('collapse-login-form').clientHeight+'px';
+            showCollapse(elementId) {
+                const el = document.getElementById(elementId);
+                this.closeCollapses(el);
+                el.style.display = 'block';
                 anime({
-                    targets: '#collapse-login-form',
-                    height: 0,
+                    targets: el,
+                    height: el.scrollHeight,
                     duration: 300,
                     easing: 'linear',
                     complete: () => {
-                        document.getElementById('collapse-login-form').style.display = 'none';
-                    }
-                });
-                document.getElementById('collapse-registration-form').style.display = 'block';
-                anime({
-                    targets: '#collapse-registration-form',
-                    height: document.getElementById('collapse-registration-form').scrollHeight,
-                    duration: 300,
-                    easing: 'linear',
-                    complete: () => {
-                        document.getElementById('collapse-registration-form').style.height = 'auto';
+                        el.style.height = 'auto';
                     }
                 });
             },
             show() {
-                this.$modal.show('hello-world');
+                this.$modal.show('modal-registration-login');
             },
             hide() {
-                this.$modal.hide('hello-world');
+                this.$modal.hide('modal-registration-login');
             },
             onSubmitLoginForm(ev) {
                 ev.preventDefault();

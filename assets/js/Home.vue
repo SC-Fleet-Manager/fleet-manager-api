@@ -16,21 +16,40 @@
         </header>
         <main id="pg-main">
             <section class="header">
-                <img @load="onLoad('sprite-character-1')" id="sprite-character-1" src="../img/character-1.png" alt="Sprite citizen">
+                <img
+                    @load="onLoad('sprite-character-1')"
+                    ref="sprite-character-1" id="sprite-character-1"
+                    src="../img/citizen_723x941.png" alt="Sprite citizen"
+                    sizes="60vh"
+                    srcset="
+                        ../img/citizen_197x300.png 197w,
+                        ../img/citizen_370x563.png 370w,
+                        ../img/citizen_556x845.png 556w,
+                        ../img/citizen_723x941.png 723w
+                    ">
                 <div class="gradient-down"></div>
                 <div class="container">
                     <h1>Fleet Manager</h1>
                     <h3>For Star Citizen</h3>
-                    <p>Best tool in the verse to manage and share your Organization's and personal fleet</p>
-                    <button v-if="this.user === null" v-once class="btn" type="button">Use Now</button>
+                    <p>Best tool in the verse to manage and share your organization's and personal fleet.</p>
+                    <button v-if="this.user === null" v-once class="btn" type="button" @click="showModal">Use Now</button>
                     <a v-else v-once class="btn" href="/profile">Use Now</a>
                     <span class="learn-more" @click="smoothScroll('#join-citizens')">learn more <i class="fas fa-angle-down"></i></span>
                 </div>
             </section>
             <section class="main">
                 <div class="gradient-up"></div>
-                <img @load="onLoad('join-citizens')" id="sprite-ship-right-1" src="../img/vaisseau-1.png" alt="300i Origin">
-                <div class="container" id="join-citizens">
+                <img
+                    @load="onLoad('join-citizens')"
+                    id="sprite-ship-right-1"
+                    src="../img/vaisseau-1_765x.png" alt="Sprite ship 300i Origin"
+                    sizes="40vw"
+                    srcset="
+                        ../img/vaisseau-1_410x.png 410w,
+                        ../img/vaisseau-1_512x.png 512w,
+                        ../img/vaisseau-1_765x.png 765w
+                    ">
+                <div class="container" ref="join-citizens" id="join-citizens">
                     <h2>Join thousands of citizens!</h2>
                     <div class="row-stats">
                         <div class="col">
@@ -62,13 +81,35 @@
                             <div class="col-2">
                                 <div class="screens-aside-media">
                                     <svg v-show="!this.screenshots['sprite-first-screenshot']" viewBox="0 0 750 422"><rect width="750" height="422" style="fill:#031217"></rect></svg>
-                                    <img v-show="this.screenshots['sprite-first-screenshot']" @load="onLoad('sprite-first-screenshot', true)" src="../img/screen-1.jpg" alt="Screenshot Orga's fleet">
+                                    <img
+                                        v-show="this.screenshots['sprite-first-screenshot']"
+                                        @load="onLoad('sprite-first-screenshot', true)"
+                                        src="../img/screen_orga_fleet_750x.png" alt="Screenshot Orga's fleet"
+                                        sizes="(min-width: 1290px) 750px,
+                                               (min-width: 1035px) 545px,
+                                               429px
+                                        "
+                                        srcset="
+                                            ../img/screen_orga_fleet_429x.png 429w,
+                                            ../img/screen_orga_fleet_545x.png 545w,
+                                            ../img/screen_orga_fleet_750x.png 750w
+                                        ">
                                 </div>
                             </div>
                             <div class="col-2">
                                 <h2 class="screens-title">Manage your Organization's fleet</h2>
                                 <div class="screens-aside-media">
-                                    <img src="../img/screen-1.jpg" alt="Screenshot Orga's fleet">
+                                    <svg v-show="!this.screenshots['sprite-first-screenshot']" viewBox="0 0 750 422"><rect width="750" height="422" style="fill:#031217"></rect></svg>
+                                    <img
+                                        v-show="this.screenshots['sprite-first-screenshot']"
+                                        @load="onLoad('sprite-first-screenshot', true)"
+                                        src="../img/screen_orga_fleet_750x.png" alt="Screenshot Orga's fleet"
+                                        sizes="100vw"
+                                        srcset="
+                                            ../img/screen_orga_fleet_429x.png 429w,
+                                            ../img/screen_orga_fleet_545x.png 545w,
+                                            ../img/screen_orga_fleet_750x.png 750w
+                                        ">
                                 </div>
                                 <ul class="list-ships">
                                     <li>
@@ -85,7 +126,7 @@
                                     </li>
                                     <li>
                                         <span class="screens-ship">4</span>
-                                        <p>Export your fleet for other tools like Fleet Viewer</p>
+                                        <p>Export your fleet for other tools like <a target="_blank" rel="nofollow" href="https://www.starship42.com/fleetview/">Fleet Viewer</a>.</p>
                                     </li>
                                     <li>
                                         <span class="screens-ship">5</span>
@@ -95,12 +136,24 @@
                             </div>
                         </div>
                     </div>
-                    <div class="container" id="review-personal-fleet">
+                    <div class="container" ref="review-personal-fleet" id="review-personal-fleet">
                         <div class="row">
                             <div class="col-2">
                                 <div class="screens-aside-media">
                                     <svg v-show="!this.screenshots['review-personal-fleet']" viewBox="0 0 750 422"><rect width="750" height="422" style="fill:#031217"></rect></svg>
-                                    <img v-show="this.screenshots['review-personal-fleet']" @load="onLoad('review-personal-fleet', true)" src="../img/screen-2.jpg" alt="Screenshot My Fleet">
+                                    <img
+                                        v-show="this.screenshots['review-personal-fleet']"
+                                        @load="onLoad('review-personal-fleet', true)"
+                                        src="../img/screen_my_fleet_750x.png" alt="Screenshot My Fleet"
+                                        sizes="(min-width: 1290px) 750px,
+                                               (min-width: 1035px) 545px,
+                                               429px
+                                        "
+                                        srcset="
+                                            ../img/screen_my_fleet_750x.png 750w,
+                                            ../img/screen_my_fleet_545x.png 545w,
+                                            ../img/screen_my_fleet_429x.png 429w
+                                        ">
                                     <img @load="onLoad('review-personal-fleet')" id="sprite-ship-right-top-1" src="../img/vaisseau-2.png" alt="Ship sprite">
                                 </div>
                             </div>
@@ -108,7 +161,16 @@
                                 <h2 class="screens-title">Review your personal fleet</h2>
                                 <div class="screens-aside-media">
                                     <svg v-show="!this.screenshots['review-personal-fleet']" viewBox="0 0 750 422"><rect width="750" height="422" style="fill:#031217"></rect></svg>
-                                    <img v-show="this.screenshots['review-personal-fleet']" @load="onLoad('review-personal-fleet', true)" src="../img/screen-2.jpg" alt="Screenshot My Fleet">
+                                    <img
+                                        v-show="this.screenshots['review-personal-fleet']"
+                                        @load="onLoad('review-personal-fleet', true)"
+                                        src="../img/screen_my_fleet_750x.png" alt="Screenshot My Fleet"
+                                        sizes="100vw"
+                                        srcset="
+                                            ../img/screen_my_fleet_750x.png 750w,
+                                            ../img/screen_my_fleet_545x.png 545w,
+                                            ../img/screen_my_fleet_429x.png 429w
+                                        ">
                                     <img @load="onLoad('review-personal-fleet')" id="sprite-ship-right-top-1-reduced" src="../img/vaisseau-2.png" alt="Ship sprite">
                                 </div>
                                 <ul class="list-ships">
@@ -128,12 +190,24 @@
                             </div>
                         </div>
                     </div>
-                    <div class="container" id="official-extension">
+                    <div class="container" ref="official-extension" id="official-extension">
                         <div class="row">
                             <div class="col-2">
                                 <div class="screens-aside-media">
                                     <svg v-show="!this.screenshots['official-extension']" viewBox="0 0 750 422"><rect width="750" height="422" style="fill:#031217"></rect></svg>
-                                    <img v-show="this.screenshots['official-extension']" @load="onLoad('official-extension', true)" src="../img/screen-3.jpg" alt="Screenshot web extension">
+                                    <img
+                                            v-show="this.screenshots['official-extension']"
+                                            @load="onLoad('official-extension', true)"
+                                            src="../img/screen_browser_extension_750x.png" alt="Screenshot web extension"
+                                            sizes="(min-width: 1290px) 750px,
+                                               (min-width: 1035px) 545px,
+                                               429px
+                                            "
+                                            srcset="
+                                                ../img/screen_browser_extension_750x.png 750w,
+                                                ../img/screen_browser_extension_545x.png 545w,
+                                                ../img/screen_browser_extension_429x.png 429w
+                                            ">
                                     <img @load="onLoad('official-extension')" id="sprite-ship-left-bottom-1" src="../img/vaisseau-3.png" alt="Ship sprite">
                                 </div>
                             </div>
@@ -141,7 +215,16 @@
                                 <h2 class="screens-title">Official Browser Extension</h2>
                                 <div class="screens-aside-media">
                                     <svg v-show="!this.screenshots['official-extension']" viewBox="0 0 750 422"><rect width="750" height="422" style="fill:#031217"></rect></svg>
-                                    <img v-show="this.screenshots['official-extension']" @load="onLoad('official-extension', true)" src="../img/screen-3.jpg" alt="Screenshot web extension">
+                                    <img
+                                            v-show="this.screenshots['official-extension']"
+                                            @load="onLoad('official-extension', true)"
+                                            src="../img/screen_browser_extension_750x.png" alt="Screenshot web extension"
+                                            sizes="100vw"
+                                            srcset="
+                                                ../img/screen_browser_extension_750x.png 750w,
+                                                ../img/screen_browser_extension_545x.png 545w,
+                                                ../img/screen_browser_extension_429x.png 429w
+                                            ">
                                     <img @load="onLoad('official-extension')" id="sprite-ship-left-bottom-1-reduced" src="../img/vaisseau-3.png" alt="Ship sprite">
                                 </div>
                                 <ul class="list-ships">
@@ -151,7 +234,7 @@
                                     </li>
                                     <li>
                                         <span class="screens-ship">2</span>
-                                        <p>Export your fleet as JSON and use it on popular tools like <a target="_blank" href="https://www.starship42.com/fleetview/">FleetView</a>.</p>
+                                        <p>Export your fleet as JSON and use it anywhere.</p>
                                     <li>
                                         <span class="screens-ship">3</span>
                                         <p>Available on Chrome and Firefox</p>
@@ -166,13 +249,13 @@
                     </div>
                 </section>
                 <div class="gradient-blue">
-                    <div class="container" id="use-it-now">
+                    <div class="container" ref="use-it-now" id="use-it-now">
                         <div class="row">
                             <img @load="onLoad('use-it-now')" id="sprite-useitnow-character-left" src="../img/character-2.png" alt="Sprite character">
                             <div class="col">
                                 <h2>Use it now</h2>
                                 <p>Fleet Manager is an online app to help you keep your organization’s fleet updated and get more insights about it. So you can better prepare your next operations and have fun all together.</p>
-                                <button v-if="this.user === null" v-once class="btn" type="button">Start using Fleet Manager</button>
+                                <button v-if="this.user === null" v-once class="btn" type="button" @click="showModal">Start using Fleet Manager</button>
                                 <a v-else v-once class="btn" href="/profile">Start using Fleet Manager</a>
                             </div>
                             <img @load="onLoad('use-it-now')" id="sprite-useitnow-character-right" src="../img/character-3.png" alt="Sprite character with bike">
@@ -247,7 +330,7 @@
                                 </p>
                             </div>
                         </div>
-                        <div class="row" id="supporters-backers">
+                        <div class="row" ref="supporters-backers" id="supporters-backers">
                             <div class="col" v-for="supporter in topSupporters" :key="supporter.name">
                                 <img :src="supporter.avatarUrl" :alt="'avatar '+supporter.name">
                                 <div class="supporter-description">
@@ -276,7 +359,7 @@
                 </nav>
             </section>
             <section class="copyright">
-                <p>Fleet Manager © 2018 - 2020</p>
+                <p>Fleet Manager © 2018 - {{ actualYear }}</p>
                 <p>All game content and materials are copyright of Cloud Imperium Rights LLC and Cloud Imperium Rights Ltd. Star Citizen®, Roberts Space Industries®, and Cloud Imperium® are registered trademarks of Cloud Imperium Rights LLC. All rights reserved.</p>
             </section>
         </footer>
@@ -296,6 +379,7 @@ export default {
     components: {AnimatedNumber, RegistrationAndLoginModal},
     data() {
         return {
+            actualYear: (new Date()).getFullYear(),
             topSupporters: [],
             countOrga: 0,
             countUsers: 0,
@@ -350,7 +434,6 @@ export default {
     },
     mounted() {
         this.onScroll();
-        this.showModal();
     },
     methods: {
         showModal() {
@@ -400,7 +483,7 @@ export default {
             const thresholdFromBottom = window.screen.height * 1/4;
 
             if (!this.animateEls['sprite-character-1'] && this.loaded['sprite-character-1'] === 1) {
-                const el = document.getElementById('sprite-character-1');
+                const el = this.$refs['sprite-character-1'];
                 const pos = this.getPosition(el);
                 const elTopScreenY = pos.y;
                 const elBottomScreenY = pos.y + el.clientHeight;
@@ -409,7 +492,7 @@ export default {
                     setTimeout(() => { // delay a bit because it's the "first" sprite. otherwise may be too fast for "new" users.
                         anime({
                             targets: '#sprite-character-1',
-                            left: '18%',
+                            left: '20%',
                             opacity: 1,
                             duration: 2000,
                             easing: 'easeOutQuart', // https://matthewlein.com/tools/ceaser
@@ -418,7 +501,7 @@ export default {
                 }
             }
             if (!this.animateEls['join-citizens'] && this.loaded['join-citizens'] === 1) {
-                const el = document.getElementById('join-citizens');
+                const el = this.$refs['join-citizens'];
                 const pos = this.getPosition(el);
                 const elTopScreenY = pos.y;
                 const elBottomScreenY = pos.y + el.clientHeight;
@@ -435,7 +518,7 @@ export default {
                 }
             }
             if (!this.animateEls['review-personal-fleet'] && this.loaded['review-personal-fleet'] === 4) {
-                const el = document.getElementById('review-personal-fleet');
+                const el = this.$refs['review-personal-fleet'];
                 const pos = this.getPosition(el);
                 const elTopScreenY = pos.y;
                 const elBottomScreenY = pos.y + el.clientHeight;
@@ -451,7 +534,7 @@ export default {
                 }
             }
             if (!this.animateEls['official-extension'] && this.loaded['official-extension'] === 4) {
-                const el = document.getElementById('official-extension');
+                const el = this.$refs['official-extension'];
                 const pos = this.getPosition(el);
                 const elTopScreenY = pos.y;
                 const elBottomScreenY = pos.y + el.clientHeight;
@@ -467,7 +550,7 @@ export default {
                 }
             }
             if (!this.animateEls['use-it-now'] && this.loaded['use-it-now'] === 2) {
-                const el = document.getElementById('use-it-now');
+                const el = this.$refs['use-it-now'];
                 const pos = this.getPosition(el);
                 const elTopScreenY = pos.y;
                 const elBottomScreenY = pos.y + el.clientHeight;
@@ -514,7 +597,7 @@ export default {
             });
 
             if (!this.animateEls['supporters-backers'] && this.topSupporters.length > 0) {
-                const el = document.getElementById('supporters-backers');
+                const el = this.$refs['supporters-backers'];
                 const pos = this.getPosition(el);
                 const elTopScreenY = pos.y;
                 const elBottomScreenY = pos.y + el.clientHeight;
@@ -543,18 +626,6 @@ export default {
                 duration: 1500,
                 easing: 'easeOutQuart',
             });
-        },
-        computePercent(topY, bottomY, windowTopY, windowBottomY) {
-            let percent = 0;
-            if (topY - windowBottomY > 0) {
-                percent = 1;
-            } else if (bottomY - windowTopY < 0) {
-                percent = 0;
-            } else {
-                const midY = (topY + bottomY) / 2;
-                percent = (midY - windowTopY) / (windowBottomY - windowTopY);
-            }
-            return percent;
         },
     }
 }
