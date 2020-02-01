@@ -2,7 +2,7 @@
     <modal name="modal-registration-login" id="modal-registration-login" height="auto" :adaptive="true" overlayTransition="nice-modal-fade">
         <header class="header">
             <i class="fas fa-sign-in-alt"></i> Connect to Fleet Manager
-            <i class="fas fa-times" @click="$modal.hide('hello-world')"></i>
+            <i class="fas fa-times" @click="$modal.hide('modal-registration-login')"></i>
         </header>
         <section class="content">
             <a class="btn btn-discord" href="/connect/discord"><i class="fab fa-discord"></i> Log in with Discord</a>

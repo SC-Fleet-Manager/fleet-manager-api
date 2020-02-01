@@ -28,9 +28,9 @@
         {% block metas %}{% endblock %}
 
         {% block stylesheets %}
-            <link rel="preload" href="{{ preload(asset('build/fonts/josefin.woff2'), {'as': 'font'}) }}" as="font" type="font/woff2">
-            <link rel="preload" href="{{ preload(asset('build/fonts/fa-brands-400.woff2'), {'as': 'font'}) }}" as="font" type="font/woff2">
-            <link rel="preload" href="{{ preload(asset('build/fonts/fa-solid-900.woff2'), {'as': 'font'}) }}" as="font" type="font/woff2">
+            <link rel="preload" href="{{ preload(asset('build/fonts/josefin.woff2'), {'as': 'font'}) }}" as="font" type="font/woff2" crossorigin>
+            <link rel="preload" href="{{ preload(asset('build/fonts/fa-brands-400.woff2'), {'as': 'font'}) }}" as="font" type="font/woff2" crossorigin>
+            <link rel="preload" href="{{ preload(asset('build/fonts/fa-solid-900.woff2'), {'as': 'font'}) }}" as="font" type="font/woff2" crossorigin>
             {{ encore_entry_link_tags('main') }}
         {% endblock %}
     </head>
