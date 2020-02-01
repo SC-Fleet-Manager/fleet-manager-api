@@ -632,9 +632,9 @@ export default {
 </script>
 
 <style lang="scss">
-    $fa-font-path: '~@fortawesome/fontawesome-free/webfonts/';
-    @import '~@fortawesome/fontawesome-free/scss/fontawesome';
-    @import '~@fortawesome/fontawesome-free/scss/solid';
-    @import '~@fortawesome/fontawesome-free/scss/brands';
+    @import '../css/frontpage/setup/brand/icons_variables';
+    @import '~@fortawesome/fontawesome-free/scss/mixins';
+    @import '~@fortawesome/fontawesome-free/scss/core';
+    @import '../css/frontpage/setup/brand/icons';
     @import '../css/frontpage/screen.scss';
 </style>

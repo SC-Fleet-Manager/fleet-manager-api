@@ -6,6 +6,8 @@ framework:
     session:
         handler_id: Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler
         cookie_secure: 'auto'
+        cookie_samesite: 'none'
+
     cache:
         app: cache.adapter.redis
         default_redis_provider: 'redis://%env(REDIS_PASSWORD)%@%env(REDIS_HOST)%:%env(REDIS_PORT)%'

@@ -254,10 +254,6 @@
 </script>
 
 <style lang="scss">
-    $fa-font-path: '~@fortawesome/fontawesome-free/webfonts/';
-    @import '~@fortawesome/fontawesome-free/scss/fontawesome';
-    @import '~@fortawesome/fontawesome-free/scss/solid';
-    @import '~@fortawesome/fontawesome-free/scss/brands';
     @import '~pretty-checkbox/src/pretty-checkbox.scss';
     @import '../../css/frontpage/registration_login_modal.scss';
 </style>

@@ -100,6 +100,7 @@
         }
 
         section.main {
+            overflow-x: hidden;
             background: url("../../../img/grid.png") repeat center top;
             position: relative;
 
@@ -220,7 +221,6 @@
                 padding-top: 6%;
                 padding-left: 10px;
                 padding-right: 10px;
-                overflow-x: hidden;
 
                 .screens-aside-media {
                     position: relative;
