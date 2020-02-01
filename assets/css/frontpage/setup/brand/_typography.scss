@@ -3,12 +3,14 @@
 	src: url('../../../../fonts/UniviaPro-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
+    font-display: swap;
 }
 @font-face {
 	font-family: 'Univia Pro';
 	src: url('../../../../fonts/UniviaPro-Bold.ttf') format('truetype');
     font-weight: bold;
     font-style: normal;
+    font-display: swap;
 }
 
 @font-face {
@@ -16,12 +18,14 @@
 	src: url('../../../../fonts/OpenSans-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
+    font-display: swap;
 }
 @font-face {
 	font-family: 'Open Sans';
 	src: url('../../../../fonts/OpenSans-Light.ttf') format('truetype');
     font-weight: 300;
     font-style: normal;
+    font-display: swap;
 }
 
 html,
@@ -42,7 +46,6 @@ html {
 }
 body {
 	@include font;
-	line-height: auto;
 	font-size: $fontP;
 	font-weight: 400;
 	color: $white;
@@ -56,7 +59,7 @@ body {
 		color: $white;
 	}
 
-	a, li span{
+	a, li span, button {
 		@include fontHeadings;
 		font-weight: normal;
 	}

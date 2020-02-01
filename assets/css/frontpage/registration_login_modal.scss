@@ -126,35 +126,56 @@
             }
         }
     }
-    .pretty .state label {
-        display: flex;
-        align-items: center;
-        justify-content: left;
-        text-align: left;
-        text-indent: initial;
-    }
-    .pretty .state label::before {
-        position: static;
-        background: #2c405a;
-        border: none;
-        margin-right: 0.5rem;
-    }
-    .pretty .state label::after {
-        transform: none;
-        background: transparent !important;
-        transition: background 0.1s;
-    }
-    .pretty input:checked ~ .state label::after {
-        font-family: 'Font Awesome 5 Free';
-        content: "\f00c";
-        transform: none;
-        background: $blue !important;
-        text-align: center;
-        line-height: calc(1.75rem + 2px);
-    }
-    .pretty .state label::before, .pretty .state label::after {
-        top: auto;
-        width: calc(1.75rem + 2px);
-        height: calc(1.75rem + 2px);
+
+    .checkbox-custom {
+        input[type=checkbox] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            min-width: 1em;
+            width: 0;
+            height: 0;
+            z-index: 2;
+            opacity: 0;
+            margin: 0;
+            padding: 0;
+        }
+        label {
+            position: relative;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: left;
+            text-align: left;
+            cursor: pointer;
+            &::before, &::after {
+                content: '';
+                display: block;
+                width: calc(1.75rem + 2px);
+                height: calc(1.75rem + 2px);
+                border-radius: 20%;
+            }
+            &::before {
+                background: #2c405a;
+                margin-right: 0.5rem;
+            }
+            &::after {
+                border: 1px solid transparent;
+                position: absolute;
+                left: 0;
+                top: auto;
+                z-index: 0;
+                background: transparent;
+                transition: background 0.1s;
+            }
+        }
+        input:checked + label::after {
+            font-family: 'Font Awesome 5 Free';
+            content: "\f00c"; // fa-check
+            transform: none;
+            background: $blue;
+            text-align: center;
+            line-height: calc(1.75rem + 2px);
+        }
     }
 }

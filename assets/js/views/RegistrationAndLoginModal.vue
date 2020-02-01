@@ -21,11 +21,9 @@
                         <input type="password" class="form-control" id="input-password" v-model="loginForm.password" required placeholder="Password">
                     </div>
                     <div class="rememberme">
-                        <div class="pretty p-default p-curve">
-                            <input type="checkbox" v-model="loginForm.rememberMe">
-                            <div class="state">
-                                <label>Remember me</label>
-                            </div>
+                        <div class="checkbox-custom">
+                            <input type="checkbox" v-model="loginForm.rememberMe" id="checkbox-remember-me">
+                            <label for="checkbox-remember-me">Remember me</label>
                         </div>
                         <div class="link" @click="showCollapse('collapse-lost-password-form')">lost your password?</div>
                     </div>
@@ -254,10 +252,5 @@
 </script>
 
 <style lang="scss">
-    $fa-font-path: '~@fortawesome/fontawesome-free/webfonts/';
-    @import '~@fortawesome/fontawesome-free/scss/fontawesome';
-    @import '~@fortawesome/fontawesome-free/scss/solid';
-    @import '~@fortawesome/fontawesome-free/scss/brands';
-    @import '~pretty-checkbox/src/pretty-checkbox.scss';
     @import '../../css/frontpage/registration_login_modal.scss';
 </style>
