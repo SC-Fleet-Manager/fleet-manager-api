@@ -26,7 +26,6 @@
         "node-sass": "^4.9.4",
         "perfect-scrollbar": "^1.4.0",
         "postcss-loader": "^3.0.0",
-        "pretty-checkbox": "^3.0.3",
         "qs": "^6.7.0",
         "sass-loader": "^7.1.0",
         "select2": "^4.0",

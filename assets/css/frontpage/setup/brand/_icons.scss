@@ -22,6 +22,7 @@ readers do not read off random characters that represent icons */
 .#{$fa-css-prefix}-eye-slash:before { content: fa-content($fa-var-eye-slash); }
 .#{$fa-css-prefix}-id-card:before { content: fa-content($fa-var-id-card); }
 .#{$fa-css-prefix}-envelope:before { content: fa-content($fa-var-envelope); }
+.#{$fa-css-prefix}-check:before { content: fa-content($fa-var-check); }
 
 @font-face {
     font-family: 'Font Awesome 5 Free';
