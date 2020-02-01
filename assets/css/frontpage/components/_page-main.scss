@@ -301,12 +301,6 @@
                             font-size: $fontTitle;
                             padding-bottom: $gridGutter;
                         }
-
-                        @media screen and (max-width: 991px) {
-                            & {
-                                width: calc(100% / 3);
-                            }
-                        }
                     }
 
                     @media screen and (max-width: 424px) {
@@ -540,10 +534,12 @@
                             width: 100%;
                         }
                     }
-                }
 
-                #join-citizens {
-
+                    .row-stats {
+                        .col {
+                            width: 33.33333%;
+                        }
+                    }
                 }
 
                 #use-it-now {
@@ -581,12 +577,23 @@
                     left: -300px;
                 }
 
-                .container p {
-                    width: 70%;
+                .container {
+                    p {
+                        width: 70%;
+                    }
                 }
             }
 
             section.main {
+                .container {
+                    .row-stats {
+                        .col {
+                            width: 90%;
+                            margin-left: auto;
+                            margin-right: auto;
+                        }
+                    }
+                }
                 #supporters {
                     #supporters-backers {
                         .col {
@@ -602,24 +609,38 @@
 @media screen and (max-width: 575px) {
     #pg {
         main#pg-main {
-            section.header {
-                #sprite-character-1 {
-                    display: none;
-                }
+            #sprite-character-1,
+            #sprite-useitnow-character-left,
+            #sprite-useitnow-character-right {
+                display: none;
             }
 
             section.main {
                 .gradient-blue {
-                    padding-top: $gridGutter*10;
+                    padding-top: 10vw;
                 }
 
                 #sprite-ship-right-1 {
                     display: none;
                 }
 
+                #use-it-now {
+                    .col {
+                        width: 100%;
+                    }
+                }
+
                 #meet-the-team {
                     .col {
                         width: 70%;
+                    }
+                }
+
+                #supporters {
+                    #supporters-backers {
+                        .col {
+                            width: 90%;
+                        }
                     }
                 }
             }
@@ -630,20 +651,39 @@
 @media screen and (max-width: 424px) {
     #pg {
         main#pg-main {
+            section.header {
+                .container {
+                    h1 {
+                        font-size: 4rem;
+                    }
+                }
+            }
             section.main {
-                .container .row {
-                    .col-2 {
-                        ul {
-                            flex-direction: column;
+                .container {
+                    h2 {
+                        font-size: 2.5rem;
+                    }
+                    .row {
+                        .col-2 {
+                            ul {
+                                flex-direction: column;
 
-                            li {
-                                width: 100%;
+                                li {
+                                    width: 100%;
+                                }
                             }
                         }
-                    }
 
-                    .col-3 {
-                        width: 100%;
+                        .col-3 {
+                            width: 100%;
+                        }
+                    }
+                }
+                #supporters {
+                    #supporters-backers {
+                        .col {
+                            width: 100%;
+                        }
                     }
                 }
 
