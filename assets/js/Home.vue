@@ -1,262 +1,415 @@
 <template>
-    <div>
-        <nav class="navbar navbar-expand-lg" style="background-color: rgba(15, 15, 15, 1)">
-            <div class="container">
-                <a class="navbar-brand" href="/">
-                    <img src="../img/logo_fm_white.svg" height="40" alt="Fleet Manager">
-                </a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-                      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="collapse navbar-collapse text-white">
-                    <div class="ml-auto d-flex">
-                        <ul class="navbar-nav align-items-center">
-                            <li class="nav-item">
-                                <a href="https://blog.fleet-manager.space" target="_blank" class="nav-link text-white" title="Blog"><i class="fas fa-blog fa-2x"></i></a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="https://github.com/Ioni14/starcitizen-fleet-manager" target="_blank" class="nav-link text-white"  title="Github"><i class="fab fa-github fa-2x"></i></a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="https://discord.gg/5EyFpVP" target="_blank" class="nav-link text-white" title="Discord"><i class="fab fa-discord fa-2x"></i></a>
-                            </li>
-                            <li class="nav-item ml-2" v-if="userStated" v-once>
-                                <button v-if="this.user === null" v-once v-b-modal.modal-login class="nav-link btn btn-primary text-white" type="button"><i class="fas fa-door-open"></i> Login<!-- / Register--></button>
-                                <a v-else v-once class="nav-link btn btn-primary text-white" href="/profile"><i class="fas fa-space-shuttle"></i> Dashboard</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+    <div id="pg">
+        <header id="pg-hdr">
+            <div class="logo">
+                <a href="/"><img src="../img/logo_fm_white.svg" alt="Logo Fleet Manager"></a>
             </div>
-        </nav>
-
-        <header id="hero-full-screen" ref="heroFullScreen">
-            <div class="container d-flex align-items-center text-white" style="min-height: calc(100vh - 71px);">
-                <div class="jumbotron" style="background-color: rgba(0, 0, 0, 0.8);">
-                    <h1 id="hero-full-screen-title" class="display-2">Fleet Manager</h1>
-                    <p id="hero-full-screen-subtitle" class="mb-4 mt-1" style="font-size: 2rem;">Manage your Star Citizen fleets</p>
-                    <p class="mb-4" style="font-size: 1.1rem;">Fleet Manager is an online open source tool to help you <strong>manage</strong> your <strong>personal</strong> and <strong>organizations</strong> <strong>Star Citizen Fleets</strong>, share it with your friends and your organizations.</p>
-                    <div class="text-center">
-                        <button v-if="this.user === null" v-once v-b-modal.modal-login class="btn btn-primary btn-lg font-2xl" type="button">Start using Fleet Manager now</button>
-                        <a v-else v-once class="btn btn-primary btn-lg font-2xl" href="/profile">Start using Fleet Manager now</a>
-                    </div>
+            <nav>
+                <div class="links">
+                    <a target="_blank" href="https://blog.fleet-manager.space" aria-label="Blog"><i class="fas fa-blog"></i></a>
+                    <a target="_blank" href="https://github.com/Ioni14/starcitizen-fleet-manager" aria-label="Github"><i class="fab fa-github"></i></a>
+                    <a target="_blank" href="https://discord.gg/5EyFpVP" aria-label="Discord"><i class="fab fa-discord"></i></a>
                 </div>
-            </div>
+                <button v-if="this.user === null" v-once class="btn" type="button" @click="showModal"><i class="fas fa-sign-in-alt"></i> Login</button>
+                <a v-else v-once class="btn" href="/profile"><i class="fas fa-space-shuttle"></i> Dashboard</a>
+            </nav>
         </header>
-
-        <section id="features-part" ref="featuresPart">
-            <div class="container d-flex align-items-center text-white" style="min-height: 75vh">
-                <div class="w-100">
-                    <div class="row text-center">
-                        <div class="col-12 mb-5">
-                            <h2 id="features-part-title" class="display-3 text-uppercase" style="text-shadow: 0 0 5px rgba(10, 10, 10, 1);">Features</h2>
+        <main id="pg-main">
+            <section class="header">
+                <img
+                    @load="onLoad('sprite-character-1')"
+                    ref="sprite-character-1" id="sprite-character-1"
+                    src="../img/citizen_723x941.png" alt="Sprite citizen"
+                    sizes="60vh"
+                    srcset="
+                        ../img/citizen_197x300.png 197w,
+                        ../img/citizen_370x563.png 370w,
+                        ../img/citizen_556x845.png 556w,
+                        ../img/citizen_723x941.png 723w
+                    ">
+                <div class="gradient-down"></div>
+                <div class="container">
+                    <h1>Fleet Manager</h1>
+                    <h3>For Star Citizen</h3>
+                    <p>Best tool in the verse to manage and share your organization's and personal fleet.</p>
+                    <button v-if="this.user === null" v-once class="btn" type="button" @click="showModal">Use Now</button>
+                    <a v-else v-once class="btn" href="/profile">Use Now</a>
+                    <span class="learn-more" @click="smoothScroll('#join-citizens')">learn more <i class="fas fa-angle-down"></i></span>
+                </div>
+            </section>
+            <section class="main">
+                <div class="gradient-up"></div>
+                <img
+                    @load="onLoad('join-citizens')"
+                    id="sprite-ship-right-1"
+                    src="../img/vaisseau-1_765x.png" alt="Sprite ship 300i Origin"
+                    sizes="40vw"
+                    srcset="
+                        ../img/vaisseau-1_410x.png 410w,
+                        ../img/vaisseau-1_512x.png 512w,
+                        ../img/vaisseau-1_765x.png 765w
+                    ">
+                <div class="container" ref="join-citizens" id="join-citizens">
+                    <h2>Join thousands of citizens!</h2>
+                    <div class="row-stats">
+                        <div class="col">
+                            <h4>
+                                <animated-number v-if="canCountStatistics" :value="countOrga" :formatValue="formatSatistics" :duration="1000"/>
+                                <span v-else>0</span>
+                            </h4>
+                            <p>Organization Fleets</p>
+                        </div>
+                        <div class="col">
+                            <h4>
+                                <animated-number v-if="canCountStatistics" :value="countUsers" :formatValue="formatSatistics" :duration="1000"/>
+                                <span v-else>0</span>
+                            </h4>
+                            <p>Citizens Registered</p>
+                        </div>
+                        <div class="col">
+                            <h4>
+                                <animated-number v-if="canCountStatistics" :value="countShips" :formatValue="formatSatistics" :duration="1000"/>
+                                <span v-else>0</span>
+                            </h4>
+                            <p>Ships Managed</p>
                         </div>
                     </div>
-                    <div class="row text-center">
-                        <div class="col-md-4 mb-3">
-                            <div class="card h-100" style="background-color: rgba(15, 15, 15, 0.9);">
-                                <div class="card-body">
-                                    <i class="fas fa-plane fa-7x pb-4"></i>
-                                    <h3 class="h1">Manage</h3>
-                                    <p class="card-text h5">Manage all your organization's fleets the easy way.</p>
+                </div>
+                <section class="screens">
+                    <div class="container" id="manager-your-orga-fleet">
+                        <div class="row">
+                            <div class="col-2">
+                                <div class="screens-aside-media">
+                                    <svg v-show="!this.screenshots['sprite-first-screenshot']" viewBox="0 0 750 422"><rect width="750" height="422" style="fill:#031217"></rect></svg>
+                                    <img
+                                        v-show="this.screenshots['sprite-first-screenshot']"
+                                        @load="onLoad('sprite-first-screenshot', true)"
+                                        src="../img/screen_orga_fleet_750x.png" alt="Screenshot Orga's fleet"
+                                        sizes="(min-width: 1290px) 750px,
+                                               (min-width: 1035px) 545px,
+                                               429px
+                                        "
+                                        srcset="
+                                            ../img/screen_orga_fleet_429x.png 429w,
+                                            ../img/screen_orga_fleet_545x.png 545w,
+                                            ../img/screen_orga_fleet_750x.png 750w
+                                        ">
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <h2 class="screens-title">Manage your Organization's fleet</h2>
+                                <div class="screens-aside-media">
+                                    <svg v-show="!this.screenshots['sprite-first-screenshot']" viewBox="0 0 750 422"><rect width="750" height="422" style="fill:#031217"></rect></svg>
+                                    <img
+                                        v-show="this.screenshots['sprite-first-screenshot']"
+                                        @load="onLoad('sprite-first-screenshot', true)"
+                                        src="../img/screen_orga_fleet_750x.png" alt="Screenshot Orga's fleet"
+                                        sizes="100vw"
+                                        srcset="
+                                            ../img/screen_orga_fleet_429x.png 429w,
+                                            ../img/screen_orga_fleet_545x.png 545w,
+                                            ../img/screen_orga_fleet_750x.png 750w
+                                        ">
+                                </div>
+                                <ul class="list-ships">
+                                    <li>
+                                        <span class="screens-ship">1</span>
+                                        <p>Review your Organization's fleet at a glance with easy access to who owns what</p>
+                                    </li>
+                                    <li>
+                                        <span class="screens-ship">2</span>
+                                        <p>Many filters to quickly find what you are looking for</p>
+                                    </li>
+                                    <li>
+                                        <span class="screens-ship">3</span>
+                                        <p>Share your Organization’s page with the world or hide it event to your citizens</p>
+                                    </li>
+                                    <li>
+                                        <span class="screens-ship">4</span>
+                                        <p>Export your fleet for other tools like <a target="_blank" rel="nofollow" href="https://www.starship42.com/fleetview/">Fleet Viewer</a>.</p>
+                                    </li>
+                                    <li>
+                                        <span class="screens-ship">5</span>
+                                        <p>Get in depth statistics about your organization. Track changes and informations about your citizens</p>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container" ref="review-personal-fleet" id="review-personal-fleet">
+                        <div class="row">
+                            <div class="col-2">
+                                <div class="screens-aside-media">
+                                    <svg v-show="!this.screenshots['review-personal-fleet']" viewBox="0 0 750 422"><rect width="750" height="422" style="fill:#031217"></rect></svg>
+                                    <img
+                                        v-show="this.screenshots['review-personal-fleet']"
+                                        @load="onLoad('review-personal-fleet', true)"
+                                        src="../img/screen_my_fleet_750x.png" alt="Screenshot My Fleet"
+                                        sizes="(min-width: 1290px) 750px,
+                                               (min-width: 1035px) 545px,
+                                               429px
+                                        "
+                                        srcset="
+                                            ../img/screen_my_fleet_750x.png 750w,
+                                            ../img/screen_my_fleet_545x.png 545w,
+                                            ../img/screen_my_fleet_429x.png 429w
+                                        ">
+                                    <img @load="onLoad('review-personal-fleet')" id="sprite-ship-right-top-1" src="../img/vaisseau-2.png" alt="Ship sprite">
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <h2 class="screens-title">Review your personal fleet</h2>
+                                <div class="screens-aside-media">
+                                    <svg v-show="!this.screenshots['review-personal-fleet']" viewBox="0 0 750 422"><rect width="750" height="422" style="fill:#031217"></rect></svg>
+                                    <img
+                                        v-show="this.screenshots['review-personal-fleet']"
+                                        @load="onLoad('review-personal-fleet', true)"
+                                        src="../img/screen_my_fleet_750x.png" alt="Screenshot My Fleet"
+                                        sizes="100vw"
+                                        srcset="
+                                            ../img/screen_my_fleet_750x.png 750w,
+                                            ../img/screen_my_fleet_545x.png 545w,
+                                            ../img/screen_my_fleet_429x.png 429w
+                                        ">
+                                    <img @load="onLoad('review-personal-fleet')" id="sprite-ship-right-top-1-reduced" src="../img/vaisseau-2.png" alt="Ship sprite">
+                                </div>
+                                <ul class="list-ships">
+                                    <li>
+                                        <span class="screens-ship">1</span>
+                                        <p>Get a better overview of your fleet than in “My Hangar”</p>
+                                    </li>
+                                    <li>
+                                        <span class="screens-ship">2</span>
+                                        <p>Control who can see your fleet. The world, your orga or no one (even your orgas)</p>
+                                    </li>
+                                    <li>
+                                        <span class="screens-ship">3</span>
+                                        <p>Upload your fleet Automatically with our dedicated browser extension or Manually</p>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container" ref="official-extension" id="official-extension">
+                        <div class="row">
+                            <div class="col-2">
+                                <div class="screens-aside-media">
+                                    <svg v-show="!this.screenshots['official-extension']" viewBox="0 0 750 422"><rect width="750" height="422" style="fill:#031217"></rect></svg>
+                                    <img
+                                            v-show="this.screenshots['official-extension']"
+                                            @load="onLoad('official-extension', true)"
+                                            src="../img/screen_browser_extension_750x.png" alt="Screenshot web extension"
+                                            sizes="(min-width: 1290px) 750px,
+                                               (min-width: 1035px) 545px,
+                                               429px
+                                            "
+                                            srcset="
+                                                ../img/screen_browser_extension_750x.png 750w,
+                                                ../img/screen_browser_extension_545x.png 545w,
+                                                ../img/screen_browser_extension_429x.png 429w
+                                            ">
+                                    <img @load="onLoad('official-extension')" id="sprite-ship-left-bottom-1" src="../img/vaisseau-3.png" alt="Ship sprite">
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <h2 class="screens-title">Official Browser Extension</h2>
+                                <div class="screens-aside-media">
+                                    <svg v-show="!this.screenshots['official-extension']" viewBox="0 0 750 422"><rect width="750" height="422" style="fill:#031217"></rect></svg>
+                                    <img
+                                            v-show="this.screenshots['official-extension']"
+                                            @load="onLoad('official-extension', true)"
+                                            src="../img/screen_browser_extension_750x.png" alt="Screenshot web extension"
+                                            sizes="100vw"
+                                            srcset="
+                                                ../img/screen_browser_extension_750x.png 750w,
+                                                ../img/screen_browser_extension_545x.png 545w,
+                                                ../img/screen_browser_extension_429x.png 429w
+                                            ">
+                                    <img @load="onLoad('official-extension')" id="sprite-ship-left-bottom-1-reduced" src="../img/vaisseau-3.png" alt="Ship sprite">
+                                </div>
+                                <ul class="list-ships">
+                                    <li>
+                                        <span class="screens-ship">1</span>
+                                        <p>Update your fleet with a simple click and forget about updating your checklist or xml shared files</p>
+                                    </li>
+                                    <li>
+                                        <span class="screens-ship">2</span>
+                                        <p>Export your fleet as JSON and use it anywhere.</p>
+                                    <li>
+                                        <span class="screens-ship">3</span>
+                                        <p>Available on Chrome and Firefox</p>
+                                    </li>
+                                    <li>
+                                        <span class="screens-ship">4</span>
+                                        <p>Download extension<br/><a href="https://ext.fleet-manager.space/fleet_manager_extension-latest.xpi" title="Firefox"><i class="fab fa-firefox"></i></a>&nbsp;<a target="_blank" href="https://chrome.google.com/webstore/detail/fleet-manager-extension/hbbadomkekhkhemjjmhkhgiokjhpobhk" title="Chrome"><i class="fab fa-chrome"></i></a></p>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <div class="gradient-blue">
+                    <div class="container" ref="use-it-now" id="use-it-now">
+                        <div class="row">
+                            <img @load="onLoad('use-it-now')" id="sprite-useitnow-character-left" src="../img/character-2.png" alt="Sprite character">
+                            <div class="col">
+                                <h2>Use it now</h2>
+                                <p>Fleet Manager is an online app to help you keep your organization’s fleet updated and get more insights about it. So you can better prepare your next operations and have fun all together.</p>
+                                <button v-if="this.user === null" v-once class="btn" type="button" @click="showModal">Start using Fleet Manager</button>
+                                <a v-else v-once class="btn" href="/profile">Start using Fleet Manager</a>
+                            </div>
+                            <img @load="onLoad('use-it-now')" id="sprite-useitnow-character-right" src="../img/character-3.png" alt="Sprite character with bike">
+                        </div>
+                    </div>
+                </div>
+                <div class="container" id="meet-the-team">
+                    <h2>Meet the Team</h2>
+                    <div class="row">
+                        <div class="col">
+                            <img
+                                src="../img/thomas_400x400.jpg" alt="Thomas photo"
+                                srcset="
+                                    ../img/thomas_400x400.jpg 1x,
+                                    ../img/thomas_800x800.jpg 2x
+                                "
+                                width="400">
+                            <div class="meta">
+                                <h4 class="name">Thomas Talbot</h4>
+                                <div class="description">Lead Developer - Solution Architect</div>
+                                <div class="links">
+                                    <a target="_blank" href="https://github.com/ioni14"><i class="fab fa-github"></i></a>
+                                    <a target="_blank" href="https://www.linkedin.com/in/thomas-talbot/"><i class="fab fa-linkedin"></i></a>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="card h-100" style="background-color: rgba(15, 15, 15, 0.9);">
-                                <div class="card-body">
-                                    <i class="fas fa-share-alt fa-7x pb-4"></i>
-                                    <h3 class="h1">Share</h3>
-                                    <p class="card-text h5">Share your fleet with everyone, orga only or keep it private.</p>
+                        <div class="col">
+                            <img
+                                src="../img/valentin_400x400.jpg" alt="Valentin photo"
+                                srcset="
+                                    ../img/valentin_400x400.jpg 1x,
+                                    ../img/valentin_800x800.jpg 2x
+                                "
+                                width="400">
+                            <div class="meta">
+                                <h4 class="name">Valentin Ronteix</h4>
+                                <div class="description">Community Manager - Project Manager</div>
+                                <div class="links">
+                                    <a target="_blank" href="https://github.com/vyrtualsynthese"><i class="fab fa-github"></i></a>
+                                    <a target="_blank" href="https://twitch.tv/ashuvidz/"><i class="fab fa-twitch"></i></a>
+                                    <a target="_blank" href="https://youtube.com/ashuvidz/"><i class="fab fa-youtube"></i></a>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="card h-100" style="background-color: rgba(15, 15, 15, 0.9);">
-                                <div class="card-body">
-                                    <i class="fas fa-sync-alt fa-7x pb-4"></i>
-                                    <h3 class="h1">Update</h3>
-                                    <p class="card-text h5">Update your fleet in one click with our dedicated <strong>browser extension</strong>.</p>
+                        <div class="col">
+                            <img
+                                src="../img/arnaud_400x400.jpg" alt="Arnaud photo"
+                                srcset="
+                                    ../img/arnaud_400x400.jpg 1x,
+                                    ../img/arnaud_800x800.jpg 2x
+                                "
+                                width="400">
+                            <div class="meta">
+                                <h4 class="name">Arnaud Cantaloube</h4>
+                                <div class="description">Designer</div>
+                                <div class="links">
+                                    <a target="_blank" href="https://twitter.com/a_cantaloube"><i class="fab fa-twitter"></i></a>
+                                    <a target="_blank" href="https://www.linkedin.com/in/arnaudcantaloube/"><i class="fab fa-linkedin"></i></a>
+                                    <a target="_blank" href="https://www.arnaudcantaloube.fr/"><i class="fas fa-globe"></i></a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
-
-        <section id="statistics" ref="statistics">
-            <div class="container text-white">
-                <div class="row text-center align-content-center" style="min-height: 25vh">
-                    <div class="col-md-4 mb-3">
-                        <div class="statistics-nb-value">
-                            <animated-number v-if="canCountStatistics" :value="countOrga" :formatValue="formatSatistics" :duration="1000"/>
-                            <span v-else>0</span></div>
-                        <div class="statistics-nb-label">Organizations' Fleets</div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="statistics-nb-value">
-                            <animated-number v-if="canCountStatistics" :value="countUsers" :formatValue="formatSatistics" :duration="1000"/>
-                            <span v-else>0</span></div>
-                        <div class="statistics-nb-label">Citizens Registered</div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="statistics-nb-value">
-                            <animated-number v-if="canCountStatistics" :value="countShips" :formatValue="formatSatistics" :duration="1000"/>
-                            <span v-else>0</span></div>
-                        <div class="statistics-nb-label">Ships Managed</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="who-use" ref="whoUse">
-            <div class="container d-flex align-items-center text-white" style="min-height: 75vh;">
-                <div class="w-100">
-                    <div class="row text-center">
-                        <div class="col-12 mb-5">
-                            <h2 id="who-use-title" class="display-3 text-uppercase" style="text-shadow: 0 0 5px rgba(10, 10, 10, 1);">Who uses it ?</h2>
-                        </div>
-                    </div>
-                    <div class="row text-center">
-                        <div class="col-md-4 mb-3">
-                            <div class="card h-100" style="background-color: rgba(15, 15, 15, 0.9);">
-                                <img src="../img/org.jpg" class="card-img-top" alt="">
-                                <div class="card-body">
-                                    <h3 class="h1">Organizations</h3>
-                                    <p class="card-text h5">to keep up to date inventory of their fleet.</p>
-                                </div>
+                <div class="gradient-blue">
+                    <div class="container" id="supporters">
+                        <div class="row">
+                            <div class="col">
+                                <h2>They supported us</h2>
+                                <p>
+                                    These Citizens are our top backers, they helped us cover the cost of hosting and maintenance while being active and invested members of the community.
+                                </p>
                             </div>
                         </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="card h-100" style="background-color: rgba(15, 15, 15, 0.9);">
-                                <img src="../img/streamer.jpg" class="card-img-top" alt="">
-                                <div class="card-body">
-                                    <h3 class="h1">Influencers</h3>
-                                    <p class="card-text h5">to share their current fleet with their fans.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="card h-100" style="background-color: rgba(15, 15, 15, 0.9);">
-                                <img src="../img/citizen.jpg" class="card-img-top" alt="">
-                                <div class="card-body">
-                                    <h3 class="h1">Citizens</h3>
-                                    <p class="card-text h5">looking for better information about their fleet.</p>
+                        <div class="row" ref="supporters-backers" id="supporters-backers">
+                            <div class="col" v-for="supporter in topSupporters" :key="supporter.name">
+                                <img :src="supporter.avatarUrl" :alt="'avatar '+supporter.name">
+                                <div class="supporter-description">
+                                    <div class="supporter-name">{{ supporter.name }}</div>
+                                    <p>{{ supporter.mainOrgaName }}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </main>
 
-        <section id="social-networks">
-            <div class="container text-white">
-                <div class="row text-center align-content-center" style="min-height: 25vh">
-                    <div class="col-4 mb-3">
-                        <div class="social-networks-label pb-3">Roadmap</div>
-                        <a href="https://trello.com/b/V2daCSis/fleet-manager-road-map" target="_blank"><i class="fab fa-trello fa-8x"></i></a>
-                    </div>
-                    <div class="col-4 mb-3">
-                        <div class="social-networks-label pb-3">Sources</div>
-                        <a href="https://github.com/Ioni14/starcitizen-fleet-manager" target="_blank"><i class="fab fa-github fa-8x"></i></a>
-                    </div>
-                    <div class="col-4 mb-3">
-                        <div class="social-networks-label pb-3">Ideas,&nbsp;Bugs</div>
-                        <a href="https://discord.gg/sD7Wp3u" target="_blank"><i class="fab fa-discord fa-8x"></i></a>
-                    </div>
+        <footer id="pg-ftr">
+            <section class="footer">
+                <div class="logo">
+                    <img src="../img/logo_fm_white.svg" alt="Logo Fleet Manager">
                 </div>
-            </div>
-        </section>
-
-        <section id="team" ref="team">
-            <div class="container d-flex align-items-center text-white" style="min-height: 75vh;">
-                <div class="w-100">
-                    <div class="row text-center">
-                        <div class="col-12 mb-5">
-                            <h2 id="team-title" class="display-3 text-uppercase" style="text-shadow: 0 0 5px rgba(10, 10, 10, 1);">Fleet Manager Team</h2>
-                        </div>
+                <nav>
+                    <div class="policy"><a href="/privacy-policy">Privacy Policy</a><!-- - <a href="#">FAQ</a>--></div>
+                    <div class="links">
+                        <a target="_blank" href="https://blog.fleet-manager.space"><i class="fas fa-blog"></i></a>
+                        <a target="_blank" href="https://github.com/Ioni14/starcitizen-fleet-manager"><i class="fab fa-github"></i></a>
+                        <a target="_blank" href="https://discord.gg/5EyFpVP"><i class="fab fa-discord"></i></a>
                     </div>
-                    <div class="row text-center">
-                        <div class="col-md-6 col-lg-5 offset-lg-1 col-xl-4 offset-xl-1 mb-3">
-                            <div class="card h-100" style="background-color: rgba(15, 15, 15, 0.9);">
-                                <img src="../img/ioni.jpg" class="card-img-top" alt="">
-                                <div class="card-body d-flex flex-column">
-                                    <h3 class="h1">Ioni</h3>
-                                    <p class="card-text h5 mb-2">Lead&nbsp;Developer - Solution&nbsp;Architect</p>
-                                    <div class="row mt-auto">
-                                        <div class="col-12">
-                                            <a href="https://github.com/ioni14" target="_blank"><i class="fab fa-github fa-3x"></i></a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-5 col-xl-4 offset-xl-2 mb-3">
-                            <div class="card h-100" style="background-color: rgba(15, 15, 15, 0.9);">
-                                <img src="../img/synthese.jpg" class="card-img-top" alt="">
-                                <div class="card-body d-flex flex-column">
-                                    <h3 class="h1">Vyrtual Synthese</h3>
-                                    <p class="card-text h5 mb-2">Community&nbsp;Manager - Project&nbsp;Manager</p>
-                                    <div class="row mt-auto">
-                                        <div class="col-4">
-                                            <a href="https://github.com/vyrtualsynthese" target="_blank"><i class="fab fa-github fa-3x"></i></a>
-                                        </div>
-                                        <div class="col-4">
-                                            <a href="https://twitch.tv/ashuvidz/" target="_blank"><i class="fab fa-twitch fa-3x"></i></a>
-                                        </div>
-                                        <div class="col-4">
-                                            <a href="https://youtube.com/ashuvidz/" target="_blank"><i class="fab fa-youtube fa-3x"></i></a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <footer id="footer">
-            <div class="container text-white">
-                <div class="row align-items-center">
-                    <div class="col-6">
-                        <a class="navbar-brand" href="/"><img src="../img/logo_fm_white.svg" height="40" alt="Fleet Manager"></a>
-                        <a href="/privacy-policy">Privacy policy</a>
-                    </div>
-                    <div class="col-6 d-flex align-items-center">
-                        <a href="https://blog.fleet-manager.space" target="_blank" class="mr-3 ml-auto" title="Blog"><i class="fas fa-blog fa-2x"></i></a>
-                        <a href="https://github.com/Ioni14/starcitizen-fleet-manager" target="_blank" class="mr-3" title="Github"><i class="fab fa-github fa-2x"></i></a>
-                        <a href="https://discord.gg/5EyFpVP" target="_blank" title="Discord"><i class="fab fa-discord fa-2x"></i></a>
-                    </div>
-                </div>
-            </div>
+                </nav>
+            </section>
+            <section class="copyright">
+                <p>Fleet Manager © 2018 - {{ actualYear }}</p>
+                <p>All game content and materials are copyright of Cloud Imperium Rights LLC and Cloud Imperium Rights Ltd. Star Citizen®, Roberts Space Industries®, and Cloud Imperium® are registered trademarks of Cloud Imperium Rights LLC. All rights reserved.</p>
+            </section>
         </footer>
 
-        <RegistrationAndLoginModal :discord-login-url="discordLoginUrl"></RegistrationAndLoginModal>
+        <RegistrationAndLoginModal ref="modal"></RegistrationAndLoginModal>
     </div>
 </template>
 
 <script>
+import anime from 'animejs/lib/anime.es.js';
 import axios from 'axios';
 import AnimatedNumber from 'animated-number-vue';
 import RegistrationAndLoginModal from "./views/RegistrationAndLoginModal";
 
 export default {
-    name: 'Login',
-    props: ['discordLoginUrl'],
-    components: {RegistrationAndLoginModal, AnimatedNumber},
+    name: 'Home',
+    components: {AnimatedNumber, RegistrationAndLoginModal},
     data() {
         return {
+            actualYear: (new Date()).getFullYear(),
+            topSupporters: [],
             countOrga: 0,
             countUsers: 0,
             countShips: 0,
             canCountStatistics: false,
             user: null,
             userStated: false,
+            animateEls: {
+                'sprite-character-1': false,
+                'join-citizens': false,
+                'review-personal-fleet': false,
+                'official-extension': false,
+                'use-it-now': false,
+                'list-ships-0': false,
+                'list-ships-1': false,
+                'list-ships-2': false,
+                'supporters-backers': false,
+            },
+            loaded: {
+                'sprite-character-1': 0,
+                'join-citizens': 0,
+                'review-personal-fleet': 0,
+                'official-extension': 0,
+                'use-it-now': 0,
+            },
+            screenshots: {
+                'sprite-first-screenshot': false,
+                'review-personal-fleet': false,
+                'official-extension': false,
+            }
         };
     },
     created() {
@@ -265,72 +418,214 @@ export default {
             this.countUsers = response.data.users;
             this.countShips = response.data.ships;
         });
+        axios.get('/api/funding/ladder-alltime').then(response => {
+            this.topSupporters = response.data.topFundings.slice(0, 12);
+            this.$nextTick(() => {
+                this.onScroll();
+            });
+        });
         axios.get('/api/me').then(response => {
             this.user = response.data;
         }).catch(response => {
         }).then(_ => {
             this.userStated = true;
         });
-
         window.addEventListener('scroll', this.onScroll);
     },
     mounted() {
         this.onScroll();
     },
     methods: {
+        showModal() {
+            this.$refs['modal'].show();
+        },
         formatSatistics(value) {
             return Math.round(value);
         },
-        onScroll() {
-            if (!this.canCountStatistics) {
-                const topY = this.$refs.statistics.offsetTop;
-                const bottomY = topY + this.$refs.statistics.clientHeight;
-                const statsTopScreenY = topY - window.scrollY; // the Y-pos of statistics block with topscreen at origin
-                const statsBottomScreenY = bottomY - window.scrollY;
-                const thresholdFromTop = window.screen.height * 4/5;
-                const thresholdFromBottom = window.screen.height * 1/5;
+        onLoad(elId, isScreenshot) {
+            ++this.loaded[elId];
+            if (isScreenshot) {
+                this.screenshots[elId] = true;
+            }
+            this.onScroll();
+        },
+        getPosition(el, withoutScroll) {
+            let xPos = 0;
+            let yPos = 0;
 
-                if (statsBottomScreenY >= thresholdFromBottom && statsTopScreenY <= thresholdFromTop) {
+            while (el) {
+                if (el.tagName == "BODY") {
+                    let xScroll = 0;
+                    let yScroll = 0;
+                    if (!withoutScroll) {
+                        // deal with browser quirks with body/window/document and page scroll
+                        xScroll = el.scrollLeft || document.documentElement.scrollLeft;
+                        yScroll = el.scrollTop || document.documentElement.scrollTop;
+                    }
+
+                    xPos += (el.offsetLeft - xScroll + el.clientLeft);
+                    yPos += (el.offsetTop - yScroll + el.clientTop);
+                } else {
+                    // for all other non-BODY elements
+                    xPos += (el.offsetLeft - el.scrollLeft + el.clientLeft);
+                    yPos += (el.offsetTop - el.scrollTop + el.clientTop);
+                }
+                el = el.offsetParent;
+            }
+
+            return {
+                x: xPos,
+                y: yPos
+            };
+        },
+        onScroll() {
+            const thresholdFromTop = window.screen.height * 3/4;
+            const thresholdFromBottom = window.screen.height * 1/4;
+
+            if (!this.animateEls['sprite-character-1'] && this.loaded['sprite-character-1'] === 1) {
+                const el = this.$refs['sprite-character-1'];
+                const pos = this.getPosition(el);
+                const elTopScreenY = pos.y;
+                const elBottomScreenY = pos.y + el.clientHeight;
+                if (elBottomScreenY >= thresholdFromBottom && elTopScreenY <= thresholdFromTop) {
+                    this.animateEls['sprite-character-1'] = true;
+                    setTimeout(() => { // delay a bit because it's the "first" sprite. otherwise may be too fast for "new" users.
+                        anime({
+                            targets: '#sprite-character-1',
+                            left: '20%',
+                            opacity: 1,
+                            duration: 2000,
+                            easing: 'easeOutQuart', // https://matthewlein.com/tools/ceaser
+                        });
+                    }, 250);
+                }
+            }
+            if (!this.animateEls['join-citizens'] && this.loaded['join-citizens'] === 1) {
+                const el = this.$refs['join-citizens'];
+                const pos = this.getPosition(el);
+                const elTopScreenY = pos.y;
+                const elBottomScreenY = pos.y + el.clientHeight;
+                if (elBottomScreenY >= thresholdFromBottom && elTopScreenY <= thresholdFromTop) {
+                    this.animateEls['join-citizens'] = true;
                     this.canCountStatistics = true;
+                    anime({
+                        targets: '#sprite-ship-right-1',
+                        right: '19%',
+                        opacity: 1,
+                        duration: 1500,
+                        easing: 'easeOutQuart',
+                    });
+                }
+            }
+            if (!this.animateEls['review-personal-fleet'] && this.loaded['review-personal-fleet'] === 4) {
+                const el = this.$refs['review-personal-fleet'];
+                const pos = this.getPosition(el);
+                const elTopScreenY = pos.y;
+                const elBottomScreenY = pos.y + el.clientHeight;
+                if (elBottomScreenY >= thresholdFromBottom && elTopScreenY <= thresholdFromTop) {
+                    this.animateEls['review-personal-fleet'] = true;
+                    anime({
+                        targets: ['#sprite-ship-right-top-1', '#sprite-ship-right-top-1-reduced'],
+                        right: '12%',
+                        opacity: 1,
+                        duration: 1500,
+                        easing: 'easeOutQuart',
+                    });
+                }
+            }
+            if (!this.animateEls['official-extension'] && this.loaded['official-extension'] === 4) {
+                const el = this.$refs['official-extension'];
+                const pos = this.getPosition(el);
+                const elTopScreenY = pos.y;
+                const elBottomScreenY = pos.y + el.clientHeight;
+                if (elBottomScreenY >= thresholdFromBottom && elTopScreenY <= thresholdFromTop) {
+                    this.animateEls['official-extension'] = true;
+                    anime({
+                        targets: ['#sprite-ship-left-bottom-1', '#sprite-ship-left-bottom-1-reduced'],
+                        left: '7%',
+                        opacity: 1,
+                        duration: 1500,
+                        easing: 'easeOutQuart',
+                    });
+                }
+            }
+            if (!this.animateEls['use-it-now'] && this.loaded['use-it-now'] === 2) {
+                const el = this.$refs['use-it-now'];
+                const pos = this.getPosition(el);
+                const elTopScreenY = pos.y;
+                const elBottomScreenY = pos.y + el.clientHeight;
+                if (elBottomScreenY >= thresholdFromBottom && elTopScreenY <= thresholdFromTop) {
+                    this.animateEls['use-it-now'] = true;
+                    anime({
+                        targets: '#sprite-useitnow-character-left',
+                        left: '16%',
+                        opacity: 1,
+                        duration: 1500,
+                        easing: 'easeOutQuart',
+                    });
+                    anime({
+                        targets: '#sprite-useitnow-character-right',
+                        right: '18%',
+                        opacity: 1,
+                        duration: 1500,
+                        easing: 'easeOutQuart',
+                    });
                 }
             }
 
-            if (window.innerWidth >= 1200) { // no parallax on small screens
-                const windowTopY = window.scrollY;
-                const windowBottomY = windowTopY + window.screen.height;
+            document.querySelectorAll('.list-ships').forEach((el, i) => {
+                if (!this.animateEls['list-ships-'+i]) {
+                    const pos = this.getPosition(el);
+                    const elTopScreenY = pos.y;
+                    const elBottomScreenY = pos.y + el.clientHeight;
+                    if (elBottomScreenY >= thresholdFromBottom && elTopScreenY <= thresholdFromTop) {
+                        this.animateEls['list-ships-'+i] = true;
+                        el.querySelectorAll('li').forEach((el) => {
+                            el.style.transform = 'translateY(50px)';
+                        });
+                        anime({
+                            targets: el.querySelectorAll('li'),
+                            opacity: 1,
+                            translateY: '-=50',
+                            easing: 'easeOutQuart',
+                            delay: function(el, i) {
+                                return i * 150;
+                            },
+                        });
+                    }
+                }
+            });
 
-                // parallax #heroFullScreen
-                let topY = this.$refs.heroFullScreen.offsetTop;
-                let bottomY = topY + this.$refs.heroFullScreen.clientHeight;
-                this.$refs.heroFullScreen.style.backgroundPositionY = this.computePercent(topY, bottomY, windowTopY, windowBottomY) * 100 + '%';
-
-                // parallax #featuresPart
-                topY = this.$refs.featuresPart.offsetTop;
-                bottomY = topY + this.$refs.featuresPart.clientHeight;
-                this.$refs.featuresPart.style.backgroundPositionY = this.computePercent(topY, bottomY, windowTopY, windowBottomY) * 100 + '%';
-
-                // parallax #whoUse
-                topY = this.$refs.whoUse.offsetTop;
-                bottomY = topY + this.$refs.whoUse.clientHeight;
-                this.$refs.whoUse.style.backgroundPositionY = this.computePercent(topY, bottomY, windowTopY, windowBottomY) * 100 + '%';
-
-                // parallax #team
-                topY = this.$refs.team.offsetTop;
-                bottomY = topY + this.$refs.team.clientHeight;
-                this.$refs.team.style.backgroundPositionY = this.computePercent(topY, bottomY, windowTopY, windowBottomY) * 100 + '%';
+            if (!this.animateEls['supporters-backers'] && this.topSupporters.length > 0) {
+                const el = this.$refs['supporters-backers'];
+                const pos = this.getPosition(el);
+                const elTopScreenY = pos.y;
+                const elBottomScreenY = pos.y + el.clientHeight;
+                if (elBottomScreenY >= thresholdFromBottom && elTopScreenY <= thresholdFromTop) {
+                    this.animateEls['supporters-backers'] = true;
+                    document.querySelectorAll('#supporters-backers .col').forEach((el) => {
+                        el.style.transform = 'translateY(50px)';
+                    });
+                    anime({
+                        targets: '#supporters-backers .col',
+                        opacity: 1,
+                        translateY: '-=50',
+                        easing: 'easeInOutQuad',
+                        delay: function(el, i) {
+                            return i * 75;
+                        },
+                    });
+                }
             }
         },
-        computePercent(topY, bottomY, windowTopY, windowBottomY) {
-            let percent = 0;
-            if (topY - windowBottomY > 0) {
-                percent = 1;
-            } else if (bottomY - windowTopY < 0) {
-                percent = 0;
-            } else {
-                const midY = (topY + bottomY) / 2;
-                percent = (midY - windowTopY) / (windowBottomY - windowTopY);
-            }
-            return percent;
+        smoothScroll(cssSelector) {
+            const el = document.querySelector(cssSelector);
+            anime({
+                targets: 'html, body',
+                scrollTop: this.getPosition(el, true).y,
+                duration: 1500,
+                easing: 'easeOutQuart',
+            });
         },
     }
 }
@@ -341,136 +636,5 @@ export default {
     @import '~@fortawesome/fontawesome-free/scss/fontawesome';
     @import '~@fortawesome/fontawesome-free/scss/solid';
     @import '~@fortawesome/fontawesome-free/scss/brands';
-    @import '~bootstrap-vue/dist/bootstrap-vue.css';
-    @import '../css/style';
-
-    #hero-full-screen {
-        background-image: url('../img/hero.jpg');
-        background-size: cover;
-        background-position: center 0;
-        background-repeat: repeat-y;
-        transition: 0s linear;
-        transition-property: background-position;
-
-        .jumbotron {
-            margin-bottom: 0;
-            #hero-full-screen-title {
-                @include media-breakpoint-down(sm) {
-                    font-size: 4rem;
-                }
-            }
-            #hero-full-screen-subtitle {
-                @include media-breakpoint-down(sm) {
-                    font-size: 3rem;
-                }
-            }
-        }
-    }
-    #features-part {
-        background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0)), url('../img/jupiter.jpg');
-        background-size: cover;
-        background-position: center 0;
-        background-repeat: repeat-y;
-        transition: 0s linear;
-        transition-property: background-position;
-
-        @include media-breakpoint-down(sm) {
-            padding: 5rem 1rem;
-        }
-        #features-part-title {
-            @include media-breakpoint-down(sm) {
-                font-size: 3rem;
-            }
-        }
-    }
-    #statistics {
-        background-color: rgba(15, 15, 15, 1);
-        background-size: cover;
-        padding: 3rem 1rem;
-        .statistics-nb-value {
-            text-shadow: 0 0 10px rgba(220, 220, 220, 1);
-            font-size: 6rem;
-            @include media-breakpoint-only(md) {
-                font-size: 5rem;
-            }
-            @include media-breakpoint-down(sm) {
-                font-size: 4rem;
-            }
-        }
-        .statistics-nb-label {
-            font-size: 2rem;
-            @include media-breakpoint-only(md) {
-                font-size: 1.7rem;
-            }
-            @include media-breakpoint-down(sm) {
-                font-size: 1.5rem;
-            }
-        }
-    }
-    #who-use {
-        background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0)), url('../img/bg1.jpg');
-        background-size: cover;
-        background-position: center 0;
-        background-repeat: repeat-y;
-        transition: 0s linear;
-        transition-property: background-position;
-
-        @include media-breakpoint-down(sm) {
-            padding: 5rem 1rem;
-        }
-        #who-use-title {
-            @include media-breakpoint-down(sm) {
-                font-size: 3rem;
-            }
-        }
-    }
-    #social-networks {
-        background-color: rgba(15, 15, 15, 1);
-        background-size: cover;
-        padding: 3rem 1rem;
-        .social-networks-label {
-            font-size: 2rem;
-            @include media-breakpoint-only(md) {
-                font-size: 1.7rem;
-            }
-            @include media-breakpoint-down(sm) {
-                font-size: 1.5rem;
-            }
-            @include media-breakpoint-only(xs) {
-                font-size: 1.2rem;
-            }
-        }
-        .fab {
-            @include media-breakpoint-only(xs) {
-                font-size: 5rem;
-            }
-        }
-        a {
-            color: white;
-        }
-    }
-    #team {
-        background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0)), url('../img/bg-4.jpg');
-        background-size: cover;
-        background-position: center 0;
-        background-repeat: repeat-y;
-        transition: 0s linear;
-        transition-property: background-position;
-        padding: 5rem 1rem;
-
-        #team-title {
-            @include media-breakpoint-down(sm) {
-                font-size: 2.7rem;
-            }
-        }
-        a {
-            color: white;
-        }
-    }
-    #footer {
-        background-color: rgba(15, 15, 15, 1);
-        a {
-            color: white;
-        }
-    }
+    @import '../css/frontpage/screen.scss';
 </style>

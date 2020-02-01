@@ -1,0 +1,160 @@
+@charset "UTF-8";
+@import "setup";
+@import "global";
+
+#modal-registration-login {
+    .v--modal {
+        border-radius: 10px;
+        background: $modal-bg;
+    }
+    .header {
+        @include fontHeadings;
+        padding: 1.1rem 1.5rem;
+        display: flex;
+        align-items: center;
+        font-size: 1.5rem;
+        .fa-sign-in-alt {
+            margin-right: 0.4rem;
+        }
+        .fa-times {
+            cursor: pointer;
+            margin-left: auto;
+            color: #687F9D;
+            font-size: 1.25rem;
+        }
+        border-bottom: 1px solid rgba(104, 127, 157, 0.5);
+    }
+    .content {
+        padding: 2rem 3rem 3rem;
+        width: 80%;
+        margin: auto;
+        @media screen and (max-width: 575px) {
+            width: 100%;
+            padding: 2rem 2rem 3rem;
+        }
+        .btn {
+            width: 100%;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.0rem 1.5rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            &.btn-discord {
+                background-color: #7289da;
+                margin-bottom: 2rem;
+                &:hover {
+                    background-color: lighten(#7289da, 5%);
+                }
+            }
+            i {
+                font-size: 1.5rem;
+                text-shadow: none;
+            }
+        }
+        input.form-control {
+            border-radius: 5px;
+            width: 100%;
+            padding: 1.25rem 1.0rem;
+            margin-bottom: 1rem;
+            background: #2C405A;
+            border: 0;
+            color: $white;
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+        .form-group {
+            position: relative;
+            .input-append {
+                position: absolute;
+                top: 0;
+                right: 0;
+                .btn {
+                    font-size: 1.1rem;
+                    padding: 1.25rem 1.5rem;
+                    border-bottom-left-radius: 0;
+                    border-top-left-radius: 0;
+                    i {
+                        line-height: 0.7; // (1.1rem * 1.5 - 0.3rem * 2) / 1.5rem
+                    }
+                }
+            }
+        }
+        .has-errors input.form-control {
+            border: 1px solid $error;
+        }
+        .rememberme {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            .lostpassword {
+                margin-left: auto;
+            }
+        }
+        .bottom-line {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+        .link {
+            color: #0191EB;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .form-errors {
+            color: $error;
+            font-size: 1.0rem;
+            margin-bottom: 1rem;
+        }
+        .alert {
+            border-style: solid;
+            border-width: 1px;
+            padding: 0.8rem 1.0rem;
+            font-size: 1.0rem;
+            margin-bottom: 1rem;
+            border-radius: 5px;
+            &.alert-danger {
+                border-color: $error;
+                background-color: rgba($error, 0.2);
+                color: lighten($error, 10%);
+            }
+            &.alert-success {
+                border-color: $success;
+                background-color: rgba($success, 0.2);
+                color: lighten($success, 10%);
+            }
+        }
+    }
+    .pretty .state label {
+        display: flex;
+        align-items: center;
+        justify-content: left;
+        text-align: left;
+        text-indent: initial;
+    }
+    .pretty .state label::before {
+        position: static;
+        background: #2c405a;
+        border: none;
+        margin-right: 0.5rem;
+    }
+    .pretty .state label::after {
+        transform: none;
+        background: transparent !important;
+        transition: background 0.1s;
+    }
+    .pretty input:checked ~ .state label::after {
+        font-family: 'Font Awesome 5 Free';
+        content: "\f00c";
+        transform: none;
+        background: $blue !important;
+        text-align: center;
+        line-height: calc(1.75rem + 2px);
+    }
+    .pretty .state label::before, .pretty .state label::after {
+        top: auto;
+        width: calc(1.75rem + 2px);
+        height: calc(1.75rem + 2px);
+    }
+}

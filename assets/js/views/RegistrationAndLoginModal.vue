@@ -1,115 +1,79 @@
 <template>
-    <b-modal
-            id="modal-login"
-            ref="modalLogin"
-            title="Connect to Fleet Manager"
-            size="md"
-            centered hide-footer
-            header-bg-variant="dark"
-            header-text-variant="light"
-            body-bg-variant="dark"
-            body-text-variant="light"
-            footer-bg-variant="dark"
-            footer-text-variant="light"
-    >
-        <b-row class="justify-content-center">
-            <b-col style="padding-left:5rem;padding-right:5rem;">
-                <b-form class="text-center mt-3 mb-3">
-                    <b-button size="lg" block style="background-color: #7289da; color: #fff;" class="px-5" :href="discordLoginUrl"><i class="fab fa-discord"></i> Login with Discord</b-button>
-                </b-form>
-                <div class="text-center mt-5 mb-3">
-                    <b-alert :show="registrationFormSuccessMessage" variant="success">{{ registrationFormSuccessMessage }}</b-alert>
-                    <b-alert :show="lostPasswordFormSuccessMessage" variant="success">{{ lostPasswordFormSuccessMessage }}</b-alert>
-                    <b-collapse id="collapse-login-form" accordion="login-form" visible>
-                        <b-form @submit="onSubmitLoginForm">
-                            <b-alert :show="loginFormErrorsGlobal" variant="danger">
-                                {{ loginFormErrorsGlobal }}
-                                <b-button v-if="loginNotConfirmed != null" :disabled="resendConfirmationEmailDisabled" type="button" variant="primary" class="mt-2" @click="resendConfirmationEmail"><i class="fas fa-redo"></i> Resend a confirmation email</b-button>
-                            </b-alert>
-                            <b-form-group label-for="input-email">
-                                <b-form-input
-                                        type="email"
-                                        id="input-email"
-                                        v-model="loginForm.email"
-                                        required
-                                        placeholder="Email"
-                                ></b-form-input>
-                            </b-form-group>
-                            <b-form-group label-for="input-password">
-                                <b-form-input
-                                        type="password"
-                                        id="input-password"
-                                        v-model="loginForm.password"
-                                        required
-                                        placeholder="Password"
-                                ></b-form-input>
-                                <p class="mt-2 mb-0" style="cursor: pointer" v-b-toggle.collapse-lost-password-form>I lost my password.</p>
-                            </b-form-group>
-                            <b-form-group class="text-left">
-                                <b-form-checkbox v-model="loginForm.rememberMe">Remember me</b-form-checkbox>
-                            </b-form-group>
-                            <b-button type="submit" size="lg" block variant="primary" class="px-5"><i class="fas fa-unlock-alt"></i> Login</b-button>
-                            <p class="mt-2 mb-0" style="cursor: pointer" v-b-toggle.collapse-registration-form>I'm not registered yet.</p>
-                        </b-form>
-                    </b-collapse>
-                    <b-collapse id="collapse-registration-form" accordion="login-form">
-                        <b-form @submit="onSubmitRegistrationForm">
-                            <b-alert :show="registrationFormErrorsGlobal" variant="danger">{{ registrationFormErrorsGlobal }}</b-alert>
-                            <b-form-group :invalid-feedback="registrationFormErrorsViolations.email" :state="registrationFormErrorsViolations.email === null ? null : false">
-                                <b-form-input
-                                        type="email"
-                                        id="input-registration-email"
-                                        v-model="registrationForm.email"
-                                        :state="registrationFormErrorsViolations.email === null ? null : false"
-                                        required
-                                        placeholder="Email"
-                                ></b-form-input>
-                            </b-form-group>
-                            <b-form-group :invalid-feedback="registrationFormErrorsViolations.password" :state="registrationFormErrorsViolations.password === null ? null : false">
-                                <b-input-group>
-                                    <b-form-input
-                                            :type="registrationFormPasswordVisible ? 'text' : 'password'"
-                                            id="input-registration-password"
-                                            v-model="registrationForm.password"
-                                            :state="registrationFormErrorsViolations.password === null ? null : false"
-                                            required
-                                            placeholder="Password"
-                                    ></b-form-input>
-                                    <b-input-group-append>
-                                        <b-button variant="info" v-b-tooltip.hover :title="registrationFormPasswordVisible ? 'Hide password' : 'Show password'" @click="registrationFormPasswordVisible = !registrationFormPasswordVisible"><i :class="{'fas fa-eye': registrationFormPasswordVisible, 'fas fa-eye-slash': !registrationFormPasswordVisible}"></i></b-button>
-                                    </b-input-group-append>
-                                </b-input-group>
-                            </b-form-group>
-                            <b-button type="submit" size="lg" block variant="primary" class="px-5"><i class="fas fa-id-card"></i> Register</b-button>
-                            <p class="mt-2 mb-0" style="cursor: pointer" v-b-toggle.collapse-login-form>I'm already registered.</p>
-                        </b-form>
-                    </b-collapse>
-                    <b-collapse id="collapse-lost-password-form" accordion="login-form">
-                        <b-form @submit="onSubmitLostPasswordForm">
-                            <b-alert :show="lostPasswordFormErrorsGlobal" variant="danger">{{ lostPasswordFormErrorsGlobal }}</b-alert>
-                            <b-form-group :invalid-feedback="lostPasswordFormErrorsViolations.email" :state="lostPasswordFormErrorsViolations.email === null ? null : false">
-                                <b-form-input
-                                        type="email"
-                                        id="input-lost-password-email"
-                                        v-model="lostPasswordForm.email"
-                                        :state="lostPasswordFormErrorsViolations.email === null ? null : false"
-                                        required
-                                        placeholder="Email"
-                                ></b-form-input>
-                            </b-form-group>
-                            <b-button type="submit" size="lg" block variant="primary" class="px-5"><i class="fas fa-envelope"></i> Send me a new password</b-button>
-                            <p class="mt-2 mb-0" style="cursor: pointer" v-b-toggle.collapse-login-form>I remember my password.</p>
-                        </b-form>
-                    </b-collapse>
-                </div>
-            </b-col>
-        </b-row>
-    </b-modal>
+    <modal name="modal-registration-login" id="modal-registration-login" height="auto" :adaptive="true" overlayTransition="nice-modal-fade">
+        <header class="header">
+            <i class="fas fa-sign-in-alt"></i> Connect to Fleet Manager
+            <i class="fas fa-times" @click="$modal.hide('hello-world')"></i>
+        </header>
+        <section class="content">
+            <a class="btn btn-discord" href="/connect/discord"><i class="fab fa-discord"></i> Log in with Discord</a>
+            <div class="alert alert-success" v-if="registrationFormSuccessMessage">{{ registrationFormSuccessMessage }}</div>
+            <div class="alert alert-success" v-if="lostPasswordFormSuccessMessage">{{ lostPasswordFormSuccessMessage }}</div>
+            <div class="collapse" id="collapse-login-form" style="overflow: hidden;">
+                <form @submit="onSubmitLoginForm">
+                    <div v-if="loginFormErrorsGlobal" class="alert alert-danger">
+                        {{ loginFormErrorsGlobal }}
+                        <button v-if="loginNotConfirmed != null" :disabled="resendConfirmationEmailDisabled" type="button" @click="resendConfirmationEmail"><i class="fas fa-redo"></i> Resend a confirmation email</button>
+                    </div>
+                    <div>
+                        <input type="email" class="form-control" id="input-email" v-model="loginForm.email" required placeholder="Email">
+                    </div>
+                    <div>
+                        <input type="password" class="form-control" id="input-password" v-model="loginForm.password" required placeholder="Password">
+                    </div>
+                    <div class="rememberme">
+                        <div class="pretty p-default p-curve">
+                            <input type="checkbox" v-model="loginForm.rememberMe">
+                            <div class="state">
+                                <label>Remember me</label>
+                            </div>
+                        </div>
+                        <div class="link" @click="showCollapse('collapse-lost-password-form')">lost your password?</div>
+                    </div>
+                    <button type="submit" class="btn"><i class="fas fa-sign-in-alt"></i> Log in</button>
+                    <p class="bottom-line">Don't have an account? <span class="link" @click="showCollapse('collapse-registration-form')">Sign up</span></p>
+                </form>
+            </div>
+            <div class="collapse" id="collapse-registration-form" style="height: 0; overflow: hidden;">
+                <form @submit="onSubmitRegistrationForm">
+                    <div v-if="registrationFormErrorsGlobal" class="alert alert-danger">
+                        {{ registrationFormErrorsGlobal }}
+                    </div>
+                    <div :class="{'has-errors': registrationFormErrorsViolations.email !== null}">
+                        <input type="email" class="form-control" id="input-registration-email" v-model="registrationForm.email" required placeholder="Email">
+                        <p class="form-errors" v-if="registrationFormErrorsViolations.email">{{ registrationFormErrorsViolations.email }}</p>
+                    </div>
+                    <div class="form-group" :class="{'has-errors': registrationFormErrorsViolations.email !== null}">
+                        <input :type="registrationFormPasswordVisible ? 'text' : 'password'" class="form-control" id="input-registration-password" v-model="registrationForm.password" required placeholder="Password">
+                        <p class="form-errors" v-if="registrationFormErrorsViolations.password">{{ registrationFormErrorsViolations.password }}</p>
+                        <div class="input-append">
+                            <button type="button" class="btn" :title="registrationFormPasswordVisible ? 'Hide password' : 'Show password'" @click="registrationFormPasswordVisible = !registrationFormPasswordVisible"><i :class="{'fas fa-eye': registrationFormPasswordVisible, 'fas fa-eye-slash': !registrationFormPasswordVisible}"></i></button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn"><i class="fas fa-id-card"></i> Register</button>
+                    <p class="bottom-line link" @click="showCollapse('collapse-login-form')">I'm already registered.</p>
+                </form>
+            </div>
+            <div class="collapse" id="collapse-lost-password-form" style="height: 0; overflow: hidden;">
+                <form @submit="onSubmitLostPasswordForm">
+                    <div v-if="lostPasswordFormErrorsGlobal" class="alert alert-danger">
+                        {{ lostPasswordFormErrorsGlobal }}
+                    </div>
+                    <div :class="{'has-errors': lostPasswordFormErrorsViolations.email !== null}">
+                        <input type="email" class="form-control" id="input-lost-password-email" v-model="lostPasswordForm.email" required placeholder="Email">
+                        <p class="form-errors" v-if="lostPasswordFormErrorsViolations.email">{{ lostPasswordFormErrorsViolations.email }}</p>
+                    </div>
+                    <button type="submit" class="btn"><i class="fas fa-envelope"></i> Send me a new password</button>
+                    <p class="bottom-line">You remember your password? <span class="link" @click="showCollapse('collapse-login-form')">Log in</span></p>
+                </form>
+            </div>
+        </section>
+    </modal>
 </template>
 
 <script>
     import axios from 'axios';
     import qs from 'qs';
+    import anime from 'animejs/lib/anime.es.js';
 
     export default {
         name: 'registration-and-login-modal',
@@ -133,12 +97,44 @@
                 lostPasswordFormErrorsViolations: {email: null},
             };
         },
-        props: ['discordLoginUrl'],
-        created() {
-        },
-        computed: {
-        },
         methods: {
+            closeCollapses(exceptElement) {
+                document.querySelectorAll('.collapse').forEach((el) => {
+                    if (el == exceptElement) {
+                        return;
+                    }
+                    el.style.height = el.clientHeight+'px';
+                    anime({
+                        targets: el,
+                        height: 0,
+                        duration: 300,
+                        easing: 'linear',
+                        complete: () => {
+                            el.style.display = 'none';
+                        }
+                    });
+                });
+            },
+            showCollapse(elementId) {
+                const el = document.getElementById(elementId);
+                this.closeCollapses(el);
+                el.style.display = 'block';
+                anime({
+                    targets: el,
+                    height: el.scrollHeight,
+                    duration: 300,
+                    easing: 'linear',
+                    complete: () => {
+                        el.style.height = 'auto';
+                    }
+                });
+            },
+            show() {
+                this.$modal.show('modal-registration-login');
+            },
+            hide() {
+                this.$modal.hide('modal-registration-login');
+            },
             onSubmitLoginForm(ev) {
                 ev.preventDefault();
 
@@ -212,7 +208,7 @@
                         password: this.registrationForm.password,
                     },
                 }).then(response => {
-                    this.$root.$emit('bv::toggle::collapse', 'collapse-login-form');
+                    this.showLogin();
                     this.registrationFormSuccessMessage = 'Well done! An email has been sent to you to confirm your registration.';
                 }).catch(err => {
                     if (err.response.data.formErrors) {
@@ -258,9 +254,10 @@
 </script>
 
 <style lang="scss">
-    #modal-login {
-        .modal-title {
-            font-size: 1.2rem;
-        }
-    }
+    $fa-font-path: '~@fortawesome/fontawesome-free/webfonts/';
+    @import '~@fortawesome/fontawesome-free/scss/fontawesome';
+    @import '~@fortawesome/fontawesome-free/scss/solid';
+    @import '~@fortawesome/fontawesome-free/scss/brands';
+    @import '~pretty-checkbox/src/pretty-checkbox.scss';
+    @import '../../css/frontpage/registration_login_modal.scss';
 </style>

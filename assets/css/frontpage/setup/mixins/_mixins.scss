@@ -1,0 +1,45 @@
+@mixin clickSafe {
+  user-select: none;
+  cursor: pointer;
+}
+
+@mixin boxSizing-borderBox {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+@mixin transitionDefault {
+  -webkit-transition: all .25s ease-out;
+  -moz-transition: all .25s ease-out;
+  -o-transition: all .25s ease-out;
+  transition: all .25s ease-out;
+}
+@mixin transitionImmediate {
+  -webkit-transition: all 0s;
+  -moz-transition: all 0s;
+  -o-transition: all 0s;
+  -ms-transition: all 0s;
+}
+
+%clearfix {
+  &:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+}
+
+@mixin decorationRight {
+  position: absolute;
+  right: 150px;
+  bottom: 45px;
+  width: 0;
+}
+
+@mixin decorationLeft { 
+  position: absolute;
+  left: -200px;
+  bottom: 45px;
+  width: 0;
+}
