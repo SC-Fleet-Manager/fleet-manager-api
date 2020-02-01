@@ -20,7 +20,7 @@
                     <p v-if="hiddenMembers > 0 && activeTab == 'all_members'" class="mb-1"><i>+ {{ hiddenMembers }} hidden members</i></p>
                 </b-card>
             </b-col>
-            <b-col lg="12" xl="12">
+            <!--<b-col lg="12" xl="12">
                 <h4>All linked members</h4>
                 <b-alert variant="info" :show="true">
                     Useful when a member has left the orga but linked in Fleet Manager.<br/>
@@ -33,7 +33,7 @@
                         {{ citizen.actualHandle.handle }}
                     </p>
                 </b-card>
-            </b-col>
+            </b-col>-->
         </b-row>
     </div>
 </template>
@@ -76,7 +76,7 @@
                     this.$toastr.e('An error has occurred when retrieving members list. Please try again later.');
                 }
             });
-            this.refreshAssociatedCitizens();
+            // this.refreshAssociatedCitizens();
         },
         computed: {
             filteredMembers() {
@@ -164,7 +164,7 @@
             deleteMember(citizen) {
                 this.$set(this.refreshingProfile, citizen.actualHandle.handle, true);
                 axios.post(`/api/organization/${this.selectedSid}/delete-member/${citizen.id}`).then(response => {
-                    this.refreshAssociatedCitizens();
+                    // this.refreshAssociatedCitizens();
                     this.$emit('profileRefreshed', citizen.actualHandle.handle);
                     this.$toastr.s(`${citizen.actualHandle.handle} has been successfully removed.`);
                 }).catch(err => {
