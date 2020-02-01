@@ -32,6 +32,8 @@ yu:										## yarn upgrade
 	$(EXEC_YARN) upgrade
 watch:									## yarn watch
 	$(EXEC_YARN) watch
+webpack-stats:							## launch a webpack stats webserver for optimizing libraries imports
+	$(EXEC_NODE) ./node_modules/.bin/webpack-bundle-analyzer -h 0.0.0.0 ./public/build/stats.json
 composer: 								## exec PHP composer with arbitrary args c="<args>"
 	$(EXEC_COMPOSER) $(c)
 ci:										## composer install
