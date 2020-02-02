@@ -2,7 +2,6 @@ parameters:
     env(REDIS_HOST): 'localhost'
     env(REDIS_PORT): '6379'
     env(REDIS_PASSWORD): ''
-    locale: 'en'
     currency: 'USD'
     hwi_oauth.authentication.entry_point.oauth.class: 'App\Security\OAuthEntryPoint'
     env(PAYPAL_CHECKOUT_CLIENT_ID): ''
