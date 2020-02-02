@@ -1,2 +1,2 @@
 webpack_encore:
-    cache: true
+    cache: true # entrypoints.json

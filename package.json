@@ -27,6 +27,7 @@
         "perfect-scrollbar": "^1.4.0",
         "postcss-loader": "^3.0.0",
         "qs": "^6.7.0",
+        "regenerator-runtime": "^0.13",
         "sass-loader": "^7.1.0",
         "select2": "^4.0",
         "vue": "^2.6",
@@ -47,10 +48,6 @@
     "scripts": {
         "dev": "encore dev",
         "watch": "encore dev --watch",
-        "prod": "encore production --progress",
         "build": "encore production --progress"
-    },
-    "browserslist": [
-        ">= 1%, last 2 versions, Firefox ESR, not dead"
-    ]
+    }
 }
