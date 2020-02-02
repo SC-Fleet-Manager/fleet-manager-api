@@ -3,7 +3,6 @@ parameters:
     env(REDIS_PORT): '6379'
     env(REDIS_PASSWORD): ''
     currency: 'USD'
-    hwi_oauth.authentication.entry_point.oauth.class: 'App\Security\OAuthEntryPoint'
     env(PAYPAL_CHECKOUT_CLIENT_ID): ''
     env(PAYPAL_CHECKOUT_CLIENT_SECRET): ''
     env(PAYPAL_CHECKOUT_WEBHOOK_ID): ''
@@ -57,6 +56,11 @@ services:
     Doctrine\Common\Cache\RedisCache:
         calls:
             - [setRedis, ['@redis']]
+
+    hwi_oauth.authentication.entry_point.oauth:
+        class: App\Security\OAuthEntryPoint
+        abstract: true
+        arguments: ['@http_kernel', '@security.http_utils']
 
     App\Service\Ship\InfosProvider\ShipInfosProviderInterface: '@App\Service\Ship\InfosProvider\ApiShipInfosProvider'
     App\Service\Ship\InfosProvider\ApiShipInfosProvider: ~
