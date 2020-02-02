@@ -153,7 +153,7 @@ COPY docker/php/www.dev.conf /usr/local/etc/php-fpm.d/www.conf
 # Xdebug install
 ARG XDEBUG_VERSION=2.9.2
 RUN set -eux; \
-    apt-get update && apt-get install -y $PHPIZE_DEPS chromium \
+    apt-get update && apt-get install -y $PHPIZE_DEPS chromium git \
 	&& pecl install xdebug-$XDEBUG_VERSION \
     && apt-get remove -y $PHPIZE_DEPS \
     && rm -rf /var/lib/apt/lists/* /tmp/*
