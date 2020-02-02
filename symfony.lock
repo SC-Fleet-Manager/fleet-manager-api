@@ -204,6 +204,9 @@
     "php-http/client-common": {
         "version": "1.8.1"
     },
+    "php-http/curl-client": {
+        "version": "2.1.0"
+    },
     "php-http/discovery": {
         "version": "1.4.0"
     },
@@ -734,6 +737,9 @@
     },
     "zendframework/zend-code": {
         "version": "3.3.1"
+    },
+    "zendframework/zend-diactoros": {
+        "version": "2.2.1"
     },
     "zendframework/zend-eventmanager": {
         "version": "3.2.1"
