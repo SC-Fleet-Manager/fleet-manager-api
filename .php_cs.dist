@@ -1,13 +1,17 @@
 <?php
 
+$finder = PhpCsFixer\Finder::create()
+    ->in('src/')
+    ->in('tests/')
+;
+
 return PhpCsFixer\Config::create()
-    ->setRiskyAllowed(true)
-    ->setRules(array(
+    ->setRules([
         '@Symfony' => true,
+        'array_syntax' => ['syntax' => 'short'],
         '@PHP73Migration' => true,
         'combine_consecutive_unsets' => true,
-        'array_syntax' => array('syntax' => 'short'),
-        'no_extra_consecutive_blank_lines' => array('break', 'continue', 'extra', 'return', 'throw', 'use', 'parenthesis_brace_block', 'square_brace_block', 'curly_brace_block'),
+        'no_extra_consecutive_blank_lines' => ['break', 'continue', 'extra', 'return', 'throw', 'use', 'parenthesis_brace_block', 'square_brace_block', 'curly_brace_block'],
         'no_useless_else' => true,
         'no_useless_return' => true,
         'ordered_imports' => true,
@@ -27,9 +31,6 @@ return PhpCsFixer\Config::create()
             'use_escape_sequences_in_strings' => true,
         ],
         'self_accessor' => true,
-    ))
-    ->setFinder(
-        PhpCsFixer\Finder::create()
-            ->in('src/')
-            ->in('tests/')
-    );
+    ])
+    ->setFinder($finder)
+;
