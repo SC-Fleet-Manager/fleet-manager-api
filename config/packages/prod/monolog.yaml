@@ -1,3 +1,6 @@
+parameters:
+    env(MONOLOG_MAILER_TO): ''
+
 monolog:
     handlers:
         main:
