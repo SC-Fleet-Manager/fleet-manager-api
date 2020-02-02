@@ -5,6 +5,7 @@ namespace App\Listener;
 use App\Entity\Organization;
 use App\Entity\OrganizationChange;
 use App\Event\CitizenDeletedEvent;
+use App\Event\CitizenFiredEvent;
 use App\Event\CitizenFleetUpdatedEvent;
 use App\Event\CitizenRefreshedEvent;
 use App\Event\OrganizationPolicyChangedEvent;
@@ -15,8 +16,8 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class CreateOrganizationChangeSubscriber implements EventSubscriberInterface
 {
-    private $organizationRepository;
-    private $entityManager;
+    private OrganizationRepository $organizationRepository;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(OrganizationRepository $organizationRepository, EntityManagerInterface $entityManager)
     {
@@ -31,7 +32,25 @@ class CreateOrganizationChangeSubscriber implements EventSubscriberInterface
             CitizenRefreshedEvent::class => 'onCitizenRefreshed',
             OrganizationPolicyChangedEvent::class => 'onOrganizationPolicyChangedEvent',
             CitizenDeletedEvent::class => 'onCitizenDeleted',
+            CitizenFiredEvent::class => 'onCitizenFired',
         ];
+    }
+
+    public function onCitizenFired(CitizenFiredEvent $event): void
+    {
+        dump('onCitizenFired');
+        $firedCitizen = $event->getFiredCitizen();
+
+        $change = new OrganizationChange(Uuid::uuid4());
+        $change->setAuthor(null);
+        $change->setOrganization($event->getFiringOrga());
+        $change->setType(OrganizationChange::TYPE_DELETED_CITIZEN);
+        $change->setPayload([
+            'handle' => $firedCitizen->getActualHandle()->getHandle(),
+            'nickname' => $firedCitizen->getNickname(),
+            'number' => $firedCitizen->getNumber()->getNumber(),
+        ]);
+        $this->entityManager->persist($change);
     }
 
     public function onCitizenDeleted(CitizenDeletedEvent $event): void

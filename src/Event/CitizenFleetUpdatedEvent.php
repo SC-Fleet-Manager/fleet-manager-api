@@ -8,9 +8,9 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class CitizenFleetUpdatedEvent extends Event
 {
-    private $citizen;
-    private $newFleet;
-    private $oldFleet;
+    private Citizen $citizen;
+    private Fleet $newFleet;
+    private ?Fleet $oldFleet;
 
     public function __construct(Citizen $citizen, Fleet $newFleet, ?Fleet $oldFleet = null)
     {

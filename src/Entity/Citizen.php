@@ -22,7 +22,7 @@ class Citizen
      *
      * @ORM\Id()
      * @ORM\Column(type="uuid", unique=true)
-     * @Groups({"profile", "orga_fleet", "orga_fleet_admin"})
+     * @Groups({"profile", "public_profile", "orga_fleet", "orga_fleet_admin"})
      */
     private $id;
 
@@ -309,9 +309,6 @@ class Citizen
 
     public function removeOrganization(CitizenOrganization $orga): self
     {
-        if ($orga->getCitizen() !== null) {
-            $orga->setCitizen(null);
-        }
         $this->organizations->removeElement($orga);
 
         return $this;

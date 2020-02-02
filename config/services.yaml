@@ -2,9 +2,7 @@ parameters:
     env(REDIS_HOST): 'localhost'
     env(REDIS_PORT): '6379'
     env(REDIS_PASSWORD): ''
-    locale: 'en'
     currency: 'USD'
-    hwi_oauth.authentication.entry_point.oauth.class: 'App\Security\OAuthEntryPoint'
     env(PAYPAL_CHECKOUT_CLIENT_ID): ''
     env(PAYPAL_CHECKOUT_CLIENT_SECRET): ''
     env(PAYPAL_CHECKOUT_WEBHOOK_ID): ''
@@ -15,20 +13,36 @@ services:
     _defaults:
         autowire: true
         autoconfigure: true
-        public: false
         bind:
             $profileLinkAccountLogger: '@monolog.logger.profile_link_account'
             $registrationFromAddress: 'noreply@fleet-manager.space'
             $noreplyAddress: 'noreply@fleet-manager.space'
             $webExtensionVersionUrl: '%env(WEBEXTENSION_VERSION_URL)%'
 
-    App\:
-        resource: '../src/*'
-        exclude: '../src/{Entity,Migrations,Message,Form/Dto,Service/Funding/FakePaypalCheckout.php,Service/*/*/Fake*.php,Kernel.php}'
-
+    App\Command\:
+        resource: '../src/Command'
     App\Controller\:
-        resource: '../src/Controller/*/*'
+        resource: '../src/Controller'
         tags: ['controller.service_arguments']
+    App\DataFixtures\:
+        resource: '../src/DataFixtures'
+    App\Form\:
+        resource: '../src/Form'
+        exclude: '../src/Form/Dto'
+    App\Listener\:
+        resource: '../src/Listener'
+    App\MessageHandler\:
+        resource: '../src/MessageHandler'
+    App\Repository\:
+        resource: '../src/Repository'
+    App\Security\:
+        resource: '../src/Security'
+        exclude: '../src/Security/Exception'
+    App\Service\:
+        resource: '../src/Service'
+        exclude: '../src/Service/{Dto,*/*/Fake*.php,Funding/FakePaypalCheckout.php,Funding/Dto,WebExtension/Dto}'
+    App\Validator\:
+        resource: '../src/Validator'
 
     redis:
         class: Redis
@@ -42,6 +56,11 @@ services:
     Doctrine\Common\Cache\RedisCache:
         calls:
             - [setRedis, ['@redis']]
+
+    hwi_oauth.authentication.entry_point.oauth:
+        class: App\Security\OAuthEntryPoint
+        abstract: true
+        arguments: ['@http_kernel', '@security.http_utils']
 
     App\Service\Ship\InfosProvider\ShipInfosProviderInterface: '@App\Service\Ship\InfosProvider\ApiShipInfosProvider'
     App\Service\Ship\InfosProvider\ApiShipInfosProvider: ~

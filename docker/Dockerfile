@@ -1,4 +1,4 @@
-FROM php:7.4.1-fpm-buster as req_php
+FROM php:7.4.2-fpm-buster as req_php
 
 RUN apt-get update && apt-get install -y \
     unzip \
@@ -6,11 +6,13 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     libxslt-dev \
     libgcrypt-dev \
-    && docker-php-ext-install intl zip pdo_mysql xml xsl bcmath \
-    && pecl install redis \
-    && apt-get remove -y libzip-dev libxml2-dev libxslt-dev libgcrypt-dev \
+    && docker-php-ext-install -j$(nproc) intl zip pdo_mysql xml xsl bcmath \
+    && pecl channel-update pecl.php.net \
+    && pecl install redis apcu \
+    && apt-get remove -y icu-devtools libicu-dev libzip-dev libxml2-dev libxslt-dev libgcrypt-dev \
     && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-enable --ini-name 05-opcache.ini opcache \
+    && docker-php-ext-enable --ini-name 10-apcu.ini apcu \
     && docker-php-ext-enable --ini-name 20-redis.ini redis \
     && docker-php-source delete \
     && rm -rf /tmp/*
@@ -24,7 +26,7 @@ WORKDIR /app
 ########################################
 FROM req_php as composer_deps
 
-COPY --from=composer:1.9.1 /usr/bin/composer /usr/local/bin/composer
+COPY --from=composer:1.9.2 /usr/bin/composer /usr/local/bin/composer
 
 # prod|dev
 ARG ENV=prod
@@ -93,29 +95,45 @@ RUN mkdir -p public/bundles \
     && bin/console cache:warmup -v \
     && mkdir -p var/log
 
-ENV BUILD_ENV prod
+USER root
+# activate the opcache preloading
+RUN sed -i -r 's/;?opcache.preload=(.*)/opcache.preload=\1/' /usr/local/etc/php/php.ini
+USER www-data
+
 ENTRYPOINT ["docker-app-entrypoint"]
 CMD ["php-fpm"]
 
 ##############################
-FROM httpd:2.4-alpine as build_apache
+FROM httpd:2.4 as build_apache
+
+ENV APACHE_RUN_USER www-data
+ENV APACHE_RUN_GROUP www-data
+
+RUN apt-get update && apt-get install -y curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /tmp/*
 
 COPY docker/apache/httpd.conf /usr/local/apache2/conf/httpd.conf
 
-RUN mkdir -p /app
+USER www-data
 WORKDIR /app
-COPY public/favicon.ico public/robots.txt public/
-COPY public/icons public/icons
-COPY --from=node_deps /app/public/build public/build
-COPY --from=build_php /app/public/bundles public/bundles
+COPY --chown=www-data:www-data public/favicon.ico public/robots.txt public/
+COPY --chown=www-data:www-data public/icons public/icons
+COPY --chown=www-data:www-data --from=node_deps /app/public/build public/build
+COPY --chown=www-data:www-data --from=build_php /app/public/bundles public/bundles
 RUN touch public/index.php
+
+USER root
 
 ##############################
 FROM build_apache as build_apache_test
 
 COPY docker/apache/httpd_test.conf /usr/local/apache2/conf/httpd.conf
 
+USER www-data
 RUN touch public/index_test.php
+
+USER root
 
 ###############################
 FROM build_php as build_php_dev
@@ -123,24 +141,23 @@ FROM build_php as build_php_dev
 COPY public/index_test.php public/
 
 USER root
-COPY --from=composer:1.9.1 /usr/bin/composer /usr/local/bin/composer
+COPY --from=composer:1.9.2 /usr/bin/composer /usr/local/bin/composer
 ENV COMPOSER_MEMORY_LIMIT -1
 ENV COMPOSER_ALLOW_SUPERUSER 1
-
-# Xdebug install
-ARG XDEBUG_VERSION=2.9.0
-RUN set -eux; \
-    apt-get update && apt-get install -y $PHPIZE_DEPS chromium \
-	&& pecl install xdebug-$XDEBUG_VERSION \
-    && apt-get remove -y $PHPIZE_DEPS \
-    && rm -rf /var/lib/apt/lists/* /tmp/*
-
-ENV PANTHER_NO_SANDBOX 1
+ENV COMPOSER_HOME /.composer
 
 COPY docker/php/php.dev.ini /usr/local/etc/php/php.ini
 COPY docker/php/php-fpm.dev.conf /usr/local/etc/php-fpm.conf
 COPY docker/php/www.dev.conf /usr/local/etc/php-fpm.d/www.conf
 
-ENV BUILD_ENV dev
+# Xdebug install
+ARG XDEBUG_VERSION=2.9.2
+RUN set -eux; \
+    apt-get update && apt-get install -y $PHPIZE_DEPS chromium git \
+	&& pecl install xdebug-$XDEBUG_VERSION \
+    && apt-get remove -y $PHPIZE_DEPS \
+    && rm -rf /var/lib/apt/lists/* /tmp/*
+
+ENV PANTHER_NO_SANDBOX 1
 
 USER www-data

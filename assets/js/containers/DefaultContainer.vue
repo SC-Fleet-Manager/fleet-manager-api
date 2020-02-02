@@ -8,7 +8,7 @@
             </b-link>
             <SidebarToggler class="d-md-down-none" display="lg" :defaultOpen="true" ref="sidebarDesktop"/>
             <b-navbar-nav class="ml-auto">
-                <b-nav-text v-if="user != null" class="px-3 d-none d-sm-inline-block">Welcome, <img v-if="user.supporter" src="../../img/icon_supporter.svg" alt="Supporter" class="supporter-badge" height="30" /> {{ citizen !== null ? citizen.actualHandle.handle : (user.nickname !== null ? user.nickname : user.email) }}</b-nav-text>
+                <b-nav-text v-if="user != null" class="px-3 d-none d-sm-inline-block">Welcome, <img v-if="user.supporter" src="../../img/icon_supporter.svg" alt="Supporter" class="supporter-badge" height="30" /> {{ citizen ? citizen.actualHandle.handle : (user.nickname !== null ? user.nickname : user.email) }}</b-nav-text>
                 <b-nav-text v-if="user != null && user.coins > 0" class="px-3 d-none d-sm-inline-block"><img src="../../img/coin.svg" title="FM Coins" alt="FM Coins" height="30"> {{ user.coins }}</b-nav-text>
                 <b-nav-item v-if="user != null" class="px-3" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</b-nav-item>
                 <b-nav-item v-else class="px-3" v-b-modal.modal-login><i class="fas fa-sign-in-alt"></i> Login</b-nav-item>
@@ -58,7 +58,7 @@
         Footer as TheFooter
     } from '@coreui/vue';
     import { mapMutations } from 'vuex';
-    import RegistrationAndLoginModal from "../views/RegistrationAndLoginModal";
+    import RegistrationAndLoginModal from "../views/RegistrationAndLoginModal_old";
 
     export default {
         name: 'DefaultContainer',
@@ -103,13 +103,13 @@
             },
             nav() {
                 const nav = [];
-                if (this.citizen !== null) {
+                if (this.citizen) {
                     nav.push({
                         name: 'My Fleet',
                         url: `/citizen/${this.citizen ? this.citizen.actualHandle.handle : ''}`,
                         icon: 'fas fa-fighter-jet',
                         attributes: {
-                            disabled: this.citizen === null,
+                            disabled: !this.citizen,
                         },
                     });
                     if (this.citizen.organizations.length > 0) {
@@ -118,7 +118,7 @@
                             url: '/organizations-fleets',
                             icon: 'fas fa-space-shuttle',
                             attributes: {
-                                disabled: this.citizen === null || this.citizen.organizations.length === 0,
+                                disabled: !this.citizen || this.citizen.organizations.length === 0,
                             },
                         });
                     }
@@ -130,21 +130,17 @@
                         url: '/profile',
                         icon: 'fas fa-user',
                         attributes: {
-                            disabled: this.user === null,
+                            disabled: !this.user,
                         },
                     },
                     {
                         name: 'Supporters',
                         url: '/supporters',
                         icon: 'fas fa-star',
-                        badge: {
-                            text: 'NEW',
-                            variant: 'danger',
-                        },
                     }
                 );
 
-                if (this.user !== null) {
+                if (this.user) {
                     nav.push({
                         name: 'My backings',
                         url: '/my-backings',

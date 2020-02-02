@@ -98,6 +98,8 @@ class LadderHandler
                 $rank,
                 $topFunding['totalAmount'],
                 $name,
+                $topFunding['orgaName'],
+                $topFunding['avatarUrl'],
                 $user !== null ? $user->getId()->toString() === $topFunding['userId'] : false,
             );
             if ($viewFunding->me) {
@@ -125,6 +127,8 @@ class LadderHandler
                     $userRank,
                     $totalAmount,
                     $name,
+                    $citizen !== null && $citizen->getMainOrga() !== null ? $citizen->getMainOrga()->getOrganization()->getName() : null,
+                    $citizen !== null ? $citizen->getAvatarUrl() : null,
                     true,
                 );
             }

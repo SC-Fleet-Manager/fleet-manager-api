@@ -7,7 +7,7 @@ PHPUNIT=bin/phpunit
 PHP_CS_FIXER=vendor/bin/php-cs-fixer
 EXEC_PHP=$(DOCKER_COMPOSE) exec -u ${UID}:${GID} php
 EXEC_PHP_NOTTY=$(DOCKER_COMPOSE) exec -T -u ${UID}:${GID} php
-EXEC_PHP_ROOT=$(DOCKER_COMPOSE) exec php
+EXEC_PHP_ROOT=$(DOCKER_COMPOSE) exec -u 0 php
 EXEC_MYSQL=$(DOCKER_COMPOSE) exec -T mysql
 EXEC_COMPOSER=$(EXEC_PHP) composer
 EXEC_CONSOLE=$(EXEC_PHP) $(CONSOLE)
@@ -32,6 +32,8 @@ yu:										## yarn upgrade
 	$(EXEC_YARN) upgrade
 watch:									## yarn watch
 	$(EXEC_YARN) watch
+webpack-stats:							## launch a webpack stats webserver for optimizing libraries imports
+	$(EXEC_NODE) ./node_modules/.bin/webpack-bundle-analyzer -h 0.0.0.0 ./public/build/stats.json
 composer: 								## exec PHP composer with arbitrary args c="<args>"
 	$(EXEC_COMPOSER) $(c)
 ci:										## composer install
@@ -60,9 +62,9 @@ up: 										## launch all containers
 down: 										## destroy all containers (without volumes)
 	$(DOCKER_COMPOSE) down
 tty: 										## get a shell
-	$(EXEC_PHP) sh
+	$(EXEC_PHP) bash
 tty-root:									## get a root shell
-	$(EXEC_PHP_ROOT) sh
+	$(EXEC_PHP_ROOT) bash
 
 clear:										## remove all the cache, the logs, the sessions and the built assets
 	-$(EXEC_PHP_ROOT) rm -rf var/cache/* var/sessions/* var/log/*
@@ -111,7 +113,7 @@ end2end-tests:											## launch end2end tests
 	$(EXEC_PHP_NOTTY) $(PHPUNIT) --group=end2end $(c)
 
 phpcsfix:												## fix syntax of all PHP sources
-	$(EXEC_PHP) $(PHP_CS_FIXER) fix
+	$(EXEC_PHP) $(PHP_CS_FIXER) --allow-risky=yes fix
 lint-twig:												## check syntax of templates
 	$(EXEC_CONSOLE) lint:twig templates
 lint-yaml:												## check syntax of yaml files

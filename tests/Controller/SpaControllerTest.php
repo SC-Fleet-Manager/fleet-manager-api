@@ -16,6 +16,11 @@ class SpaControllerTest extends PantherTestCase
 
     private $client;
 
+    public static function setUpBeforeClass(): void
+    {
+        @mkdir('var/screenshots');
+    }
+
     public function setUp(): void
     {
         if ($_SERVER['NO_PANTHER'] ?? false) {
@@ -63,11 +68,11 @@ class SpaControllerTest extends PantherTestCase
             $this->client->refreshCrawler();
 
             // registration
-            $this->client->findElement(WebDriverBy::xpath('//button[contains(text(), "Start using Fleet Manager now")]'))->click();
+            $this->client->findElement(WebDriverBy::xpath('//button[contains(text(), "Use Now")]'))->click();
             $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
-                return $driver->findElement(WebDriverBy::id('modal-login___BV_modal_body_'))->isDisplayed();
+                return $driver->findElement(WebDriverBy::id('modal-registration-login'))->isDisplayed();
             });
-            $this->client->findElement(WebDriverBy::xpath('//p[contains(text(), "I\'m not registered yet.")]'))->click();
+            $this->client->findElement(WebDriverBy::xpath('//span[contains(text(), "Sign up")]'))->click();
             $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
                 return $driver->findElement(WebDriverBy::xpath('//button[contains(text(), "Register")]'))->isDisplayed();
             });
@@ -75,16 +80,16 @@ class SpaControllerTest extends PantherTestCase
             $this->client->findElement(WebDriverBy::cssSelector('input#input-registration-password'))->sendKeys('123456');
             $this->client->findElement(WebDriverBy::xpath('//button[contains(text(), "Register")]'))->click();
             $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
-                return $driver->findElement(WebDriverBy::xpath('//*[@id="collapse-login-form"]//button[contains(text(), "Login")]'))->isDisplayed()
+                return $driver->findElement(WebDriverBy::xpath('//*[@id="modal-registration-login"]//button[contains(text(), "Log in")]'))->isDisplayed()
                     && $driver->findElement(WebDriverBy::cssSelector('.alert'))->isDisplayed();
             });
             $this->assertContains('Well done! An email has been sent to you to confirm your registration.', $this->client->findElement(WebDriverBy::cssSelector('.alert.alert-success'))->getText());
 
             // lost password
             $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
-                return $driver->findElement(WebDriverBy::xpath('//*[@id="collapse-login-form"]//button[contains(text(), "Login")]'))->isDisplayed();
+                return $driver->findElement(WebDriverBy::xpath('//*[@id="modal-registration-login"]//button[contains(text(), "Log in")]'))->isDisplayed();
             });
-            $this->client->findElement(WebDriverBy::xpath('//p[contains(text(), "I lost my password.")]'))->click();
+            $this->client->findElement(WebDriverBy::xpath('//div[contains(text(), "lost your password?")]'))->click();
             $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
                 return $driver->findElement(WebDriverBy::xpath('//button[contains(text(), "Send me a new password")]'))->isDisplayed();
             });
@@ -92,18 +97,18 @@ class SpaControllerTest extends PantherTestCase
             $this->client->findElement(WebDriverBy::xpath('//button[contains(text(), "Send me a new password")]'))->click();
 
             $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
-                return $driver->findElement(WebDriverBy::xpath('//*[@id="collapse-login-form"]//button[contains(text(), "Login")]'))->isDisplayed()
+                return $driver->findElement(WebDriverBy::xpath('//*[@id="modal-registration-login"]//button[contains(text(), "Log in")]'))->isDisplayed()
                     && $driver->findElement(WebDriverBy::cssSelector('.alert'))->isDisplayed();
             });
             $this->assertContains('If we recognize this email, we will send to you the instructions to create a new password.', $this->client->findElement(WebDriverBy::cssSelector('.alert.alert-success'))->getText());
 
             // login
             $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
-                return $driver->findElement(WebDriverBy::xpath('//*[@id="collapse-login-form"]//button[contains(text(), "Login")]'))->isDisplayed();
+                return $driver->findElement(WebDriverBy::xpath('//*[@id="modal-registration-login"]//button[contains(text(), "Log in")]'))->isDisplayed();
             });
             $this->client->findElement(WebDriverBy::cssSelector('input#input-email'))->sendKeys('ioni@example.com');
             $this->client->findElement(WebDriverBy::cssSelector('input#input-password'))->sendKeys('123456');
-            $this->client->findElement(WebDriverBy::xpath('//*[@id="collapse-login-form"]//button[contains(text(), "Login")]'))->click();
+            $this->client->findElement(WebDriverBy::xpath('//*[@id="modal-registration-login"]//button[contains(text(), "Log in")]'))->click();
 
             // Profile
             $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
@@ -147,7 +152,7 @@ class SpaControllerTest extends PantherTestCase
                 return (int) $driver->executeScript('return document.querySelectorAll(".card-ship").length;') > 0;
             });
             $this->client->refreshCrawler();
-            $this->assertSame('FallKrom', $this->client->findElement(WebDriverBy::id('select-orga'))->getText());
+            $this->assertSame('FallKrom', $this->client->findElement(WebDriverBy::cssSelector('#select-orga__BV_toggle_'))->getText());
 
             // Months Insurance
             $this->login('46380677-9915-4b7c-87ba-418840cb1772');
@@ -303,7 +308,8 @@ class SpaControllerTest extends PantherTestCase
             });
             $this->client->findElement(WebDriverBy::xpath('//button[contains(text(), "Okay, I\'m ready to link my account")]'))->click();
             $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
-                return count($driver->findElements(WebDriverBy::cssSelector('.collapse.show'))) === 1;
+                return count($driver->findElements(WebDriverBy::cssSelector('.collapse.show'))) === 1
+                    && count($driver->findElements(WebDriverBy::cssSelector('.collapsing'))) === 0;
             });
             $this->assertContains('1. Who are you?', $this->client->findElement(WebDriverBy::cssSelector('#collapse-step-1 h4'))->getText());
             $this->client->findElement(WebDriverBy::cssSelector('input#form_handle'))->sendKeys('not_found');
@@ -327,11 +333,11 @@ class SpaControllerTest extends PantherTestCase
 
             $this->client->findElement(WebDriverBy::xpath('//button[contains(text(), "Great, this is my account, let\'s continue!")]'))->click();
             $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
-                return count($driver->findElements(WebDriverBy::cssSelector('.collapse.show'))) === 2;
+                return count($driver->findElements(WebDriverBy::cssSelector('.collapse.show'))) === 2
+                    && count($driver->findElements(WebDriverBy::cssSelector('.collapsing'))) === 0;
             });
             $this->assertContains('2. Special marker', $this->client->findElement(WebDriverBy::cssSelector('#collapse-step-2 h4'))->getText());
             $this->assertSame(64, $this->client->executeScript('return document.getElementById("form_user_token").value.length;'), 'The token must be 64 chars long.');
-
             $this->client->findElement(WebDriverBy::xpath('//button[contains(text(), "Done! I\'ve pasted the token in my bio.")]'))->click();
             $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
                 return count($driver->findElements(WebDriverBy::className('alert-danger'))) > 0;
@@ -347,7 +353,8 @@ class SpaControllerTest extends PantherTestCase
             });
             $this->client->findElement(WebDriverBy::xpath('//button[contains(text(), "Great, this is my account, let\'s continue!")]'))->click();
             $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
-                return count($driver->findElements(WebDriverBy::cssSelector('.collapse.show'))) === 2;
+                return count($driver->findElements(WebDriverBy::cssSelector('.collapse.show'))) === 2
+                    && count($driver->findElements(WebDriverBy::cssSelector('.collapsing'))) === 0;
             });
             $this->client->findElement(WebDriverBy::xpath('//button[contains(text(), "Done! I\'ve pasted the token in my bio.")]'))->click();
             $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
@@ -631,8 +638,6 @@ class SpaControllerTest extends PantherTestCase
      * @group end2end
      * @group spa
      * @group funding
-     *
-     * @group toto
      */
     public function testFunding(): void
     {

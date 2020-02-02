@@ -1,5 +1,5 @@
 hwi_oauth_login:
-    resource: "@HWIOAuthBundle/Resources/config/routing/login_41.xml"
+    resource: "@HWIOAuthBundle/Resources/config/routing/login.xml"
     prefix:   /login
 
 security_login_form:

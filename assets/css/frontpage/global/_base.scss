@@ -1,0 +1,62 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    width: 100%;
+    color: $white;
+    box-sizing: border-box;
+
+    body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        color: $white;
+        background-color: #031217;
+
+        #pg {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+            width: 100%;
+        }
+    }
+}
+
+img {
+    max-width: 100%;
+}
+
+a,
+a:link,
+a:visited {
+    text-decoration: none;
+    color: white;
+}
+
+.text-center {
+    text-align: center;
+}
+
+i {
+    font-size: 1.7rem;
+    padding: 0.3rem;
+}
+
+.container {
+    width: auto;
+    margin: 0 auto;
+}
+
+@media screen and (min-width: 768px) {
+    .container {
+        width: 100%;
+    }
+}
+
+// Extra small devices (<768px): width: auto (or no width)
+// Small Devices (≥768px): width: 750px
+// Medium Devices (≥992px): width: 970px
+// Larger Devices (≥1200px): width: 1170px

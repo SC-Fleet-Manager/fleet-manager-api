@@ -9,6 +9,7 @@
 ###< symfony/framework-bundle ###
 ###> symfony/phpunit-bridge ###
 .phpunit
+.phpunit.result.cache
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
 
@@ -26,8 +27,3 @@
 npm-debug.log
 yarn-error.log
 ###< symfony/webpack-encore-bundle ###
-
-/k8s/serviceaccount.yaml
-/k8s/app-config.yaml
-/k8s/app-secrets.yaml
-/k8s/traefik-helm-values.yaml
