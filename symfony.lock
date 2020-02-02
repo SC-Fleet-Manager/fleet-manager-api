@@ -98,9 +98,6 @@
     "fabpot/goutte": {
         "version": "v3.2.3"
     },
-    "facebook/webdriver": {
-        "version": "1.6.0"
-    },
     "friendsofphp/php-cs-fixer": {
         "version": "2.2",
         "recipe": {
@@ -243,14 +240,8 @@
     "php-http/stopwatch-plugin": {
         "version": "1.1.0"
     },
-    "phpdocumentor/reflection-common": {
-        "version": "1.0.1"
-    },
-    "phpdocumentor/reflection-docblock": {
-        "version": "4.3.0"
-    },
-    "phpdocumentor/type-resolver": {
-        "version": "0.4.0"
+    "php-webdriver/webdriver": {
+        "version": "1.7.1"
     },
     "psr/cache": {
         "version": "1.0.1"
@@ -723,9 +714,6 @@
     },
     "webimpress/safe-writer": {
         "version": "2.0.0"
-    },
-    "webmozart/assert": {
-        "version": "1.3.0"
     },
     "zendframework/zend-code": {
         "version": "3.3.1"

@@ -6,9 +6,10 @@ use Symfony\Component\HttpFoundation\Request;
 
 $_SERVER['APP_ENV'] = 'test';
 $_SERVER['APP_DEBUG'] = true;
-$_SERVER['TESTING_WITH_SESSION'] = true;
 
 require dirname(__DIR__).'/config/bootstrap.php';
+
+$_SERVER['TESTING_WITH_SESSION'] = true;
 
 if ($_SERVER['APP_DEBUG']) {
     umask(0000);
