@@ -14,7 +14,7 @@ class Registration
      * @Assert\Email()
      * @UniqueField(entityClass="App\Entity\User", field="email", message="This email is already taken. Please choose another.");
      */
-    public $email;
+    public ?string $email;
 
     /**
      * @var string|null
@@ -23,5 +23,5 @@ class Registration
      * @Assert\Length(min="6", minMessage="Some extra characters and you'll have the 6 required. ;-)")
      * //Assert\NotCompromisedPassword(message="This password is too simple. Please choose another.")
      */
-    public $password;
+    public ?string $password;
 }

@@ -22,12 +22,12 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class RegistrationController extends AbstractController
 {
-    private $validator;
-    private $entityManager;
-    private $passwordEncoder;
-    private $serializer;
-    private $bus;
-    private $eventDispatcher;
+    private ValidatorInterface $validator;
+    private EntityManagerInterface $entityManager;
+    private UserPasswordEncoderInterface $passwordEncoder;
+    private SerializerInterface $serializer;
+    private MessageBusInterface $bus;
+    private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
         ValidatorInterface $validator,

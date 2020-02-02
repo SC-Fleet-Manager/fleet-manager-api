@@ -3,7 +3,6 @@
 namespace App\Validator\Constraints;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
@@ -16,16 +15,11 @@ class UniqueFieldValidator extends ConstraintValidator
         $this->entityManager = $entityManager;
     }
 
-    /**
-     * @param UniqueField $constraint
-     * @param mixed       $value
-     */
     public function validate($value, Constraint $constraint): void
     {
-        $userRepo = $this->entityManager->getRepository($constraint->entityClass);
-        /** @var UserInterface $foundUser */
-        $foundUser = $userRepo->findOneBy([$constraint->field => $value]);
-        if ($foundUser === null) {
+        $repo = $this->entityManager->getRepository($constraint->entityClass);
+        $foundEntity = $repo->findOneBy([$constraint->field => $value]);
+        if ($foundEntity === null) {
             return;
         }
 

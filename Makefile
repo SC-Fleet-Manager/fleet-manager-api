@@ -113,7 +113,7 @@ end2end-tests:											## launch end2end tests
 	$(EXEC_PHP_NOTTY) $(PHPUNIT) --group=end2end $(c)
 
 phpcsfix:												## fix syntax of all PHP sources
-	$(EXEC_PHP) $(PHP_CS_FIXER) fix
+	$(EXEC_PHP) $(PHP_CS_FIXER) --allow-risky=yes fix
 lint-twig:												## check syntax of templates
 	$(EXEC_CONSOLE) lint:twig templates
 lint-yaml:												## check syntax of yaml files
