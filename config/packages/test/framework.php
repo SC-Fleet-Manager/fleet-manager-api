@@ -1,7 +1,5 @@
 <?php
 
-use Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHandler;
-
 $container->loadFromExtension('framework', [
     'test' => true,
     'session' => [
