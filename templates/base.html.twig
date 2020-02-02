@@ -25,6 +25,11 @@
         <meta name="msapplication-config" content="{{ asset('icons/browserconfig.xml') }}?1.4.1">
         <meta name="theme-color" content="#1e396a">
 
+        {% if app.environment == 'prod' %}
+            <link rel="preconnect" href="https://www.google-analytics.com">
+            <link rel="dns-prefetch" href="https://www.google-analytics.com">
+        {% endif %}
+
         {% block metas %}{% endblock %}
 
         {% block stylesheets %}
