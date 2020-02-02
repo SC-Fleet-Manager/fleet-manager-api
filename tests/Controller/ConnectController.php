@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use HWI\Bundle\OAuthBundle\OAuth\Response\PathUserResponse;
 use HWI\Bundle\OAuthBundle\Security\Core\Authentication\Token\OAuthToken;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -40,7 +41,14 @@ class ConnectController extends AbstractController
         $token->setAuthenticated(true);
         $this->tokenStorage->setToken($token);
 
-        return $this->redirect('/profile');
+        $session = $request->getSession();
+        $session->set('_security_main', serialize($token));
+        $session->save();
+
+        $response = $this->redirect('/profile');
+        $response->headers->setCookie(new Cookie($session->getName(), $session->getId()));
+
+        return $response;
     }
 
     public function connectService(Request $request, $service): Response

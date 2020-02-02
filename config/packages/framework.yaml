@@ -1,37 +1,10 @@
-parameters:
-    env(APP_SECRET): ''
-
 framework:
     secret: '%env(APP_SECRET)%'
+
     session:
         handler_id: Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler
         cookie_secure: 'auto'
         cookie_samesite: 'none'
-
-    cache:
-        app: cache.adapter.redis
-        default_redis_provider: 'redis://%env(REDIS_PASSWORD)%@%env(REDIS_HOST)%:%env(REDIS_PORT)%'
-
-        pools:
-            rsi.citizens.cache:
-                adapter: cache.adapter.redis
-                tags: true
-            rsi.organizations.cache:
-                adapter: cache.adapter.redis
-                tags: true
-            rsi.organizations_members.cache:
-                adapter: cache.adapter.redis
-                tags: true
-            rsi.ships.cache:
-                adapter: cache.adapter.redis
-
-    http_client:
-        max_host_connections: 6
-        scoped_clients:
-            rsi.orga_members.client:
-                base_uri: 'https://robertsspaceindustries.com'
-            rsi.ship_infos.client:
-                base_uri: 'https://robertsspaceindustries.com'
 
     php_errors:
         log: true

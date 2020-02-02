@@ -127,8 +127,8 @@ class LadderHandler
                     $userRank,
                     $totalAmount,
                     $name,
-                    $citizen->getMainOrga() !== null ? $citizen->getMainOrga()->getOrganization()->getName() : null,
-                    $citizen->getAvatarUrl(),
+                    $citizen !== null && $citizen->getMainOrga() !== null ? $citizen->getMainOrga()->getOrganization()->getName() : null,
+                    $citizen !== null ? $citizen->getAvatarUrl() : null,
                     true,
                 );
             }

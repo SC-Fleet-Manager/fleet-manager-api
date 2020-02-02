@@ -206,7 +206,7 @@
                         password: this.registrationForm.password,
                     },
                 }).then(response => {
-                    this.showLogin();
+                    this.showCollapse('collapse-login-form');
                     this.registrationFormSuccessMessage = 'Well done! An email has been sent to you to confirm your registration.';
                 }).catch(err => {
                     if (err.response.data.formErrors) {
@@ -235,7 +235,7 @@
                         email: this.lostPasswordForm.email,
                     },
                 }).then(response => {
-                    this.$root.$emit('bv::toggle::collapse', 'collapse-login-form');
+                    this.showCollapse('collapse-login-form');
                     this.lostPasswordFormSuccessMessage = 'If we recognize this email, we will send to you the instructions to create a new password.';
                 }).catch(err => {
                     if (err.response.data.formErrors) {

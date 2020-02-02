@@ -259,7 +259,7 @@
                 });
             },
             getMyFleetLink() {
-                if (this.citizen === null) {
+                if (!this.citizen) {
                     return '';
                 }
 
