@@ -173,8 +173,12 @@
             "repo": "github.com/symfony/recipes",
             "branch": "master",
             "version": "3.2",
-            "ref": "aaf440eb4d289ead8e2ef986c4f25c97fffec4ac"
-        }
+            "ref": "0b9900ece737bec7752e4155c0164639dd9b0cb0"
+        },
+        "files": [
+            "config/packages/dev/nelmio_alice.yaml",
+            "config/packages/test/nelmio_alice.yaml"
+        ]
     },
     "ocramius/package-versions": {
         "version": "1.3.0"
