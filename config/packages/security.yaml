@@ -28,7 +28,7 @@ security:
                 authenticators: ['App\Security\TokenAuthenticator']
         main:
             provider: user_entity # default provider
-            anonymous: true
+            anonymous: lazy
             user_checker: App\Security\ConfirmedUserChecker
             switch_user:
                 provider: user_entity_username
