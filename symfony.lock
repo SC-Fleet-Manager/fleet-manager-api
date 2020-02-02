@@ -513,13 +513,20 @@
         "version": "v0.2.0"
     },
     "symfony/phpunit-bridge": {
-        "version": "4.1",
+        "version": "4.3",
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "master",
-            "version": "4.1",
-            "ref": "e637a1337f5faf0b2529b1c9a47de5e8286679f0"
-        }
+            "version": "4.3",
+            "ref": "3f8a8c93cd47061999316f8d56edd6c2abca9308"
+        },
+        "files": [
+            ".env.test",
+            "bin/phpunit",
+            "config/services_test.yaml",
+            "phpunit.xml.dist",
+            "tests/bootstrap.php"
+        ]
     },
     "symfony/polyfill-intl-icu": {
         "version": "v1.10.0"
