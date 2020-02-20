@@ -81,3 +81,9 @@
     overflow-y: auto;
     height: 150px;
 }
+
+.app-header .navbar-brand {
+    position: static;
+    left: unset;
+    margin-left: 0;
+}
