@@ -293,7 +293,7 @@
                     return;
                 }
                 for (let ship of shipVariants) {
-                    this.loadShipVariantUsers({ ship, page: 1 });
+                    this.loadShipVariantUsers({ ship, page: 1, clean: true });
                 }
             },
             citizen(newCitizen) {
