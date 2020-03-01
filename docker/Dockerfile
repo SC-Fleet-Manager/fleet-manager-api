@@ -1,4 +1,4 @@
-FROM php:7.4.2-fpm-buster as req_php
+FROM php:7.4.3-fpm-buster as req_php
 
 RUN apt-get update && apt-get install -y \
     unzip \
@@ -26,7 +26,7 @@ WORKDIR /app
 ########################################
 FROM req_php as composer_deps
 
-COPY --from=composer:1.9.2 /usr/bin/composer /usr/local/bin/composer
+COPY --from=composer:1.9.3 /usr/bin/composer /usr/local/bin/composer
 
 # prod|dev
 ARG ENV=prod
@@ -141,7 +141,7 @@ FROM build_php as build_php_dev
 COPY public/index_test.php public/
 
 USER root
-COPY --from=composer:1.9.2 /usr/bin/composer /usr/local/bin/composer
+COPY --from=composer:1.9.3 /usr/bin/composer /usr/local/bin/composer
 ENV COMPOSER_MEMORY_LIMIT -1
 ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV COMPOSER_HOME /.composer

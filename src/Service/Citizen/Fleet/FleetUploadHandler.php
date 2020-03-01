@@ -26,11 +26,11 @@ class FleetUploadHandler implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
-    private $entityManager;
-    private $citizenInfosProvider;
-    private $citizenRefresher;
-    private $eventDispatcher;
-    private $requestStack;
+    private EntityManagerInterface $entityManager;
+    private CitizenInfosProviderInterface $citizenInfosProvider;
+    private CitizenRefresher $citizenRefresher;
+    private EventDispatcherInterface $eventDispatcher;
+    private RequestStack $requestStack;
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -116,12 +116,19 @@ class FleetUploadHandler implements LoggerAwareInterface
         $fleet->setVersion($lastVersionFleet === null ? 1 : ($lastVersionFleet->getVersion() + 1));
 
         foreach ($fleetData as $shipData) {
+            $insuranceDuration = null;
+            if (isset($shipData['insurance_duration'])) {
+                $insuranceDuration = (int) $shipData['insurance_duration'];
+            } elseif (isset($shipData['monthsInsurance'])) {
+                $insuranceDuration = (int) $shipData['monthsInsurance'];
+            }
             $ship = new Ship(Uuid::uuid4());
             $ship
                 ->setName(trim($shipData['name']))
                 ->setManufacturer(trim($shipData['manufacturer']))
                 ->setInsured((bool) ($shipData['lti'] ?? false))
-                ->setInsuranceDuration(isset($shipData['monthsInsurance']) ? (int) $shipData['monthsInsurance'] : null)
+                ->setInsuranceType($shipData['insurance_type'] ?? null)
+                ->setInsuranceDuration($insuranceDuration)
                 ->setPledgeDate(\DateTimeImmutable::createFromFormat('F d, Y', $shipData['pledge_date'])->setTime(0, 0))
                 ->setRawData($shipData);
             if (isset($shipData['cost'])) {
@@ -154,6 +161,11 @@ class FleetUploadHandler implements LoggerAwareInterface
             }
             if (isset($shipData['cost']) && !preg_match('~^\$(\d+(,\d+)*\.\d+)~', $shipData['cost'])) {
                 $this->logger->error('[FleetDataInvalid] the cost is not in a good format.', ['ship_data' => $shipData]);
+
+                return false;
+            }
+            if (isset($shipData['insurance_type']) && !in_array($shipData['insurance_type'], Ship::INSURANCE_TYPES, true)) {
+                $this->logger->error('[FleetDataInvalid] the insurance_type is not valid.', ['ship_data' => $shipData]);
 
                 return false;
             }

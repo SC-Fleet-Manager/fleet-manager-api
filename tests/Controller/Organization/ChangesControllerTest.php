@@ -15,7 +15,7 @@ class ChangesControllerTest extends WebTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ioni']);
+        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
     }
 
     /**
@@ -49,7 +49,7 @@ class ChangesControllerTest extends WebTestCase
 
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
 
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ashuvidz']);
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ashuvidz']);
         $this->logIn($user);
         $this->client->xmlHttpRequest('GET', '/api/organization/flk/changes', [], [], [
             'CONTENT_TYPE' => 'application/json',
@@ -89,14 +89,14 @@ class ChangesControllerTest extends WebTestCase
     public function testChangesJoinOrga(): void
     {
         /** @var User $userNeedRefresh */
-        $userNeedRefresh = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'needRefresh']);
+        $userNeedRefresh = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'needRefresh']);
         $this->logIn($userNeedRefresh);
         $this->client->xmlHttpRequest('POST', '/api/profile/refresh-rsi-profile', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
         $this->assertSame(204, $this->client->getResponse()->getStatusCode());
 
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ashuvidz']);
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ashuvidz']);
         $this->logIn($user);
         $this->client->xmlHttpRequest('GET', '/api/organization/flk/changes', [], [], [
             'CONTENT_TYPE' => 'application/json',
@@ -140,7 +140,7 @@ class ChangesControllerTest extends WebTestCase
         $this->assertSame(204, $this->client->getResponse()->getStatusCode());
 
         /** @var User $user */
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ashuvidz']);
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ashuvidz']);
         $this->logIn($user);
         $this->client->xmlHttpRequest('GET', '/api/organization/flk/changes', [], [], [
             'CONTENT_TYPE' => 'application/json',

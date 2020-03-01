@@ -13,7 +13,7 @@ class FleetHiddenUsersControllerTest extends WebTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ioni']);
+        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
     }
 
     /**
@@ -22,7 +22,7 @@ class FleetHiddenUsersControllerTest extends WebTestCase
      */
     public function testOrgaFleetsHiddenUsers(): void
     {
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Pulsar42Admin']);
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Pulsar42Admin']);
         $this->logIn($user);
         $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/pulsar42/hidden-users/Aurora%20MR', [], [], [
             'CONTENT_TYPE' => 'application/json',

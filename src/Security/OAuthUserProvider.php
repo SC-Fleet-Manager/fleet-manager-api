@@ -81,7 +81,6 @@ class OAuthUserProvider extends BaseProvider implements AccountConnectorInterfac
 
             $user->setDiscordId($response->getUsername());
             $user->setDiscordTag($response->getData()[$response->getPath('discordtag')] ?? null);
-            $user->setUsername($response->getNickname());
             $user->setNickname($response->getNickname());
             if (!$user->getApiToken()) {
                 $user->setApiToken(User::generateToken());
@@ -110,7 +109,6 @@ class OAuthUserProvider extends BaseProvider implements AccountConnectorInterfac
         if ($user !== null) {
             $user->setDiscordId($response->getUsername());
             $user->setDiscordTag($response->getData()[$response->getPath('discordtag')] ?? null);
-            $user->setUsername($response->getNickname());
             $user->setNickname($response->getNickname());
             if (!$user->getApiToken()) {
                 $user->setApiToken(User::generateToken());
@@ -150,7 +148,6 @@ class OAuthUserProvider extends BaseProvider implements AccountConnectorInterfac
         $newUser = new User(Uuid::uuid4());
         $newUser->setDiscordId($discordId);
         $newUser->setDiscordTag($discordTag);
-        $newUser->setUsername($username);
         $newUser->setNickname($username);
         $newUser->setToken(User::generateToken());
         $newUser->setApiToken(User::generateToken());

@@ -5,17 +5,19 @@ security:
     providers:
         oauth_user_provider:
             id: App\Security\OAuthUserProvider
-        user_entity:
+        user_entity_uuid:
+            id: 'App\Security\UuidProvider'
+        user_entity_email:
             entity:
                 class: 'App\Entity\User'
                 property: 'email'
-        user_entity_username:
+        user_entity_nickname:
             entity:
                 class: 'App\Entity\User'
-                property: 'username'
+                property: 'nickname'
         chain_user:
             chain:
-                providers: ['user_entity_username', 'oauth_user_provider', 'user_entity']
+                providers: ['user_entity_uuid', 'oauth_user_provider', 'user_entity_email', 'user_entity_nickname']
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|build|icons|favicon\.ico|robots\.txt)/
@@ -27,11 +29,11 @@ security:
                 provider: oauth_user_provider
                 authenticators: ['App\Security\TokenAuthenticator']
         main:
-            provider: user_entity # default provider
+            provider: chain_user # default provider
             anonymous: true
             user_checker: App\Security\ConfirmedUserChecker
             switch_user:
-                provider: user_entity_username
+                provider: chain_user
                 role: ROLE_ADMIN
             remember_me:
                 secret: '%kernel.secret%'
@@ -39,7 +41,7 @@ security:
                 path: /
                 user_providers: ['chain_user']
             form_login:
-                provider: user_entity
+                provider: user_entity_email
                 login_path: /login/
                 check_path: /api/login/check-form-login
                 success_handler: App\Security\FormLoginSuccessHandler

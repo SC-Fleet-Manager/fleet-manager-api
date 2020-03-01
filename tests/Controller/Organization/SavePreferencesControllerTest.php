@@ -14,7 +14,7 @@ class SavePreferencesControllerTest extends WebTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ioni']);
+        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
     }
 
     /**
@@ -23,7 +23,7 @@ class SavePreferencesControllerTest extends WebTestCase
      */
     public function testSavePreferences(): void
     {
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ashuvidz']);
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ashuvidz']);
         $this->logIn($user);
 
         /** @var Organization $orga */
@@ -48,7 +48,7 @@ class SavePreferencesControllerTest extends WebTestCase
      */
     public function testSavePreferencesErrors(): void
     {
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ashuvidz']);
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ashuvidz']);
         $this->logIn($user);
 
         $this->client->xmlHttpRequest('POST', '/api/organization/flk/save-preferences', [], [], [

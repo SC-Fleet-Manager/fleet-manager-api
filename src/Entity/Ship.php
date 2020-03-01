@@ -14,6 +14,15 @@ use Symfony\Component\Serializer\Annotation\Groups;
  */
 class Ship
 {
+    public const INSURANCE_TYPE_LTI = 'lti';
+    public const INSURANCE_TYPE_IAE = 'iae';
+    public const INSURANCE_TYPE_MONTHLY = 'monthly';
+    public const INSURANCE_TYPES = [
+        self::INSURANCE_TYPE_LTI,
+        self::INSURANCE_TYPE_IAE,
+        self::INSURANCE_TYPE_MONTHLY,
+    ];
+
     /**
      * @ORM\Id()
      * @ORM\Column(type="uuid", unique=true)
@@ -53,12 +62,22 @@ class Ship
     private ?float $cost = null;
 
     /**
+     * @deprecated since 1.4.1j
+     *
      * Lifetime insured.
      *
      * @ORM\Column(type="boolean", options={"default":false})
      * @Groups({"my-fleet", "public-fleet"})
      */
     private bool $insured = false;
+
+    /**
+     * @see self::INSURANCE_TYPES
+     *
+     * @ORM\Column(type="string", length=30, nullable=true)
+     * @Groups({"my-fleet", "public-fleet"})
+     */
+    private ?string $insuranceType = null;
 
     /**
      * In months.
@@ -148,14 +167,35 @@ class Ship
         return $this;
     }
 
+    /**
+     * @deprecated since 1.4.1j
+     */
     public function isInsured(): bool
     {
         return $this->insured;
     }
 
+    /**
+     * @deprecated since 1.4.1j
+     */
     public function setInsured(bool $insured): self
     {
         $this->insured = $insured;
+
+        return $this;
+    }
+
+    public function getInsuranceType(): ?string
+    {
+        return $this->insuranceType;
+    }
+
+    public function setInsuranceType(?string $insuranceType): self
+    {
+        if ($insuranceType !== null && !in_array($insuranceType, self::INSURANCE_TYPES, true)) {
+            return $this;
+        }
+        $this->insuranceType = $insuranceType;
 
         return $this;
     }
@@ -189,7 +229,7 @@ class Ship
     {
         return mb_strtolower($this->name) === mb_strtolower($other->name)
             && mb_strtolower($this->manufacturer) === mb_strtolower($other->manufacturer)
-            && $this->insured === $other->insured
+            && $this->insuranceType === $other->insuranceType
             && $this->insuranceDuration === $other->insuranceDuration
             && $this->cost === $other->cost
             && $this->pledgeDate->format('Ymd') === $other->pledgeDate->format('Ymd');

@@ -13,7 +13,7 @@ class RegisteredMembersControllerTest extends WebTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ioni']);
+        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
     }
 
     /**
@@ -23,7 +23,7 @@ class RegisteredMembersControllerTest extends WebTestCase
     public function testRegisteredMembersSuccess(): void
     {
         /** @var User $user */
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ashuvidz']); // admin
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ashuvidz']); // admin
         $this->logIn($user);
         $this->client->xmlHttpRequest('GET', '/api/organization/flk/members-registered', [], [], [
             'CONTENT_TYPE' => 'application/json',

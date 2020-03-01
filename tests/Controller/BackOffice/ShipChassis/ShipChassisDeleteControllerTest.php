@@ -13,7 +13,7 @@ class ShipChassisDeleteControllerTest extends WebTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ioni']);
+        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
     }
 
     /**
@@ -36,7 +36,7 @@ class ShipChassisDeleteControllerTest extends WebTestCase
     public function testNotAdmin(): void
     {
         /** @var User $user */
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Gardien1']); // ROLE_USER
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Gardien1']); // ROLE_USER
         $this->logIn($user);
         $this->client->request('POST', '/bo/ship-chassis/delete/a4f47e08-ac5d-48b4-a080-cca7ab260391');
 

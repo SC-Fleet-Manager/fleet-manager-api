@@ -8,6 +8,7 @@ const state = {
     shipVariantUsersTrackChanges: 0, // +1 at each update TODO : only update the right ShipVariant instead of all !
     shipVariantUsers: {}, // {"<ship id>": {...}}
     shipVariantUsersMetadata: {}, // { page, lastPage, total }
+    shipVariantUsersLoadedPages: {}, // {"<ship id>": [1, 2, 3...]}
     shipVariantHiddenUsers: {}, // {"<ship id>": <count hidden>}
     filterShipName: [],
     filterCitizenId: [],
@@ -51,10 +52,17 @@ const mutations = {
         if (!state.shipVariantUsers[shipId]) {
             state.shipVariantUsers[shipId] = [];
         }
+        if (!state.shipVariantUsersLoadedPages[shipId]) {
+            state.shipVariantUsersLoadedPages[shipId] = [];
+        }
+        if (state.shipVariantUsersLoadedPages[shipId].indexOf(page) >= 0) {
+            return;
+        }
         for (let user of users) {
             state.shipVariantUsers[shipId].push(user);
         }
         state.shipVariantUsersMetadata[shipId] = { page, lastPage, total };
+        state.shipVariantUsersLoadedPages[shipId].push(page);
         ++state.shipVariantUsersTrackChanges;
     },
     updateSid(state, value) {
@@ -66,9 +74,13 @@ const mutations = {
 };
 
 const actions = {
-    async loadShipVariantUsers({ commit, state }, { ship, page }) {
+    async loadShipVariantUsers({ commit, state }, { ship, page, clean }) {
+        clean = clean !== undefined ? clean : false;
         page = page > 0 ? page : 1;
-        axios.get(`/api/fleet/orga-fleets/${state.selectedSid}/users/${ship.shipInfo.name}`, {
+        if (clean) {
+            state.shipVariantUsersLoadedPages[ship.shipInfo.id] = [];
+        }
+        axios.get(`/api/fleet/orga-fleets/${state.selectedSid}/users/${encodeURIComponent(ship.shipInfo.name)}`, {
             params: {
                 page,
                 'filters[shipNames]': state.filterShipName,
@@ -86,7 +98,7 @@ const actions = {
             });
             if (response.data.lastPage === response.data.page) {
                 // we are on the last page : load how many hidden there are.
-                axios.get(`/api/fleet/orga-fleets/${state.selectedSid}/hidden-users/${ship.shipInfo.name}`).then(response => {
+                axios.get(`/api/fleet/orga-fleets/${state.selectedSid}/hidden-users/${encodeURIComponent(ship.shipInfo.name)}`).then(response => {
                     commit('updateShipVariantsHiddenUsers', {
                         shipId: ship.shipInfo.id,
                         countHidden: response.data.hiddenUsers,

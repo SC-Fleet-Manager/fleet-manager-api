@@ -27,7 +27,7 @@ class ShipTransformListControllerTest extends WebTestCase
     public function testNotAdmin(): void
     {
         /** @var User $user */
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Gardien1']); // ROLE_USER
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Gardien1']); // ROLE_USER
         $this->logIn($user);
         $this->client->request('GET', '/bo/ship-transform/list');
 
@@ -42,7 +42,7 @@ class ShipTransformListControllerTest extends WebTestCase
     public function testAdmin(): void
     {
         /** @var User $user */
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ioni']); // ROLE_ADMIN
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']); // ROLE_ADMIN
         $this->logIn($user);
         $crawler = $this->client->request('GET', '/bo/ship-transform/list');
 

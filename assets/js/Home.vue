@@ -29,8 +29,7 @@
                     ">
                 <div class="gradient-down"></div>
                 <div class="container">
-                    <h1>Fleet Manager</h1>
-                    <h3>For Star Citizen</h3>
+                    <h1 id="title">Fleet Manager <span id="subtitle">for Star Citizen</span></h1>
                     <p>Best tool in the verse to manage and share your organization's and personal fleet.</p>
                     <button v-if="this.user === null" v-once class="btn" type="button" @click="showModal">Use Now</button>
                     <a v-else v-once class="btn" href="/profile">Use Now</a>
@@ -114,15 +113,15 @@
                                 <ul class="list-ships">
                                     <li>
                                         <span class="screens-ship">1</span>
-                                        <p>Review your Organization's fleet at a glance with easy access to who owns what</p>
+                                        <p>Review your Organization's fleet at a glance with easy access to who owns what.</p>
                                     </li>
                                     <li>
                                         <span class="screens-ship">2</span>
-                                        <p>Many filters to quickly find what you are looking for</p>
+                                        <p>Many filters to quickly find what you are looking for.</p>
                                     </li>
                                     <li>
                                         <span class="screens-ship">3</span>
-                                        <p>Share your Organization’s page with the world or hide it event to your citizens</p>
+                                        <p>Share your Organization’s page with the world or hide it even to your members.</p>
                                     </li>
                                     <li>
                                         <span class="screens-ship">4</span>
@@ -130,7 +129,7 @@
                                     </li>
                                     <li>
                                         <span class="screens-ship">5</span>
-                                        <p>Get in depth statistics about your organization. Track changes and informations about your citizens</p>
+                                        <p>Get in depth statistics about your organization. Track changes and informations about your citizens.</p>
                                     </li>
                                 </ul>
                             </div>
@@ -176,15 +175,15 @@
                                 <ul class="list-ships">
                                     <li>
                                         <span class="screens-ship">1</span>
-                                        <p>Get a better overview of your fleet than in “My Hangar”</p>
+                                        <p>Get a better overview of your fleet than in “My Hangar”.</p>
                                     </li>
                                     <li>
                                         <span class="screens-ship">2</span>
-                                        <p>Control who can see your fleet. The world, your orga or no one (even your orgas)</p>
+                                        <p>Control who can see your fleet. The world, your orga or no one (even your orgas).</p>
                                     </li>
                                     <li>
                                         <span class="screens-ship">3</span>
-                                        <p>Upload your fleet Automatically with our dedicated browser extension or Manually</p>
+                                        <p>Upload your fleet Automatically with our dedicated browser extension or Manually.</p>
                                     </li>
                                 </ul>
                             </div>
@@ -230,14 +229,14 @@
                                 <ul class="list-ships">
                                     <li>
                                         <span class="screens-ship">1</span>
-                                        <p>Update your fleet with a simple click and forget about updating your checklist or xml shared files</p>
+                                        <p>Update your fleet with a simple click and forget about updating your checklist or xml shared files.</p>
                                     </li>
                                     <li>
                                         <span class="screens-ship">2</span>
                                         <p>Export your fleet as JSON and use it anywhere.</p>
                                     <li>
                                         <span class="screens-ship">3</span>
-                                        <p>Available on Chrome and Firefox</p>
+                                        <p>Available on Chrome and Firefox.</p>
                                     </li>
                                     <li>
                                         <span class="screens-ship">4</span>

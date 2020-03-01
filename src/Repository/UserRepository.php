@@ -13,25 +13,6 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
-    public function getByUsername(string $username): ?User
-    {
-        /** @var User $userEntity */
-        $userEntity = $this->createQueryBuilder('u')
-            ->addSelect('c')
-            ->addSelect('co')
-            ->addSelect('o')
-            ->leftJoin('u.citizen', 'c')
-            ->leftJoin('c.organizations', 'co')
-            ->leftJoin('co.organization', 'o')
-            ->where('u.username = :username')
-            ->setParameter('username', $username)
-            ->setMaxResults(1)
-            ->getQuery()
-            ->getOneOrNullResult();
-
-        return $userEntity;
-    }
-
     public function getByDiscordId(string $id): ?User
     {
         /** @var User $userEntity */

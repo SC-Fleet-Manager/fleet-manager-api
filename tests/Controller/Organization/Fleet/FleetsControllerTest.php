@@ -13,7 +13,7 @@ class FleetsControllerTest extends WebTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ioni']);
+        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
     }
 
     /**
@@ -69,7 +69,7 @@ class FleetsControllerTest extends WebTestCase
      */
     public function testOrgaFleetsPrivateAuthBadOrga(): void
     {
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Gardien1']);
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Gardien1']);
         $this->logIn($user);
         $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/not_exist', [], [], [
             'CONTENT_TYPE' => 'application/json',
@@ -101,7 +101,7 @@ class FleetsControllerTest extends WebTestCase
      */
     public function testOrgaFleetsPrivateAuthPrivateOrga(): void
     {
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Gardien1']);
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Gardien1']);
         $this->logIn($user);
         $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/flk', [], [], [
             'CONTENT_TYPE' => 'application/json',
@@ -118,7 +118,7 @@ class FleetsControllerTest extends WebTestCase
      */
     public function testOrgaFleetsPrivateAuthAdminOnlyOrgaFail(): void
     {
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Pulsar42Member1']);
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Pulsar42Member1']);
         $this->logIn($user);
         $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/pulsar42', [], [], [
             'CONTENT_TYPE' => 'application/json',
@@ -135,7 +135,7 @@ class FleetsControllerTest extends WebTestCase
      */
     public function testOrgaFleetsPrivateAuthAdminOnlyOrgaSuccess(): void
     {
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Pulsar42Admin']);
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Pulsar42Admin']);
         $this->logIn($user);
         $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/pulsar42', [], [], [
             'CONTENT_TYPE' => 'application/json',

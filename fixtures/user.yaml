@@ -4,7 +4,6 @@ include:
 App\Entity\User:
     user_ioni:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("d92e229e-e743-4583-905a-e02c57eacfe0"))>']
-        username: 'Ioni'
         nickname: 'Ioni'
         email: 'ioni@example.com'
         emailConfirmed: true
@@ -21,7 +20,6 @@ App\Entity\User:
         roles: ['ROLE_USER', 'ROLE_ADMIN']
     user_ashuvidz:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("4cbc6f40-3348-4e0f-a443-d4a4325eb728"))>']
-        username: 'Ashuvidz'
         nickname: 'Ashuvidz'
         discordId: '123456789002'
         discordTag: '0002'
@@ -35,7 +33,6 @@ App\Entity\User:
         roles: ['ROLE_USER', 'ROLE_ADMIN']
     user_nocitizen:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("2a288e5d-f83f-4b0d-9275-3351b8cb3848"))>']
-        username: 'NoCitizen'
         nickname: 'NoCitizen'
         discordId: '123456789003'
         discordTag: '0003'
@@ -47,7 +44,6 @@ App\Entity\User:
         lastConnectedAt: '<(new \DateTimeImmutable("2019-04-05 22:33:44"))>'
     user_gardiens1:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("46380677-9915-4b7c-87ba-418840cb1772"))>']
-        username: 'Gardien1'
         nickname: 'Gardien1'
         discordId: '123456789004'
         discordTag: '0004'
@@ -60,7 +56,6 @@ App\Entity\User:
         coins: 90
     user_ihaveships:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("503e3bc1-cff9-42b8-9f27-a6064b0a78f2"))>']
-        username: 'iHaveShips'
         nickname: 'iHaveShips'
         discordId: '123456789005'
         discordTag: '0005'
@@ -73,7 +68,6 @@ App\Entity\User:
         coins: 90
     user_orgastats1:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("f2ab3ea1-315e-4a72-b03c-add203335acb"))>']
-        username: 'orgaStats1'
         nickname: 'orgaStats1'
         discordId: '1234567890051'
         discordTag: '1005'
@@ -85,7 +79,6 @@ App\Entity\User:
         lastConnectedAt: '<(new \DateTimeImmutable("2019-05-07 22:33:44"))>'
     user_orgastats2:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("9dfbd543-cd2c-4262-8ae2-03904ddbadef"))>']
-        username: 'orgaStats2'
         nickname: 'orgaStats2'
         discordId: '1234567890052'
         discordTag: '2005'
@@ -97,7 +90,6 @@ App\Entity\User:
         lastConnectedAt: '<(new \DateTimeImmutable("2019-06-07 22:33:44"))>'
     user_need_refresh:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("9a634812-97dd-4c10-892f-6b7a9b7a2921"))>']
-        username: 'needRefresh'
         nickname: 'needRefresh'
         discordId: '123456789006'
         discordTag: '0006'
@@ -109,7 +101,6 @@ App\Entity\User:
         lastConnectedAt: '<(new \DateTimeImmutable("2019-04-08 22:33:44"))>'
     user_pulsar42_admin:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("def951eb-14ce-4fd7-8226-3d127e547f62"))>']
-        username: 'Pulsar42Admin'
         nickname: 'Pulsar42Admin'
         discordId: '123456789007'
         discordTag: '0007'
@@ -121,7 +112,6 @@ App\Entity\User:
         lastConnectedAt: '<(new \DateTimeImmutable("2019-05-09 22:33:44"))>'
     user_pulsar42_member1:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("0c2f6a5d-6621-44b2-8351-e94239034a3a"))>']
-        username: 'Pulsar42Member1'
         nickname: 'Pulsar42Member1'
         discordId: '123456789008'
         discordTag: '0008'
@@ -133,7 +123,6 @@ App\Entity\User:
         lastConnectedAt: '<(new \DateTimeImmutable("2019-09-10 22:33:44"))>'
     user_pulsar42_member2:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("4354da33-d2e7-442e-aa5d-22f9bbbdd132"))>']
-        username: 'Pulsar42Member2'
         nickname: 'Pulsar42Member2'
         discordId: '123456789009'
         discordTag: '0009'
@@ -145,7 +134,6 @@ App\Entity\User:
         lastConnectedAt: '<(new \DateTimeImmutable("2019-04-11 22:33:44"))>'
     user_pulsar42_member3:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("3f90d959-c0fd-4bc0-b0bb-35c570c3c2f5"))>']
-        username: 'Pulsar42Member3'
         nickname: 'Pulsar42Member3'
         discordId: '123456789010'
         discordTag: '0010'
@@ -157,7 +145,6 @@ App\Entity\User:
         lastConnectedAt: '<(new \DateTimeImmutable("2019-04-12 22:33:44"))>'
     user_foo@example.com:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("65ca8ef6-bcf6-46ff-b9ae-1ade7a51ec26"))>']
-        username: 'foo@example.com'
         email: 'foo@example.com'
         emailConfirmed: false
         password: '123456'
@@ -169,7 +156,6 @@ App\Entity\User:
         lastConnectedAt: '<(new \DateTimeImmutable("2019-04-13 22:33:44"))>'
     user_alreadyconfirmed@example.com:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("c869de61-1a88-4aaa-a2f9-9b4b116afe85"))>']
-        username: 'alreadyconfirmed@example.com'
         email: 'alreadyconfirmed@example.com'
         emailConfirmed: true
         password: '123456'
@@ -181,7 +167,6 @@ App\Entity\User:
         lastConnectedAt: '<(new \DateTimeImmutable("2019-04-14 22:33:44"))>'
     user_lostpasswordrequested@example.com:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("d477c5bd-4b1d-4a51-adf0-091ce599f408"))>']
-        username: 'lostpasswordrequested@example.com'
         email: 'lostpasswordrequested@example.com'
         emailConfirmed: true
         password: '123456'
@@ -194,7 +179,6 @@ App\Entity\User:
         lastConnectedAt: '<(new \DateTimeImmutable("2019-04-15 22:33:44"))>'
     user_lostpasswordexpired@example.com:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("f27a6609-57cc-4e98-b762-2d929d046afe"))>']
-        username: 'lostpasswordexpired@example.com'
         email: 'lostpasswordexpired@example.com'
         emailConfirmed: true
         password: '123456'
@@ -207,7 +191,6 @@ App\Entity\User:
         lastConnectedAt: '<(new \DateTimeImmutable("2019-04-16 22:33:44"))>'
     user_changepasswordrequested@example.com:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("013b7f07-142c-495e-8efc-2f9d21c50ee3"))>']
-        username: 'changepasswordrequested@example.com'
         email: 'changepasswordrequested@example.com'
         emailConfirmed: true
         password: '123456'
@@ -218,7 +201,6 @@ App\Entity\User:
         lastConnectedAt: '<(new \DateTimeImmutable("2019-04-15 22:33:44"))>'
     user_linksocialnetworks-without-citizen@example.com:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("26fd729d-6d32-4a1d-a6af-c06555c5628a"))>']
-        username: 'linksocialnetworks-without-citizen@example.com'
         email: 'linksocialnetworks-without-citizen@example.com'
         emailConfirmed: true
         password: '123456'
@@ -229,7 +211,6 @@ App\Entity\User:
         lastConnectedAt: '<(new \DateTimeImmutable("2019-04-17 22:33:44"))>'
     user_linksocialnetworks-with-citizen@example.com:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("77ea3d73-a786-4f0f-83dd-36a37265f952"))>']
-        username: 'linksocialnetworks-with-citizen@example.com'
         email: 'linksocialnetworks-with-citizen@example.com'
         emailConfirmed: true
         password: '123456'
@@ -241,7 +222,6 @@ App\Entity\User:
         lastConnectedAt: '<(new \DateTimeImmutable("2019-04-18 22:33:44"))>'
     user_linksocialnetworks-with-citizen-pending@example.com:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("6b5f4962-4660-4705-bd48-2c587c42fe95"))>']
-        username: 'linksocialnetworks-with-citizen-pending@example.com'
         email: 'linksocialnetworks-with-citizen-pending@example.com'
         emailConfirmed: true
         password: '123456'
@@ -254,7 +234,6 @@ App\Entity\User:
         lastConnectedAt: '<(new \DateTimeImmutable("2019-04-19 22:33:44"))>'
     user_fundings_1:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("a70526d9-5319-4445-901a-4bcccd50d911"))>']
-        username: 'fundings-1'
         nickname: 'fundings-1'
         email: 'fundings-1@example.com'
         emailConfirmed: true
@@ -267,7 +246,6 @@ App\Entity\User:
         supporterVisible: false
     user_fundings_2:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("c704d896-2d69-4b3e-b373-51659c5fbc08"))>']
-        username: 'fundings-2'
         nickname: 'fundings-2'
         email: 'fundings-2@example.com'
         emailConfirmed: true
@@ -279,7 +257,6 @@ App\Entity\User:
         lastConnectedAt: '<(new \DateTimeImmutable("2019-04-21 22:33:44"))>'
     user_fundings_3:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("129b2e1a-d808-4370-a07d-51837b436cb3"))>']
-        username: 'fundings-3'
         nickname: 'fundings-3'
         email: 'fundings-3@example.com'
         emailConfirmed: true
@@ -291,7 +268,6 @@ App\Entity\User:
         lastConnectedAt: '<(new \DateTimeImmutable("2019-04-22 22:33:44"))>'
     user_fundings_{10..30}:
         __construct: ['<createUuid("14203774-91fa-4300-b464-bcda42697b", $current)>']
-        username: '<current()>_fundings'
         nickname: '<current()>_fundings'
         email: '<current()>_fundings@example.com'
         emailConfirmed: true

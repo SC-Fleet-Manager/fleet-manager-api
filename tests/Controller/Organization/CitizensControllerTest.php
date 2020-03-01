@@ -13,7 +13,7 @@ class CitizensControllerTest extends WebTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ioni']);
+        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
     }
 
     /**
@@ -62,7 +62,7 @@ class CitizensControllerTest extends WebTestCase
      */
     public function testCitizensNotPrivateRights(): void
     {
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Gardien1']);
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Gardien1']);
         $this->logIn($user);
         $this->client->xmlHttpRequest('GET', '/api/organization/flk/citizens', [], [], [
             'CONTENT_TYPE' => 'application/json',
@@ -79,7 +79,7 @@ class CitizensControllerTest extends WebTestCase
      */
     public function testCitizensNotAdminRights(): void
     {
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Pulsar42Member1']);
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Pulsar42Member1']);
         $this->logIn($user);
         $this->client->xmlHttpRequest('GET', '/api/organization/pulsar42/citizens', [], [], [
             'CONTENT_TYPE' => 'application/json',
@@ -96,7 +96,7 @@ class CitizensControllerTest extends WebTestCase
      */
     public function testCitizensAdmin(): void
     {
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Pulsar42Admin']);
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Pulsar42Admin']);
         $this->logIn($user);
         $this->client->xmlHttpRequest('GET', '/api/organization/pulsar42/citizens', [], [], [
             'CONTENT_TYPE' => 'application/json',
