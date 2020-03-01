@@ -80,7 +80,7 @@ const actions = {
         if (clean) {
             state.shipVariantUsersLoadedPages[ship.shipInfo.id] = [];
         }
-        axios.get(`/api/fleet/orga-fleets/${state.selectedSid}/users/${ship.shipInfo.name}`, {
+        axios.get(`/api/fleet/orga-fleets/${state.selectedSid}/users/${encodeURIComponent(ship.shipInfo.name)}`, {
             params: {
                 page,
                 'filters[shipNames]': state.filterShipName,
@@ -98,7 +98,7 @@ const actions = {
             });
             if (response.data.lastPage === response.data.page) {
                 // we are on the last page : load how many hidden there are.
-                axios.get(`/api/fleet/orga-fleets/${state.selectedSid}/hidden-users/${ship.shipInfo.name}`).then(response => {
+                axios.get(`/api/fleet/orga-fleets/${state.selectedSid}/hidden-users/${encodeURIComponent(ship.shipInfo.name)}`).then(response => {
                     commit('updateShipVariantsHiddenUsers', {
                         shipId: ship.shipInfo.id,
                         countHidden: response.data.hiddenUsers,
