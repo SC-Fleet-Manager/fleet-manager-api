@@ -13,7 +13,7 @@ class LadderAlltimeControllerTest extends WebTestCase
      */
     public function testIndex(): void
     {
-        $this->logIn($this->doctrine->getRepository(User::class)->findOneBy(['username' => '10_fundings']));
+        $this->logIn($this->doctrine->getRepository(User::class)->findOneBy(['nickname' => '10_fundings']));
 
         $this->client->xmlHttpRequest('GET', '/api/funding/ladder-alltime', [], [], [
             'CONTENT_TYPE' => 'application/json',

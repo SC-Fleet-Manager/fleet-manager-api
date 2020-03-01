@@ -44,19 +44,18 @@
                 flex-flow: wrap column;
                 position: relative;
 
-                h1 {
-                    font-size: $fontH1;
+                #title {
+                    font-size: 5rem;
                     font-weight: 700;
                     margin: 0;
                     text-shadow: $shadow-title;
                 }
-
-                h3 {
-                    font-size: $fontH3;
+                #subtitle {
+                    display: block;
+                    @include font;
+                    font-size: 2.5rem;
                     font-weight: 300;
-                    margin: 0;
-                    margin-top: 0;
-                    margin-bottom: $gridGutter*2;
+                    margin: 0 0 22px;
                     text-shadow: $shadow;
                 }
 

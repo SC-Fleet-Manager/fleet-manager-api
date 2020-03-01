@@ -4,12 +4,12 @@ orga_fleet_fleets_admins:
     methods: GET
 
 orga_fleet_fleet_users:
-    path: /api/fleet/orga-fleets/{organizationSid}/users/{providerShipName}
+    path: /api/fleet/orga-fleets/{organizationSid}/users/{providerShipName<.+>}
     controller: App\Controller\Organization\Fleet\FleetUsersController
     methods: GET
 
 orga_fleet_hidden_users:
-    path: /api/fleet/orga-fleets/{organizationSid}/hidden-users/{providerShipName}
+    path: /api/fleet/orga-fleets/{organizationSid}/hidden-users/{providerShipName<.+>}
     controller: App\Controller\Organization\Fleet\FleetHiddenUsersController
     methods: GET
 

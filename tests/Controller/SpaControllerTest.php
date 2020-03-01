@@ -638,6 +638,8 @@ class SpaControllerTest extends PantherTestCase
      * @group end2end
      * @group spa
      * @group funding
+     *
+     * @group toto
      */
     public function testFunding(): void
     {

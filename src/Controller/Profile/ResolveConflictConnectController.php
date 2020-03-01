@@ -90,6 +90,7 @@ class ResolveConflictConnectController extends AbstractController
                 $citizenToRemove = $user->getCitizen();
             }
 
+            // TODO : if transaction rollbacks, the event is inconsistent : set citizen + its organizations in Event and dispatch it after commit()
             $this->eventDispatcher->dispatch(new CitizenDeletedEvent($citizenToRemove));
 
             $this->entityManager->remove($citizenToRemove);
@@ -106,15 +107,14 @@ class ResolveConflictConnectController extends AbstractController
             $user->setPendingDiscordId(null);
             $user->setDiscordId($alreadyLinkedUser->getDiscordId());
             $user->setDiscordTag($alreadyLinkedUser->getDiscordTag());
-            $user->setUsername($alreadyLinkedUser->getNickname());
             $user->setNickname($alreadyLinkedUser->getNickname());
             if (!$user->getApiToken()) {
                 $user->setApiToken(User::generateToken());
             }
             $this->entityManager->flush();
-            $this->entityManager->getConnection()->commit();
+            $this->entityManager->commit();
         } catch (\Exception $e) {
-            $this->entityManager->getConnection()->rollBack();
+            $this->entityManager->rollback();
             throw $e;
         }
 

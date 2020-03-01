@@ -13,7 +13,7 @@ class StatsCitizensControllerTest extends WebTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ioni']);
+        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
     }
 
     /**
@@ -76,7 +76,7 @@ class StatsCitizensControllerTest extends WebTestCase
     public function testCitizenWithMostShipsAnonymousOrga(): void
     {
         /** @var User $user */
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'orgaStats2']);
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'orgaStats2']);
         $this->logIn($user);
         $this->client->xmlHttpRequest('GET', '/api/organization/orgastats/stats/citizens', [], [], [
             'CONTENT_TYPE' => 'application/json',
@@ -107,17 +107,17 @@ class StatsCitizensControllerTest extends WebTestCase
         $this->doctrine->getRepository(User::class)->createQueryBuilder('u')
             ->update('App:User', 'u')
             ->set('u.publicChoice', ':publicChoice')
-            ->where('u.username = :username')
+            ->where('u.nickname = :nickname')
             ->setParameters([
-                'username' => 'orgaStats1',
+                'nickname' => 'orgaStats1',
                 'publicChoice' => User::PUBLIC_CHOICE_PRIVATE,
             ])
             ->getQuery()
             ->execute();
-        $this->doctrine->getManager()->refresh($this->doctrine->getRepository(User::class)->findOneBy(['username' => 'orgaStats1']));
+        $this->doctrine->getManager()->refresh($this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'orgaStats1']));
 
         /** @var User $user */
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'orgaStats2']);
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'orgaStats2']);
         $this->logIn($user);
         $this->client->xmlHttpRequest('GET', '/api/organization/orgastats/stats/citizens', [], [], [
             'CONTENT_TYPE' => 'application/json',

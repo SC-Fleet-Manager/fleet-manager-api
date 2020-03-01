@@ -13,7 +13,7 @@ class MonthlyCostCoverageEditControllerTest extends WebTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ioni']);
+        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
     }
 
     /**
@@ -36,7 +36,7 @@ class MonthlyCostCoverageEditControllerTest extends WebTestCase
     public function testNotAdmin(): void
     {
         /** @var User $user */
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Gardien1']); // ROLE_USER
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Gardien1']); // ROLE_USER
         $this->logIn($user);
         $this->client->request('GET', '/bo/monthly-cost-coverage/edit/0a77f3fc-3ecd-48f5-b9f6-dfb8ac5ed642');
 

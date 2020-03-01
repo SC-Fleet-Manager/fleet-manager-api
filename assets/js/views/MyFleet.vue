@@ -20,12 +20,27 @@
                                     :title="ship.name">
                                 <p class="card-text">
                                     <strong>Manufacturer</strong>: {{ ship.manufacturer }}<br/>
-                                    <template v-if="ship.insured">
-                                        <strong>Insurance</strong>: <b-badge variant="success">Lifetime</b-badge><br/>
+
+                                    <template v-if="ship.insuranceType !== null">
+                                        <template v-if="ship.insuranceType === 'lti'">
+                                            <strong>Insurance</strong>: <b-badge variant="success">Lifetime</b-badge><br/>
+                                        </template>
+                                        <template v-if="ship.insuranceType === 'iae'">
+                                            <strong>Insurance</strong>: <b-badge variant="warning">IAE 10 years</b-badge><br/>
+                                        </template>
+                                        <template v-if="ship.insuranceType === 'monthly'">
+                                            <strong>Insurance</strong>: <b-badge variant="info">{{ ship.insuranceDuration }} months</b-badge><br/>
+                                        </template>
                                     </template>
                                     <template v-else>
-                                        <template v-if="ship.insuranceDuration != null"><strong>Insurance</strong>: <b-badge variant="info">{{ ship.insuranceDuration }} months</b-badge><br/></template>
-                                        <template v-else><strong>Insurance</strong>: <b-badge variant="danger">No</b-badge><br/></template>
+                                        <!-- DEPRECATED -->
+                                        <template v-if="ship.insured">
+                                            <strong>Insurance</strong>: <b-badge variant="success">Lifetime</b-badge><br/>
+                                        </template>
+                                        <template v-else>
+                                            <template v-if="ship.insuranceDuration != null"><strong>Insurance</strong>: <b-badge variant="info">{{ ship.insuranceDuration }} months</b-badge><br/></template>
+                                            <template v-else><strong>Insurance</strong>: <b-badge variant="danger">No</b-badge><br/></template>
+                                        </template>
                                     </template>
                                     <span v-if="ship.cost !== undefined && ship.cost > 0"><strong>Cost</strong>: <i class="fas fa-dollar-sign" aria-hidden="true"></i> <span class="sr-only">$</span>{{ formatNumber(ship.cost) }}<br/></span>
                                     <span v-if="ship.cost !== undefined && ship.cost == 0"><b-badge variant="info">Referral/Event</b-badge><br/></span>

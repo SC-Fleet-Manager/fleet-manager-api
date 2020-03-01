@@ -13,7 +13,7 @@ class FleetAdminsControllerTest extends WebTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ioni']);
+        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
     }
 
     /**
@@ -58,7 +58,7 @@ class FleetAdminsControllerTest extends WebTestCase
      */
     public function testOrgaFleetsAdminsNotPrivateRights(): void
     {
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Gardien1']);
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Gardien1']);
         $this->logIn($user);
         $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/flk/admins', [], [], [
             'CONTENT_TYPE' => 'application/json',
@@ -75,7 +75,7 @@ class FleetAdminsControllerTest extends WebTestCase
      */
     public function testOrgaFleetsAdminsNotAdminRights(): void
     {
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Pulsar42Member1']);
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Pulsar42Member1']);
         $this->logIn($user);
         $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/pulsar42/admins', [], [], [
             'CONTENT_TYPE' => 'application/json',
@@ -92,7 +92,7 @@ class FleetAdminsControllerTest extends WebTestCase
      */
     public function testOrgaFleetsAdminsAuthAdmin(): void
     {
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Pulsar42Admin']);
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Pulsar42Admin']);
         $this->logIn($user);
         $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/pulsar42/admins', [], [], [
             'CONTENT_TYPE' => 'application/json',

@@ -14,7 +14,7 @@ class ExportMembersControllerTest extends WebTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ioni']);
+        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
     }
 
     /**
@@ -24,7 +24,7 @@ class ExportMembersControllerTest extends WebTestCase
     public function testExportMembersSuccess(): void
     {
         /** @var User $user */
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ashuvidz']); // admin
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ashuvidz']); // admin
         $this->logIn($user);
         $this->client->xmlHttpRequest('GET', '/api/organization/export-orga-members/flk', [], [], [
             'CONTENT_TYPE' => 'application/json',

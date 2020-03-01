@@ -13,7 +13,7 @@ class RefreshRsiProfileControllerTest extends WebTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ioni']);
+        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
     }
 
     /**
@@ -23,7 +23,7 @@ class RefreshRsiProfileControllerTest extends WebTestCase
     public function testRefreshRsiProfile(): void
     {
         /** @var User $user */
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'needRefresh']);
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'needRefresh']);
         $this->logIn($user);
 
         $this->assertNull($user->getCitizen()->getMainOrga(), 'Main orga of user need_refresh must be null before refresh.');
@@ -81,7 +81,7 @@ class RefreshRsiProfileControllerTest extends WebTestCase
      */
     public function testRefreshRsiProfileNoCitizen(): void
     {
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'NoCitizen']);
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'NoCitizen']);
         $this->logIn($user);
         $this->client->xmlHttpRequest('POST', '/api/profile/refresh-rsi-profile', [], [], [
             'CONTENT_TYPE' => 'application/json',

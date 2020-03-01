@@ -16,7 +16,7 @@ class ConfirmedUserChecker implements UserCheckerInterface
         }
 
         if ($user->getEmail() !== null && !$user->isEmailConfirmed()) {
-            throw new NotConfirmedRegistrationException($user->getId(), $user->getUsername(), 'You have not confirmed your registration yet. Please check your emails.');
+            throw new NotConfirmedRegistrationException($user->getId(), $user->getUserEmail(), 'You have not confirmed your registration yet. Please check your emails.');
         }
     }
 

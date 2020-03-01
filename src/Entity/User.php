@@ -11,7 +11,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\Table(indexes={
  *     @ORM\Index(name="discord_idx", columns={"discord_id"}),
- *     @ORM\Index(name="username_idx", columns={"username"}),
+ *     @ORM\Index(name="nickname_idx", columns={"nickname"}),
  *     @ORM\Index(name="email_idx", columns={"email"})
  * })
  */
@@ -34,13 +34,7 @@ class User implements UserInterface
     private ?UuidInterface $id = null;
 
     /**
-     * @ORM\Column(type="string", length=255)
-     * @Groups({"profile"})
-     */
-    private ?string $username = null;
-
-    /**
-     * @ORM\Column(type="json_array")
+     * @ORM\Column(type="json")
      */
     private array $roles = ['ROLE_USER'];
 
@@ -196,14 +190,7 @@ class User implements UserInterface
 
     public function getUsername(): string
     {
-        return $this->username;
-    }
-
-    public function setUsername(string $username): self
-    {
-        $this->username = $username;
-
-        return $this;
+        return $this->id->toString();
     }
 
     public function getPassword(): ?string
@@ -272,6 +259,15 @@ class User implements UserInterface
     public function getEmail(): ?string
     {
         return $this->email;
+    }
+
+    public function getUserEmail(): ?string
+    {
+        if ($this->email === null) {
+            return null;
+        }
+
+        return strpos($this->email, '@') !== false ? explode('@', $this->email)[0] : $this->email;
     }
 
     public function setEmail(?string $email): self
