@@ -4,7 +4,8 @@ Amount : {{ (funding.amount / 100)|number_format(2) }} {{ funding.currency }}
 Net Amount : {{ (funding.netAmount / 100)|number_format(2) }} {{ funding.currency }}
 ID : {{ funding.id }}
 Payer ID : {{ funding.user.id }}
-Payer username : {{ funding.user.username }}
+Payer nickname : {{ funding.user.nickname }}
+Payer email : {{ funding.user.email }}
 Gateway : {{ funding.gateway }}
 Created at : {{ funding.createdAt|date('r') }}
 Paypal Order Id : {{ funding.paypalOrderId }}

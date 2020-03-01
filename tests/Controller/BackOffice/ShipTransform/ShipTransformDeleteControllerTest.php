@@ -13,7 +13,7 @@ class ShipTransformDeleteControllerTest extends WebTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ioni']);
+        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
     }
 
     /**
@@ -36,7 +36,7 @@ class ShipTransformDeleteControllerTest extends WebTestCase
     public function testNotAdmin(): void
     {
         /** @var User $user */
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Gardien1']); // ROLE_USER
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Gardien1']); // ROLE_USER
         $this->logIn($user);
         $this->client->request('POST', '/bo/ship-transform/delete/1a216d86-9fae-484c-ac0d-38804aad2039');
 

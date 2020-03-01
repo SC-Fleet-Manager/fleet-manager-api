@@ -13,7 +13,7 @@ class RefreshOrganizationControllerTest extends WebTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ioni']);
+        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
     }
 
     /**
@@ -23,7 +23,7 @@ class RefreshOrganizationControllerTest extends WebTestCase
     public function testRefreshOrgaSuccess(): void
     {
         /** @var User $user */
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ashuvidz']); // admin
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ashuvidz']); // admin
         $this->logIn($user);
         $this->client->xmlHttpRequest('POST', '/api/organization/flk/refresh-orga', [], [], [
             'CONTENT_TYPE' => 'application/json',

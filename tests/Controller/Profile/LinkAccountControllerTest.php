@@ -17,7 +17,7 @@ class LinkAccountControllerTest extends WebTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ioni']);
+        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
     }
 
     /**
@@ -74,7 +74,7 @@ class LinkAccountControllerTest extends WebTestCase
         $this->assertSame('123456789', $this->user->getCitizen()->getNumber()->getNumber());
         $this->assertSame('ashuvidz', $this->user->getCitizen()->getActualHandle()->getHandle());
 
-        $oldUser = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ashuvidz']);
+        $oldUser = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ashuvidz']);
         $this->assertNull($oldUser->getCitizen(), 'Citizen of old user should be null.');
     }
 

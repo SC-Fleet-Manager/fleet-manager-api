@@ -14,7 +14,7 @@ class PaymentControllerTest extends WebTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ioni']);
+        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
     }
 
     /**
@@ -43,7 +43,7 @@ class PaymentControllerTest extends WebTestCase
         /** @var Funding $funding */
         $funding = $this->doctrine->getRepository(Funding::class)->find($json['id']);
         $this->assertNotNull($funding, 'The entity funding must be persisted.');
-        $this->assertSame('Ioni', $funding->getUser()->getUsername());
+        $this->assertSame('Ioni', $funding->getUser()->getNickname());
     }
 
     /**

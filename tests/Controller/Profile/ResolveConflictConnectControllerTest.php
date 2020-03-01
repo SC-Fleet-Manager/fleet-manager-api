@@ -13,7 +13,7 @@ class ResolveConflictConnectControllerTest extends WebTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'linksocialnetworks-with-citizen-pending@example.com']);
+        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['email' => 'linksocialnetworks-with-citizen-pending@example.com']);
     }
 
     /**

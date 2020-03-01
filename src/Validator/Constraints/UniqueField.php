@@ -10,6 +10,6 @@ use Symfony\Component\Validator\Constraint;
 class UniqueField extends Constraint
 {
     public string $entityClass = '';
-    public string $field = 'username';
-    public string $message = 'This username is taken. Please choose another.';
+    public string $field = 'email';
+    public string $message = 'This email is taken. Please choose another.';
 }

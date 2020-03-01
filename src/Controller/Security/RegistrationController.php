@@ -62,7 +62,6 @@ class RegistrationController extends AbstractController
         }
 
         $newUser = (new User(Uuid::uuid4()))
-            ->setUsername(strpos($registration->email, '@') !== false ? explode('@', $registration->email)[0] : $registration->email)
             ->setEmail($registration->email)
             ->setToken(User::generateToken())
             ->setApiToken(User::generateToken())

@@ -15,7 +15,7 @@ class LinkEmailPasswordControllerTest extends WebTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['username' => 'Ashuvidz']);
+        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ashuvidz']);
     }
 
     /**

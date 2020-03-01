@@ -119,7 +119,7 @@ class LadderHandler
             }
             if ($userRank !== null) {
                 $citizen = $user->getCitizen();
-                $name = $citizen !== null ? $citizen->getActualHandle()->getHandle() : $user->getNickname() ?? $user->getUsername();
+                $name = $citizen !== null ? $citizen->getActualHandle()->getHandle() : $user->getNickname() ?? 'Unknown';
                 if (!$user->isSupporterVisible()) {
                     $name = 'Anonymous';
                 }
