@@ -1,4 +1,4 @@
-FROM php:7.4.3-fpm-buster as req_php
+FROM php:7.4.4-fpm-buster as req_php
 
 RUN apt-get update && apt-get install -y \
     unzip \
