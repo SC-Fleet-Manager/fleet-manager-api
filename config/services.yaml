@@ -62,7 +62,8 @@ services:
         abstract: true
         arguments: ['@http_kernel', '@security.http_utils']
 
-    App\Service\Ship\InfosProvider\ShipInfosProviderInterface: '@App\Service\Ship\InfosProvider\ApiShipInfosProvider'
+#    App\Service\Ship\InfosProvider\ShipInfosProviderInterface: '@App\Service\Ship\InfosProvider\ApiShipInfosProvider'
+    App\Service\Ship\InfosProvider\ShipInfosProviderInterface: '@App\Service\Ship\InfosProvider\GalaxyApiShipInfosProvider'
     App\Service\Ship\InfosProvider\ApiShipInfosProvider: ~
 
     App\Service\Organization\InfosProvider\OrganizationInfosProviderInterface: '@App\Service\Organization\InfosProvider\ApiOrganizationInfosProvider'

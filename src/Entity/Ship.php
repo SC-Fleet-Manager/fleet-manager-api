@@ -38,10 +38,28 @@ class Ship
     private array $rawData = [];
 
     /**
+     * From MyHangar page.
+     *
      * @ORM\Column(type="string", length=255)
      * @Groups({"my-fleet", "public-fleet"})
      */
     private ?string $name = null;
+
+    /**
+     * The SC-Galaxy ship name.
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"my-fleet", "public-fleet"})
+     */
+    private ?string $normalizedName = null;
+
+    /**
+     * The SC-Galaxy ship Id.
+     *
+     * @ORM\Column(type="uuid", nullable=true)
+     * @Groups({"my-fleet", "public-fleet"})
+     */
+    private ?UuidInterface $galaxyId = null;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -127,6 +145,30 @@ class Ship
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getNormalizedName(): ?string
+    {
+        return $this->normalizedName;
+    }
+
+    public function setNormalizedName(?string $normalizedName): self
+    {
+        $this->normalizedName = $normalizedName;
+
+        return $this;
+    }
+
+    public function getGalaxyId(): ?UuidInterface
+    {
+        return $this->galaxyId;
+    }
+
+    public function setGalaxyId(?UuidInterface $galaxyId): self
+    {
+        $this->galaxyId = $galaxyId;
 
         return $this;
     }

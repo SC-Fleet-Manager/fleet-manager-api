@@ -16,7 +16,13 @@ class ShipTransformForm extends AbstractType
             ->add('myHangarName', TextType::class, [
                 'required' => true,
             ])
+            ->add('myHangarNamePattern', TextType::class, [
+                'required' => true,
+            ])
             ->add('shipMatrixName', TextType::class, [
+                'required' => true,
+            ])
+            ->add('providerId', TextType::class, [
                 'required' => true,
             ]);
     }

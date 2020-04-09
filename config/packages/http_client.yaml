@@ -6,3 +6,7 @@ framework:
                 base_uri: 'https://robertsspaceindustries.com'
             rsi.ship_infos.client:
                 base_uri: 'https://robertsspaceindustries.com'
+            galaxy.ship_infos.client:
+                base_uri: '%env(string:GALAXY_API_BASE_URL)%'
+                headers:
+                    'Accept': 'application/json'

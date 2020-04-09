@@ -7,6 +7,7 @@ use App\Form\Dto\ShipTransform;
 use App\Form\ShipTransformForm;
 use App\Repository\ShipNameRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,13 +36,20 @@ class ShipTransformEditController extends AbstractController
             throw new NotFoundHttpException('Ship name not found.');
         }
 
-        $shipTransform = new ShipTransform($shipName->getMyHangarName(), $shipName->getShipMatrixName());
+        $shipTransform = new ShipTransform(
+            $shipName->getMyHangarName(),
+            $shipName->getShipMatrixName(),
+            $shipName->getProviderId() !== null ? $shipName->getProviderId()->toString() : null,
+            $shipName->getMyHangarNamePattern());
         $form = $this->createForm(ShipTransformForm::class, $shipTransform);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $shipName->setMyHangarName($shipTransform->myHangarName);
-            $shipName->setShipMatrixName($shipTransform->shipMatrixName);
+            $shipName
+                ->setMyHangarName($shipTransform->myHangarName)
+                ->setShipMatrixName($shipTransform->shipMatrixName)
+                ->setProviderId(Uuid::fromString($shipTransform->providerId))
+                ->setMyHangarNamePattern($shipTransform->myHangarNamePattern);
             $this->entityManager->flush();
 
             return $this->redirectToRoute('bo_ship_transform_list');

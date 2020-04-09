@@ -55,6 +55,22 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
         return $this->ships;
     }
 
+    public function getShipsByIdOrName(array $ids, array $names = []): iterable
+    {
+        /** @var array $ships */
+        $ships = $this->getAllShips();
+
+        $res = array_filter($ships, static function (ShipInfo $shipInfo) use ($ids): bool {
+            return in_array((string) $shipInfo->id, $ids, true);
+        });
+
+        foreach ($names as $name) {
+            $res[] = $this->getShipByName($name);
+        }
+
+        return $res;
+    }
+
     private function scrap(): array
     {
         $response = $this->httpClient->request('GET', '/ship-matrix/index');

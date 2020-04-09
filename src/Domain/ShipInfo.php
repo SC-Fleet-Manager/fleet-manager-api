@@ -25,99 +25,81 @@ class ShipInfo
     ];
 
     /**
-     * @var string
+     * @Groups({"my-fleet", "public-fleet"})
+     */
+    public ?string $id = null;
+
+    /**
+     * @see self::FLIGHT_READY|self::NOT_READY
      *
      * @Groups({"my-fleet", "public-fleet"})
      */
-    public $id;
+    public ?string $productionStatus = null;
 
     /**
-     * @var string self::FLIGHT_READY|self::NOT_READY
+     * @Groups({"my-fleet", "public-fleet"})
+     */
+    public ?int $minCrew = null;
+
+    /**
+     * @Groups({"my-fleet", "public-fleet"})
+     */
+    public ?int $maxCrew = null;
+
+    /**
+     * @Groups({"my-fleet", "public-fleet"})
+     */
+    public ?string $name = null;
+
+    /**
+     * @see self::SIZES
      *
      * @Groups({"my-fleet", "public-fleet"})
      */
-    public $productionStatus;
+    public ?string $size = null;
 
     /**
-     * @var int
      * @Groups({"my-fleet", "public-fleet"})
      */
-    public $minCrew;
+    public ?int $cargoCapacity = null;
 
     /**
-     * @var int
-     *
      * @Groups({"my-fleet", "public-fleet"})
      */
-    public $maxCrew;
+    public ?string $pledgeUrl = null;
 
     /**
-     * @var string
-     *
      * @Groups({"my-fleet", "public-fleet"})
      */
-    public $name;
+    public ?string $manufacturerId = null;
 
     /**
-     * @var string self::SIZES
-     *
      * @Groups({"my-fleet", "public-fleet"})
      */
-    public $size;
+    public ?string $manufacturerName = null;
 
     /**
-     * @var int
-     *
      * @Groups({"my-fleet", "public-fleet"})
      */
-    public $cargoCapacity;
+    public ?string $manufacturerCode = null;
 
     /**
-     * @var string
-     *
      * @Groups({"my-fleet", "public-fleet"})
      */
-    public $pledgeUrl;
+    public ?string $chassisId = null;
 
     /**
-     * @var string
-     *
      * @Groups({"my-fleet", "public-fleet"})
      */
-    public $manufacturerName;
+    public ?string $chassisName = null;
 
     /**
-     * @var string
-     *
      * @Groups({"my-fleet", "public-fleet"})
      */
-    public $manufacturerCode;
+    public string $mediaUrl = '/build/images/static/placeholder_ship.svg';
 
     /**
-     * @var string
-     *
      * @Groups({"my-fleet", "public-fleet"})
      */
-    public $chassisId;
-
-    /**
-     * @var string
-     *
-     * @Groups({"my-fleet", "public-fleet"})
-     */
-    public $chassisName;
-
-    /**
-     * @var string
-     *
-     * @Groups({"my-fleet", "public-fleet"})
-     */
-    public $mediaUrl = '/build/images/static/placeholder_ship.svg';
-
-    /**
-     * @var string
-     *
-     * @Groups({"my-fleet", "public-fleet"})
-     */
-    public $mediaThumbUrl = '/build/images/static/placeholder_ship.svg';
+    public string $mediaThumbUrl = '/build/images/static/placeholder_ship.svg';
 }

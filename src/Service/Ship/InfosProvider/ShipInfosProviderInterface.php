@@ -25,4 +25,9 @@ interface ShipInfosProviderInterface
     public function transformProviderToHangar(string $providerName): string;
 
     public function transformHangarToProvider(string $hangarName): string;
+
+    /**
+     * @return iterable|ShipInfo[]
+     */
+    public function getShipsByIdOrName(array $ids, array $names = []): iterable;
 }
