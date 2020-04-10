@@ -179,7 +179,7 @@ class FleetUploadHandler implements LoggerAwareInterface
                 }
             }
             if ($foundShipInfo === null) {
-                $this->logger->error('[FleetUploadHandler] The ship with name {shipName} was not found. You should add it to ship mapping in BO.', ['shipName' => $shipName]);
+                $this->logger->error('[FleetUploadHandler] The ship with name "{shipName}" was not found. You should add it to ship mapping in BO.', ['shipName' => $shipName]);
             }
             $ship = $this->createShip($shipData, $foundShipInfo);
             $fleet->addShip($ship);

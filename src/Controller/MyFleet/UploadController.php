@@ -59,9 +59,6 @@ class UploadController extends AbstractController
             foreach ($formErrors as $formError) {
                 $errors[] = $formError->getMessage();
             }
-            $this->logger->warning('Upload fleet form error.', [
-                'form_errors' => $errors,
-            ]);
 
             return $this->json([
                 'error' => 'invalid_form',

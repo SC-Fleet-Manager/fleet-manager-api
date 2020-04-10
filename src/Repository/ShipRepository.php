@@ -11,6 +11,8 @@ use App\Entity\Ship;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class ShipRepository extends ServiceEntityRepository
 {
@@ -19,16 +21,44 @@ class ShipRepository extends ServiceEntityRepository
         parent::__construct($registry, Ship::class);
     }
 
-    public function distinctNames(): iterable
+    public function countFromLastFleetWithoutGalaxyId(): int
     {
-        $qb = $this->createQueryBuilder('ships')
-            ->distinct()
-            ->select('ships.name')
-            ->orderBy('ships.name');
+        $dql = <<<DQL
+            SELECT COUNT(ship) FROM  App\Entity\Citizen citizen
+            JOIN citizen.lastFleet fleet
+            JOIN App\Entity\Ship ship WITH ship.fleet = fleet.id
+            WHERE ship.galaxyId IS NULL OR ship.normalizedName IS NULL
+            DQL;
+        $query = $this->_em->createQuery($dql);
 
-        return array_map(static function (array $result): string {
-            return $result['name'];
-        }, $qb->getQuery()->getScalarResult());
+        return $query->getSingleScalarResult();
+    }
+
+    /**
+     * @return Ship[]
+     */
+    public function findFromLastFleetWithoutGalaxyId(?UuidInterface $afterId = null, ?int $itemPerPage = null): iterable
+    {
+        $dql = <<<DQL
+            SELECT ship FROM  App\Entity\Citizen citizen
+            JOIN citizen.lastFleet fleet
+            JOIN App\Entity\Ship ship WITH ship.fleet = fleet.id
+            WHERE (ship.galaxyId IS NULL OR ship.normalizedName IS NULL)
+            DQL;
+        if ($afterId !== null) {
+            $dql .= ' AND ship.id > :afterId ';
+        }
+        $dql .= ' ORDER BY ship.id ASC ';
+        $query = $this->_em->createQuery($dql);
+
+        if ($afterId !== null) {
+            $query->setParameter('afterId', $afterId);
+        }
+        if ($itemPerPage !== null) {
+            $query->setMaxResults($itemPerPage);
+        }
+
+        return $query->getResult();
     }
 
     /**

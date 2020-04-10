@@ -12,10 +12,10 @@ use Symfony\Component\HttpFoundation\Response;
 
 class FleetFamilyController extends AbstractController
 {
-    private $fleetOrganizationGuard;
-    private $shipInfosProvider;
-    private $citizenRepository;
-    private $shipFamilyFilterFactory;
+    private FleetOrganizationGuard $fleetOrganizationGuard;
+    private ShipInfosProviderInterface $shipInfosProvider;
+    private CitizenRepository $citizenRepository;
+    private ShipFamilyFilterFactory $shipFamilyFilterFactory;
 
     public function __construct(
         FleetOrganizationGuard $fleetOrganizationGuard,

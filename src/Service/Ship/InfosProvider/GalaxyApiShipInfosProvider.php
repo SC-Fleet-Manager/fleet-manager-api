@@ -5,15 +5,15 @@ namespace App\Service\Ship\InfosProvider;
 use App\Domain\ShipInfo;
 use App\Repository\ShipNameRepository;
 use Psr\Cache\CacheItemInterface;
-use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Cache\CacheItem;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class GalaxyApiShipInfosProvider implements ShipInfosProviderInterface
 {
     private LoggerInterface $logger;
-    private CacheItemPoolInterface $cache;
+    private TagAwareCacheInterface $cache;
     private ShipNameRepository $shipNameRepository;
     private HttpClientInterface $httpClient;
     private array $ships = [];
@@ -22,8 +22,7 @@ class GalaxyApiShipInfosProvider implements ShipInfosProviderInterface
 
     public function __construct(
         LoggerInterface $logger,
-//        AbstractAdapter $rsiShipsCache,
-        CacheItemPoolInterface $rsiShipsCache,
+        TagAwareCacheInterface $rsiShipsCache,
         HttpClientInterface $galaxyShipInfosClient,
         ShipNameRepository $shipNameRepository
     ) {
@@ -36,11 +35,22 @@ class GalaxyApiShipInfosProvider implements ShipInfosProviderInterface
     /**
      * @return iterable|ShipInfo[]
      */
+    public function refreshShips(): iterable
+    {
+        $this->cache->invalidateTags(['galaxy_api_ship']);
+        $this->ships = [];
+
+        return $this->getAllShips();
+    }
+
+    /**
+     * @return iterable|ShipInfo[]
+     */
     public function getAllShips(bool $indexedById = false): iterable
     {
         if (!$this->ships) {
-            $this->ships = $this->cache->get('galaxy_api_all_ships', function (CacheItem $cacheItem) use ($indexedById) {
-                $cacheItem->expiresAfter(new \DateInterval('P1D'));
+            $this->ships = $this->cache->get('galaxy_api_all_ships', function (ItemInterface $cacheItem) use ($indexedById) {
+                $cacheItem->expiresAfter(new \DateInterval('P1D'))->tag('galaxy_api_ship');
 
                 return $this->retrieveData($indexedById);
             });
@@ -89,10 +99,10 @@ class GalaxyApiShipInfosProvider implements ShipInfosProviderInterface
 
             foreach ($json as $shipJson) {
                 $shipInfo = $this->createShipInfo($shipJson);
-                $shipInfos[] = $shipInfo;
+                $shipInfos[$shipInfo->id] = $shipInfo;
 
-                $callback = static function (CacheItemInterface $item) use ($shipInfo) {
-                    $item->expiresAfter(3600);
+                $callback = static function (ItemInterface $item) use ($shipInfo) {
+                    $item->expiresAfter(3600)->tag('galaxy_api_ship');
 
                     return $shipInfo;
                 };
@@ -120,8 +130,9 @@ class GalaxyApiShipInfosProvider implements ShipInfosProviderInterface
                 $missShipInfoProviderField[$cacheKeys[$shipInfoItem->getKey()]] = $shipInfoItem;
                 continue;
             }
+            /** @var ShipInfo $shipInfo */
             $shipInfo = $shipInfoItem->get();
-            $shipInfos[] = $shipInfo;
+            $shipInfos[$shipInfo->id] = $shipInfo;
         }
 
         return $shipInfos;

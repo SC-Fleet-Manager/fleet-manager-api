@@ -3,7 +3,6 @@
 namespace App\Controller\BackOffice\ShipTransform;
 
 use App\Repository\ShipNameRepository;
-use App\Service\Ship\InfosProvider\ShipInfosProviderInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

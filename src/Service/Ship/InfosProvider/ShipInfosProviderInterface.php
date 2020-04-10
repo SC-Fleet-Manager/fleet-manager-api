@@ -9,7 +9,7 @@ interface ShipInfosProviderInterface
     /**
      * @return iterable|ShipInfo[]
      */
-    public function getAllShips(): iterable;
+    public function getAllShips(bool $indexedById = false): iterable;
 
     public function getShipById(string $id): ?ShipInfo;
 
@@ -27,7 +27,14 @@ interface ShipInfosProviderInterface
     public function transformHangarToProvider(string $hangarName): string;
 
     /**
-     * @return iterable|ShipInfo[]
+     * @return iterable|ShipInfo[] indexed by Id
      */
     public function getShipsByIdOrName(array $ids, array $names = []): iterable;
+
+    /**
+     * typically delete the cache and warmup.
+     *
+     * @return iterable|ShipInfo[]
+     */
+    public function refreshShips(): iterable;
 }

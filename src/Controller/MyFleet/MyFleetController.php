@@ -37,7 +37,21 @@ class MyFleetController extends AbstractController
             ], 400);
         }
         $fleet = $citizen->getLastFleet();
-        $shipInfos = array_values($this->shipInfosProvider->getAllShips());
+
+        if ($fleet === null) {
+            return $this->json([
+                'fleet' => null,
+            ]);
+        }
+
+        $galaxyIds = [];
+        foreach ($fleet->getShips() as $ship) {
+            if ($ship->getGalaxyId() !== null) {
+                $galaxyIds[] = $ship->getGalaxyId()->toString();
+            }
+        }
+
+        $shipInfos = $this->shipInfosProvider->getShipsByIdOrName($galaxyIds);
 
         return $this->json([
             'fleet' => $fleet,

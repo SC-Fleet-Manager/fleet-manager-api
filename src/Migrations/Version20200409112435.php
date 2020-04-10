@@ -20,10 +20,12 @@ final class Version20200409112435 extends AbstractMigration
 
         $this->addSql('CREATE INDEX my_hangar_name_pattern_idx ON ship_name (my_hangar_name_pattern)');
         $this->addSql('CREATE INDEX provider_id_idx ON ship_name (provider_id)');
+        $this->addSql('CREATE INDEX galaxy_id_idx ON ship (galaxy_id)');
     }
 
     public function down(Schema $schema): void
     {
+        $this->addSql('DROP INDEX galaxy_id_idx ON ship');
         $this->addSql('DROP INDEX my_hangar_name_pattern_idx ON ship_name');
         $this->addSql('DROP INDEX provider_id_idx ON ship_name');
         $this->addSql('ALTER TABLE ship DROP normalized_name, DROP galaxy_id');

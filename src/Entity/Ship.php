@@ -9,7 +9,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ShipRepository")
  * @ORM\Table(indexes={
- *     @ORM\Index(name="name_idx", columns={"name"})
+ *     @ORM\Index(name="name_idx", columns={"name"}),
+ *     @ORM\Index(name="galaxy_id_idx", columns={"galaxy_id"})
  * })
  */
 class Ship

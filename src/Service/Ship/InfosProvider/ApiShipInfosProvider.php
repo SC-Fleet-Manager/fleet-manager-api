@@ -42,7 +42,18 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
     /**
      * @return iterable|ShipInfo[]
      */
-    public function getAllShips(): iterable
+    public function refreshShips(): iterable
+    {
+        $this->cache->delete('ship_matrix');
+        $this->ships = [];
+
+        return $this->getAllShips();
+    }
+
+    /**
+     * @return iterable|ShipInfo[]
+     */
+    public function getAllShips(bool $indexedById = false): iterable
     {
         if (!$this->ships) {
             $this->ships = $this->cache->get('ship_matrix', function (CacheItem $cacheItem) {

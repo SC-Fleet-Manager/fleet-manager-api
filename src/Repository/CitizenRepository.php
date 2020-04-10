@@ -194,7 +194,7 @@ class CitizenRepository extends ServiceEntityRepository
         $orgaMetadata = $this->_em->getClassMetadata(Organization::class);
 
         $sql = <<<EOT
-                SELECT *, c.nickname AS citizenNickname, c.id AS citizenId, f.id AS fleetId, s.id AS shipId FROM {$citizenMetadata->getTableName()} c
+                SELECT s.*, s.id AS shipId FROM {$citizenMetadata->getTableName()} c
                 INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON citizenOrga.citizen_id = c.id
                 INNER JOIN {$orgaMetadata->getTableName()} orga ON orga.id = citizenOrga.organization_id AND orga.organization_sid = :sid
                 INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
@@ -218,8 +218,6 @@ class CitizenRepository extends ServiceEntityRepository
 
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata(Ship::class, 's', ['id' => 'shipId']);
-        $rsm->addJoinedEntityFromClassMetadata(Fleet::class, 'f', 's', 'fleet', ['id' => 'fleetId']);
-        $rsm->addJoinedEntityFromClassMetadata(Citizen::class, 'c', 'f', 'owner', ['id' => 'citizenId', 'nickname' => 'citizenNickname']);
 
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
         $stmt->setParameter('sid', mb_strtolower($organizationId->getSid()));

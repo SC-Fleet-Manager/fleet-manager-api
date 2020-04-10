@@ -6,7 +6,15 @@ use App\Domain\ShipInfo;
 
 class FakeShipInfosProvider extends ApiShipInfosProvider
 {
-    public function getAllShips(): iterable
+    /**
+     * @return iterable|ShipInfo[]
+     */
+    public function refreshShips(): iterable
+    {
+        return $this->getAllShips();
+    }
+
+    public function getAllShips(bool $indexedById = false): iterable
     {
         $shipInfos = [];
 

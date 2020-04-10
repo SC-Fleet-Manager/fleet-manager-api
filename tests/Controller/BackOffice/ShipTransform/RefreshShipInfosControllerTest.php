@@ -5,7 +5,7 @@ namespace App\Tests\Controller\BackOffice\Funding;
 use App\Entity\User;
 use App\Tests\WebTestCase;
 
-class ClearRsiCacheControllerTest extends WebTestCase
+class RefreshShipInfosControllerTest extends WebTestCase
 {
     /**
      * @group functional
@@ -14,7 +14,7 @@ class ClearRsiCacheControllerTest extends WebTestCase
      */
     public function testNotAuth(): void
     {
-        $this->client->request('POST', '/bo/clear-rsi-cache');
+        $this->client->request('POST', '/bo/refresh-ship-infos');
 
         $this->assertSame(401, $this->client->getResponse()->getStatusCode());
     }
@@ -29,7 +29,7 @@ class ClearRsiCacheControllerTest extends WebTestCase
         /** @var User $user */
         $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Gardien1']); // ROLE_USER
         $this->logIn($user);
-        $this->client->request('POST', '/bo/clear-rsi-cache');
+        $this->client->request('POST', '/bo/refresh-ship-infos');
 
         $this->assertSame(403, $this->client->getResponse()->getStatusCode());
     }
@@ -44,7 +44,7 @@ class ClearRsiCacheControllerTest extends WebTestCase
         /** @var User $user */
         $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']); // ROLE_ADMIN
         $this->logIn($user);
-        $this->client->request('POST', '/bo/clear-rsi-cache');
+        $this->client->request('POST', '/bo/refresh-ship-infos');
 
         $this->assertSame(302, $this->client->getResponse()->getStatusCode());
     }
