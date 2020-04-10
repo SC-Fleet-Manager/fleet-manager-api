@@ -1,3 +1,6 @@
+parameters:
+    env(GALAXY_API_BASE_URL): ''
+
 framework:
     http_client:
         max_host_connections: 6
