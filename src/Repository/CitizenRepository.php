@@ -64,7 +64,7 @@ class CitizenRepository extends ServiceEntityRepository
             LEFT JOIN f.ships s
         ';
         $query = $this->_em->createQuery($dql);
-        $query->setParameter('sid', mb_strtolower($organizationId->getSid()));
+        $query->setParameter('sid', $organizationId->getSid());
         $query->enableResultCache(30);
 
         return $query->getResult();
@@ -136,7 +136,7 @@ class CitizenRepository extends ServiceEntityRepository
 
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
         $stmt->setParameters([
-            'sid' => mb_strtolower($organizationId),
+            'sid' => $organizationId,
             'visibilityOrga' => CitizenOrganization::VISIBILITY_ORGA,
             'visibilityAdmin' => CitizenOrganization::VISIBILITY_ADMIN,
             'userPublicChoicePublic' => User::PUBLIC_CHOICE_PUBLIC,
@@ -176,7 +176,7 @@ class CitizenRepository extends ServiceEntityRepository
 
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
         $stmt->setParameters([
-            'sid' => mb_strtolower($organizationSid),
+            'sid' => $organizationSid,
         ]);
         $stmt->enableResultCache(30);
 
@@ -221,7 +221,7 @@ class CitizenRepository extends ServiceEntityRepository
         $rsm->addRootEntityFromClassMetadata(Ship::class, 's', ['id' => 'shipId']);
 
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
-        $stmt->setParameter('sid', mb_strtolower($organizationId->getSid()));
+        $stmt->setParameter('sid', $organizationId->getSid());
         foreach ($filter->shipNames as $i => $filterShipName) {
             $stmt->setParameter('shipName_'.$i, $filterShipName);
         }
@@ -286,7 +286,7 @@ class CitizenRepository extends ServiceEntityRepository
      *
      * @return User[]
      */
-    public function getOwnersOfShip(string $organizationId, string $shipName, ?Citizen $viewerCitizen, ShipFamilyFilter $filter, int $page = null, int $itemsPerPage = 10): array
+    public function getOwnersOfShip(string $organizationId, UuidInterface $shipGalaxyId, ?Citizen $viewerCitizen, ShipFamilyFilter $filter, int $page = null, int $itemsPerPage = 10): array
     {
         $userMetadata = $this->_em->getClassMetadata(User::class);
         $citizenMetadata = $this->_em->getClassMetadata(Citizen::class);
@@ -295,7 +295,7 @@ class CitizenRepository extends ServiceEntityRepository
         $citizenOrgaMetadata = $this->_em->getClassMetadata(CitizenOrganization::class);
         $orgaMetadata = $this->_em->getClassMetadata(Organization::class);
 
-        $sql = <<<EOT
+        $sql = <<<SQL
                 SELECT u.*, u.id AS userId,
                        c.*, c.nickname AS citizenNickname, c.id AS citizenId,
                        COUNT(s.id) AS countShips
@@ -304,7 +304,7 @@ class CitizenRepository extends ServiceEntityRepository
                 INNER JOIN {$citizenMetadata->getTableName()} c ON citizenOrga.citizen_id = c.id
                 INNER JOIN {$userMetadata->getTableName()} u ON u.citizen_id = c.id
                 INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
-                INNER JOIN {$shipMetadata->getTableName()} s ON s.fleet_id = f.id and LOWER(s.name) = :shipName
+                INNER JOIN {$shipMetadata->getTableName()} s ON s.fleet_id = f.id and s.galaxy_id = :shipId
                 WHERE (
                     u.public_choice = :userPublicChoicePublic
                     OR (u.public_choice = :userPublicChoiceOrga AND (
@@ -327,7 +327,7 @@ class CitizenRepository extends ServiceEntityRepository
                         )
                     )
                 )
-            EOT;
+            SQL;
 
         // filtering
         if (count($filter->shipNames) > 0) {
@@ -360,8 +360,8 @@ class CitizenRepository extends ServiceEntityRepository
 
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
         $stmt->setParameters([
-            'sid' => mb_strtolower($organizationId),
-            'shipName' => mb_strtolower($shipName),
+            'sid' => $organizationId,
+            'shipId' => $shipGalaxyId,
             'visibilityOrga' => CitizenOrganization::VISIBILITY_ORGA,
             'visibilityAdmin' => CitizenOrganization::VISIBILITY_ADMIN,
             'userPublicChoicePublic' => User::PUBLIC_CHOICE_PUBLIC,
@@ -386,7 +386,7 @@ class CitizenRepository extends ServiceEntityRepository
     /**
      * @param Citizen|null $viewerCitizen the logged citizen
      */
-    public function countOwnersOfShip(string $organizationId, string $shipName, ?Citizen $viewerCitizen, ShipFamilyFilter $filter): int
+    public function countOwnersOfShip(string $organizationId, UuidInterface $shipGalaxyId, ?Citizen $viewerCitizen, ShipFamilyFilter $filter): int
     {
         $userMetadata = $this->_em->getClassMetadata(User::class);
         $citizenMetadata = $this->_em->getClassMetadata(Citizen::class);
@@ -395,14 +395,14 @@ class CitizenRepository extends ServiceEntityRepository
         $citizenOrgaMetadata = $this->_em->getClassMetadata(CitizenOrganization::class);
         $orgaMetadata = $this->_em->getClassMetadata(Organization::class);
 
-        $sql = <<<EOT
+        $sql = <<<SQL
                 SELECT COUNT(DISTINCT c.id) AS total
                 FROM {$orgaMetadata->getTableName()} orga
                 INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON orga.id = citizenOrga.organization_id AND orga.organization_sid = :sid
                 INNER JOIN {$citizenMetadata->getTableName()} c ON citizenOrga.citizen_id = c.id
                 INNER JOIN {$userMetadata->getTableName()} u ON u.citizen_id = c.id
                 INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
-                INNER JOIN {$shipMetadata->getTableName()} s ON s.fleet_id = f.id and LOWER(s.name) = :shipName
+                INNER JOIN {$shipMetadata->getTableName()} s ON s.fleet_id = f.id and s.galaxy_id = :shipId
                 WHERE (
                     u.public_choice = :userPublicChoicePublic
                     OR (u.public_choice = :userPublicChoiceOrga AND (
@@ -425,7 +425,7 @@ class CitizenRepository extends ServiceEntityRepository
                         )
                     )
                 )
-            EOT;
+            SQL;
 
         // filtering
         if (count($filter->shipNames) > 0) {
@@ -448,8 +448,8 @@ class CitizenRepository extends ServiceEntityRepository
 
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
         $stmt->setParameters([
-            'sid' => mb_strtolower($organizationId),
-            'shipName' => mb_strtolower($shipName),
+            'sid' => $organizationId,
+            'shipId' => $shipGalaxyId,
             'visibilityOrga' => CitizenOrganization::VISIBILITY_ORGA,
             'visibilityAdmin' => CitizenOrganization::VISIBILITY_ADMIN,
             'userPublicChoicePublic' => User::PUBLIC_CHOICE_PUBLIC,
@@ -469,7 +469,7 @@ class CitizenRepository extends ServiceEntityRepository
     /**
      * @param Citizen|null $viewerCitizen the logged citizen
      */
-    public function countHiddenOwnersOfShip(string $organizationId, string $shipName, ?Citizen $viewerCitizen): int
+    public function countHiddenOwnersOfShip(string $organizationId, UuidInterface $shipGalaxyId, ?Citizen $viewerCitizen): int
     {
         $userMetadata = $this->_em->getClassMetadata(User::class);
         $citizenMetadata = $this->_em->getClassMetadata(Citizen::class);
@@ -485,7 +485,7 @@ class CitizenRepository extends ServiceEntityRepository
                 INNER JOIN {$citizenMetadata->getTableName()} c ON citizenOrga.citizen_id = c.id
                 INNER JOIN {$userMetadata->getTableName()} u ON u.citizen_id = c.id
                 INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
-                INNER JOIN {$shipMetadata->getTableName()} s ON s.fleet_id = f.id and LOWER(s.name) = :shipName
+                INNER JOIN {$shipMetadata->getTableName()} s ON s.fleet_id = f.id and s.galaxy_id = :shipId
                 # notice the NOT to inverse the normal condition
                 WHERE NOT (
                     u.public_choice = :userPublicChoicePublic
@@ -516,8 +516,8 @@ class CitizenRepository extends ServiceEntityRepository
 
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
         $stmt->setParameters([
-            'sid' => mb_strtolower($organizationId),
-            'shipName' => mb_strtolower($shipName),
+            'sid' => $organizationId,
+            'shipId' => $shipGalaxyId,
             'visibilityOrga' => CitizenOrganization::VISIBILITY_ORGA,
             'visibilityAdmin' => CitizenOrganization::VISIBILITY_ADMIN,
             'userPublicChoicePublic' => User::PUBLIC_CHOICE_PUBLIC,

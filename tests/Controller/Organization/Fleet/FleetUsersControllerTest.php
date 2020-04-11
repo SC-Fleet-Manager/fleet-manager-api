@@ -22,7 +22,7 @@ class FleetUsersControllerTest extends WebTestCase
      */
     public function testOrgaFleetsUsersPublicNotAuth(): void
     {
-        $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/gardiens/users/Aurora%20MR', [], [], [
+        $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/gardiens/users/cbcb60c7-a780-4a59-b51d-0ad8021813bf', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
 
@@ -43,7 +43,7 @@ class FleetUsersControllerTest extends WebTestCase
     public function testOrgaFleetsUsersPrivateAuth(): void
     {
         $this->logIn($this->user);
-        $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/flk/users/Cutlass%20Black', [], [], [
+        $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/flk/users/e37c618b-3ec6-4d4d-92b6-5aed679962a2', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
 
@@ -96,7 +96,7 @@ class FleetUsersControllerTest extends WebTestCase
     {
         $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Gardien1']);
         $this->logIn($user);
-        $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/flk/users/Cutlass%20Black', [], [], [
+        $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/flk/users/e37c618b-3ec6-4d4d-92b6-5aed679962a2', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
 
@@ -111,7 +111,7 @@ class FleetUsersControllerTest extends WebTestCase
      */
     public function testOrgaFleetsUsersPrivateNotAuth(): void
     {
-        $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/flk/users/Cutlass%20Black', [], [], [
+        $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/flk/users/e37c618b-3ec6-4d4d-92b6-5aed679962a2', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
 
@@ -128,7 +128,7 @@ class FleetUsersControllerTest extends WebTestCase
     {
         $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Pulsar42Member1']);
         $this->logIn($user);
-        $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/pulsar42/users/Aurora%20MR', [], [], [
+        $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/pulsar42/users/cbcb60c7-a780-4a59-b51d-0ad8021813bf', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
 
@@ -145,7 +145,7 @@ class FleetUsersControllerTest extends WebTestCase
     {
         $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Pulsar42Admin']);
         $this->logIn($user);
-        $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/pulsar42/users/Aurora%20MR', [], [], [
+        $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/pulsar42/users/cbcb60c7-a780-4a59-b51d-0ad8021813bf', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
 
@@ -153,6 +153,20 @@ class FleetUsersControllerTest extends WebTestCase
         $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArraySubset([
             'users' => [
+                [
+                    [
+                        'id' => '3f90d959-c0fd-4bc0-b0bb-35c570c3c2f5',
+                        'citizen' => [
+                            'id' => '3c201cad-860e-4e7b-a072-0b496bb97464',
+                            'nickname' => 'Member3 de Pulsar42',
+                            'actualHandle' => ['handle' => 'pulsar42_member3'],
+                            'countRedactedOrganizations' => 0,
+                            'redactedMainOrga' => false,
+                        ],
+                        'publicChoice' => 'orga',
+                    ],
+                    'countShips' => '1',
+                ],
                 [
                     [
                         'id' => '4354da33-d2e7-442e-aa5d-22f9bbbdd132',
@@ -170,7 +184,7 @@ class FleetUsersControllerTest extends WebTestCase
             ],
             'page' => 1,
             'lastPage' => 1,
-            'total' => 1,
+            'total' => 2,
         ], $json);
     }
 }

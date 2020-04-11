@@ -15,6 +15,8 @@ use Symfony\Component\Security\Core\Security;
 
 class ChangesController extends AbstractController
 {
+    private const ITEM_PER_PAGE = 100;
+
     private Security $security;
     private OrganizationRepository $organizationRepository;
     private EntityManagerInterface $entityManager;
@@ -58,7 +60,7 @@ class ChangesController extends AbstractController
             ], 403);
         }
 
-        $changes = $this->entityManager->getRepository(OrganizationChange::class)->findBy(['organization' => $organization], ['createdAt' => 'DESC'], 50);
+        $changes = $this->entityManager->getRepository(OrganizationChange::class)->findBy(['organization' => $organization], ['createdAt' => 'DESC'], self::ITEM_PER_PAGE);
 
         return $this->json($changes, 200, [], ['groups' => 'orga_fleet_admin']);
     }

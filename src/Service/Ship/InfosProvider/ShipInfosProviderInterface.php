@@ -11,16 +11,6 @@ interface ShipInfosProviderInterface
      */
     public function getAllShips(): array;
 
-    public function getShipById(string $id): ?ShipInfo;
-
-    public function getShipByName(string $name): ?ShipInfo;
-
-    public function shipNamesAreEquals(string $hangarName, string $providerName): bool;
-
-    public function transformProviderToHangar(string $providerName): string;
-
-    public function transformHangarToProvider(string $hangarName): string;
-
     /**
      * @return ShipInfo[] indexed by Id
      */
@@ -37,4 +27,6 @@ interface ShipInfosProviderInterface
      * @return ShipInfo[]
      */
     public function getShipsByChassisId(string $chassisId): array;
+
+    public function getShipById(string $id): ShipInfo;
 }

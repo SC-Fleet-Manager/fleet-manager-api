@@ -3,7 +3,6 @@
 namespace App\Service\Ship\InfosProvider;
 
 use App\Domain\ShipInfo;
-use App\Repository\ShipNameRepository;
 use Psr\Cache\CacheItemInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -15,21 +14,16 @@ class GalaxyApiShipInfosProvider implements ShipInfosProviderInterface
 {
     private LoggerInterface $logger;
     private TagAwareCacheInterface $cache;
-    private ShipNameRepository $shipNameRepository;
     private HttpClientInterface $httpClient;
     private array $ships = [];
-    private array $shipNames = [];
-    private array $shipNamesFlipped = [];
 
     public function __construct(
         LoggerInterface $logger,
         TagAwareCacheInterface $rsiShipsCache,
-        HttpClientInterface $galaxyShipInfosClient,
-        ShipNameRepository $shipNameRepository
+        HttpClientInterface $galaxyShipInfosClient
     ) {
         $this->logger = $logger;
         $this->cache = $rsiShipsCache;
-        $this->shipNameRepository = $shipNameRepository;
         $this->httpClient = $galaxyShipInfosClient;
     }
 
@@ -128,6 +122,24 @@ class GalaxyApiShipInfosProvider implements ShipInfosProviderInterface
         });
     }
 
+    public function getShipById(string $id): ShipInfo
+    {
+        return $this->cache->get('galaxy_api_ship.'.$id, function (ItemInterface $item) use ($id) {
+            $item->expiresAfter(3600)->tag('galaxy_api_ship');
+
+            $response = $this->httpClient->request('GET', '/api/ships/'.$id);
+
+            try {
+                $json = $response->toArray();
+            } catch (\Exception $e) {
+                $this->logger->error(sprintf('Cannot retrieve ship info {shipId} from Galaxy : {message}.'), ['shipId' => $id, 'exception' => $e, 'message' => $e->getMessage()]);
+                throw new \RuntimeException('Cannot retrieve ship info: '.$e->getMessage(), 0, $e);
+            }
+
+            return $this->createShipInfo($json);
+        });
+    }
+
     /**
      * @return ShipInfo[]
      */
@@ -137,7 +149,7 @@ class GalaxyApiShipInfosProvider implements ShipInfosProviderInterface
             $json = $response->toArray();
         } catch (\Exception $e) {
             $this->logger->error(sprintf('Cannot retrieve ships infos from Galaxy : {message}.'), ['exception' => $e, 'message' => $e->getMessage()]);
-            throw new \RuntimeException('Cannot retrieve ships infos.', 0, $e);
+            throw new \RuntimeException('Cannot retrieve ships infos: '.$e->getMessage(), 0, $e);
         }
 
         $shipInfos = [];
@@ -198,70 +210,5 @@ class GalaxyApiShipInfosProvider implements ShipInfosProviderInterface
         }
 
         return $shipInfo;
-    }
-
-    public function getShipById(string $id): ?ShipInfo
-    {
-        $ships = $this->getAllShips();
-        if (!\array_key_exists($id, $ships)) {
-            return null;
-        }
-
-        return $ships[$id];
-    }
-
-    public function getShipByName(string $name): ?ShipInfo
-    {
-        $name = trim($name);
-        $ships = $this->getAllShips();
-        /** @var ShipInfo $ship */
-        foreach ($ships as $ship) {
-            if (mb_strtolower($ship->name) === mb_strtolower($name)) {
-                return $ship;
-            }
-        }
-
-        return null;
-    }
-
-    public function shipNamesAreEquals(string $hangarName, string $providerName): bool
-    {
-        return $this->transformHangarToProvider(trim($hangarName)) === $providerName;
-    }
-
-    public function transformProviderToHangar(string $providerName): string
-    {
-        $shipNames = $this->findAllShipNamesFlipped();
-
-        return $shipNames[$providerName]['myHangarName'] ?? $providerName;
-    }
-
-    public function transformHangarToProvider(string $hangarName): string
-    {
-        $shipNames = $this->findAllShipNames();
-
-        return $shipNames[$hangarName]['shipMatrixName'] ?? $hangarName;
-    }
-
-    private function findAllShipNames(): array
-    {
-        if ($this->shipNames === []) {
-            $this->shipNames = $this->shipNameRepository->findAllShipNames();
-        }
-
-        return $this->shipNames;
-    }
-
-    private function findAllShipNamesFlipped(): array
-    {
-        if ($this->shipNamesFlipped === []) {
-            $shipNames = $this->findAllShipNames();
-            $this->shipNamesFlipped = [];
-            foreach ($shipNames as $shipName) {
-                $this->shipNamesFlipped[$shipName['shipMatrixName']] = $shipName;
-            }
-        }
-
-        return $this->shipNamesFlipped;
     }
 }

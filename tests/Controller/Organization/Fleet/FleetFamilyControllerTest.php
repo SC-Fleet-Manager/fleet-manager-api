@@ -7,23 +7,15 @@ use App\Tests\WebTestCase;
 
 class FleetFamilyControllerTest extends WebTestCase
 {
-    /** @var User */
-    private $user;
-
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
-    }
-
     /**
      * @group functional
      * @group organization_fleet
      */
     public function testOrgaFleetsFamily(): void
     {
-        $this->logIn($this->user);
-        $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/flk/1', [], [], [
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
+        $this->logIn($user);
+        $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/flk/8502c9fd-6b1a-47e1-a7fc-6cb034b94da1', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
 
@@ -32,7 +24,7 @@ class FleetFamilyControllerTest extends WebTestCase
         $this->assertArraySubset([
             [
                 'shipInfo' => [
-                    'id' => '4',
+                    'id' => 'cbcb60c7-a780-4a59-b51d-0ad8021813bf',
                     'productionStatus' => 'ready',
                     'minCrew' => 1,
                     'maxCrew' => 1,
@@ -41,7 +33,7 @@ class FleetFamilyControllerTest extends WebTestCase
                     'pledgeUrl' => 'https://robertsspaceindustries.com/pledge/ships/rsi-aurora/Aurora-MR',
                     'manufacturerName' => 'Roberts Space Industries',
                     'manufacturerCode' => 'RSI',
-                    'chassisId' => '1',
+                    'chassisId' => '8502c9fd-6b1a-47e1-a7fc-6cb034b94da1',
                     'chassisName' => 'Aurora',
                     'mediaUrl' => 'https://robertsspaceindustries.com/media/ohbfgn1ebcsnar/source/Rsi_aurora_mr_storefront_visual.jpg',
                     'mediaThumbUrl' => 'https://robertsspaceindustries.com/media/ohbfgn1ebcsnar/store_small/Rsi_aurora_mr_storefront_visual.jpg',
@@ -59,7 +51,7 @@ class FleetFamilyControllerTest extends WebTestCase
     {
         $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Gardien1']);
         $this->logIn($user);
-        $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/flk/1', [], [], [
+        $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/flk/8502c9fd-6b1a-47e1-a7fc-6cb034b94da1', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
 
@@ -76,7 +68,7 @@ class FleetFamilyControllerTest extends WebTestCase
     {
         $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Pulsar42Member1']);
         $this->logIn($user);
-        $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/pulsar42/1', [], [], [
+        $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/pulsar42/8502c9fd-6b1a-47e1-a7fc-6cb034b94da1', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
 
@@ -93,7 +85,7 @@ class FleetFamilyControllerTest extends WebTestCase
     {
         $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Pulsar42Admin']);
         $this->logIn($user);
-        $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/pulsar42/1', [], [], [
+        $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/pulsar42/8502c9fd-6b1a-47e1-a7fc-6cb034b94da1', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
 
@@ -102,7 +94,7 @@ class FleetFamilyControllerTest extends WebTestCase
         $this->assertArraySubset([
             [
                 'shipInfo' => [
-                    'id' => '4',
+                    'id' => 'cbcb60c7-a780-4a59-b51d-0ad8021813bf',
                     'productionStatus' => 'ready',
                     'minCrew' => 1,
                     'maxCrew' => 1,
@@ -111,12 +103,12 @@ class FleetFamilyControllerTest extends WebTestCase
                     'pledgeUrl' => 'https://robertsspaceindustries.com/pledge/ships/rsi-aurora/Aurora-MR',
                     'manufacturerName' => 'Roberts Space Industries',
                     'manufacturerCode' => 'RSI',
-                    'chassisId' => '1',
+                    'chassisId' => '8502c9fd-6b1a-47e1-a7fc-6cb034b94da1',
                     'chassisName' => 'Aurora',
                     'mediaUrl' => 'https://robertsspaceindustries.com/media/ohbfgn1ebcsnar/source/Rsi_aurora_mr_storefront_visual.jpg',
                     'mediaThumbUrl' => 'https://robertsspaceindustries.com/media/ohbfgn1ebcsnar/store_small/Rsi_aurora_mr_storefront_visual.jpg',
                 ],
-                'countTotalShips' => '2',
+                'countTotalShips' => 3,
             ],
         ], $json);
     }

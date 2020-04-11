@@ -24,7 +24,7 @@ class FleetHiddenUsersControllerTest extends WebTestCase
     {
         $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Pulsar42Admin']);
         $this->logIn($user);
-        $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/pulsar42/hidden-users/Aurora%20MR', [], [], [
+        $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/pulsar42/hidden-users/cbcb60c7-a780-4a59-b51d-0ad8021813bf', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
 

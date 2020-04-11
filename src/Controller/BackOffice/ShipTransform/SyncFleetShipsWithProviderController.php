@@ -54,6 +54,9 @@ class SyncFleetShipsWithProviderController extends AbstractController implements
         do {
             $ships = $this->shipRepository->findFromLastFleetWithoutGalaxyId($lastId, $itemPerPage);
             $countShips = count($ships);
+            if ($countShips === 0) {
+                break;
+            }
             $countNormalizedShips = 0;
             $sumCountShips += $countShips;
 

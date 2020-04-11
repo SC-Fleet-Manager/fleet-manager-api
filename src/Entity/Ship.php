@@ -270,8 +270,18 @@ class Ship
 
     public function equals(self $other): bool
     {
-        return mb_strtolower($this->name) === mb_strtolower($other->name)
-            && mb_strtolower($this->manufacturer) === mb_strtolower($other->manufacturer)
+        if ($this->galaxyId !== null) {
+            return $this->galaxyId === $other->galaxyId
+                && $this->insuranceType === $other->insuranceType
+                && $this->insuranceDuration === $other->insuranceDuration
+                && $this->cost === $other->cost
+                && $this->pledgeDate->format('Ymd') === $other->pledgeDate->format('Ymd');
+        }
+
+        $collator = new \Collator(null);
+        $collator->setStrength(\Collator::PRIMARY);
+
+        return $collator->compare($this->name, $other->name) === 0
             && $this->insuranceType === $other->insuranceType
             && $this->insuranceDuration === $other->insuranceDuration
             && $this->cost === $other->cost

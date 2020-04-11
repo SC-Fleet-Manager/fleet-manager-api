@@ -7,19 +7,22 @@ use App\Repository\CitizenRepository;
 use App\Service\Organization\Fleet\FleetOrganizationGuard;
 use App\Service\Organization\ShipFamilyFilterFactory;
 use App\Service\Ship\InfosProvider\ShipInfosProviderInterface;
-use Psr\Log\LoggerInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Security;
 
-class FleetUsersController extends AbstractController
+class FleetUsersController extends AbstractController implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     private Security $security;
     private FleetOrganizationGuard $fleetOrganizationGuard;
     private ShipInfosProviderInterface $shipInfosProvider;
-    private LoggerInterface $logger;
     private CitizenRepository $citizenRepository;
     private ShipFamilyFilterFactory $shipFamilyFilterFactory;
 
@@ -27,26 +30,24 @@ class FleetUsersController extends AbstractController
         Security $security,
         FleetOrganizationGuard $fleetOrganizationGuard,
         ShipInfosProviderInterface $shipInfosProvider,
-        LoggerInterface $logger,
         CitizenRepository $citizenRepository,
         ShipFamilyFilterFactory $shipFamilyFilterFactory
     ) {
         $this->security = $security;
         $this->fleetOrganizationGuard = $fleetOrganizationGuard;
         $this->shipInfosProvider = $shipInfosProvider;
-        $this->logger = $logger;
         $this->citizenRepository = $citizenRepository;
         $this->shipFamilyFilterFactory = $shipFamilyFilterFactory;
     }
 
-    public function __invoke(Request $request, string $organizationSid, string $providerShipName): Response
+    public function __invoke(Request $request, string $organizationSid, string $providerShipId): Response
     {
-        $page = $request->query->getInt('page', 1);
-        $itemsPerPage = 10;
-
         if (null !== $response = $this->fleetOrganizationGuard->checkAccessibleOrganization($organizationSid)) {
             return $response;
         }
+
+        $page = $request->query->getInt('page', 1);
+        $itemsPerPage = 10;
 
         // If viewer is not in this orga, he doesn't see the users
         if ($this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
@@ -78,13 +79,7 @@ class FleetUsersController extends AbstractController
 
         $shipFamilyFilter = $this->shipFamilyFilterFactory->create($request, $organizationSid);
 
-        $shipName = $this->shipInfosProvider->transformProviderToHangar($providerShipName);
-        $shipInfo = $this->shipInfosProvider->getShipByName($providerShipName);
-        if ($shipInfo === null) {
-            $this->logger->warning('Ship not found in the ship infos provider.', ['hangarShipName' => $providerShipName, 'provider' => get_class($this->shipInfosProvider)]);
-
-            return $this->json([]);
-        }
+        $shipInfo = $this->shipInfosProvider->getShipById(Uuid::fromString($providerShipId));
 
         // filtering
         if (count($shipFamilyFilter->shipSizes) > 0 && !in_array($shipInfo->size, $shipFamilyFilter->shipSizes, false)) {
@@ -99,10 +94,10 @@ class FleetUsersController extends AbstractController
             $loggedCitizen = $this->getUser()->getCitizen();
         }
 
-        $countOwners = $this->citizenRepository->countOwnersOfShip($organizationSid, $shipName, $loggedCitizen, $shipFamilyFilter);
+        $countOwners = $this->citizenRepository->countOwnersOfShip($organizationSid, Uuid::fromString($providerShipId), $loggedCitizen, $shipFamilyFilter);
         $users = $this->citizenRepository->getOwnersOfShip(
             $organizationSid,
-            $shipName,
+            Uuid::fromString($providerShipId),
             $loggedCitizen,
             $shipFamilyFilter,
             $page,

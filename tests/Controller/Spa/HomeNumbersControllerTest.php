@@ -21,7 +21,7 @@ class HomeNumbersControllerTest extends WebTestCase
         $this->assertArraySubset([
             'organizations' => 4,
             'users' => 44,
-            'ships' => 11,
+            'ships' => 12,
         ], $json);
     }
 }

@@ -71,12 +71,18 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
         /** @var array $ships */
         $ships = $this->getAllShips();
 
-        $res = array_filter($ships, static function (ShipInfo $shipInfo) use ($ids): bool {
-            return in_array((string) $shipInfo->id, $ids, true);
-        });
+        $res = [];
+        foreach ($ships as $ship) {
+            if (in_array((string) $ship->id, $ids, true)) {
+                $res[(string) $ship->id] = $ship;
+            }
+        }
 
         foreach ($names as $name) {
-            $res[] = $this->getShipByName($name);
+            $shipInfo = $this->getShipByName($name);
+            if ($shipInfo !== null) {
+                $res[(string) $shipInfo->id] = $shipInfo;
+            }
         }
 
         return $res;
@@ -241,12 +247,9 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
         });
     }
 
-    public function getShipById(string $id): ?ShipInfo
+    public function getShipById(string $id): ShipInfo
     {
         $ships = $this->getAllShips();
-        if (!\array_key_exists($id, $ships)) {
-            return null;
-        }
 
         return $ships[$id];
     }
@@ -272,46 +275,5 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
         }
 
         return $this->chassisNames[(int) $chassisId]['name'] ?? 'Unknown chassis';
-    }
-
-    public function shipNamesAreEquals(string $hangarName, string $providerName): bool
-    {
-        return $this->transformHangarToProvider(trim($hangarName)) === $providerName;
-    }
-
-    public function transformProviderToHangar(string $providerName): string
-    {
-        $shipNames = $this->findAllShipNamesFlipped();
-
-        return $shipNames[$providerName]['myHangarName'] ?? $providerName;
-    }
-
-    public function transformHangarToProvider(string $hangarName): string
-    {
-        $shipNames = $this->findAllShipNames();
-
-        return $shipNames[$hangarName]['shipMatrixName'] ?? $hangarName;
-    }
-
-    private function findAllShipNames(): array
-    {
-        if ($this->shipNames === []) {
-            $this->shipNames = $this->shipNameRepository->findAllShipNames();
-        }
-
-        return $this->shipNames;
-    }
-
-    private function findAllShipNamesFlipped(): array
-    {
-        if ($this->shipNamesFlipped === []) {
-            $shipNames = $this->findAllShipNames();
-            $this->shipNamesFlipped = [];
-            foreach ($shipNames as $shipName) {
-                $this->shipNamesFlipped[$shipName['shipMatrixName']] = $shipName;
-            }
-        }
-
-        return $this->shipNamesFlipped;
     }
 }

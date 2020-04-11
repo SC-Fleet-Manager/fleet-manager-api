@@ -10,15 +10,6 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class UploadControllerTest extends WebTestCase
 {
-    /** @var User */
-    private $user;
-
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
-    }
-
     /**
      * @group functional
      * @group api
@@ -58,21 +49,25 @@ class UploadControllerTest extends WebTestCase
             EOT
         );
         $citizenInfosProvider = static::$container->get(CitizenInfosProviderInterface::class);
-        $citizenInfosProvider->setCitizen($this->user->getCitizen());
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
+        $citizenInfosProvider->setCitizen($user->getCitizen());
 
-        $this->logIn($this->user);
+        $this->logIn($user);
         $this->client->xmlHttpRequest('POST', '/api/upload', [], [
             'fleetFile' => new UploadedFile(sys_get_temp_dir().'/test-fleet.json', 'test-fleet.json', 'application/json', null),
         ]);
 
         $this->assertSame(204, $this->client->getResponse()->getStatusCode());
-
         /** @var Fleet $lastFleet */
-        $lastFleet = $this->user->getCitizen()->getLastFleet();
+        $lastFleet = $user->getCitizen()->getLastFleet();
         $this->assertSame(2, $lastFleet->getVersion());
         $this->assertCount(3, $lastFleet->getShips());
         $this->assertSame('Cutlass Black', $lastFleet->getShips()[0]->getName());
+        $this->assertSame('e37c618b-3ec6-4d4d-92b6-5aed679962a2', $lastFleet->getShips()[0]->getGalaxyId()->toString());
+        $this->assertSame('Cutlass Black', $lastFleet->getShips()[0]->getNormalizedName());
         $this->assertSame('Cyclone', $lastFleet->getShips()[1]->getName());
+        $this->assertNull($lastFleet->getShips()[1]->getGalaxyId());
+        $this->assertNull($lastFleet->getShips()[1]->getNormalizedName());
         $this->assertFalse($lastFleet->getShips()[1]->isInsured());
         $this->assertNull($lastFleet->getShips()[1]->getInsuranceDuration());
         $this->assertSame(6, $lastFleet->getShips()[2]->getInsuranceDuration());
@@ -84,7 +79,8 @@ class UploadControllerTest extends WebTestCase
      */
     public function testMustUploadFleetFileUpload(): void
     {
-        $this->logIn($this->user);
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
+        $this->logIn($user);
         $this->client->xmlHttpRequest('POST', '/api/upload', [
             'fleetFile' => null,
         ]);
@@ -112,16 +108,17 @@ class UploadControllerTest extends WebTestCase
             EOT
         );
         $citizenInfosProvider = static::$container->get(CitizenInfosProviderInterface::class);
-        $citizenInfosProvider->setCitizen($this->user->getCitizen());
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
+        $citizenInfosProvider->setCitizen($user->getCitizen());
 
-        $this->logIn($this->user);
+        $this->logIn($user);
         $this->client->xmlHttpRequest('POST', '/api/upload', [], [
             'fleetFile' => new UploadedFile(sys_get_temp_dir().'/test-fleet.json', 'test-fleet.json', 'application/json', null),
         ]);
         $this->assertSame(204, $this->client->getResponse()->getStatusCode());
 
         /** @var Fleet $lastFleet */
-        $lastFleet = $this->user->getCitizen()->getLastFleet();
+        $lastFleet = $user->getCitizen()->getLastFleet();
         $this->assertSame(2, $lastFleet->getVersion());
         $this->assertCount(1, $lastFleet->getShips());
         $this->assertSame('Cutlass Black', $lastFleet->getShips()[0]->getName());
@@ -159,16 +156,17 @@ class UploadControllerTest extends WebTestCase
             EOT
         );
         $citizenInfosProvider = static::$container->get(CitizenInfosProviderInterface::class);
-        $citizenInfosProvider->setCitizen($this->user->getCitizen());
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
+        $citizenInfosProvider->setCitizen($user->getCitizen());
 
-        $this->logIn($this->user);
+        $this->logIn($user);
         $this->client->xmlHttpRequest('POST', '/api/upload', [], [
             'fleetFile' => new UploadedFile(sys_get_temp_dir().'/test-fleet.json', 'test-fleet.json', 'application/json', null),
         ]);
         $this->assertSame(204, $this->client->getResponse()->getStatusCode());
 
         /** @var Fleet $lastFleet */
-        $lastFleet = $this->user->getCitizen()->getLastFleet();
+        $lastFleet = $user->getCitizen()->getLastFleet();
         $this->assertSame(1000.0, $lastFleet->getShips()[0]->getCost());
         $this->assertSame(500.0, $lastFleet->getShips()[1]->getCost());
         $this->assertSame(2123456.78, $lastFleet->getShips()[2]->getCost());
@@ -192,9 +190,10 @@ class UploadControllerTest extends WebTestCase
             EOT
         );
         $citizenInfosProvider = static::$container->get(CitizenInfosProviderInterface::class);
-        $citizenInfosProvider->setCitizen($this->user->getCitizen());
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
+        $citizenInfosProvider->setCitizen($user->getCitizen());
 
-        $this->logIn($this->user);
+        $this->logIn($user);
         $this->client->xmlHttpRequest('POST', '/api/upload', [], [
             'fleetFile' => new UploadedFile(sys_get_temp_dir().'/test-fleet.json', 'test-fleet.json', 'application/json', null),
         ]);
@@ -263,16 +262,17 @@ class UploadControllerTest extends WebTestCase
             EOT
         );
         $citizenInfosProvider = static::$container->get(CitizenInfosProviderInterface::class);
-        $citizenInfosProvider->setCitizen($this->user->getCitizen());
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
+        $citizenInfosProvider->setCitizen($user->getCitizen());
 
-        $this->logIn($this->user);
+        $this->logIn($user);
         $this->client->xmlHttpRequest('POST', '/api/upload', [], [
             'fleetFile' => new UploadedFile(sys_get_temp_dir().'/test-fleet.json', 'test-fleet.json', 'application/json', null),
         ]);
         $this->assertSame(204, $this->client->getResponse()->getStatusCode());
 
         /** @var Fleet $lastFleet */
-        $lastFleet = $this->user->getCitizen()->getLastFleet();
+        $lastFleet = $user->getCitizen()->getLastFleet();
         $this->assertSame(2, $lastFleet->getVersion());
         $this->assertCount(7, $lastFleet->getShips());
 

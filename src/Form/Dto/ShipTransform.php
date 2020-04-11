@@ -27,7 +27,6 @@ class ShipTransform
      */
     public ?string $providerId;
 
-
     public function __construct(?string $myHangarName = null, ?string $shipMatrixName = null, ?string $providerId = null, ?string $myHangarNamePattern = null)
     {
         $this->myHangarName = $myHangarName;

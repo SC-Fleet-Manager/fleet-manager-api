@@ -39,6 +39,7 @@ class OrganizationFleetHandler implements LoggerAwareInterface
                 $shipIds[] = $orgaShip->getGalaxyId()->toString();
             }
         }
+
         $shipInfos = $this->shipInfosProvider->getShipsByIdOrName($shipIds);
 
         $shipFamilies = [];

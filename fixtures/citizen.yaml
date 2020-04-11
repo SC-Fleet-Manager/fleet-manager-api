@@ -95,6 +95,8 @@ App\Entity\Citizen:
         actualHandle: '<(new \App\Domain\HandleSC("pulsar42_member3"))>'
         organizations: ['@pulsar42_member3_orga_pulsar42']
         mainOrga: '@pulsar42_member3_orga_pulsar42'
+        fleets: ['@fleet_pulsar42_member3_v1']
+        lastFleet: '@fleet_pulsar42_member3_v1'
     citizen_linksocialnetworks:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("9fa8f892-15d6-415b-b535-14455314b865"))>']
         number: '<(new \App\Domain\CitizenNumber("62415214"))>'
