@@ -42,7 +42,7 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
     /**
      * @return iterable|ShipInfo[]
      */
-    public function refreshShips(): iterable
+    public function refreshShips(): array
     {
         $this->cache->delete('ship_matrix');
         $this->ships = [];
@@ -53,7 +53,7 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
     /**
      * @return iterable|ShipInfo[]
      */
-    public function getAllShips(bool $indexedById = false): iterable
+    public function getAllShips(): array
     {
         if (!$this->ships) {
             $this->ships = $this->cache->get('ship_matrix', function (CacheItem $cacheItem) {
@@ -66,7 +66,7 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
         return $this->ships;
     }
 
-    public function getShipsByIdOrName(array $ids, array $names = []): iterable
+    public function getShipsByIdOrName(array $ids, array $names = []): array
     {
         /** @var array $ships */
         $ships = $this->getAllShips();
@@ -234,7 +234,7 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
         return $shipInfos;
     }
 
-    public function getShipsByChassisId(string $chassisId): iterable
+    public function getShipsByChassisId(string $chassisId): array
     {
         return array_filter($this->getAllShips(), static function (ShipInfo $shipInfo) use ($chassisId): bool {
             return $shipInfo->chassisId === $chassisId;

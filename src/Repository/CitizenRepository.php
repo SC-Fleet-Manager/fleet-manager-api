@@ -14,6 +14,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Ramsey\Uuid\UuidInterface;
 
 class CitizenRepository extends ServiceEntityRepository
 {
@@ -231,7 +232,7 @@ class CitizenRepository extends ServiceEntityRepository
         return $stmt->getResult();
     }
 
-    public function countOwnersAndOwnedOfShip(string $organizationId, string $shipName, ShipFamilyFilter $filter): array
+    public function countShipOwnedByOrga(string $organizationId, UuidInterface $shipGalaxyId, ShipFamilyFilter $filter): array
     {
         $citizenMetadata = $this->getClassMetadata();
         $fleetMetadata = $this->_em->getClassMetadata(Fleet::class);
@@ -239,13 +240,13 @@ class CitizenRepository extends ServiceEntityRepository
         $citizenOrgaMetadata = $this->_em->getClassMetadata(CitizenOrganization::class);
         $orgaMetadata = $this->_em->getClassMetadata(Organization::class);
 
-        $sql = <<<EOT
-                SELECT count(DISTINCT c.id) AS countOwners, count(*) AS countOwned FROM {$citizenMetadata->getTableName()} c
+        $sql = <<<SQL
+                SELECT COUNT(*) AS countShips FROM {$citizenMetadata->getTableName()} c
                 INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON citizenOrga.citizen_id = c.id
                 INNER JOIN {$orgaMetadata->getTableName()} orga ON orga.id = citizenOrga.organization_id AND orga.organization_sid = :sid
                 INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
-                INNER JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id and LOWER(s.name) = :shipName
-            EOT;
+                INNER JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id and s.galaxy_id = :galaxyId
+            SQL;
         // filtering
         if (count($filter->shipNames) > 0) {
             $sql .= ' AND (';
@@ -263,12 +264,11 @@ class CitizenRepository extends ServiceEntityRepository
         }
 
         $rsm = new ResultSetMapping();
-        $rsm->addScalarResult('countOwners', 'countOwners');
-        $rsm->addScalarResult('countOwned', 'countOwned');
+        $rsm->addScalarResult('countShips', 'countShips');
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
         $stmt->setParameters([
-            'sid' => mb_strtolower($organizationId),
-            'shipName' => mb_strtolower($shipName),
+            'sid' => $organizationId,
+            'galaxyId' => $shipGalaxyId,
         ]);
         foreach ($filter->shipNames as $i => $filterShipName) {
             $stmt->setParameter('shipName_'.$i, $filterShipName);
@@ -276,6 +276,7 @@ class CitizenRepository extends ServiceEntityRepository
         foreach ($filter->citizenIds as $i => $filterCitizenId) {
             $stmt->setParameter('citizenId_'.$i, $filterCitizenId);
         }
+        $stmt->enableResultCache(60);
 
         return $stmt->getScalarResult();
     }

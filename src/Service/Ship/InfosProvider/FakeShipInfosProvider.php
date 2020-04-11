@@ -9,12 +9,12 @@ class FakeShipInfosProvider extends ApiShipInfosProvider
     /**
      * @return iterable|ShipInfo[]
      */
-    public function refreshShips(): iterable
+    public function refreshShips(): array
     {
         return $this->getAllShips();
     }
 
-    public function getAllShips(bool $indexedById = false): iterable
+    public function getAllShips(): array
     {
         $shipInfos = [];
 

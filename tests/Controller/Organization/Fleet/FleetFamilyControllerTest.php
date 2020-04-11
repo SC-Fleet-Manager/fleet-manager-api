@@ -46,7 +46,6 @@ class FleetFamilyControllerTest extends WebTestCase
                     'mediaUrl' => 'https://robertsspaceindustries.com/media/ohbfgn1ebcsnar/source/Rsi_aurora_mr_storefront_visual.jpg',
                     'mediaThumbUrl' => 'https://robertsspaceindustries.com/media/ohbfgn1ebcsnar/store_small/Rsi_aurora_mr_storefront_visual.jpg',
                 ],
-                'countTotalOwners' => '1',
                 'countTotalShips' => '1',
             ],
         ], $json);
@@ -117,7 +116,6 @@ class FleetFamilyControllerTest extends WebTestCase
                     'mediaUrl' => 'https://robertsspaceindustries.com/media/ohbfgn1ebcsnar/source/Rsi_aurora_mr_storefront_visual.jpg',
                     'mediaThumbUrl' => 'https://robertsspaceindustries.com/media/ohbfgn1ebcsnar/store_small/Rsi_aurora_mr_storefront_visual.jpg',
                 ],
-                'countTotalOwners' => '2',
                 'countTotalShips' => '2',
             ],
         ], $json);

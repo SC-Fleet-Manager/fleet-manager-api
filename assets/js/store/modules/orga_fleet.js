@@ -4,7 +4,7 @@ const state = {
     selectedSid: null,
     selectedIndex: null, // index of the ship family in the page. used to compute where the details will open
     selectedShipFamily: null, // {chassisId: "00", name: "xx", ...}
-    selectedShipVariants: [], // [{countTotalOwners: 0, countTotalShips: 0, shipInfo: {id: "00", name: "xxx", mediaThumbUrl: "https://...", ...}}, {...}]
+    selectedShipVariants: [], // [{countTotalShips: 0, shipInfo: {id: "00", name: "xxx", mediaThumbUrl: "https://...", ...}}, {...}]
     shipVariantUsersTrackChanges: 0, // +1 at each update TODO : only update the right ShipVariant instead of all !
     shipVariantUsers: {}, // {"<ship id>": {...}}
     shipVariantUsersMetadata: {}, // { page, lastPage, total }

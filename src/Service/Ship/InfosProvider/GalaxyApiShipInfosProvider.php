@@ -9,6 +9,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class GalaxyApiShipInfosProvider implements ShipInfosProviderInterface
 {
@@ -32,10 +33,7 @@ class GalaxyApiShipInfosProvider implements ShipInfosProviderInterface
         $this->httpClient = $galaxyShipInfosClient;
     }
 
-    /**
-     * @return iterable|ShipInfo[]
-     */
-    public function refreshShips(): iterable
+    public function refreshShips(): array
     {
         $this->cache->invalidateTags(['galaxy_api_ship']);
         $this->ships = [];
@@ -43,26 +41,26 @@ class GalaxyApiShipInfosProvider implements ShipInfosProviderInterface
         return $this->getAllShips();
     }
 
-    /**
-     * @return iterable|ShipInfo[]
-     */
-    public function getAllShips(bool $indexedById = false): iterable
+    public function getAllShips(): array
     {
         if (!$this->ships) {
-            $this->ships = $this->cache->get('galaxy_api_all_ships', function (ItemInterface $cacheItem) use ($indexedById) {
+            $this->ships = $this->cache->get('galaxy_api_all_ships', function (ItemInterface $cacheItem) {
                 $cacheItem->expiresAfter(new \DateInterval('P1D'))->tag('galaxy_api_ship');
 
-                return $this->retrieveData($indexedById);
+                $response = $this->httpClient->request('GET', '/api/ships', [
+                    'query' => [
+                        'pagination' => 'false',
+                    ],
+                ]);
+
+                return $this->parseApiShipsCollectionResponse($response);
             });
         }
 
         return $this->ships;
     }
 
-    /**
-     * @return iterable|ShipInfo[]
-     */
-    public function getShipsByIdOrName(array $ids, array $names = []): iterable
+    public function getShipsByIdOrName(array $ids, array $names = []): array
     {
         $cacheKeysIds = [];
         foreach ($ids as $id) {
@@ -109,6 +107,44 @@ class GalaxyApiShipInfosProvider implements ShipInfosProviderInterface
                 $this->cache->get('galaxy_api_ship_name.'.sha1(mb_strtolower($shipInfo->name)), $callback, INF);
                 $this->cache->get('galaxy_api_ship.'.$shipInfo->id, $callback, INF);
             }
+        }
+
+        return $shipInfos;
+    }
+
+    public function getShipsByChassisId(string $chassisId): array
+    {
+        return $this->cache->get('galaxy_api_ships_chassis_'.$chassisId, function (ItemInterface $cacheItem) use ($chassisId) {
+            $cacheItem->expiresAfter(new \DateInterval('P1D'))->tag('galaxy_api_ship');
+
+            $response = $this->httpClient->request('GET', '/api/ships', [
+                'query' => [
+                    'pagination' => 'false',
+                    'chassis' => $chassisId,
+                ],
+            ]);
+
+            return $this->parseApiShipsCollectionResponse($response);
+        });
+    }
+
+    /**
+     * @return ShipInfo[]
+     */
+    private function parseApiShipsCollectionResponse(ResponseInterface $response): array
+    {
+        try {
+            $json = $response->toArray();
+        } catch (\Exception $e) {
+            $this->logger->error(sprintf('Cannot retrieve ships infos from Galaxy : {message}.'), ['exception' => $e, 'message' => $e->getMessage()]);
+            throw new \RuntimeException('Cannot retrieve ships infos.', 0, $e);
+        }
+
+        $shipInfos = [];
+        foreach ($json as $shipJson) {
+            $shipInfo = $this->createShipInfo($shipJson);
+
+            $shipInfos[$shipInfo->id] = $shipInfo;
         }
 
         return $shipInfos;
@@ -164,47 +200,9 @@ class GalaxyApiShipInfosProvider implements ShipInfosProviderInterface
         return $shipInfo;
     }
 
-    /**
-     * @return ShipInfo[]
-     */
-    private function retrieveData(bool $indexedById = false): array
-    {
-        $response = $this->httpClient->request('GET', '/api/ships', [
-            'query' => [
-                'pagination' => 'false',
-            ],
-        ]);
-        try {
-            $json = $response->toArray();
-        } catch (\Exception $e) {
-            $this->logger->error(sprintf('Cannot retrieve ships infos from Galaxy : {message}.'), ['exception' => $e, 'message' => $e->getMessage()]);
-            throw new \RuntimeException('Cannot retrieve ships infos.', 0, $e);
-        }
-
-        $shipInfos = [];
-        foreach ($json as $shipJson) {
-            $shipInfo = $this->createShipInfo($shipJson);
-
-            if ($indexedById) {
-                $shipInfos[$shipInfo->id] = $shipInfo;
-            } else {
-                $shipInfos[] = $shipInfo;
-            }
-        }
-
-        return $shipInfos;
-    }
-
-    public function getShipsByChassisId(string $chassisId): iterable
-    {
-        return array_filter($this->getAllShips(), static function (ShipInfo $shipInfo) use ($chassisId): bool {
-            return $shipInfo->chassisId === $chassisId;
-        });
-    }
-
     public function getShipById(string $id): ?ShipInfo
     {
-        $ships = $this->getAllShips(true);
+        $ships = $this->getAllShips();
         if (!\array_key_exists($id, $ships)) {
             return null;
         }

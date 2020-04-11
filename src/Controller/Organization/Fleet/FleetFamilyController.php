@@ -6,6 +6,7 @@ use App\Repository\CitizenRepository;
 use App\Service\Organization\Fleet\FleetOrganizationGuard;
 use App\Service\Organization\ShipFamilyFilterFactory;
 use App\Service\Ship\InfosProvider\ShipInfosProviderInterface;
+use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -37,10 +38,13 @@ class FleetFamilyController extends AbstractController
 
         $shipFamilyFilter = $this->shipFamilyFilterFactory->create($request, $organizationSid);
 
-        $shipsInfos = $this->shipInfosProvider->getShipsByChassisId($chassisId);
+        $shipInfos = $this->shipInfosProvider->getShipsByChassisId($chassisId);
 
         $res = [];
-        foreach ($shipsInfos as $shipInfo) {
+        foreach ($shipInfos as $shipInfo) {
+            if ($shipInfo->id === null) {
+                continue;
+            }
             // filtering
             if (count($shipFamilyFilter->shipSizes) > 0 && !in_array($shipInfo->size, $shipFamilyFilter->shipSizes, false)) {
                 continue;
@@ -48,19 +52,19 @@ class FleetFamilyController extends AbstractController
             if ($shipFamilyFilter->shipStatus !== null && $shipFamilyFilter->shipStatus !== $shipInfo->productionStatus) {
                 continue;
             }
-            $shipName = $this->shipInfosProvider->transformProviderToHangar($shipInfo->name);
-            $countOwnersAndOwned = $this->citizenRepository->countOwnersAndOwnedOfShip($organizationSid, $shipName, $shipFamilyFilter)[0];
-            if ((int) $countOwnersAndOwned['countOwned'] === 0) {
+
+            $countShip = $this->citizenRepository->countShipOwnedByOrga($organizationSid, Uuid::fromString($shipInfo->id), $shipFamilyFilter)[0];
+            if ((int) $countShip['countShips'] === 0) {
+                // only return owner ships.
                 continue;
             }
             $res[] = [
                 'shipInfo' => $shipInfo,
-                'countTotalOwners' => $countOwnersAndOwned['countOwners'],
-                'countTotalShips' => $countOwnersAndOwned['countOwned'],
+                'countTotalShips' => (int) $countShip['countShips'],
             ];
         }
         usort($res, static function (array $result1, array $result2): int {
-            return $result2['countTotalShips'] - $result1['countTotalShips'];
+            return (int) $result2['countTotalShips'] - (int) $result1['countTotalShips'];
         });
 
         return $this->json($res);
