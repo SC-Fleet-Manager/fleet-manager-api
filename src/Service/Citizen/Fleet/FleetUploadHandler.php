@@ -143,18 +143,25 @@ class FleetUploadHandler implements LoggerAwareInterface
                     continue;
                 }
                 // found a mapping
-                $providerIds[$shipMapping->getProviderId()->toString()] = $shipData; // for request all ship infos all-in-once
+                $shipProviderId = $shipMapping->getProviderId()->toString();
+                if (!isset($providerIds[$shipProviderId])) {
+                    $providerIds[$shipProviderId] = [];
+                }
+                $providerIds[$shipProviderId][] = $shipData; // for request all ship infos all-in-once
                 $mappingFound = true;
                 break;
             }
             if (!$mappingFound) {
-                $notFoundMappingNames[$shipName] = $shipData; // for trying to get a ship info by the name
+                if (!isset($notFoundMappingNames[$shipName])) {
+                    $notFoundMappingNames[$shipName] = [];
+                }
+                $notFoundMappingNames[$shipName][] = $shipData; // for trying to get a ship info by the name
             }
         }
 
         $shipInfos = $this->shipInfosProvider->getShipsByIdOrName(array_keys($providerIds), array_keys($notFoundMappingNames));
 
-        foreach ($providerIds as $providerId => $shipData) {
+        foreach ($providerIds as $providerId => $shipDatas) {
             $foundShipInfo = null;
             foreach ($shipInfos as $shipInfo) {
                 if ($shipInfo->id === $providerId) {
@@ -165,12 +172,14 @@ class FleetUploadHandler implements LoggerAwareInterface
             if ($foundShipInfo === null) {
                 $this->logger->error('[FleetUploadHandler] The ship with provider Id {providerId} was not found. Check the ship mapping in BO.', ['providerId' => $providerId]);
             }
-            $ship = $this->createShip($shipData, $foundShipInfo);
-            $fleet->addShip($ship);
+            foreach ($shipDatas as $shipData) {
+                $ship = $this->createShip($shipData, $foundShipInfo);
+                $fleet->addShip($ship);
+            }
         }
         $collator = \Collator::create(null);
         $collator->setStrength(\Collator::PRIMARY); // first level compares for example : a === Â, but a < b
-        foreach ($notFoundMappingNames as $shipName => $shipData) {
+        foreach ($notFoundMappingNames as $shipName => $shipDatas) {
             $foundShipInfo = null;
             foreach ($shipInfos as $shipInfo) {
                 if ($collator->compare($shipInfo->name, $shipName) === 0) {
@@ -181,8 +190,10 @@ class FleetUploadHandler implements LoggerAwareInterface
             if ($foundShipInfo === null) {
                 $this->logger->error('[FleetUploadHandler] The ship with name "{shipName}" was not found. You should add it to ship mapping in BO.', ['shipName' => $shipName]);
             }
-            $ship = $this->createShip($shipData, $foundShipInfo);
-            $fleet->addShip($ship);
+            foreach ($shipDatas as $shipData) {
+                $ship = $this->createShip($shipData, $foundShipInfo);
+                $fleet->addShip($ship);
+            }
         }
 
         return $fleet;

@@ -41,9 +41,6 @@ class SyncFleetShipsWithProviderController extends AbstractController implements
      */
     public function __invoke(Request $request): Response
     {
-        $totalCountShips = $this->shipRepository->countFromLastFleetWithoutGalaxyId();
-        $this->logger->info('[SyncFleetShipsWithProvider] refreshing {countShips} ships.', ['countShips' => $totalCountShips]);
-
         /** @var ShipName[] $shipMappings */
         $shipMappings = $this->shipNameRepository->findAllMappingsWithPatternAndProviderId();
 
@@ -52,9 +49,12 @@ class SyncFleetShipsWithProviderController extends AbstractController implements
         $this->entityManager->clear();
         $lastId = null;
         $sumCountShips = 0;
+        $sumCountNormalizedShips = 0;
+        $itemPerPage = 1000;
         do {
-            $ships = $this->shipRepository->findFromLastFleetWithoutGalaxyId($lastId, 1000);
+            $ships = $this->shipRepository->findFromLastFleetWithoutGalaxyId($lastId, $itemPerPage);
             $countShips = count($ships);
+            $countNormalizedShips = 0;
             $sumCountShips += $countShips;
 
             $notFoundMappingNames = [];
@@ -67,18 +67,25 @@ class SyncFleetShipsWithProviderController extends AbstractController implements
                         continue;
                     }
                     // found a mapping
-                    $providerIds[$shipMapping->getProviderId()->toString()] = $ship; // for request all ship infos all-in-once
+                    $shipProviderId = $shipMapping->getProviderId()->toString();
+                    if (!isset($providerIds[$shipProviderId])) {
+                        $providerIds[$shipProviderId] = [];
+                    }
+                    $providerIds[$shipProviderId][] = $ship; // for request all ship infos all-in-once
                     $mappingFound = true;
                     break;
                 }
                 if (!$mappingFound) {
-                    $notFoundMappingNames[$shipName] = $ship; // for trying to get a ship info by the name
+                    if (!isset($notFoundMappingNames[$shipName])) {
+                        $notFoundMappingNames[$shipName] = [];
+                    }
+                    $notFoundMappingNames[$shipName][] = $ship; // for trying to get a ship info by the name
                 }
             }
 
             $shipInfos = $this->shipInfosProvider->getShipsByIdOrName(array_keys($providerIds), array_keys($notFoundMappingNames));
 
-            foreach ($providerIds as $providerId => $ship) {
+            foreach ($providerIds as $providerId => $ships) {
                 $foundShipInfo = null;
                 foreach ($shipInfos as $shipInfo) {
                     if ($shipInfo->id === $providerId) {
@@ -90,12 +97,15 @@ class SyncFleetShipsWithProviderController extends AbstractController implements
                     $this->logger->warning('[SyncFleetShipsWithProvider] The ship with provider Id {providerId} was not found. Check the ship mapping in BO.', ['providerId' => $providerId]);
                     continue;
                 }
-                $ship->setNormalizedName($foundShipInfo->name);
-                $ship->setGalaxyId($foundShipInfo->id !== null ? Uuid::fromString($foundShipInfo->id) : null);
+                foreach ($ships as $ship) {
+                    $ship->setNormalizedName($foundShipInfo->name);
+                    $ship->setGalaxyId($foundShipInfo->id !== null ? Uuid::fromString($foundShipInfo->id) : null);
+                    ++$countNormalizedShips;
+                }
             }
             $collator = \Collator::create(null);
             $collator->setStrength(\Collator::PRIMARY); // first level compares for example : a === Â, but a < b
-            foreach ($notFoundMappingNames as $shipName => $ship) {
+            foreach ($notFoundMappingNames as $shipName => $ships) {
                 $foundShipInfo = null;
                 foreach ($shipInfos as $shipInfo) {
                     if ($collator->compare($shipInfo->name, $shipName) === 0) {
@@ -107,16 +117,22 @@ class SyncFleetShipsWithProviderController extends AbstractController implements
                     $this->logger->warning('[SyncFleetShipsWithProvider] The ship with name "{shipName}" was not found. You should add it to ship mapping in BO.', ['shipName' => $shipName]);
                     continue;
                 }
-                $ship->setNormalizedName($foundShipInfo->name);
-                $ship->setGalaxyId($foundShipInfo->id !== null ? Uuid::fromString($foundShipInfo->id) : null);
+                foreach ($ships as $ship) {
+                    $ship->setNormalizedName($foundShipInfo->name);
+                    $ship->setGalaxyId($foundShipInfo->id !== null ? Uuid::fromString($foundShipInfo->id) : null);
+                    ++$countNormalizedShips;
+                }
             }
+
+            $sumCountNormalizedShips += $countNormalizedShips;
 
             $lastId = end($ships)->getId();
 
             $this->entityManager->flush();
             $this->entityManager->clear();
-            $this->logger->info('[SyncFleetShipsWithProvider] {countShips} ships synced with Galaxy.', ['countShips' => $countShips, 'sumCountShips' => $sumCountShips]);
-        } while ($countShips >= 1000);
+
+            $this->logger->info('[SyncFleetShipsWithProvider] {countShips} ships synced with Galaxy.', ['countShips' => $countShips, 'sumCountShips' => $sumCountShips, 'countNormalizedShips' => $countNormalizedShips, 'sumCountNormalizedShips' => $sumCountNormalizedShips]);
+        } while ($countShips >= $itemPerPage);
 
         return $this->redirectToRoute('bo_ship_transform_list');
     }

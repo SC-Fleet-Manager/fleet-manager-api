@@ -21,19 +21,6 @@ class ShipRepository extends ServiceEntityRepository
         parent::__construct($registry, Ship::class);
     }
 
-    public function countFromLastFleetWithoutGalaxyId(): int
-    {
-        $dql = <<<DQL
-            SELECT COUNT(ship) FROM  App\Entity\Citizen citizen
-            JOIN citizen.lastFleet fleet
-            JOIN App\Entity\Ship ship WITH ship.fleet = fleet.id
-            WHERE ship.galaxyId IS NULL OR ship.normalizedName IS NULL
-            DQL;
-        $query = $this->_em->createQuery($dql);
-
-        return $query->getSingleScalarResult();
-    }
-
     /**
      * @return Ship[]
      */
