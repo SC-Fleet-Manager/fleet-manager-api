@@ -9,7 +9,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ShipRepository")
  * @ORM\Table(indexes={
- *     @ORM\Index(name="name_idx", columns={"name"})
+ *     @ORM\Index(name="name_idx", columns={"name"}),
+ *     @ORM\Index(name="galaxy_id_idx", columns={"galaxy_id"})
  * })
  */
 class Ship
@@ -38,10 +39,28 @@ class Ship
     private array $rawData = [];
 
     /**
+     * From MyHangar page.
+     *
      * @ORM\Column(type="string", length=255)
      * @Groups({"my-fleet", "public-fleet"})
      */
     private ?string $name = null;
+
+    /**
+     * The SC-Galaxy ship name.
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"my-fleet", "public-fleet"})
+     */
+    private ?string $normalizedName = null;
+
+    /**
+     * The SC-Galaxy ship Id.
+     *
+     * @ORM\Column(type="uuid", nullable=true)
+     * @Groups({"my-fleet", "public-fleet"})
+     */
+    private ?UuidInterface $galaxyId = null;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -127,6 +146,30 @@ class Ship
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getNormalizedName(): ?string
+    {
+        return $this->normalizedName;
+    }
+
+    public function setNormalizedName(?string $normalizedName): self
+    {
+        $this->normalizedName = $normalizedName;
+
+        return $this;
+    }
+
+    public function getGalaxyId(): ?UuidInterface
+    {
+        return $this->galaxyId;
+    }
+
+    public function setGalaxyId(?UuidInterface $galaxyId): self
+    {
+        $this->galaxyId = $galaxyId;
 
         return $this;
     }
@@ -227,8 +270,18 @@ class Ship
 
     public function equals(self $other): bool
     {
-        return mb_strtolower($this->name) === mb_strtolower($other->name)
-            && mb_strtolower($this->manufacturer) === mb_strtolower($other->manufacturer)
+        if ($this->galaxyId !== null) {
+            return $this->galaxyId === $other->galaxyId
+                && $this->insuranceType === $other->insuranceType
+                && $this->insuranceDuration === $other->insuranceDuration
+                && $this->cost === $other->cost
+                && $this->pledgeDate->format('Ymd') === $other->pledgeDate->format('Ymd');
+        }
+
+        $collator = new \Collator(null);
+        $collator->setStrength(\Collator::PRIMARY);
+
+        return $collator->compare($this->name, $other->name) === 0
             && $this->insuranceType === $other->insuranceType
             && $this->insuranceDuration === $other->insuranceDuration
             && $this->cost === $other->cost

@@ -4,7 +4,7 @@
             <div class="">
                 <div class="ship-family-detail-variants" :class="{'hide-contents': (!this.supportIndex() || selectedShipFamily === null)}"  ref="block-variants">
                     <div v-if="selectedShipVariants.length === 0">
-                        <b-alert show variant="warning">Sorry, no ships was found for this chassis.</b-alert>
+                        <b-alert show variant="warning">No ships was found for this chassis.</b-alert>
                     </div>
                     <ShipVariant v-for="ship in selectedShipVariants" :key="ship.shipInfo.id" :shipVariant="ship"></ShipVariant>
                 </div>

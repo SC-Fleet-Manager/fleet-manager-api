@@ -35,6 +35,7 @@ class FleetsController extends AbstractController
         $shipFamilyFilter = $this->shipFamilyFilterFactory->create($request, $organizationSid);
 
         $shipFamilies = $this->organizationFleetHandler->computeShipFamilies(new SpectrumIdentification($organizationSid), $shipFamilyFilter);
+
         usort($shipFamilies, static function (array $shipFamily1, array $shipFamily2): int {
             $count = $shipFamily2['count'] - $shipFamily1['count'];
             if ($count !== 0) {

@@ -128,12 +128,6 @@ class ApiCitizenInfosProvider implements CitizenInfosProviderInterface
         $ci->redactedMainOrga = $mainOrgaRedacted;
         $ci->countRedactedOrganizations = $redactedAffiliates + ($mainOrgaRedacted ? 1 : 0);
 
-        $this->logger->info('Citizen infos retrieved.', [
-            'handle' => $handleSC->getHandle(),
-            'citizen_number' => $citizenNumber,
-            'infos' => $this->serializer->serialize($ci, 'json'),
-        ]);
-
         return $ci;
     }
 }

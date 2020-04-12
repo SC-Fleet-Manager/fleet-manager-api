@@ -78,7 +78,11 @@ class ExportControllerTest extends WebTestCase
         $this->assertSame(2, $lastFleet->getVersion());
         $this->assertCount(2, $lastFleet->getShips());
         $this->assertSame('Cutlass Black', $lastFleet->getShips()[0]->getName());
+        $this->assertSame('e37c618b-3ec6-4d4d-92b6-5aed679962a2', $lastFleet->getShips()[0]->getGalaxyId()->toString());
+        $this->assertSame('Cutlass Black', $lastFleet->getShips()[0]->getNormalizedName());
         $this->assertSame('Cyclone', $lastFleet->getShips()[1]->getName());
+        $this->assertNull($lastFleet->getShips()[1]->getGalaxyId());
+        $this->assertNull($lastFleet->getShips()[1]->getNormalizedName());
 
         $this->assertTrue($lastFleet->getId()->equals($this->user->getCitizen()->getLastFleet()->getId()), 'Last fleet is inconsistent.');
     }

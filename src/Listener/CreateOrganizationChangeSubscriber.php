@@ -38,7 +38,6 @@ class CreateOrganizationChangeSubscriber implements EventSubscriberInterface
 
     public function onCitizenFired(CitizenFiredEvent $event): void
     {
-        dump('onCitizenFired');
         $firedCitizen = $event->getFiredCitizen();
 
         $change = new OrganizationChange(Uuid::uuid4());
@@ -78,13 +77,22 @@ class CreateOrganizationChangeSubscriber implements EventSubscriberInterface
         $newFleet = $event->getNewFleet();
         $oldFleet = $event->getOldFleet();
 
-        if ($oldFleet === null) {
-            $payload = [];
-            foreach ($newFleet->getShips() as $ship) {
+        $collator = new \Collator(null);
+        $collator->setStrength(\Collator::PRIMARY);
+
+        $payload = [];
+        if ($oldFleet !== null) {
+            foreach ($oldFleet->getShips() as $oldShip) {
                 $payloadFound = false;
                 foreach ($payload as &$payloadShip) {
-                    if (mb_strtolower($payloadShip['ship']) === mb_strtolower($ship->getName())) {
-                        ++$payloadShip['count'];
+                    if (isset($payloadShip['shipGalaxyId']) && $payloadShip['shipGalaxyId'] === $oldShip->getGalaxyId()) {
+                        --$payloadShip['count'];
+                        $payloadFound = true;
+                        break;
+                    }
+                    if ($collator->compare($payloadShip['ship'], $oldShip->getNormalizedName() ?: $oldShip->getName()) === 0
+                        || $collator->compare($payloadShip['ship'], $oldShip->getName()) === 0) {
+                        --$payloadShip['count'];
                         $payloadFound = true;
                         break;
                     }
@@ -92,50 +100,43 @@ class CreateOrganizationChangeSubscriber implements EventSubscriberInterface
                 unset($payloadShip);
                 if (!$payloadFound) {
                     $payload[] = [
-                        'ship' => $ship->getName(),
-                        'manu' => $ship->getManufacturer(),
-                        'count' => 1,
+                        'shipGalaxyId' => $oldShip->getGalaxyId(),
+                        'ship' => $oldShip->getNormalizedName() ?: $oldShip->getName(),
+                        'manu' => $oldShip->getManufacturer(),
+                        'count' => -1,
                     ];
                 }
             }
-            foreach ($citizen->getOrganizations() as $citizenOrga) {
-                $change = new OrganizationChange(Uuid::uuid4());
-                $change->setAuthor($citizen);
-                $change->setOrganization($citizenOrga->getOrganization());
-                $change->setType(OrganizationChange::TYPE_UPLOAD_FLEET);
-                $change->setPayload($payload);
-                $this->entityManager->persist($change);
-            }
-            $this->entityManager->flush();
-
-            return;
         }
 
-        $countShips = [];
-        foreach ($oldFleet->getShips() as $oldShip) {
-            $oldShipName = mb_strtolower($oldShip->getName());
-            if (!isset($countShips[$oldShipName])) {
-                $countShips[$oldShipName] = [
-                    'ship' => $oldShip->getName(),
-                    'manu' => $oldShip->getManufacturer(),
-                    'count' => 0,
-                ];
-            }
-            --$countShips[$oldShipName]['count'];
-        }
         foreach ($newFleet->getShips() as $newShip) {
-            $newShipName = mb_strtolower($newShip->getName());
-            if (!isset($countShips[$newShipName])) {
-                $countShips[$newShipName] = [
-                    'ship' => $newShip->getName(),
+            $payloadFound = false;
+            foreach ($payload as &$payloadShip) {
+                if (isset($payloadShip['shipGalaxyId']) && $payloadShip['shipGalaxyId'] === $newShip->getGalaxyId()) {
+                    ++$payloadShip['count'];
+                    $payloadFound = true;
+                    break;
+                }
+                if ($collator->compare($payloadShip['ship'], $newShip->getNormalizedName() ?: $newShip->getName()) === 0
+                    || $collator->compare($payloadShip['ship'], $newShip->getName()) === 0) {
+                    ++$payloadShip['count'];
+                    $payloadFound = true;
+                    break;
+                }
+            }
+            unset($payloadShip);
+            if (!$payloadFound) {
+                $payload[] = [
+                    'shipGalaxyId' => $newShip->getGalaxyId(),
+                    'ship' => $newShip->getNormalizedName() ?: $newShip->getName(),
                     'manu' => $newShip->getManufacturer(),
-                    'count' => 0,
+                    'count' => 1,
                 ];
             }
-            ++$countShips[$newShipName]['count'];
         }
 
-        $payloadShips = array_values(array_filter($countShips, static function (array $payloadShip) {
+        $payloadShips = array_values(array_filter($payload, static function (array $payloadShip) {
+            // ** We don't want ship replacement **
             return $payloadShip['count'] !== 0;
         }));
         foreach ($citizen->getOrganizations() as $citizenOrga) {

@@ -13,9 +13,9 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class UserFleetController extends AbstractController
 {
-    private $citizenRepository;
-    private $userRepository;
-    private $shipInfosProvider;
+    private CitizenRepository $citizenRepository;
+    private UserRepository $userRepository;
+    private ShipInfosProviderInterface $shipInfosProvider;
 
     public function __construct(
         CitizenRepository $citizenRepository,
@@ -58,7 +58,20 @@ class UserFleetController extends AbstractController
         }
 
         $fleet = $citizen->getLastFleet();
-        $shipInfos = $this->shipInfosProvider->getAllShips();
+        if ($fleet === null) {
+            return $this->json([
+                'fleet' => null,
+            ]);
+        }
+
+        $galaxyIds = [];
+        foreach ($fleet->getShips() as $ship) {
+            if ($ship->getGalaxyId() !== null) {
+                $galaxyIds[] = $ship->getGalaxyId()->toString();
+            }
+        }
+
+        $shipInfos = $this->shipInfosProvider->getShipsByIdOrName($galaxyIds);
 
         return $this->json([
             'fleet' => $fleet,

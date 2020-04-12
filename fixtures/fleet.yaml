@@ -19,6 +19,10 @@ App\Entity\Fleet:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("afe8552d-3c85-4742-aef9-ffe1b1b9b2af"))>']
         version: 1
         uploadDate: '<(new \DateTimeImmutable("2019-04-09"))>'
+    fleet_pulsar42_member3_v1:
+        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("f3b26612-ccdd-46bc-b92b-97bbf1159643"))>']
+        version: 1
+        uploadDate: '<(new \DateTimeImmutable("2019-04-09"))>'
     fleet_orgastats1:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("17f660c5-140a-44ab-85dd-a07b792345e3"))>']
         version: 1

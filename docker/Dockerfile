@@ -1,4 +1,4 @@
-FROM php:7.4.3-fpm-buster as req_php
+FROM php:7.4.4-fpm-buster as req_php
 
 RUN apt-get update && apt-get install -y \
     unzip \
@@ -66,10 +66,11 @@ ARG ENV=prod
 ARG DUMP_ENV=0
 
 USER root
-COPY docker/php/php.prod.ini /usr/local/etc/php/php.ini
-COPY docker/php/php-fpm.prod.conf /usr/local/etc/php-fpm.conf
-COPY docker/php/www.prod.conf /usr/local/etc/php-fpm.d/www.conf
-COPY docker/php/entrypoint.sh /usr/local/bin/docker-app-entrypoint
+COPY --chown=root:root docker/php/php.prod.ini /usr/local/etc/php/php-fpm.ini
+COPY --chown=root:root docker/php/php-cli.prod.ini /usr/local/etc/php/php-cli.ini
+COPY --chown=root:root docker/php/php-fpm.prod.conf /usr/local/etc/php-fpm.conf
+COPY --chown=root:root docker/php/www.prod.conf /usr/local/etc/php-fpm.d/www.conf
+COPY --chown=root:root docker/php/entrypoint.sh /usr/local/bin/docker-app-entrypoint
 RUN chmod +x /usr/local/bin/docker-app-entrypoint
 
 USER www-data
@@ -94,11 +95,6 @@ RUN mkdir -p public/bundles \
     && rm -rf var/cache/* \
     && bin/console cache:warmup -v \
     && mkdir -p var/log
-
-USER root
-# activate the opcache preloading
-RUN sed -i -r 's/;?opcache.preload=(.*)/opcache.preload=\1/' /usr/local/etc/php/php.ini
-USER www-data
 
 ENTRYPOINT ["docker-app-entrypoint"]
 CMD ["php-fpm"]
@@ -146,9 +142,10 @@ ENV COMPOSER_MEMORY_LIMIT -1
 ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV COMPOSER_HOME /.composer
 
-COPY docker/php/php.dev.ini /usr/local/etc/php/php.ini
-COPY docker/php/php-fpm.dev.conf /usr/local/etc/php-fpm.conf
-COPY docker/php/www.dev.conf /usr/local/etc/php-fpm.d/www.conf
+COPY --chown=root:root docker/php/php.dev.ini /usr/local/etc/php/php-fpm.ini
+COPY --chown=root:root docker/php/php-cli.dev.ini /usr/local/etc/php/php-cli.ini
+COPY --chown=root:root docker/php/php-fpm.dev.conf /usr/local/etc/php-fpm.conf
+COPY --chown=root:root docker/php/www.dev.conf /usr/local/etc/php-fpm.d/www.conf
 
 # Xdebug install
 ARG XDEBUG_VERSION=2.9.2

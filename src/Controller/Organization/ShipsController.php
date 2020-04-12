@@ -33,8 +33,8 @@ class ShipsController extends AbstractController
 
         $res = array_map(static function (array $ship) {
             return [
-                'id' => $ship['shipName'],
-                'label' => $ship['shipName'],
+                'id' => $ship['galaxyId'],
+                'label' => $ship['normalizedName'] ?? $ship['name'],
             ];
         }, $ships);
 

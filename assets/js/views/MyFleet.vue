@@ -9,18 +9,18 @@
                         <b-button download :disabled="citizen == null" :href="citizen != null ? '/api/create-citizen-fleet-file' : ''" variant="success"><i class="fas fa-cloud-download-alt"></i> Export my fleet (.json)</b-button>
                     </div>
                     <b-alert :show="showError" variant="danger" v-html="errorMessage"></b-alert>
-                    <b-row v-if="ships !== null">
+                    <b-row v-if="ships !== null" class="mt-3">
                         <b-col v-if="ships.length === 0">
-                            <b-alert show variant="warning">Your fleet is empty, you should upload it.</b-alert>
+                            <b-alert show variant="warning" v-if="isMyProfile">Your fleet is empty, you should upload it.</b-alert>
+                            <b-alert show variant="warning" v-else>His/Her fleet is empty.</b-alert>
                         </b-col>
                         <b-col col xl="3" lg="4" md="6" v-for="ship in ships" :key="ship.id">
                             <b-card class="mb-3 js-card-ship"
-                                    :img-src="getShipInfo(getFixShipName(ship.name)).mediaThumbUrl"
+                                    :img-src="shipInfos[ship.galaxyId] ? shipInfos[ship.galaxyId].mediaThumbUrl : '/build/images/static/placeholder_ship.svg'"
                                     img-top
-                                    :title="ship.name">
+                                    :title="shipInfos[ship.galaxyId] ? shipInfos[ship.galaxyId].name : ship.name">
                                 <p class="card-text">
-                                    <strong>Manufacturer</strong>: {{ ship.manufacturer }}<br/>
-
+                                    <strong>Manufacturer</strong>: {{ shipInfos[ship.galaxyId] ? shipInfos[ship.galaxyId].manufacturerName : ship.manufacturer }}<br/>
                                     <template v-if="ship.insuranceType !== null">
                                         <template v-if="ship.insuranceType === 'lti'">
                                             <strong>Insurance</strong>: <b-badge variant="success">Lifetime</b-badge><br/>
@@ -136,8 +136,8 @@
                         this.ships.sort((ship1, ship2) => {
                             return ship1.name > ship2.name ? 1 : -1;
                         });
+                        this.shipInfos = response.data.shipInfos;
                     }
-                    this.shipInfos = response.data.shipInfos;
                 }).catch(err => {
                     this.checkAuth(err.response);
                     this.showError = true;
@@ -156,15 +156,6 @@
                 this.refreshMyFleet();
                 this.$refs.modalUploadFleet.hide();
             },
-            getShipInfo(shipName) {
-                for (let shipInfo of this.shipInfos) {
-                    if (shipInfo.name.toLowerCase().trim() === shipName.toLowerCase().trim()) {
-                        return shipInfo;
-                    }
-                }
-
-                return {mediaThumbUrl: '/build/images/static/placeholder_ship.svg'};
-            },
             checkAuth(response) {
                 const status = response.status;
                 const data = response.data;
@@ -173,13 +164,6 @@
                     window.location = data.loginUrl;
                 }
             },
-            getFixShipName(hangarShipName) {
-                if (!this.shipNames[hangarShipName]) {
-                    return hangarShipName;
-                }
-
-                return this.shipNames[hangarShipName].shipMatrixName;
-            }
         }
     }
 </script>

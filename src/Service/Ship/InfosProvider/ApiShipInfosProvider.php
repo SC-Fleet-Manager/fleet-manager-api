@@ -42,7 +42,18 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
     /**
      * @return iterable|ShipInfo[]
      */
-    public function getAllShips(): iterable
+    public function refreshShips(): array
+    {
+        $this->cache->delete('ship_matrix');
+        $this->ships = [];
+
+        return $this->getAllShips();
+    }
+
+    /**
+     * @return iterable|ShipInfo[]
+     */
+    public function getAllShips(): array
     {
         if (!$this->ships) {
             $this->ships = $this->cache->get('ship_matrix', function (CacheItem $cacheItem) {
@@ -53,6 +64,28 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
         }
 
         return $this->ships;
+    }
+
+    public function getShipsByIdOrName(array $ids, array $names = []): array
+    {
+        /** @var array $ships */
+        $ships = $this->getAllShips();
+
+        $res = [];
+        foreach ($ships as $ship) {
+            if (in_array((string) $ship->id, $ids, true)) {
+                $res[(string) $ship->id] = $ship;
+            }
+        }
+
+        foreach ($names as $name) {
+            $shipInfo = $this->getShipByName($name);
+            if ($shipInfo !== null) {
+                $res[(string) $shipInfo->id] = $shipInfo;
+            }
+        }
+
+        return $res;
     }
 
     private function scrap(): array
@@ -207,19 +240,16 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
         return $shipInfos;
     }
 
-    public function getShipsByChassisId(string $chassisId): iterable
+    public function getShipsByChassisId(string $chassisId): array
     {
         return array_filter($this->getAllShips(), static function (ShipInfo $shipInfo) use ($chassisId): bool {
             return $shipInfo->chassisId === $chassisId;
         });
     }
 
-    public function getShipById(string $id): ?ShipInfo
+    public function getShipById(string $id): ShipInfo
     {
         $ships = $this->getAllShips();
-        if (!\array_key_exists($id, $ships)) {
-            return null;
-        }
 
         return $ships[$id];
     }
@@ -245,46 +275,5 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
         }
 
         return $this->chassisNames[(int) $chassisId]['name'] ?? 'Unknown chassis';
-    }
-
-    public function shipNamesAreEquals(string $hangarName, string $providerName): bool
-    {
-        return $this->transformHangarToProvider(trim($hangarName)) === $providerName;
-    }
-
-    public function transformProviderToHangar(string $providerName): string
-    {
-        $shipNames = $this->findAllShipNamesFlipped();
-
-        return $shipNames[$providerName]['myHangarName'] ?? $providerName;
-    }
-
-    public function transformHangarToProvider(string $hangarName): string
-    {
-        $shipNames = $this->findAllShipNames();
-
-        return $shipNames[$hangarName]['shipMatrixName'] ?? $hangarName;
-    }
-
-    private function findAllShipNames(): array
-    {
-        if ($this->shipNames === []) {
-            $this->shipNames = $this->shipNameRepository->findAllShipNames();
-        }
-
-        return $this->shipNames;
-    }
-
-    private function findAllShipNamesFlipped(): array
-    {
-        if ($this->shipNamesFlipped === []) {
-            $shipNames = $this->findAllShipNames();
-            $this->shipNamesFlipped = [];
-            foreach ($shipNames as $shipName) {
-                $this->shipNamesFlipped[$shipName['shipMatrixName']] = $shipName;
-            }
-        }
-
-        return $this->shipNamesFlipped;
     }
 }

@@ -4,13 +4,13 @@ const state = {
     selectedSid: null,
     selectedIndex: null, // index of the ship family in the page. used to compute where the details will open
     selectedShipFamily: null, // {chassisId: "00", name: "xx", ...}
-    selectedShipVariants: [], // [{countTotalOwners: 0, countTotalShips: 0, shipInfo: {id: "00", name: "xxx", mediaThumbUrl: "https://...", ...}}, {...}]
+    selectedShipVariants: [], // [{countTotalShips: 0, shipInfo: {id: "00", name: "xxx", mediaThumbUrl: "https://...", ...}}, {...}]
     shipVariantUsersTrackChanges: 0, // +1 at each update TODO : only update the right ShipVariant instead of all !
     shipVariantUsers: {}, // {"<ship id>": {...}}
     shipVariantUsersMetadata: {}, // { page, lastPage, total }
     shipVariantUsersLoadedPages: {}, // {"<ship id>": [1, 2, 3...]}
-    shipVariantHiddenUsers: {}, // {"<ship id>": <count hidden>}
-    filterShipName: [],
+    shipVariantHiddenUsers: {}, // {"<ship id>": {'count': <int>, 'filtered': <bool>}}
+    filterShipGalaxyId: [],
     filterCitizenId: [],
     filterShipSize: [],
     filterShipStatus: null,
@@ -44,8 +44,11 @@ const mutations = {
         state.selectedShipVariants = payload.shipVariants;
         state.selectedIndex = payload.selectedIndex;
     },
-    updateShipVariantsHiddenUsers(state, { shipId, countHidden }) {
-        state.shipVariantHiddenUsers[shipId] = countHidden;
+    updateShipVariantsHiddenUsers(state, { shipId, countHidden, citizenFiltered }) {
+        state.shipVariantHiddenUsers[shipId] = {
+            'count': countHidden,
+            'filtered': citizenFiltered,
+        };
         ++state.shipVariantUsersTrackChanges;
     },
     updateShipVariantsUsers(state, { users, page, lastPage, total, shipId }) {
@@ -80,15 +83,15 @@ const actions = {
         if (clean) {
             state.shipVariantUsersLoadedPages[ship.shipInfo.id] = [];
         }
-        axios.get(`/api/fleet/orga-fleets/${state.selectedSid}/users/${encodeURIComponent(ship.shipInfo.name)}`, {
+        axios.get(`/api/fleet/orga-fleets/${state.selectedSid}/users/${ship.shipInfo.id}`, {
             params: {
                 page,
-                'filters[shipNames]': state.filterShipName,
+                'filters[shipGalaxyIds]': state.filterShipGalaxyId,
                 'filters[citizenIds]': state.filterCitizenId,
                 'filters[shipSizes]': state.filterShipSize,
                 'filters[shipStatus]': state.filterShipStatus,
             },
-        }).then(response => {
+        }).then(async response => {
             commit('updateShipVariantsUsers', {
                 users: response.data.users,
                 page: response.data.page,
@@ -98,11 +101,15 @@ const actions = {
             });
             if (response.data.lastPage === response.data.page) {
                 // we are on the last page : load how many hidden there are.
-                axios.get(`/api/fleet/orga-fleets/${state.selectedSid}/hidden-users/${encodeURIComponent(ship.shipInfo.name)}`).then(response => {
-                    commit('updateShipVariantsHiddenUsers', {
-                        shipId: ship.shipInfo.id,
-                        countHidden: response.data.hiddenUsers,
-                    });
+                const response = await axios.get(`/api/fleet/orga-fleets/${state.selectedSid}/hidden-users/${ship.shipInfo.id}`, {
+                    params: {
+                        'filters[citizenIds]': state.filterCitizenId,
+                    },
+                });
+                commit('updateShipVariantsHiddenUsers', {
+                    shipId: ship.shipInfo.id,
+                    countHidden: response.data.hiddenUsers,
+                    citizenFiltered: response.data.citizenFiltered,
                 });
             }
         });
@@ -119,7 +126,7 @@ const actions = {
         try {
             const response = await axios.get(`/api/fleet/orga-fleets/${state.selectedSid}/${payload.shipFamily.chassisId}`, {
                 params: {
-                    'filters[shipNames]': state.filterShipName,
+                    'filters[shipGalaxyIds]': state.filterShipGalaxyId,
                     'filters[citizenIds]': state.filterCitizenId,
                     'filters[shipSizes]': state.filterShipSize,
                     'filters[shipStatus]': state.filterShipStatus,

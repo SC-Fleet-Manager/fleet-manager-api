@@ -44,7 +44,7 @@
                     </b-row>
                     <b-row class="mb-3" v-if="!notEnoughRightsMessage && sid != null && ((citizen != null && citizenOrgaInfo != null) || (organization !== null && organization.publicChoice === 'public'))">
                         <b-col sm="6" md="6" lg="4" xl="2">
-                            <v-select id="filters_input_ship_name" :reduce="item => item.id" v-model="filterShipName" :options="filterOptionsShips" multiple @input="refreshOrganizationFleet(true)" placeholder="Filter by ship name"></v-select>
+                            <v-select id="filters_input_ship_name" :reduce="item => item.id" v-model="filterShipGalaxyId" :options="filterOptionsShips" multiple @input="refreshOrganizationFleet(true)" placeholder="Filter by ship name"></v-select>
                         </b-col>
                         <b-col sm="6" md="6" lg="4" xl="2" v-if="isInSelectedOrganization">
                             <v-select id="filters_input_citizen_id" :reduce="item => item.id" v-model="filterCitizenId" :options="filterOptionsCitizens" multiple @input="refreshOrganizationFleet(true)" placeholder="Filter by citizen"></v-select>
@@ -185,7 +185,7 @@
             this.refreshBreakpoint();
         },
         beforeRouteLeave (to, from, next) {
-            this.filterShipName = [];
+            this.filterShipGalaxyId = [];
             this.filterCitizenId = [];
             this.filterShipSize = [];
             this.filterShipStatus = null;
@@ -214,12 +214,12 @@
                 }
                 return null;
             },
-            filterShipName: {
+            filterShipGalaxyId: {
                 get() {
-                    return this.$store.state.orga_fleet.filterShipName;
+                    return this.$store.state.orga_fleet.filterShipGalaxyId;
                 },
                 set(value) {
-                    this.$store.state.orga_fleet.filterShipName = value;
+                    this.$store.state.orga_fleet.filterShipGalaxyId = value;
                 }
             },
             filterCitizenId: {
@@ -407,7 +407,7 @@
                 this.notFoundError = false;
                 axios.get(`/api/fleet/orga-fleets/${this.selectedSid}`, {
                     params: {
-                        'filters[shipNames]': this.filterShipName,
+                        'filters[shipGalaxyIds]': this.filterShipGalaxyId,
                         'filters[citizenIds]': this.filterCitizenId,
                         'filters[shipSizes]': this.filterShipSize,
                         'filters[shipStatus]': this.filterShipStatus,
