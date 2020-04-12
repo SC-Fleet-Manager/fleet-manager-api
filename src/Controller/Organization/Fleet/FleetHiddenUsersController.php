@@ -5,7 +5,7 @@ namespace App\Controller\Organization\Fleet;
 use App\Entity\User;
 use App\Repository\CitizenRepository;
 use App\Service\Organization\Fleet\FleetOrganizationGuard;
-use App\Service\Ship\InfosProvider\ShipInfosProviderInterface;
+use App\Service\Organization\ShipFamilyFilterFactory;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Ramsey\Uuid\Uuid;
@@ -21,19 +21,19 @@ class FleetHiddenUsersController extends AbstractController implements LoggerAwa
 
     private Security $security;
     private FleetOrganizationGuard $fleetOrganizationGuard;
-    private ShipInfosProviderInterface $shipInfosProvider;
     private CitizenRepository $citizenRepository;
+    private ShipFamilyFilterFactory $shipFamilyFilterFactory;
 
     public function __construct(
         Security $security,
         FleetOrganizationGuard $fleetOrganizationGuard,
-        ShipInfosProviderInterface $shipInfosProvider,
-        CitizenRepository $citizenRepository
+        CitizenRepository $citizenRepository,
+        ShipFamilyFilterFactory $shipFamilyFilterFactory
     ) {
         $this->security = $security;
         $this->fleetOrganizationGuard = $fleetOrganizationGuard;
-        $this->shipInfosProvider = $shipInfosProvider;
         $this->citizenRepository = $citizenRepository;
+        $this->shipFamilyFilterFactory = $shipFamilyFilterFactory;
     }
 
     public function __invoke(Request $request, string $organizationSid, string $providerShipId): Response
@@ -69,10 +69,13 @@ class FleetHiddenUsersController extends AbstractController implements LoggerAwa
             $loggedCitizen = $this->getUser()->getCitizen();
         }
 
+        $shipFamilyFilter = $this->shipFamilyFilterFactory->create($request, $organizationSid);
+
         $totalHiddenOwners = $this->citizenRepository->countHiddenOwnersOfShip($organizationSid, Uuid::fromString($providerShipId), $loggedCitizen);
 
         return $this->json([
             'hiddenUsers' => $totalHiddenOwners,
+            'citizenFiltered' => $shipFamilyFilter->citizenIds !== [],
         ]);
     }
 }

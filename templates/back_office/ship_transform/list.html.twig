@@ -17,9 +17,7 @@
         <table class="table table-hover table-sm">
             <thead>
                 <tr>
-                    <th scope="col"><strike>My Hangar name</strike></th>
                     <th scope="col">My Hangar name pattern</th>
-                    <th scope="col"><strike>Ship Matrix name</strike></th>
                     <th scope="col">Provider Id</th>
                     <th scope="col">Edit</th>
                     <th scope="col">Delete</th>
@@ -28,9 +26,7 @@
             <tbody>
                 {% for ship_name in ship_names %}
                     <tr>
-                        <td>{{ ship_name.myHangarName }}</td>
                         <td>{{ ship_name.myHangarNamePattern }}</td>
-                        <td>{{ ship_name.shipMatrixName }}</td>
                         <td>{{ ship_name.providerId }}</td>
                         <td>
                             <a href="{{ path('bo_ship_transform_edit', {'id': ship_name.id}) }}" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i> Edit</a>

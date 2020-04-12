@@ -202,10 +202,10 @@ class CitizenRepository extends ServiceEntityRepository
                 INNER JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id
             EOT;
         // filtering
-        if (count($filter->shipNames) > 0) {
+        if (count($filter->shipGalaxyIds) > 0) {
             $sql .= ' AND (';
-            foreach ($filter->shipNames as $i => $filterShipName) {
-                $sql .= sprintf(' s.name = :shipName_%d OR ', $i);
+            foreach ($filter->shipGalaxyIds as $i => $shipGalaxyId) {
+                $sql .= sprintf(' s.galaxy_id = :shipGalaxyId_%d OR ', $i);
             }
             $sql .= ' 1=0) ';
         }
@@ -222,8 +222,8 @@ class CitizenRepository extends ServiceEntityRepository
 
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
         $stmt->setParameter('sid', $organizationId->getSid());
-        foreach ($filter->shipNames as $i => $filterShipName) {
-            $stmt->setParameter('shipName_'.$i, $filterShipName);
+        foreach ($filter->shipGalaxyIds as $i => $shipGalaxyId) {
+            $stmt->setParameter('shipGalaxyId_'.$i, $shipGalaxyId);
         }
         foreach ($filter->citizenIds as $i => $filterCitizenId) {
             $stmt->setParameter('citizenId_'.$i, $filterCitizenId);
@@ -248,13 +248,6 @@ class CitizenRepository extends ServiceEntityRepository
                 INNER JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id and s.galaxy_id = :galaxyId
             SQL;
         // filtering
-        if (count($filter->shipNames) > 0) {
-            $sql .= ' AND (';
-            foreach ($filter->shipNames as $i => $filterShipName) {
-                $sql .= sprintf(' s.name = :shipName_%d OR ', $i);
-            }
-            $sql .= ' 1=0) ';
-        }
         if (count($filter->citizenIds) > 0) {
             $sql .= ' AND (';
             foreach ($filter->citizenIds as $i => $filterCitizenId) {
@@ -270,9 +263,6 @@ class CitizenRepository extends ServiceEntityRepository
             'sid' => $organizationId,
             'galaxyId' => $shipGalaxyId,
         ]);
-        foreach ($filter->shipNames as $i => $filterShipName) {
-            $stmt->setParameter('shipName_'.$i, $filterShipName);
-        }
         foreach ($filter->citizenIds as $i => $filterCitizenId) {
             $stmt->setParameter('citizenId_'.$i, $filterCitizenId);
         }
@@ -330,13 +320,6 @@ class CitizenRepository extends ServiceEntityRepository
             SQL;
 
         // filtering
-        if (count($filter->shipNames) > 0) {
-            $sql .= ' AND (';
-            foreach ($filter->shipNames as $i => $filterShipName) {
-                $sql .= sprintf(' s.name = :shipName_%d OR ', $i);
-            }
-            $sql .= ' 1=0) ';
-        }
         if (count($filter->citizenIds) > 0) {
             $sql .= ' AND (';
             foreach ($filter->citizenIds as $i => $filterCitizenId) {
@@ -372,9 +355,6 @@ class CitizenRepository extends ServiceEntityRepository
             $page = $page < 1 ? 1 : $page;
             $stmt->setParameter('first', ($page - 1) * $itemsPerPage);
             $stmt->setParameter('countItems', $itemsPerPage);
-        }
-        foreach ($filter->shipNames as $i => $filterShipName) {
-            $stmt->setParameter('shipName_'.$i, $filterShipName);
         }
         foreach ($filter->citizenIds as $i => $filterCitizenId) {
             $stmt->setParameter('citizenId_'.$i, $filterCitizenId);
@@ -428,13 +408,6 @@ class CitizenRepository extends ServiceEntityRepository
             SQL;
 
         // filtering
-        if (count($filter->shipNames) > 0) {
-            $sql .= ' AND (';
-            foreach ($filter->shipNames as $i => $filterShipName) {
-                $sql .= sprintf(' s.name = :shipName_%d OR ', $i);
-            }
-            $sql .= ' 1=0) ';
-        }
         if (count($filter->citizenIds) > 0) {
             $sql .= ' AND (';
             foreach ($filter->citizenIds as $i => $filterCitizenId) {
@@ -456,9 +429,6 @@ class CitizenRepository extends ServiceEntityRepository
             'userPublicChoiceOrga' => User::PUBLIC_CHOICE_ORGANIZATION,
             'viewerCitizenId' => $viewerCitizen !== null ? $viewerCitizen->getId()->toString() : null,
         ]);
-        foreach ($filter->shipNames as $i => $filterShipName) {
-            $stmt->setParameter('shipName_'.$i, $filterShipName);
-        }
         foreach ($filter->citizenIds as $i => $filterCitizenId) {
             $stmt->setParameter('citizenId_'.$i, $filterCitizenId);
         }

@@ -62,7 +62,7 @@ class GalaxyApiShipInfosProvider implements ShipInfosProviderInterface
         }
         $cacheKeysNames = [];
         foreach ($names as $name) {
-            $cacheKeysNames['galaxy_api_ship_name.'.sha1($name)] = $name;
+            $cacheKeysNames['galaxy_api_ship_name.'.sha1(mb_strtolower($name))] = $name;
         }
 
         $missShipInfoProviderIds = [];
@@ -108,7 +108,7 @@ class GalaxyApiShipInfosProvider implements ShipInfosProviderInterface
 
     public function getShipsByChassisId(string $chassisId): array
     {
-        return $this->cache->get('galaxy_api_ships_chassis_'.$chassisId, function (ItemInterface $cacheItem) use ($chassisId) {
+        return $this->cache->get('galaxy_api_ships_chassis.'.$chassisId, function (ItemInterface $cacheItem) use ($chassisId) {
             $cacheItem->expiresAfter(new \DateInterval('P1D'))->tag('galaxy_api_ship');
 
             $response = $this->httpClient->request('GET', '/api/ships', [

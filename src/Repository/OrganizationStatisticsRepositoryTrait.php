@@ -21,7 +21,7 @@ trait OrganizationStatisticsRepositoryTrait
                 INNER JOIN fleet.ships ship
             DQL;
         $query = $this->_em->createQuery($dql);
-        $query->setParameter('sid', mb_strtolower($sid->getSid()));
+        $query->setParameter('sid', $sid->getSid());
         $query->enableResultCache(300);
 
         return $query->getSingleScalarResult();

@@ -52,7 +52,9 @@ class FleetFamilyController extends AbstractController
             if ($shipFamilyFilter->shipStatus !== null && $shipFamilyFilter->shipStatus !== $shipInfo->productionStatus) {
                 continue;
             }
-
+            if ($shipFamilyFilter->shipGalaxyIds !== [] && !in_array($shipInfo->id, $shipFamilyFilter->shipGalaxyIds, true)) {
+                continue;
+            }
             $countShip = $this->citizenRepository->countShipOwnedByOrga($organizationSid, Uuid::fromString($shipInfo->id), $shipFamilyFilter)[0];
             if ((int) $countShip['countShips'] === 0) {
                 // only return owner ships.

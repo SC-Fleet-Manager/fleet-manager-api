@@ -49,32 +49,29 @@ class FleetUsersController extends AbstractController implements LoggerAwareInte
         $page = $request->query->getInt('page', 1);
         $itemsPerPage = 10;
 
+        $defaultResponse = new JsonResponse([
+            'users' => [],
+            'page' => 1,
+            'lastPage' => 1,
+            'total' => 0,
+        ]);
+
+        if (!$this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+            return $defaultResponse;
+        }
+
         // If viewer is not in this orga, he doesn't see the users
-        if ($this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            /** @var User $user */
-            $user = $this->security->getUser();
-            $citizen = $user->getCitizen();
-            if ($citizen === null) {
-                return new JsonResponse([
-                    'error' => 'no_citizen_created',
-                    'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
-                ], 400);
-            }
-            if (!$citizen->hasOrganization($organizationSid)) {
-                return new JsonResponse([
-                    'users' => [],
-                    'page' => 1,
-                    'lastPage' => 1,
-                    'total' => 0,
-                ]);
-            }
-        } else {
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $citizen = $user->getCitizen();
+        if ($citizen === null) {
             return new JsonResponse([
-                'users' => [],
-                'page' => 1,
-                'lastPage' => 1,
-                'total' => 0,
-            ]);
+                'error' => 'no_citizen_created',
+                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
+            ], 400);
+        }
+        if (!$citizen->hasOrganization($organizationSid)) {
+            return $defaultResponse;
         }
 
         $shipFamilyFilter = $this->shipFamilyFilterFactory->create($request, $organizationSid);
@@ -83,10 +80,13 @@ class FleetUsersController extends AbstractController implements LoggerAwareInte
 
         // filtering
         if (count($shipFamilyFilter->shipSizes) > 0 && !in_array($shipInfo->size, $shipFamilyFilter->shipSizes, false)) {
-            return $this->json([]);
+            return $defaultResponse;
         }
         if ($shipFamilyFilter->shipStatus !== null && $shipFamilyFilter->shipStatus !== $shipInfo->productionStatus) {
-            return $this->json([]);
+            return $defaultResponse;
+        }
+        if ($shipFamilyFilter->shipGalaxyIds !== [] && !in_array($providerShipId, $shipFamilyFilter->shipGalaxyIds, true)) {
+            return $defaultResponse;
         }
 
         $loggedCitizen = null;
@@ -94,15 +94,20 @@ class FleetUsersController extends AbstractController implements LoggerAwareInte
             $loggedCitizen = $this->getUser()->getCitizen();
         }
 
-        $countOwners = $this->citizenRepository->countOwnersOfShip($organizationSid, Uuid::fromString($providerShipId), $loggedCitizen, $shipFamilyFilter);
+        $countOwners = $this->citizenRepository->countOwnersOfShip(
+            $organizationSid,
+            Uuid::fromString($providerShipId),
+            $loggedCitizen,
+            $shipFamilyFilter);
+
         $users = $this->citizenRepository->getOwnersOfShip(
             $organizationSid,
             Uuid::fromString($providerShipId),
             $loggedCitizen,
             $shipFamilyFilter,
             $page,
-            $itemsPerPage
-        );
+            $itemsPerPage);
+
         $lastPage = (int) ceil($countOwners / $itemsPerPage);
 
         return $this->json([

@@ -59,22 +59,22 @@ class ShipRepository extends ServiceEntityRepository
         $orgaMetadata = $this->_em->getClassMetadata(Organization::class);
 
         $sql = <<<EOT
-                SELECT DISTINCT s.name AS shipName FROM {$citizenMetadata->getTableName()} c
+                SELECT DISTINCT s.galaxy_id, s.normalized_name FROM {$citizenMetadata->getTableName()} c
                 INNER JOIN {$citizenOrgaMetadata->getTableName()} citizenOrga ON citizenOrga.citizen_id = c.id
-                INNER JOIN {$orgaMetadata->getTableName()} orga ON orga.id = citizenOrga.organization_id
-                INNER JOIN {$fleetMetadata->getTableName()} f ON c.id = f.owner_id AND f.id = (
-                    SELECT f2.id FROM {$fleetMetadata->getTableName()} f2 WHERE f2.owner_id = f.owner_id ORDER BY f2.version DESC LIMIT 1
-                )
-                INNER JOIN {$shipMetadata->getTableName()} s ON f.id = s.fleet_id
-                WHERE orga.organization_sid = :sid
-                ORDER BY s.name
+                INNER JOIN {$orgaMetadata->getTableName()} orga ON orga.id = citizenOrga.organization_id AND orga.organization_sid = :sid
+                INNER JOIN {$fleetMetadata->getTableName()} f ON f.id = c.last_fleet_id
+                INNER JOIN {$shipMetadata->getTableName()} s ON s.fleet_id = f.id
+                WHERE s.galaxy_id IS NOT NULL
+                ORDER BY s.normalized_name
             EOT;
 
         $rsm = new ResultSetMappingBuilder($this->_em);
-        $rsm->addScalarResult('shipName', 'shipName');
+        $rsm->addScalarResult('galaxy_id', 'galaxyId');
+        $rsm->addScalarResult('normalized_name', 'normalizedName');
+        $rsm->addScalarResult('name', 'name');
 
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
-        $stmt->setParameter('sid', mb_strtolower($organizationId->getSid()));
+        $stmt->setParameter('sid', $organizationId->getSid());
 
         return $stmt->getResult();
     }

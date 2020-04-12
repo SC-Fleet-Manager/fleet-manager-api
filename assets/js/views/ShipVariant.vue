@@ -15,9 +15,8 @@
                 <a :href="'/citizen/'+user[0].citizen.actualHandle.handle" target="_blank"><img v-if="user[0].supporter" src="../../img/icon_supporter.svg" alt="Supporter" class="supporter-badge" style="height: 1.4rem" /> {{ user[0].citizen.actualHandle.handle }}</a>
                 : {{ user.countShips }}
             </div>
-            <i v-if="shipVariantHiddenUsers > 0">
-                <template v-if="shipVariantHiddenUsers == 1">+ {{ shipVariantHiddenUsers }} hidden owner</template>
-                <template v-else>+ {{ shipVariantHiddenUsers }} hidden owners</template>
+            <i v-if="shipVariantHiddenUsers && !shipVariantHiddenUsers.filtered && shipVariantHiddenUsers.count > 0">
+                + {{ shipVariantHiddenUsers.count }} hidden owner{{ shipVariantHiddenUsers.count == 1  ? '' : 's' }}
             </i>
         </div>
     </div>

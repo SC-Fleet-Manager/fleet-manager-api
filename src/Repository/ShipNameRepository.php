@@ -20,7 +20,6 @@ class ShipNameRepository extends ServiceEntityRepository
             DQL;
 
         $query = $this->_em->createQuery($dql);
-        $query->enableResultCache(30);
 
         return $query->getArrayResult();
     }
@@ -31,7 +30,7 @@ class ShipNameRepository extends ServiceEntityRepository
     public function findAllMappingsWithPatternAndProviderId(): array
     {
         $dql = <<<DQL
-            SELECT s FROM App\Entity\ShipName s WHERE s.myHangarNamePattern IS NOT NULL AND s.providerId IS NOT NULL
+                SELECT s FROM App\Entity\ShipName s WHERE s.myHangarNamePattern IS NOT NULL AND s.providerId IS NOT NULL
             DQL;
 
         $query = $this->_em->createQuery($dql);

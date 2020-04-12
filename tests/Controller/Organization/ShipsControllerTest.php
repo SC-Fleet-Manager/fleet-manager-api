@@ -7,22 +7,14 @@ use App\Tests\WebTestCase;
 
 class ShipsControllerTest extends WebTestCase
 {
-    /** @var User */
-    private $user;
-
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
-    }
-
     /**
      * @group functional
      * @group organization
      */
     public function testShips(): void
     {
-        $this->logIn($this->user);
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
+        $this->logIn($user);
         $this->client->xmlHttpRequest('GET', '/api/organization/flk/ships', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
@@ -31,27 +23,27 @@ class ShipsControllerTest extends WebTestCase
         $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArraySubset([
             [
-                'id' => 'Aurora MR',
+                'id' => 'cbcb60c7-a780-4a59-b51d-0ad8021813bf',
                 'label' => 'Aurora MR',
             ],
             [
-                'id' => 'Constellation Andromeda',
+                'id' => 'f43fa89e-d34f-43d2-807d-5e8bf8c8929a',
                 'label' => 'Constellation Andromeda',
             ],
             [
-                'id' => 'Cutlass Black',
+                'id' => 'e37c618b-3ec6-4d4d-92b6-5aed679962a2',
                 'label' => 'Cutlass Black',
             ],
             [
-                'id' => 'Dragonfly Black',
+                'id' => '05e980c5-6425-4fe4-a3c2-d69a0d568e40',
                 'label' => 'Dragonfly Black',
             ],
             [
-                'id' => 'Orion',
+                'id' => '9950adb5-9151-4760-9073-080416120fca',
                 'label' => 'Orion',
             ],
             [
-                'id' => 'Ranger CV',
+                'id' => 'f250a2b7-76ea-481f-84b5-3e2e96d40e84',
                 'label' => 'Ranger CV',
             ],
         ], $json);

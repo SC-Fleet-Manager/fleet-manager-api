@@ -170,6 +170,12 @@ class UploadControllerTest extends WebTestCase
         $this->assertSame(1000.0, $lastFleet->getShips()[0]->getCost());
         $this->assertSame(500.0, $lastFleet->getShips()[1]->getCost());
         $this->assertSame(2123456.78, $lastFleet->getShips()[2]->getCost());
+        $this->assertSame('e37c618b-3ec6-4d4d-92b6-5aed679962a2', $lastFleet->getShips()[0]->getGalaxyId()->toString());
+        $this->assertSame('Cutlass Black', $lastFleet->getShips()[0]->getNormalizedName());
+        $this->assertSame('e37c618b-3ec6-4d4d-92b6-5aed679962a2', $lastFleet->getShips()[1]->getGalaxyId()->toString());
+        $this->assertSame('Cutlass Black', $lastFleet->getShips()[1]->getNormalizedName());
+        $this->assertSame('e37c618b-3ec6-4d4d-92b6-5aed679962a2', $lastFleet->getShips()[2]->getGalaxyId()->toString());
+        $this->assertSame('Cutlass Black', $lastFleet->getShips()[2]->getNormalizedName());
     }
 
     /**
