@@ -77,7 +77,6 @@
                 shipInfos: [],
                 showError: false,
                 errorMessage: '',
-                shipNames: {},
             };
         },
         created() {
@@ -99,9 +98,6 @@
             });
             axios.get(`/api/public-profile/${this.userHandle}`).then(response => {
                 this.publicProfile = response.data;
-            });
-            axios.get('/api/ship-names').then(response => {
-                this.shipNames = response.data.shipNames;
             });
         },
         filters: {

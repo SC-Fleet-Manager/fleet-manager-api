@@ -141,7 +141,15 @@ class SpaControllerTest extends PantherTestCase
             $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
                 return $driver->findElement(WebDriverBy::id('modal-upload-fleet___BV_modal_body_'))->isDisplayed();
             });
-            $this->client->findElement(WebDriverBy::cssSelector('#modal-upload-fleet .close'))->click();
+            $this->client->refreshCrawler();
+            $this->client->wait(5, 100)->until(static function (WebDriver $driver) {
+                if (count($driver->findElements(WebDriverBy::cssSelector('#modal-upload-fleet .close'))) === 1) {
+                    $driver->findElement(WebDriverBy::cssSelector('#modal-upload-fleet .close'))->click();
+                }
+
+                return count($driver->findElements(WebDriverBy::cssSelector('#modal-upload-fleet'))) === 0;
+            });
+
             $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
                 return count($driver->findElements(WebDriverBy::id('modal-upload-fleet'))) === 0;
             });
