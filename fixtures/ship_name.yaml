@@ -1,7 +1,5 @@
 App\Entity\ShipName:
     ship_name_1:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("1a216d86-9fae-484c-ac0d-38804aad2039"))>']
-        myHangarName: 'HangarShipName1'
         myHangarNamePattern: '^HangarShipName1$'
-        shipMatrixName: 'MatrixShipName1'
         providerId: '<(\Ramsey\Uuid\Uuid::fromString("17ab7583-ed1b-4554-aff4-c2f6a1da5667"))>'

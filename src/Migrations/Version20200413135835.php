@@ -80,10 +80,14 @@ final class Version20200413135835 extends AbstractMigration
             ('5845d553-d582-43da-ad39-7083046cade1', '^x1 - force$', '19ea6bb8-dcc2-4a4c-b972-59232d6ab39a'),
             ('23e0f06f-7738-4e33-846d-e118b3a1bef4', '^x1 - velocity$', 'a3a871d4-e7a6-48de-84b2-b25f1e2165ad')
         ");
+
+        $this->addSql('DROP TABLE ship_chassis');
     }
 
     public function down(Schema $schema): void
     {
+        $this->addSql('CREATE TABLE ship_chassis (id CHAR(36) CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_unicode_ci` COMMENT \'(DC2Type:uuid)\', rsi_id INT NOT NULL, name VARCHAR(255) CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_unicode_ci`, UNIQUE INDEX UNIQ_3BE443B2967433DD (rsi_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE `utf8_unicode_ci` ENGINE = InnoDB COMMENT = \'\' ');
+
         $this->addSql('ALTER TABLE ship_name ADD my_hangar_name VARCHAR(255) CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_unicode_ci`, ADD ship_matrix_name VARCHAR(255) CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_unicode_ci`');
         $this->addSql('CREATE INDEX my_hangar_name_idx ON ship_name (my_hangar_name)');
         $this->addSql('CREATE INDEX ship_matrix_name_idx ON ship_name (ship_matrix_name)');
