@@ -3,8 +3,6 @@
 namespace App\Service\Ship\InfosProvider;
 
 use App\Domain\ShipInfo;
-use App\Repository\ShipChassisRepository;
-use App\Repository\ShipNameRepository;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Cache\CacheItem;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -17,25 +15,16 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
 
     private LoggerInterface $logger;
     private CacheInterface $cache;
-    private ShipNameRepository $shipNameRepository;
-    private ShipChassisRepository $shipChassisRepository;
     private HttpClientInterface $httpClient;
     private array $ships = [];
-    private array $shipNames = [];
-    private array $shipNamesFlipped = [];
-    private array $chassisNames = [];
 
     public function __construct(
         LoggerInterface $logger,
         CacheInterface $rsiShipsCache,
-        HttpClientInterface $rsiShipInfosClient,
-        ShipNameRepository $shipNameRepository,
-        ShipChassisRepository $shipChassisRepository
+        HttpClientInterface $rsiShipInfosClient
     ) {
         $this->logger = $logger;
         $this->cache = $rsiShipsCache;
-        $this->shipNameRepository = $shipNameRepository;
-        $this->shipChassisRepository = $shipChassisRepository;
         $this->httpClient = $rsiShipInfosClient;
     }
 
@@ -270,10 +259,6 @@ class ApiShipInfosProvider implements ShipInfosProviderInterface
 
     public function findChassisName(string $chassisId): string
     {
-        if ($this->chassisNames === []) {
-            $this->chassisNames = $this->shipChassisRepository->findAllChassisNames();
-        }
-
-        return $this->chassisNames[(int) $chassisId]['name'] ?? 'Unknown chassis';
+        return 'Unknown chassis';
     }
 }

@@ -91,6 +91,9 @@ class MyFleetControllerTest extends WebTestCase
 
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $json = json_decode($this->client->getResponse()->getContent(), true);
+        usort($json['fleet']['ships'], static function (array $ship1, array $ship2) {
+            return $ship1['name'] <=> $ship2['name'];
+        });
         $this->assertArraySubset([
             'fleet' => [
                 'id' => '7418a47d-6bdd-4023-bd4e-5d2e0fcff6c1',
@@ -110,25 +113,13 @@ class MyFleetControllerTest extends WebTestCase
                         'insuranceDuration' => null,
                     ],
                     [
-                        'id' => 'f25131ad-a74d-4efb-9fbf-81665d09feb8',
-                        'name' => 'Ranger CV',
-                        'normalizedName' => 'Ranger CV',
-                        'galaxyId' => 'f250a2b7-76ea-481f-84b5-3e2e96d40e84',
-                        'manufacturer' => 'Tumbril',
-                        'pledgeDate' => '2019-04-20T00:00:00+00:00',
-                        'cost' => 30,
-                        'insured' => false,
-                        'insuranceType' => null,
-                        'insuranceDuration' => null,
-                    ],
-                    [
-                        'id' => '35c1af61-7dca-4f42-8d52-fc0439e23af2',
-                        'name' => 'Dragonfly Black',
-                        'normalizedName' => 'Dragonfly Black',
-                        'galaxyId' => '05e980c5-6425-4fe4-a3c2-d69a0d568e40',
-                        'manufacturer' => 'Drake',
-                        'pledgeDate' => '2018-11-27T00:00:00+00:00',
-                        'cost' => 40,
+                        'id' => 'afb85b3b-6e2b-45bb-b099-307890f129c9',
+                        'name' => 'Constellation Andromeda',
+                        'normalizedName' => 'Constellation Andromeda',
+                        'galaxyId' => 'f43fa89e-d34f-43d2-807d-5e8bf8c8929a',
+                        'manufacturer' => 'RSI',
+                        'pledgeDate' => '2019-03-30T00:00:00+00:00',
+                        'cost' => 225,
                         'insured' => false,
                         'insuranceType' => null,
                         'insuranceDuration' => null,
@@ -146,13 +137,13 @@ class MyFleetControllerTest extends WebTestCase
                         'insuranceDuration' => null,
                     ],
                     [
-                        'id' => 'afb85b3b-6e2b-45bb-b099-307890f129c9',
-                        'name' => 'Constellation Andromeda',
-                        'normalizedName' => 'Constellation Andromeda',
-                        'galaxyId' => 'f43fa89e-d34f-43d2-807d-5e8bf8c8929a',
-                        'manufacturer' => 'RSI',
-                        'pledgeDate' => '2019-03-30T00:00:00+00:00',
-                        'cost' => 225,
+                        'id' => '35c1af61-7dca-4f42-8d52-fc0439e23af2',
+                        'name' => 'Dragonfly Black',
+                        'normalizedName' => 'Dragonfly Black',
+                        'galaxyId' => '05e980c5-6425-4fe4-a3c2-d69a0d568e40',
+                        'manufacturer' => 'Drake',
+                        'pledgeDate' => '2018-11-27T00:00:00+00:00',
+                        'cost' => 40,
                         'insured' => false,
                         'insuranceType' => null,
                         'insuranceDuration' => null,
@@ -166,6 +157,18 @@ class MyFleetControllerTest extends WebTestCase
                         'pledgeDate' => '2019-02-17T00:00:00+00:00',
                         'cost' => 325,
                         'insured' => true,
+                        'insuranceType' => null,
+                        'insuranceDuration' => null,
+                    ],
+                    [
+                        'id' => 'f25131ad-a74d-4efb-9fbf-81665d09feb8',
+                        'name' => 'Ranger CV',
+                        'normalizedName' => 'Ranger CV',
+                        'galaxyId' => 'f250a2b7-76ea-481f-84b5-3e2e96d40e84',
+                        'manufacturer' => 'Tumbril',
+                        'pledgeDate' => '2019-04-20T00:00:00+00:00',
+                        'cost' => 30,
+                        'insured' => false,
                         'insuranceType' => null,
                         'insuranceDuration' => null,
                     ],

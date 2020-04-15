@@ -37,8 +37,6 @@ class ShipTransformEditController extends AbstractController
         }
 
         $shipTransform = new ShipTransform(
-            $shipName->getMyHangarName(),
-            $shipName->getShipMatrixName(),
             $shipName->getProviderId() !== null ? $shipName->getProviderId()->toString() : null,
             $shipName->getMyHangarNamePattern());
         $form = $this->createForm(ShipTransformForm::class, $shipTransform);
@@ -46,8 +44,6 @@ class ShipTransformEditController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $shipName
-                ->setMyHangarName($shipTransform->myHangarName)
-                ->setShipMatrixName($shipTransform->shipMatrixName)
                 ->setProviderId(Uuid::fromString($shipTransform->providerId))
                 ->setMyHangarNamePattern($shipTransform->myHangarNamePattern);
             $this->entityManager->flush();

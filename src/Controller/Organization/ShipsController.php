@@ -11,8 +11,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ShipsController extends AbstractController
 {
-    private $fleetOrganizationGuard;
-    private $shipRepository;
+    private FleetOrganizationGuard $fleetOrganizationGuard;
+    private ShipRepository $shipRepository;
 
     public function __construct(FleetOrganizationGuard $fleetOrganizationGuard, ShipRepository $shipRepository)
     {
@@ -34,7 +34,7 @@ class ShipsController extends AbstractController
         $res = array_map(static function (array $ship) {
             return [
                 'id' => $ship['galaxyId'],
-                'label' => $ship['normalizedName'] ?? $ship['name'],
+                'label' => $ship['normalizedName'],
             ];
         }, $ships);
 
