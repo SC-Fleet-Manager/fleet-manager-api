@@ -71,7 +71,6 @@ class ShipRepository extends ServiceEntityRepository
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addScalarResult('galaxy_id', 'galaxyId');
         $rsm->addScalarResult('normalized_name', 'normalizedName');
-        $rsm->addScalarResult('name', 'name');
 
         $stmt = $this->_em->createNativeQuery($sql, $rsm);
         $stmt->setParameter('sid', $organizationId->getSid());

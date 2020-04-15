@@ -7,9 +7,7 @@
         <p><a href="{{ path('bo_ship_transform_list') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to the list</a></p>
 
         <form action="{{ path('bo_ship_transform_create') }}" method="post">
-            {{ form_row(form.myHangarName) }}
             {{ form_row(form.myHangarNamePattern) }}
-            {{ form_row(form.shipMatrixName) }}
             {{ form_row(form.providerId) }}
 
             <button type="submit" class="btn btn-success">Valider</button>

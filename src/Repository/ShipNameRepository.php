@@ -13,17 +13,6 @@ class ShipNameRepository extends ServiceEntityRepository
         parent::__construct($registry, ShipName::class);
     }
 
-    public function findAllShipNames(): array
-    {
-        $dql = <<<DQL
-                SELECT s.myHangarName, s.shipMatrixName FROM App\Entity\ShipName s INDEX BY s.myHangarName
-            DQL;
-
-        $query = $this->_em->createQuery($dql);
-
-        return $query->getArrayResult();
-    }
-
     /**
      * @return ShipName[]
      */

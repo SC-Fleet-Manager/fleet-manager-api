@@ -22,7 +22,7 @@ class ShipTransformListController extends AbstractController
      */
     public function __invoke(Request $request): Response
     {
-        $shipNames = $this->shipNameRepository->findBy([], ['myHangarName' => 'ASC']);
+        $shipNames = $this->shipNameRepository->findBy([], ['myHangarNamePattern' => 'ASC']);
 
         return $this->render('back_office/ship_transform/list.html.twig', [
             'ship_names' => $shipNames,
