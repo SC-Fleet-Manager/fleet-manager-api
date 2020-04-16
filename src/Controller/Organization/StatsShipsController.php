@@ -64,6 +64,9 @@ class StatsShipsController extends AbstractController implements LoggerAwareInte
 
         $shipIds = [];
         foreach ($orgaShips as $orgaShip) {
+            if ($orgaShip === null) {
+                continue;
+            }
             if ($orgaShip->getGalaxyId() !== null) {
                 $shipIds[] = $orgaShip->getGalaxyId()->toString();
             }
@@ -71,6 +74,9 @@ class StatsShipsController extends AbstractController implements LoggerAwareInte
         $shipInfos = $this->shipInfosProvider->getShipsByIdOrName($shipIds);
 
         foreach ($orgaShips as $orgaShip) {
+            if ($orgaShip === null) {
+                continue;
+            }
             $shipInfo = $orgaShip->getGalaxyId() !== null && $shipInfos[$orgaShip->getGalaxyId()->toString()]
                 ? $shipInfos[$orgaShip->getGalaxyId()->toString()]
                 : null;
