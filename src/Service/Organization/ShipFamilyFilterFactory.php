@@ -24,7 +24,7 @@ class ShipFamilyFilterFactory
         $filters = $request->query->get('filters', []);
 
         $shipFamilyFilter = new ShipFamilyFilter(
-            $filters['shipNames'] ?? [],
+            $filters['shipGalaxyIds'] ?? [],
             $filters['citizenIds'] ?? [],
             $filters['shipSizes'] ?? [],
             $filters['shipStatus'] ?? null

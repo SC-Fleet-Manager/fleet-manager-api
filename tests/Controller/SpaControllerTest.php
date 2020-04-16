@@ -141,7 +141,15 @@ class SpaControllerTest extends PantherTestCase
             $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
                 return $driver->findElement(WebDriverBy::id('modal-upload-fleet___BV_modal_body_'))->isDisplayed();
             });
-            $this->client->findElement(WebDriverBy::cssSelector('#modal-upload-fleet .close'))->click();
+            $this->client->refreshCrawler();
+            $this->client->wait(5, 100)->until(static function (WebDriver $driver) {
+                if (count($driver->findElements(WebDriverBy::cssSelector('#modal-upload-fleet .close'))) === 1) {
+                    $driver->findElement(WebDriverBy::cssSelector('#modal-upload-fleet .close'))->click();
+                }
+
+                return count($driver->findElements(WebDriverBy::cssSelector('#modal-upload-fleet'))) === 0;
+            });
+
             $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
                 return count($driver->findElements(WebDriverBy::id('modal-upload-fleet'))) === 0;
             });
@@ -162,7 +170,7 @@ class SpaControllerTest extends PantherTestCase
                 return count($driver->findElements(WebDriverBy::className('js-card-ship'))) > 0;
             });
             $this->assertSame('Aurora MR', $this->client->findElement(WebDriverBy::cssSelector('.card-title'))->getText());
-            $this->assertContains('Manufacturer: RSI', $this->client->findElement(WebDriverBy::cssSelector('.card-body'))->getText());
+            $this->assertContains('Manufacturer: Roberts Space Industries', $this->client->findElement(WebDriverBy::cssSelector('.card-body'))->getText());
             $this->assertContains('Insurance: 6 months', $this->client->findElement(WebDriverBy::cssSelector('.card-body'))->getText());
         } catch (\Exception $e) {
             $this->client->takeScreenshot(sprintf('var/screenshots/error-%s.png', date('Y-m-d_H:i:s')));
@@ -638,8 +646,6 @@ class SpaControllerTest extends PantherTestCase
      * @group end2end
      * @group spa
      * @group funding
-     *
-     * @group toto
      */
     public function testFunding(): void
     {
@@ -686,8 +692,12 @@ class SpaControllerTest extends PantherTestCase
                 return count($driver->findElements(WebDriverBy::cssSelector('#input-funding-amount'))) === 1
                     && $driver->findElement(WebDriverBy::cssSelector('#modal-funding button.close'))->isDisplayed();
             });
-            $this->client->findElement(WebDriverBy::cssSelector('#modal-funding button.close'))->click();
-            $this->client->wait(3, 100)->until(static function (WebDriver $driver) {
+            $this->client->refreshCrawler();
+            $this->client->wait(5, 100)->until(static function (WebDriver $driver) {
+                if (count($driver->findElements(WebDriverBy::cssSelector('#modal-funding button.close'))) === 1) {
+                    $driver->findElement(WebDriverBy::cssSelector('#modal-funding button.close'))->click();
+                }
+
                 return count($driver->findElements(WebDriverBy::cssSelector('#modal-funding'))) === 0;
             });
 

@@ -7,18 +7,25 @@ use App\Domain\SpectrumIdentification;
 use App\Repository\OrganizationRepository;
 use App\Service\Organization\Fleet\FleetOrganizationGuard;
 use App\Service\Ship\InfosProvider\ShipInfosProviderInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class StatsShipsController extends AbstractController
+class StatsShipsController extends AbstractController implements LoggerAwareInterface
 {
-    private $fleetOrganizationGuard;
-    private $organizationRepository;
-    private $shipInfosProvider;
+    use LoggerAwareTrait;
 
-    public function __construct(FleetOrganizationGuard $fleetOrganizationGuard, OrganizationRepository $organizationRepository, ShipInfosProviderInterface $shipInfosProvider)
-    {
+    private FleetOrganizationGuard $fleetOrganizationGuard;
+    private OrganizationRepository $organizationRepository;
+    private ShipInfosProviderInterface $shipInfosProvider;
+
+    public function __construct(
+        FleetOrganizationGuard $fleetOrganizationGuard,
+        OrganizationRepository $organizationRepository,
+        ShipInfosProviderInterface $shipInfosProvider
+    ) {
         $this->fleetOrganizationGuard = $fleetOrganizationGuard;
         $this->organizationRepository = $organizationRepository;
         $this->shipInfosProvider = $shipInfosProvider;
@@ -55,13 +62,20 @@ class StatsShipsController extends AbstractController
             ShipInfo::SIZE_CAPITAL => 0,
         ];
 
+        $shipIds = [];
         foreach ($orgaShips as $orgaShip) {
-            if ($orgaShip === null) {
-                continue;
+            if ($orgaShip->getGalaxyId() !== null) {
+                $shipIds[] = $orgaShip->getGalaxyId()->toString();
             }
-            $shipName = $this->shipInfosProvider->transformHangarToProvider($orgaShip->getName());
-            $shipInfo = $this->shipInfosProvider->getShipByName($shipName);
+        }
+        $shipInfos = $this->shipInfosProvider->getShipsByIdOrName($shipIds);
+
+        foreach ($orgaShips as $orgaShip) {
+            $shipInfo = $orgaShip->getGalaxyId() !== null && $shipInfos[$orgaShip->getGalaxyId()->toString()]
+                ? $shipInfos[$orgaShip->getGalaxyId()->toString()]
+                : null;
             if ($shipInfo === null) {
+                // *** A ship is missing: the stat is not reliable and relevant. ***
                 continue;
             }
             if ($shipInfo->productionStatus === ShipInfo::FLIGHT_READY) {

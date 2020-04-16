@@ -86,17 +86,17 @@ class OrganizationFleetExporter
         $totalColumn = [];
         foreach ($citizens as $citizen) {
             $citizenHandle = $citizen->getActualHandle()->getHandle();
-            $lastFleet = $citizen->getLastFleet();
-            if ($lastFleet === null) {
+            if (null === $lastFleet = $citizen->getLastFleet()) {
                 continue;
             }
             foreach ($lastFleet->getShips() as $ship) {
-                if (!isset($ships[$ship->getName()])) {
-                    $ships[$ship->getName()] = [$citizenHandle => 1];
-                } elseif (!isset($ships[$ship->getName()][$citizenHandle])) {
-                    $ships[$ship->getName()][$citizenHandle] = 1;
+                $shipName = $ship->getNormalizedName() ?: $ship->getName();
+                if (!isset($ships[$shipName])) {
+                    $ships[$shipName] = [$citizenHandle => 1];
+                } elseif (!isset($ships[$shipName][$citizenHandle])) {
+                    $ships[$shipName][$citizenHandle] = 1;
                 } else {
-                    ++$ships[$ship->getName()][$citizenHandle];
+                    ++$ships[$shipName][$citizenHandle];
                 }
             }
         }

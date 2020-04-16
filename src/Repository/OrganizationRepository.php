@@ -16,20 +16,6 @@ class OrganizationRepository extends ServiceEntityRepository
         parent::__construct($registry, Organization::class);
     }
 
-    public function updatePublicChoice(string $sid, string $publicChoice): void
-    {
-        $qb = $this->_em->createQueryBuilder();
-        $qb->update('App:Organization', 'orga')
-            ->set('orga.publicChoice', ':publicChoice')
-            ->where('orga.organizationSid = :sid')
-            ->setParameters([
-                'sid' => $sid,
-                'publicChoice' => $publicChoice,
-            ])
-            ->getQuery()
-            ->execute();
-    }
-
     /**
      * @return Citizen[]
      */

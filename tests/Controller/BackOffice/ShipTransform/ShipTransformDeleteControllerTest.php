@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Controller\BackOffice\Funding;
+namespace App\Tests\Controller\BackOffice\ShipTransform;
 
 use App\Entity\User;
 use App\Tests\WebTestCase;

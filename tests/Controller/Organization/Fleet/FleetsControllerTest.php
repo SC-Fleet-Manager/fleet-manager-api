@@ -7,15 +7,6 @@ use App\Tests\WebTestCase;
 
 class FleetsControllerTest extends WebTestCase
 {
-    /** @var User */
-    private $user;
-
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
-    }
-
     /**
      * @group functional
      * @group organization_fleet
@@ -30,7 +21,7 @@ class FleetsControllerTest extends WebTestCase
         $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArraySubset([
             [
-                'chassisId' => '1',
+                'chassisId' => '8502c9fd-6b1a-47e1-a7fc-6cb034b94da1',
                 'name' => 'Aurora',
                 'count' => 2,
                 'manufacturerCode' => 'RSI',
@@ -45,7 +36,8 @@ class FleetsControllerTest extends WebTestCase
      */
     public function testOrgaFleetsPrivateAuth(): void
     {
-        $this->logIn($this->user);
+        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
+        $this->logIn($user);
         $this->client->xmlHttpRequest('GET', '/api/fleet/orga-fleets/flk', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
@@ -54,7 +46,7 @@ class FleetsControllerTest extends WebTestCase
         $json = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArraySubset([
             [
-                'chassisId' => '6',
+                'chassisId' => 'f92c7c98-a8d2-4c79-b34c-c728d4fffbfc',
                 'name' => 'Cutlass',
                 'count' => 2,
                 'manufacturerCode' => 'DRAK',

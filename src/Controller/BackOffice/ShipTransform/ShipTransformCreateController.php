@@ -31,7 +31,10 @@ class ShipTransformCreateController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $shipName = new ShipName(Uuid::uuid4(), $shipTransform->myHangarName, $shipTransform->shipMatrixName);
+            $shipName = new ShipName(
+                Uuid::uuid4(),
+                $shipTransform->providerId !== null ? Uuid::fromString($shipTransform->providerId) : null,
+                $shipTransform->myHangarNamePattern);
             $this->entityManager->persist($shipName);
             $this->entityManager->flush();
 

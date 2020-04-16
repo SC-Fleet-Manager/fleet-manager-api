@@ -62,7 +62,7 @@ services:
         abstract: true
         arguments: ['@http_kernel', '@security.http_utils']
 
-    App\Service\Ship\InfosProvider\ShipInfosProviderInterface: '@App\Service\Ship\InfosProvider\ApiShipInfosProvider'
+    App\Service\Ship\InfosProvider\ShipInfosProviderInterface: '@App\Service\Ship\InfosProvider\GalaxyApiShipInfosProvider'
     App\Service\Ship\InfosProvider\ApiShipInfosProvider: ~
 
     App\Service\Organization\InfosProvider\OrganizationInfosProviderInterface: '@App\Service\Organization\InfosProvider\ApiOrganizationInfosProvider'
@@ -76,10 +76,6 @@ services:
     App\Service\Citizen\InfosProvider\CitizenInfosProviderInterface: '@App\Service\Citizen\InfosProvider\ApiCitizenInfosProvider'
     App\Service\Citizen\InfosProvider\ApiCitizenInfosProvider:
         arguments: { '$cache': '@rsi.citizens.cache' }
-
-    App\Listener\TrackConnectionListener:
-        tags:
-            - { name: 'kernel.event_listener', event: 'kernel.terminate', method: 'onTerminate' }
 
     App\Listener\UpdateCitizenLastFleetListener:
         tags:

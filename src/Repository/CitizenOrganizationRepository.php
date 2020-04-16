@@ -12,18 +12,4 @@ class CitizenOrganizationRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, CitizenOrganization::class);
     }
-
-    public function findGreaterThanRank(string $sid, int $rank): array
-    {
-        $qb = $this->createQueryBuilder('co');
-        $query = $qb->where('co.rank > :minRank')
-            ->andWhere('co.organizationSid = :sid')
-            ->setParameters([
-                'minRank' => $rank,
-                'sid' => $sid,
-            ])
-            ->getQuery();
-
-        return $query->getResult();
-    }
 }

@@ -8,8 +8,8 @@ use Ramsey\Uuid\UuidInterface;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ShipNameRepository")
  * @ORM\Table(indexes={
- *     @ORM\Index(name="my_hangar_name_idx", columns={"my_hangar_name"}),
- *     @ORM\Index(name="ship_matrix_name_idx", columns={"ship_matrix_name"})
+ *     @ORM\Index(name="my_hangar_name_pattern_idx", columns={"my_hangar_name_pattern"}),
+ *     @ORM\Index(name="provider_id_idx", columns={"provider_id"})
  * })
  */
 class ShipName
@@ -21,20 +21,27 @@ class ShipName
     private ?UuidInterface $id = null;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * e.g., "^Pisces( Expedition)?$".
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private string $myHangarName;
+    private ?string $myHangarNamePattern = null;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * SC-Galaxy Ship Id.
+     *
+     * @ORM\Column(type="uuid", nullable=true)
      */
-    private string $shipMatrixName;
+    private ?UuidInterface $providerId = null;
 
-    public function __construct(?UuidInterface $id = null, string $myHangarName = '', string $shipMatrixName = '')
-    {
+    public function __construct(
+        ?UuidInterface $id = null,
+        ?UuidInterface $providerId = null,
+        ?string $myHangarNamePattern = null
+    ) {
         $this->id = $id;
-        $this->myHangarName = $myHangarName;
-        $this->shipMatrixName = $shipMatrixName;
+        $this->providerId = $providerId;
+        $this->myHangarNamePattern = $myHangarNamePattern;
     }
 
     public function getId(): ?UuidInterface
@@ -42,26 +49,26 @@ class ShipName
         return $this->id;
     }
 
-    public function getMyHangarName(): string
+    public function getProviderId(): ?UuidInterface
     {
-        return $this->myHangarName;
+        return $this->providerId;
     }
 
-    public function setMyHangarName(string $myHangarName): self
+    public function setProviderId(?UuidInterface $providerId): self
     {
-        $this->myHangarName = $myHangarName;
+        $this->providerId = $providerId;
 
         return $this;
     }
 
-    public function getShipMatrixName(): string
+    public function getMyHangarNamePattern(): ?string
     {
-        return $this->shipMatrixName;
+        return $this->myHangarNamePattern;
     }
 
-    public function setShipMatrixName(string $shipMatrixName): self
+    public function setMyHangarNamePattern(?string $myHangarNamePattern): self
     {
-        $this->shipMatrixName = $shipMatrixName;
+        $this->myHangarNamePattern = $myHangarNamePattern;
 
         return $this;
     }

@@ -7,22 +7,26 @@ use App\Domain\ShipInfo;
 interface ShipInfosProviderInterface
 {
     /**
-     * @return iterable|ShipInfo[]
+     * @return ShipInfo[]
      */
-    public function getAllShips(): iterable;
-
-    public function getShipById(string $id): ?ShipInfo;
-
-    public function getShipByName(string $name): ?ShipInfo;
+    public function getAllShips(): array;
 
     /**
-     * @return iterable|ShipInfo[]
+     * @return ShipInfo[] indexed by Id
      */
-    public function getShipsByChassisId(string $chassisId): iterable;
+    public function getShipsByIdOrName(array $ids, array $names = []): array;
 
-    public function shipNamesAreEquals(string $hangarName, string $providerName): bool;
+    /**
+     * typically delete the cache and warmup.
+     *
+     * @return ShipInfo[]
+     */
+    public function refreshShips(): array;
 
-    public function transformProviderToHangar(string $providerName): string;
+    /**
+     * @return ShipInfo[]
+     */
+    public function getShipsByChassisId(string $chassisId): array;
 
-    public function transformHangarToProvider(string $hangarName): string;
+    public function getShipById(string $id): ShipInfo;
 }

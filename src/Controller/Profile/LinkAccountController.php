@@ -89,9 +89,6 @@ class LinkAccountController extends AbstractController
                 $errors[] = $formError->getMessage();
             }
 
-            $this->profileLinkAccountLogger->error('Invalid form.',
-                ['errors' => $errors, 'userId' => $user->getId(), 'nickname' => $user->getNickname()]);
-
             return $this->json([
                 'error' => 'invalid_form',
                 'formErrors' => $errors,
@@ -105,9 +102,6 @@ class LinkAccountController extends AbstractController
                 ['infos' => $this->serializer->serialize($citizenInfos, 'json'), 'handleSC' => $linkAccount->handleSC, 'userId' => $user->getId(), 'nickname' => $user->getNickname()]);
 
             if (!$this->isTokenValid($user, $citizenInfos)) {
-                $this->profileLinkAccountLogger->error('Token not valid.',
-                    ['infos' => $this->serializer->serialize($citizenInfos, 'json'), 'handleSC' => $linkAccount->handleSC, 'userId' => $user->getId(), 'nickname' => $user->getNickname(), 'userToken' => $user->getToken()]);
-
                 return $this->json([
                     'error' => 'invalid_form',
                     'formErrors' => ['Sorry, your RSI bio does not contain this token. Please copy-paste the following token to your RSI short bio.'],
@@ -115,9 +109,6 @@ class LinkAccountController extends AbstractController
             }
             $this->attachCitizenToUser($user, $citizenInfos);
         } catch (NotFoundHandleSCException $e) {
-            $this->profileLinkAccountLogger->error('Citizen infos not found.',
-                ['exception' => $e, 'handleSC' => $linkAccount->handleSC, 'userId' => $user->getId(), 'nickname' => $user->getNickname()]);
-
             return $this->json([
                 'error' => 'not_found_handle',
                 'errorMessage' => sprintf('The SC handle %s does not exist. Try to check the typo.', $linkAccount->handleSC),

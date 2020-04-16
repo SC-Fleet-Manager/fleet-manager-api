@@ -62,11 +62,13 @@ class ChangesControllerTest extends WebTestCase
                 'type' => 'upload_fleet',
                 'payload' => [
                     [
-                        'manu' => 'Drake',
+                        'shipGalaxyId' => 'e37c618b-3ec6-4d4d-92b6-5aed679962a2',
                         'ship' => 'Cutlass Black',
+                        'manu' => 'Drake',
                         'count' => -1,
                     ],
                     [
+                        'shipGalaxyId' => '9950adb5-9151-4760-9073-080416120fca',
                         'manu' => 'RSI',
                         'ship' => 'Orion',
                         'count' => 1,

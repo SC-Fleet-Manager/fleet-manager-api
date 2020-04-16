@@ -31,6 +31,7 @@ class WebTestCase extends BaseWebTestCase
     {
         $this->client = static::createClient();
         $this->doctrine = static::$container->get(ManagerRegistry::class);
+        $this->doctrine->getManager()->clear();
     }
 
     protected function logIn(User $user): void

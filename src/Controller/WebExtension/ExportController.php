@@ -55,11 +55,8 @@ class ExportController extends AbstractController
         $webExtVersionComparison = $this->webExtVersionComparator->compareVersions($extensionVersion);
 
         $contents = $request->getContent();
-        if (($contentSize = strlen($contents)) >= 2 * 1000 * 1000) {
-            $errors = [sprintf('The data are too large (%.2f MB). Allowed maximum size is 2 MB.', $contentSize / (1000 * 1000))];
-            $this->logger->warning('Upload fleet form error.', [
-                'form_errors' => $errors,
-            ]);
+        if (($contentSize = strlen($contents)) >= 3 * 1000 * 1000) {
+            $errors = [sprintf('The data are too large (%.2f MB). Allowed maximum size is 3 MB.', $contentSize / (1000 * 1000))];
 
             return $this->json([
                 'error' => 'invalid_form',

@@ -13,10 +13,10 @@ class ShipTransformForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('myHangarName', TextType::class, [
+            ->add('myHangarNamePattern', TextType::class, [
                 'required' => true,
             ])
-            ->add('shipMatrixName', TextType::class, [
+            ->add('providerId', TextType::class, [
                 'required' => true,
             ]);
     }

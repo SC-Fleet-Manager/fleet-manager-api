@@ -10,7 +10,7 @@
                         <b>{{ change.author ? change.author.actualHandle.handle : 'Unknown citizen' }}</b> :
                         <i v-if="change.payloadPrivate">hidden</i>
                         <template v-else>
-                            <template v-for="(ship, index) in change.payload">{{ ship.count > 0 ? '+'+ship.count : ship.count }} {{ ship.ship }}<template v-if="index < change.payload.length - 1">, </template></template>
+                            <template v-for="(ship, index) in change.payload"><b-badge :variant="ship.count > 0 ? 'success' : 'danger'">{{ ship.count > 0 ? '+'+ship.count : ship.count }}</b-badge> {{ ship.ship }}<template v-if="index < change.payload.length - 1">, </template></template>
                         </template>
                     </span>
                     <span v-if="change.type == 'join_orga' || change.type == 'leave_orga'">
