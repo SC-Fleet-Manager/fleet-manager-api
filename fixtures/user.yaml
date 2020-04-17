@@ -18,6 +18,7 @@ App\Entity\User:
         lastConnectedAt: '<(new \DateTimeImmutable("2019-04-03 22:33:44"))>'
         coins: 5133
         roles: ['ROLE_USER', 'ROLE_ADMIN']
+        lastPatchNoteReadAt: '<(new \DateTimeImmutable("2019-04-04 11:22:33"))>'
     user_ashuvidz:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("4cbc6f40-3348-4e0f-a443-d4a4325eb728"))>']
         nickname: 'Ashuvidz'
@@ -31,6 +32,7 @@ App\Entity\User:
         lastConnectedAt: '<(new \DateTimeImmutable("2019-04-04 22:33:44"))>'
         coins: 700
         roles: ['ROLE_USER', 'ROLE_ADMIN']
+        lastPatchNoteReadAt: '<(new \DateTimeImmutable("2019-04-01 11:22:33"))>'
     user_nocitizen:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("2a288e5d-f83f-4b0d-9275-3351b8cb3848"))>']
         nickname: 'NoCitizen'
@@ -54,6 +56,7 @@ App\Entity\User:
         createdAt: '<(new \DateTimeImmutable("2019-04-05 11:22:33"))>'
         lastConnectedAt: '<(new \DateTimeImmutable("2019-04-06 22:33:44"))>'
         coins: 90
+        lastPatchNoteReadAt: null
     user_ihaveships:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("503e3bc1-cff9-42b8-9f27-a6064b0a78f2"))>']
         nickname: 'iHaveShips'

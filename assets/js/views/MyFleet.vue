@@ -141,6 +141,8 @@
                         this.errorMessage = err.response.data.errorMessage;
                     } else if (err.response.data.error === 'no_rights') {
                         this.errorMessage = err.response.data.errorMessage;
+                    }  else if (err.response.data.error === 'unable_retrieve_ships_infos') {
+                        this.errorMessage = err.response.data.errorMessage;
                     } else if (err.response.status === 404) {
                         this.errorMessage = 'This citizen does not exist.';
                     } else {
