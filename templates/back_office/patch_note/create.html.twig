@@ -1,0 +1,23 @@
+{% extends 'back_office_layout.html.twig' %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1 class="mb-3">Patch Note Create</h1>
+
+        <p><a href="{{ path('bo_patch_note_list') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to the list</a></p>
+
+        <form action="{{ path('bo_patch_note_create') }}" method="post">
+            {{ form_row(form.title) }}
+            {{ form_row(form.body, {'attr': {'rows': '10'}}) }}
+            {{ form_row(form.link, {'attr': {'placeholder': 'https://blog.fleet-manager.space/'}}) }}
+
+            <button type="submit" class="btn btn-success">Valider</button>
+            {% if form._token is defined %}
+                {{ form_widget(form._token) }}
+            {% endif %}
+        </form>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+{% endblock %}
