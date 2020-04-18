@@ -428,6 +428,8 @@
                     if (err.response.status === 400 && err.response.data.error === 'no_citizen_created') {
                         // no citizen created
                         return;
+                    } else if (err.response.status === 400 && err.response.data.error === 'unable_request_ships_infos_provider') {
+                        this.notEnoughRightsMessage = err.response.data.errorMessage;
                     }
                     if (err.response.status === 403 && err.response.data.error.startsWith('not_enough_rights')) {
                         this.notEnoughRightsMessage = err.response.data.errorMessage;

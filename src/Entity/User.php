@@ -162,6 +162,11 @@ class User implements UserInterface
      */
     private ?\DateTimeImmutable  $lastConnectedAt = null;
 
+    /**
+     * @ORM\Column(type="datetimetz_immutable", nullable=true)
+     */
+    private ?\DateTimeImmutable  $lastPatchNoteReadAt = null;
+
     public function __construct(?UuidInterface $id = null)
     {
         $this->id = $id;
@@ -472,6 +477,18 @@ class User implements UserInterface
     public function setLastConnectedAt(?\DateTimeImmutable $lastConnectedAt): self
     {
         $this->lastConnectedAt = $lastConnectedAt;
+
+        return $this;
+    }
+
+    public function getLastPatchNoteReadAt(): ?\DateTimeImmutable
+    {
+        return $this->lastPatchNoteReadAt;
+    }
+
+    public function setLastPatchNoteReadAt(?\DateTimeImmutable $lastPatchNoteReadAt): self
+    {
+        $this->lastPatchNoteReadAt = $lastPatchNoteReadAt;
 
         return $this;
     }

@@ -51,7 +51,14 @@ class MyFleetController extends AbstractController
             }
         }
 
-        $shipInfos = $this->shipInfosProvider->getShipsByIdOrName($galaxyIds);
+        try {
+            $shipInfos = $this->shipInfosProvider->getShipsByIdOrName($galaxyIds);
+        } catch (\Exception $e) {
+            return $this->json([
+                'fleet' => $fleet,
+                'shipInfos' => [],
+            ], 200, [], ['groups' => ['my-fleet']]);
+        }
 
         return $this->json([
             'fleet' => $fleet,

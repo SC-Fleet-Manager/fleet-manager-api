@@ -37,6 +37,7 @@
                 Star Citizen is a product of Cloud Imperium Rights LLC and Cloud Imperium Rights Ltd.
             </div>
             <b-nav class="ml-auto">
+                <b-nav-item link-classes="p-2" v-b-modal.modal-patch-notes>Patch notes</b-nav-item>
                 <b-nav-item link-classes="p-2" target="_blank" href="https://sc-galaxy.com" title="SC Galaxy"><img src="../../img/icon_scg_blue.svg" alt="SCG" height="24" /></b-nav-item>
                 <b-nav-text class="p-2">–</b-nav-text>
                 <b-nav-item link-classes="p-2" href="https://ext.fleet-manager.space/fleet_manager_extension-latest.xpi"><i style="font-size: 1.4rem;" class="fab fa-firefox"></i></b-nav-item>
@@ -49,6 +50,14 @@
         </TheFooter>
 
         <RegistrationAndLoginModal discord-login-url="/connect/discord"></RegistrationAndLoginModal>
+
+        <b-modal id="modal-patch-notes" ref="modalPatchNotes" size="lg" centered scrollable title="What's new?" hide-footer @show="onShowPatchNotes">
+            <div v-for="patchNote in patchNotes" :key="patchNote.id">
+                <h5>{{ patchNote.title }}</h5>
+                <p>{{ patchNote.body }}</p>
+                <p v-if="patchNote.link"><a :href="patchNote.link" target="_blank">{{ patchNote.link }}</a></p>
+            </div>
+        </b-modal>
     </div>
 </template>
 
@@ -82,6 +91,7 @@
                 user: null,
                 citizen: null,
                 lastVersion: null,
+                patchNotes: [],
             }
         },
         created() {
@@ -101,6 +111,20 @@
             );
 
             this.findLastVersion();
+
+            try {
+                axios.get('/api/has-new-patch-note').then(response => {
+                    if (response.data.hasNewPatchNote === true) {
+                        this.$bvModal.show('modal-patch-notes');
+                    }
+                });
+            } catch (err) {
+                if (err.response.status === 401) {
+                    // not connected
+                    return;
+                }
+                console.error(err);
+            }
         },
         computed: {
             name() {
@@ -153,16 +177,18 @@
                     });
                 }
 
-                nav.push({
-                    name: 'SC Galaxy',
-                    class: 'mt-auto ',
-                    url: 'https://sc-galaxy.com',
-                    icon: 'fas fa-database',
-                    variant: 'primary',
-                    attributes: {
-                        target: '_blank',
+                nav.push(
+                    {
+                        name: 'SC Galaxy',
+                        class: 'mt-auto',
+                        url: 'https://sc-galaxy.com',
+                        icon: 'fas fa-database',
+                        variant: 'primary',
+                        attributes: {
+                            target: '_blank',
+                        },
                     },
-                });
+                );
 
                 return nav;
             }
@@ -173,7 +199,19 @@
                 axios.get('https://api.github.com/repos/Ioni14/starcitizen-fleet-manager/tags').then(response => {
                     this.lastVersion = response.data[0].name;
                 });
-            }
+            },
+            async onShowPatchNotes(ev) {
+                try {
+                    const response = await axios.get('/api/last-patch-notes');
+                    this.patchNotes = response.data.patchNotes;
+                } catch (err) {
+                    if (err.response.data.errorMessage) {
+                        this.$toastr.e(err.response.data.errorMessage);
+                    } else {
+                        this.$toastr.e('Sorry, an unexpected error has occurred when requesting the last patch notes.');
+                    }
+                }
+            },
         }
     };
 </script>

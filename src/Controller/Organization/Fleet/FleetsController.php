@@ -34,7 +34,14 @@ class FleetsController extends AbstractController
 
         $shipFamilyFilter = $this->shipFamilyFilterFactory->create($request, $organizationSid);
 
-        $shipFamilies = $this->organizationFleetHandler->computeShipFamilies(new SpectrumIdentification($organizationSid), $shipFamilyFilter);
+        try {
+            $shipFamilies = $this->organizationFleetHandler->computeShipFamilies(new SpectrumIdentification($organizationSid), $shipFamilyFilter);
+        } catch (\Exception $e) {
+            return $this->json([
+                'error' => 'unable_request_ships_infos_provider',
+                'errorMessage' => 'Sorry, we\'re unable to retrieve the ship infos from SC Galaxy. Please retry in a moment.',
+            ], 400);
+        }
 
         usort($shipFamilies, static function (array $shipFamily1, array $shipFamily2): int {
             $count = $shipFamily2['count'] - $shipFamily1['count'];
