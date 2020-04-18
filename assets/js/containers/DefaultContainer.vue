@@ -54,7 +54,7 @@
         <b-modal id="modal-patch-notes" ref="modalPatchNotes" size="lg" centered scrollable title="What's new?" hide-footer @show="onShowPatchNotes">
             <div v-for="patchNote in patchNotes" :key="patchNote.id">
                 <h5>{{ patchNote.title }}</h5>
-                <p>{{ patchNote.body }}</p>
+                <p v-html="nl2br(patchNote.body)"></p>
                 <p v-if="patchNote.link"><a :href="patchNote.link" target="_blank">{{ patchNote.link }}</a></p>
             </div>
         </b-modal>
@@ -211,6 +211,9 @@
                         this.$toastr.e('Sorry, an unexpected error has occurred when requesting the last patch notes.');
                     }
                 }
+            },
+            nl2br(str) {
+                return str.replace(/(?:\r\n|\r|\n)/g, '<br />');
             },
         }
     };
