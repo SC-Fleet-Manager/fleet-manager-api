@@ -30,10 +30,10 @@ class HasNewPatchNoteController extends AbstractController
         /** @var User $user */
         $user = $this->security->getUser();
 
-        $oneRecentPatchNote = $this->patchNoteRepository->findOneRecentPatchNote($user->getLastPatchNoteReadAt());
+        $oneRecentPatchNoteId = $this->patchNoteRepository->findOneRecentPatchNoteId($user->getLastPatchNoteReadAt());
 
         return $this->json([
-            'hasNewPatchNote' => $oneRecentPatchNote !== null,
+            'hasNewPatchNote' => $oneRecentPatchNoteId !== null,
         ]);
     }
 }

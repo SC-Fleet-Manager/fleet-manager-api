@@ -7,7 +7,9 @@ use Ramsey\Uuid\UuidInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\PatchNoteRepository")
- * @ORM\Table()
+ * @ORM\Table(indexes={
+ *     @ORM\Index(name="created_at_idx", columns={"created_at"})
+ * })
  */
 class PatchNote
 {
