@@ -1,11 +1,13 @@
-version: '3.4'
+version: '3.5'
 volumes:
     #    db: ~
     redis_db: ~
 services:
     php:
         build:
+            context: .
             target: build_php_dev
+            dockerfile: ./docker/Dockerfile
             args:
                 ENV: 'dev'
                 DUMP_ENV: 1
@@ -19,10 +21,16 @@ services:
 #                remote_port=9001
 #                idekey=PHPSTORM
     apache:
+        build:
+            context: .
+            target: build_apache
+            dockerfile: ./docker/Dockerfile
         volumes:
             - .:/app
         ports:
             - 127.0.0.1:8000:80
+        environment:
+            PHP_HANDLER_HOST: php:9000
     apache-test:
         build:
             context: .
@@ -42,19 +50,16 @@ services:
 #            - ./docker/mysql/config-file.cnf:/etc/mysql/conf.d/config-file.cnf
         ports:
             - 127.0.0.1:3306:3306
+        environment:
+            DB_ROOT_PASSWORD: root
+            DB_NAME: fleet_manager
     smtp:
         image: schickling/mailcatcher
         ports:
             - 127.0.0.1:1080:1080 # web-ui
-    redis-commander:
-        image: rediscommander/redis-commander:latest
-        hostname: redis-commander
+    redis:
         environment:
-            REDIS_HOST: redis
-            REDIS_PORT: 6379
-            REDIS_PASSWORD: ${REDIS_PASSWORD}
-        ports:
-            - 127.0.0.1:8081:8081
+            REDIS_PASSWORD: root
     selenium-hub:
         image: selenium/hub
         ports:
