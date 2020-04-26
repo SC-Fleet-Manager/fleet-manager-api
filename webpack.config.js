@@ -9,7 +9,8 @@ if (!Encore.isRuntimeEnvironmentConfigured()) {
 
 Encore
     .setOutputPath('public/build/')
-    .setPublicPath('/build')
+    .setPublicPath(process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '/build')
+    .setManifestKeyPrefix('build/')
 
     .addEntry('main', './assets/js/main.js')
     .addEntry('home', './assets/js/home.js')
@@ -41,7 +42,7 @@ Encore
 
     .addPlugin(new BundleAnalyzerPlugin({
         analyzerMode: 'disabled',
-        generateStatsFile: true,
+        generateStatsFile: !Encore.isProduction(),
     }))
     .addPlugin(new MomentLocalesPlugin({
         localesToKeep: ['en'],
