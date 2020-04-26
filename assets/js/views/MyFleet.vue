@@ -16,7 +16,7 @@
                         </b-col>
                         <b-col col xl="3" lg="4" md="6" v-for="ship in ships" :key="ship.id">
                             <b-card class="mb-3 js-card-ship"
-                                    :img-src="shipInfos[ship.galaxyId] ? shipInfos[ship.galaxyId].mediaThumbUrl : '/build/images/static/placeholder_ship.svg'"
+                                    :img-src="shipInfos[ship.galaxyId] && shipInfos[ship.galaxyId].mediaThumbUrl ? shipInfos[ship.galaxyId].mediaThumbUrl : placeholderShipUri"
                                     img-top
                                     :title="shipInfos[ship.galaxyId] ? shipInfos[ship.galaxyId].name : ship.name">
                                 <p class="card-text">
@@ -62,6 +62,7 @@
     import axios from 'axios';
     import moment from 'moment-timezone';
     import UpdateFleetFile from './UpdateFleetFile';
+    import placeholderShipUri from '../../img/static/placeholder_ship.svg';
 
     export default {
         name: 'my-fleet',
@@ -69,6 +70,7 @@
         components: {UpdateFleetFile},
         data() {
             return {
+                placeholderShipUri,
                 publicProfile: null,
                 user: null,
                 citizen: null,

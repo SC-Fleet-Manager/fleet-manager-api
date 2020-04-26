@@ -49,8 +49,8 @@ services:
         ports:
             - 127.0.0.1:3306:3306
         environment:
-            DB_ROOT_PASSWORD: root
-            DB_NAME: fleet_manager
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: fleet_manager
     smtp:
         image: schickling/mailcatcher
         ports:
