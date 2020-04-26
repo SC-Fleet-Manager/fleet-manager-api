@@ -107,7 +107,7 @@ RUN apt-get update && apt-get install -y curl \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /tmp/*
 
-COPY docker/apache/httpd.prod.conf /usr/local/apache2/conf/httpd.conf
+COPY docker/apache/httpd.conf /usr/local/apache2/conf/httpd.conf
 
 USER www-data
 WORKDIR /app

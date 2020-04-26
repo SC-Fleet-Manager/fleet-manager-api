@@ -29,8 +29,6 @@ services:
             - .:/app
         ports:
             - 127.0.0.1:8000:80
-        environment:
-            PHP_HANDLER_HOST: php:9000
     apache-test:
         build:
             context: .

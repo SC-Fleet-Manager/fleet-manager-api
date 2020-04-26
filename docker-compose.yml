@@ -6,6 +6,8 @@ services:
     apache:
         image: fleet-manager-spa-apache:latest
         hostname: apache
+        environment:
+            PHP_HANDLER_HOST: php:9000
         depends_on:
             - php
     redis:
