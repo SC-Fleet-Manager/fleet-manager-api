@@ -115,7 +115,7 @@ WORKDIR /app
 COPY --chown=www-data:www-data public/favicon.ico public/robots.txt public/
 COPY --chown=www-data:www-data public/icons public/icons
 #COPY --chown=www-data:www-data --from=node_deps /app/public/build public/build
-COPY --chown=www-data:www-data --from=build_php /app/public/bundles public/bundles
+#COPY --chown=www-data:www-data --from=build_php /app/public/bundles public/bundles
 RUN touch public/index.php
 
 USER root
