@@ -13,5 +13,5 @@ services:
         depends_on:
             - php
     redis:
-        image: bitnami/redis:5.0.5-debian-9-r56
+        image: bitnami/redis:5.0.9-debian-10-r6
         hostname: redis
