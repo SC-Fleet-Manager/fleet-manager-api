@@ -3,6 +3,8 @@ services:
     php:
         image: fleet-manager-spa-php:latest
         hostname: php
+        depends_on:
+            - redis
     apache:
         image: fleet-manager-spa-apache:latest
         hostname: apache
