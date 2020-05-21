@@ -2,6 +2,7 @@ parameters:
     env(INFLUXDB_HOST): 'localhost'
     env(INFLUXDB_DATABASE): 'fleet_manager'
     env(INFLUXDB_UDP_PORT): 8089
+    env(INFLUXDB_HTTP_PORT): 8086
 
 influx_db:
     default_connection: ~
@@ -9,8 +10,9 @@ influx_db:
         default:
             host: '%env(INFLUXDB_HOST)%'
             database: '%env(INFLUXDB_DATABASE)%'
-            udp: true
+            udp: false
             udp_port: '%env(int:INFLUXDB_UDP_PORT)%'
+            http_port: '%env(int:INFLUXDB_HTTP_PORT)%'
             timeout: 0.0
             connect_timeout: 0.0
             listener_enabled: true

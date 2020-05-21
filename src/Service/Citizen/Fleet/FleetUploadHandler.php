@@ -2,7 +2,8 @@
 
 namespace App\Service\Citizen\Fleet;
 
-use Algatux\InfluxDbBundle\Events\DeferredUdpEvent;
+use Algatux\InfluxDbBundle\Events\AbstractInfluxDbEvent;
+use Algatux\InfluxDbBundle\Events\DeferredHttpEvent;
 use App\Domain\Money;
 use App\Domain\ShipInfo;
 use App\Entity\Citizen;
@@ -91,11 +92,11 @@ class FleetUploadHandler implements LoggerAwareInterface
         $this->entityManager->flush();
 
         $this->eventDispatcher->dispatch(new CitizenFleetUpdatedEvent($citizen, $fleet, $lastVersion));
-        $this->eventDispatcher->dispatch(new DeferredUdpEvent([new Point(
+        $this->eventDispatcher->dispatch(new DeferredHttpEvent([new Point(
             'app.fleet_upload',
             1,
             ['citizen_id' => $citizen->getId(), 'citizen_handle' => (string) $citizen->getActualHandle(), 'host' => $this->requestStack->getCurrentRequest()->getHost()],
-        )], Database::PRECISION_SECONDS), DeferredUdpEvent::NAME);
+        )], Database::PRECISION_SECONDS), AbstractInfluxDbEvent::NAME);
     }
 
     private function hasDiff(Fleet $newFleet, Fleet $lastFleet): bool

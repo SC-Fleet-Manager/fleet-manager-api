@@ -2,7 +2,8 @@
 
 namespace App\Controller\Security;
 
-use Algatux\InfluxDbBundle\Events\DeferredUdpEvent;
+use Algatux\InfluxDbBundle\Events\AbstractInfluxDbEvent;
+use Algatux\InfluxDbBundle\Events\DeferredHttpEvent;
 use App\Entity\User;
 use App\Form\Dto\Registration;
 use App\Message\Registration\SendRegistrationConfirmationMail;
@@ -72,11 +73,11 @@ class RegistrationController extends AbstractController
         $this->entityManager->flush();
 
         $this->bus->dispatch(new SendRegistrationConfirmationMail($newUser->getId()));
-        $this->eventDispatcher->dispatch(new DeferredUdpEvent([new Point(
+        $this->eventDispatcher->dispatch(new DeferredHttpEvent([new Point(
             'app.registration',
             1,
             ['method' => 'email/password', 'host' => $request->getHost()],
-        )], Database::PRECISION_SECONDS), DeferredUdpEvent::NAME);
+        )], Database::PRECISION_SECONDS), AbstractInfluxDbEvent::NAME);
 
         return $this->json(null, 204);
     }

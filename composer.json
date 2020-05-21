@@ -11,7 +11,7 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-zend-opcache": "*",
-        "algatux/influxdb-bundle": "^2.4",
+        "algatux/influxdb-bundle": "^3.0@beta",
         "doctrine/annotations": "^1.8",
         "doctrine/doctrine-bundle": "^2.0",
         "doctrine/doctrine-migrations-bundle": "^2.1",

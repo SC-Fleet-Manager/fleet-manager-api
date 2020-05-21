@@ -2,7 +2,8 @@
 
 namespace App\Service\Citizen;
 
-use Algatux\InfluxDbBundle\Events\DeferredUdpEvent;
+use Algatux\InfluxDbBundle\Events\AbstractInfluxDbEvent;
+use Algatux\InfluxDbBundle\Events\DeferredHttpEvent;
 use App\Domain\CitizenInfos;
 use App\Domain\SpectrumIdentification;
 use App\Entity\Citizen;
@@ -50,11 +51,11 @@ class CitizenRefresher
                 $orga->setOrganizationSid($orgaInfo->sid->getSid());
                 $this->entityManager->persist($orga);
 
-                $this->eventDispatcher->dispatch(new DeferredUdpEvent([new Point(
+                $this->eventDispatcher->dispatch(new DeferredHttpEvent([new Point(
                     'app.new_organization',
                     1,
                     ['orga_id' => $orga->getId(), 'orga_name' => $providerOrgaInfos->fullname, 'host' => $this->requestStack->getCurrentRequest()->getHost()],
-                )], Database::PRECISION_SECONDS), DeferredUdpEvent::NAME);
+                )], Database::PRECISION_SECONDS), AbstractInfluxDbEvent::NAME);
             }
             $orga->setAvatarUrl($providerOrgaInfos->avatarUrl);
             $orga->setName($providerOrgaInfos->fullname);

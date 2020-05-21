@@ -2,7 +2,8 @@
 
 namespace App\Security;
 
-use Algatux\InfluxDbBundle\Events\DeferredUdpEvent;
+use Algatux\InfluxDbBundle\Events\AbstractInfluxDbEvent;
+use Algatux\InfluxDbBundle\Events\DeferredHttpEvent;
 use App\Entity\Funding;
 use App\Entity\User;
 use App\Repository\UserRepository;
@@ -154,11 +155,11 @@ class OAuthUserProvider extends BaseProvider implements AccountConnectorInterfac
 
         $this->entityManager->persist($newUser);
 
-        $this->eventDispatcher->dispatch(new DeferredUdpEvent([new Point(
+        $this->eventDispatcher->dispatch(new DeferredHttpEvent([new Point(
             'app.registration',
             1,
             ['method' => 'discord', 'host' => $this->requestStack->getCurrentRequest()->getHost()],
-        )], Database::PRECISION_SECONDS), DeferredUdpEvent::NAME);
+        )], Database::PRECISION_SECONDS), AbstractInfluxDbEvent::NAME);
 
         return $newUser;
     }
