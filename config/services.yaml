@@ -8,6 +8,7 @@ parameters:
     env(PAYPAL_CHECKOUT_WEBHOOK_ID): ''
     env(PAYPAL_CHECKOUT_MODE): !php/const App\Service\Funding\PayPalHttpClientFactory::MODE_SANDBOX
     env(WEBEXTENSION_VERSION_URL): ''
+    env(MAILER_NOREPLY_ADDRESS): 'noreply@fleet-manager.space'
 
 services:
     _defaults:
@@ -15,8 +16,8 @@ services:
         autoconfigure: true
         bind:
             $profileLinkAccountLogger: '@monolog.logger.profile_link_account'
-            $registrationFromAddress: 'noreply@fleet-manager.space'
-            $noreplyAddress: 'noreply@fleet-manager.space'
+            $registrationFromAddress: '%env(MAILER_NOREPLY_ADDRESS)%'
+            $noreplyAddress: '%env(MAILER_NOREPLY_ADDRESS)%'
             $webExtensionVersionUrl: '%env(WEBEXTENSION_VERSION_URL)%'
 
     App\Command\:

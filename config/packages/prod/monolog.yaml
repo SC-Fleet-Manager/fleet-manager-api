@@ -1,5 +1,6 @@
 parameters:
     env(MONOLOG_MAILER_TO): ''
+    env(MAILER_NOREPLY_ADDRESS): 'noreply@fleet-manager.space'
 
 monolog:
     handlers:
@@ -50,7 +51,7 @@ monolog:
             handler: mailer
         mailer:
             type: swift_mailer
-            from_email: 'noreply@fleet-manager.space'
+            from_email: '%env(MAILER_NOREPLY_ADDRESS)%'
             to_email: '%env(MONOLOG_MAILER_TO)%'
             subject: '[FM Monolog] Error : %%message%%'
             formatter: monolog.formatter.html
