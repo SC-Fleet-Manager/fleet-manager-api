@@ -36,6 +36,15 @@
                 </template>
                 <b-button v-else size="lg" block variant="primary" disabled><i class="fas fa-key"></i> Email/password linked <i class="fas fa-check"></i></b-button>
             </b-col>
+            <b-col col xl="6" lg="12" class="mb-3">
+                <h5 class="mb-3">Danger section</h5>
+
+                <b-button size="lg" block variant="danger" v-b-modal.modal-delete-account>Delete my account and my data</b-button>
+                <b-modal id="modal-delete-account" ref="modalDeleteAccount" size="lg" centered title="Delete my account and my data" hide-footer>
+                  <b-alert variant="danger" :show="true"><i class="fa fa-exclamation-triangle"></i> You are about to delete your account and all your data. This can not be cancelled.<br/>Are you sure you want to confirm?</b-alert>
+                  <b-button size="lg" block variant="danger" @click="deleteAccount">Delete my account</b-button>
+                </b-modal>
+            </b-col>
         </b-row>
     </b-card>
 </template>
@@ -129,6 +138,18 @@
                     }
                 });
             },
+            deleteAccount() {
+                axios({
+                    method: 'post',
+                    url: '/api/profile/delete-account'
+                }).then(response => {
+                    window.location.replace('/');
+                }).catch(err => {
+                    this.$toastr.e({
+                        timeout: 10000,
+                        msg: "Sorry, we are unable to delete your account.\nPlease contact fleet-manager@protonmail.com with your username or email."});
+                });
+            }
         },
     }
 </script>

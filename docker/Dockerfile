@@ -18,15 +18,14 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /tmp/*
 
 RUN mkdir -p /app /.composer && chown -R www-data:www-data /app /.composer
-WORKDIR /app
-USER www-data
 
+USER www-data
 WORKDIR /app
 
 ########################################
 FROM req_php as composer_deps
 
-COPY --from=composer:1.9.3 /usr/bin/composer /usr/local/bin/composer
+COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 
 # prod|dev
 ARG ENV=prod
@@ -38,8 +37,7 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV COMPOSER_MEMORY_LIMIT -1
 ENV COMPOSER_HOME /.composer
 ENV APP_ENV $ENV
-RUN composer global require "hirak/prestissimo:^0.3" --prefer-dist --no-progress --no-suggest --optimize-autoloader --classmap-authoritative --no-interaction; \
-    if [ $ENV = 'prod' ]; then \
+RUN if [ $ENV = 'prod' ]; then \
         composer install --no-scripts --no-suggest --ignore-platform-reqs --optimize-autoloader --classmap-authoritative --no-dev --prefer-dist --no-progress --no-interaction; \
         rm -rf vendor/*/*/docs; \
     else \

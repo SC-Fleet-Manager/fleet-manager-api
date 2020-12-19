@@ -32,8 +32,6 @@ class Ship
     private ?UuidInterface $id = null;
 
     /**
-     * @var array
-     *
      * @ORM\Column(type="json")
      */
     private array $rawData = [];
