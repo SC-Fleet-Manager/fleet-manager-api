@@ -138,8 +138,6 @@ class User implements UserInterface
     private bool $supporterVisible = true;
 
     /**
-     * @var int
-     *
      * @ORM\Column(type="integer", options={"default":0})
      * @Groups({"profile"})
      */

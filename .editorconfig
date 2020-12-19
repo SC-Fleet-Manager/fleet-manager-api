@@ -11,7 +11,7 @@ insert_final_newline = true
 indent_style = tab
 indent_size = 8
 
-[{*.php, *.yml, *.yaml, *.feature, *.yml.dist, *.yaml.dist}]
+[{*.php, *.js, *.vue, *.yml, *.yaml, *.feature, *.yml.dist, *.yaml.dist}]
 indent_size = 4
 
 [{k8s/**/*.yaml, k8s/*.yaml.dist}]

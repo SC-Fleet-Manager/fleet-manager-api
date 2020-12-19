@@ -69,6 +69,7 @@ App\Entity\User:
         createdAt: '<(new \DateTimeImmutable("2019-04-06 11:22:33"))>'
         lastConnectedAt: '<(new \DateTimeImmutable("2019-04-07 22:33:44"))>'
         coins: 90
+        lastPatchNoteReadAt: '<(new \DateTimeImmutable("+5 minutes"))>'
     user_orgastats1:
         __construct: ['<(\Ramsey\Uuid\Uuid::fromString("f2ab3ea1-315e-4a72-b03c-add203335acb"))>']
         nickname: 'orgaStats1'
