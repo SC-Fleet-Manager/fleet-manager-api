@@ -29,14 +29,14 @@ class ResolveConflictConnectControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
-        $this->assertSame(204, $this->client->getResponse()->getStatusCode());
+        static::assertSame(204, $this->client->getResponse()->getStatusCode());
 
         /** @var User $user */
         $user = $this->doctrine->getRepository(User::class)->find($this->user->getId());
-        $this->assertSame('3de45df8-3e84-4a69-8e9d-7bff1faa5281', $user->getCitizen()->getId()->toString());
-        $this->assertSame('ashuvidz', $user->getCitizen()->getActualHandle()->getHandle());
-        $this->assertSame('123456789002', $user->getDiscordId());
-        $this->assertNull($user->getPendingDiscordId());
+        static::assertSame('3de45df8-3e84-4a69-8e9d-7bff1faa5281', $user->getCitizen()->getId()->toString());
+        static::assertSame('ashuvidz', $user->getCitizen()->getActualHandle()->getHandle());
+        static::assertSame('123456789002', $user->getDiscordId());
+        static::assertNull($user->getPendingDiscordId());
     }
 
     /**
@@ -52,14 +52,14 @@ class ResolveConflictConnectControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
-        $this->assertSame(204, $this->client->getResponse()->getStatusCode());
+        static::assertSame(204, $this->client->getResponse()->getStatusCode());
 
         /** @var User $user */
         $user = $this->doctrine->getRepository(User::class)->find($this->user->getId());
-        $this->assertSame('fb3ff308-f4ac-40b8-9be5-98d85035e2bf', $user->getCitizen()->getId()->toString());
-        $this->assertSame('link_social_networks_pending', $user->getCitizen()->getActualHandle()->getHandle());
-        $this->assertSame('123456789002', $user->getDiscordId());
-        $this->assertNull($user->getPendingDiscordId());
+        static::assertSame('fb3ff308-f4ac-40b8-9be5-98d85035e2bf', $user->getCitizen()->getId()->toString());
+        static::assertSame('link_social_networks_pending', $user->getCitizen()->getActualHandle()->getHandle());
+        static::assertSame('123456789002', $user->getDiscordId());
+        static::assertNull($user->getPendingDiscordId());
     }
 
     /**
@@ -75,8 +75,8 @@ class ResolveConflictConnectControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
-        $this->assertSame(400, $this->client->getResponse()->getStatusCode());
+        static::assertSame(400, $this->client->getResponse()->getStatusCode());
         $json = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame('You must choose a Citizen among the proposals.', $json['formErrors']['violations'][0]['title']);
+        static::assertSame('You must choose a Citizen among the proposals.', $json['formErrors']['violations'][0]['title']);
     }
 }

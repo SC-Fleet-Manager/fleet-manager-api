@@ -17,15 +17,15 @@ class LastPatchNoteControllerTest extends WebTestCase
         $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Gardien1']);
         $this->logIn($user);
 
-        $this->assertNull($user->getLastPatchNoteReadAt(), 'The LastPatchNoteReadAt property is not null.');
+        static::assertNull($user->getLastPatchNoteReadAt(), 'The LastPatchNoteReadAt property is not null.');
 
         $this->client->xmlHttpRequest('GET', '/api/last-patch-notes', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
 
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+        static::assertSame(200, $this->client->getResponse()->getStatusCode());
         $json = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertArraySubset([
+        static::assertArraySubset([
             'patchNotes' => [
                 [
                     'id' => '686afb82-c344-4b25-be84-5d327b2af47b',
@@ -46,6 +46,6 @@ class LastPatchNoteControllerTest extends WebTestCase
 
         /** @var User $user */
         $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
-        $this->assertSame('2019-04-04T11:22:33+00:00', $user->getLastPatchNoteReadAt()->format('c'));
+        static::assertSame('2019-04-04T11:22:33+00:00', $user->getLastPatchNoteReadAt()->format('c'));
     }
 }

@@ -32,7 +32,7 @@ class PaypalWebhookControllerTest extends WebTestCase
 
         /** @var Funding $funding */
         $funding = $this->doctrine->getRepository(Funding::class)->find('1154f530-dbb5-425d-94e8-9a3200b75e35');
-        $this->assertSame(5133, $funding->getUser()->getCoins());
+        static::assertSame(5133, $funding->getUser()->getCoins());
 
         $this->client->xmlHttpRequest('POST', '/api/funding/paypal-webhook', [], [], [
             'CONTENT_TYPE' => 'application/json',
@@ -43,13 +43,13 @@ class PaypalWebhookControllerTest extends WebTestCase
             ],
         ]));
 
-        $this->assertSame(204, $this->client->getResponse()->getStatusCode());
+        static::assertSame(204, $this->client->getResponse()->getStatusCode());
 
         $funding = $this->doctrine->getRepository(Funding::class)->find('1154f530-dbb5-425d-94e8-9a3200b75e35');
-        $this->assertSame('PARTIALLY_REFUNDED', $funding->getPaypalStatus());
-        $this->assertSame(2050, $funding->getRefundedAmount());
-        $this->assertSame(1940, $funding->getRefundedNetAmount());
-        $this->assertArraySubset([
+        static::assertSame('PARTIALLY_REFUNDED', $funding->getPaypalStatus());
+        static::assertSame(2050, $funding->getRefundedAmount());
+        static::assertSame(1940, $funding->getRefundedNetAmount());
+        static::assertArraySubset([
             'payments' => [
                 'captures' => [
                     [
@@ -88,14 +88,14 @@ class PaypalWebhookControllerTest extends WebTestCase
                 ],
             ],
         ], $funding->getPaypalPurchase());
-        $this->assertSame(5133 - 2050, $funding->getUser()->getCoins()); // removed X coins
+        static::assertSame(5133 - 2050, $funding->getUser()->getCoins()); // removed X coins
 
         /** @var TransportInterface $transport */
         $transport = static::$container->get('messenger.transport.sync');
         $envelopes = $transport->get();
-        $this->assertCount(1, $envelopes);
-        $this->assertInstanceOf(SendOrderRefundMail::class, $envelopes[0]->getMessage());
-        $this->assertSame($funding->getId()->toString(), $envelopes[0]->getMessage()->getFundingId()->toString());
+        static::assertCount(1, $envelopes);
+        static::assertInstanceOf(SendOrderRefundMail::class, $envelopes[0]->getMessage());
+        static::assertSame($funding->getId()->toString(), $envelopes[0]->getMessage()->getFundingId()->toString());
     }
 
     /**
@@ -118,7 +118,7 @@ class PaypalWebhookControllerTest extends WebTestCase
 
         /** @var Funding $funding */
         $funding = $this->doctrine->getRepository(Funding::class)->find('fc296ec6-0e4f-405e-a44c-05e089428751');
-        $this->assertSame(700, $funding->getUser()->getCoins());
+        static::assertSame(700, $funding->getUser()->getCoins());
 
         $this->client->xmlHttpRequest('POST', '/api/funding/paypal-webhook', [], [], [
             'CONTENT_TYPE' => 'application/json',
@@ -130,13 +130,13 @@ class PaypalWebhookControllerTest extends WebTestCase
             ],
         ]));
 
-        $this->assertSame(204, $this->client->getResponse()->getStatusCode());
+        static::assertSame(204, $this->client->getResponse()->getStatusCode());
 
         $funding = $this->doctrine->getRepository(Funding::class)->find('fc296ec6-0e4f-405e-a44c-05e089428751');
-        $this->assertSame('REFUNDED', $funding->getPaypalStatus());
-        $this->assertSame(1200, $funding->getRefundedAmount());
-        $this->assertSame(1100, $funding->getRefundedNetAmount());
-        $this->assertArraySubset([
+        static::assertSame('REFUNDED', $funding->getPaypalStatus());
+        static::assertSame(1200, $funding->getRefundedAmount());
+        static::assertSame(1100, $funding->getRefundedNetAmount());
+        static::assertArraySubset([
             'payments' => [
                 'captures' => [
                     [
@@ -199,14 +199,14 @@ class PaypalWebhookControllerTest extends WebTestCase
                 ],
             ],
         ], $funding->getPaypalPurchase());
-        $this->assertSame(700 - 700, $funding->getUser()->getCoins()); // no more coins
+        static::assertSame(700 - 700, $funding->getUser()->getCoins()); // no more coins
 
         /** @var TransportInterface $transport */
         $transport = static::$container->get('messenger.transport.sync');
         $envelopes = $transport->get();
-        $this->assertCount(1, $envelopes);
-        $this->assertInstanceOf(SendOrderRefundMail::class, $envelopes[0]->getMessage());
-        $this->assertSame($funding->getId()->toString(), $envelopes[0]->getMessage()->getFundingId()->toString());
+        static::assertCount(1, $envelopes);
+        static::assertInstanceOf(SendOrderRefundMail::class, $envelopes[0]->getMessage());
+        static::assertSame($funding->getId()->toString(), $envelopes[0]->getMessage()->getFundingId()->toString());
     }
 
     /**
@@ -228,7 +228,7 @@ class PaypalWebhookControllerTest extends WebTestCase
 
         /** @var Funding $funding */
         $funding = $this->doctrine->getRepository(Funding::class)->find('1154f530-dbb5-425d-94e8-9a3200b75e35');
-        $this->assertSame(5133, $funding->getUser()->getCoins());
+        static::assertSame(5133, $funding->getUser()->getCoins());
 
         $this->client->xmlHttpRequest('POST', '/api/funding/paypal-webhook', [], [], [
             'CONTENT_TYPE' => 'application/json',
@@ -239,11 +239,11 @@ class PaypalWebhookControllerTest extends WebTestCase
             ],
         ]));
 
-        $this->assertSame(204, $this->client->getResponse()->getStatusCode());
+        static::assertSame(204, $this->client->getResponse()->getStatusCode());
 
         $funding = $this->doctrine->getRepository(Funding::class)->find('1154f530-dbb5-425d-94e8-9a3200b75e35');
-        $this->assertSame('DENIED', $funding->getPaypalStatus());
-        $this->assertArraySubset([
+        static::assertSame('DENIED', $funding->getPaypalStatus());
+        static::assertArraySubset([
             'payments' => [
                 'captures' => [
                     [
@@ -252,7 +252,7 @@ class PaypalWebhookControllerTest extends WebTestCase
                 ],
             ],
         ], $funding->getPaypalPurchase());
-        $this->assertSame(5133 - 5133, $funding->getUser()->getCoins()); // coins canceled
+        static::assertSame(5133 - 5133, $funding->getUser()->getCoins()); // coins canceled
     }
 
     /**
@@ -273,8 +273,8 @@ class PaypalWebhookControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
-        $this->assertSame(400, $this->client->getResponse()->getStatusCode());
+        static::assertSame(400, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame('bad signature.', $json['error']);
+        static::assertSame('bad signature.', $json['error']);
     }
 }

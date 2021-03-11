@@ -21,9 +21,9 @@ class HasNewPatchNoteControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+        static::assertSame(200, $this->client->getResponse()->getStatusCode());
         $json = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertFalse($json['hasNewPatchNote'], 'hasNewPatchNote is not false.');
+        static::assertFalse($json['hasNewPatchNote'], 'hasNewPatchNote is not false.');
     }
 
     /**
@@ -40,9 +40,9 @@ class HasNewPatchNoteControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+        static::assertSame(200, $this->client->getResponse()->getStatusCode());
         $json = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertTrue($json['hasNewPatchNote'], 'hasNewPatchNote is not false.');
+        static::assertTrue($json['hasNewPatchNote'], 'hasNewPatchNote is not false.');
     }
 
     /**
@@ -55,8 +55,8 @@ class HasNewPatchNoteControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
-        $this->assertSame(401, $this->client->getResponse()->getStatusCode());
+        static::assertSame(401, $this->client->getResponse()->getStatusCode());
         $json = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame('no_auth', $json['error']);
+        static::assertSame('no_auth', $json['error']);
     }
 }

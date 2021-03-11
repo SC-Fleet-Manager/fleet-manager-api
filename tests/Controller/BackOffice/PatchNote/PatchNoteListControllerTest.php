@@ -16,7 +16,7 @@ class PatchNoteListControllerTest extends WebTestCase
     {
         $this->client->request('GET', '/bo/patch-note/list');
 
-        $this->assertSame(401, $this->client->getResponse()->getStatusCode());
+        static::assertSame(401, $this->client->getResponse()->getStatusCode());
     }
 
     /**
@@ -31,7 +31,7 @@ class PatchNoteListControllerTest extends WebTestCase
         $this->logIn($user);
         $this->client->request('GET', '/bo/patch-note/list');
 
-        $this->assertSame(403, $this->client->getResponse()->getStatusCode());
+        static::assertSame(403, $this->client->getResponse()->getStatusCode());
     }
 
     /**
@@ -46,7 +46,7 @@ class PatchNoteListControllerTest extends WebTestCase
         $this->logIn($user);
         $crawler = $this->client->request('GET', '/bo/patch-note/list');
 
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $this->assertSame('Patch Note List', $crawler->filter('h1')->text());
+        static::assertSame(200, $this->client->getResponse()->getStatusCode());
+        static::assertSame('Patch Note List', $crawler->filter('h1')->text());
     }
 }

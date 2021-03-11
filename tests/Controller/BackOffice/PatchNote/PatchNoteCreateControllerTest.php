@@ -16,7 +16,7 @@ class PatchNoteCreateControllerTest extends WebTestCase
     {
         $this->client->request('GET', '/bo/patch-note/create');
 
-        $this->assertSame(401, $this->client->getResponse()->getStatusCode());
+        static::assertSame(401, $this->client->getResponse()->getStatusCode());
     }
 
     /**
@@ -31,7 +31,7 @@ class PatchNoteCreateControllerTest extends WebTestCase
         $this->logIn($user);
         $this->client->request('GET', '/bo/patch-note/create');
 
-        $this->assertSame(403, $this->client->getResponse()->getStatusCode());
+        static::assertSame(403, $this->client->getResponse()->getStatusCode());
     }
 
     /**
@@ -46,6 +46,6 @@ class PatchNoteCreateControllerTest extends WebTestCase
         $this->logIn($user);
         $this->client->request('GET', '/bo/patch-note/create');
 
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+        static::assertSame(200, $this->client->getResponse()->getStatusCode());
     }
 }

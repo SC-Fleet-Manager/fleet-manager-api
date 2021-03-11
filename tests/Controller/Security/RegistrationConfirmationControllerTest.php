@@ -17,8 +17,8 @@ class RegistrationConfirmationControllerTest extends WebTestCase
             'id' => '65ca8ef6-bcf6-46ff-b9ae-1ade7a51ec26', // user_foo@example.com
         ]);
 
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $this->assertContains('Congrats! You are now confirmed on Fleet Manager. You will be redirected to the homepage in 5 seconds.', $crawler->filter('.alert-success')->text());
+        static::assertSame(200, $this->client->getResponse()->getStatusCode());
+        static::assertStringContainsString('Congrats! You are now confirmed on Fleet Manager. You will be redirected to the homepage in 5 seconds.', $crawler->filter('.alert-success')->text(null, false));
     }
 
     /**
@@ -32,8 +32,8 @@ class RegistrationConfirmationControllerTest extends WebTestCase
             'id' => 'c869de61-1a88-4aaa-a2f9-9b4b116afe85', // user_alreadyconfirmed@example.com
         ]);
 
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $this->assertContains('Sorry, you have already confirmed your registration. Feel free to login to the Fleet Manager.', $crawler->filter('.alert-danger')->text());
+        static::assertSame(200, $this->client->getResponse()->getStatusCode());
+        static::assertStringContainsString('Sorry, you have already confirmed your registration. Feel free to login to the Fleet Manager.', $crawler->filter('.alert-danger')->text(null, false));
     }
 
     /**
@@ -47,8 +47,8 @@ class RegistrationConfirmationControllerTest extends WebTestCase
             'id' => '65ca8ef6-bcf6-46ff-b9ae-1ade7a51ec26', // user_foo@example.com
         ]);
 
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $this->assertContains('Sorry, this confirmation does not exist. Please check the web address in your email message.', $crawler->filter('.alert-danger')->text());
+        static::assertSame(200, $this->client->getResponse()->getStatusCode());
+        static::assertStringContainsString('Sorry, this confirmation does not exist. Please check the web address in your email message.', $crawler->filter('.alert-danger')->text(null, false));
     }
 
     /**
@@ -62,7 +62,7 @@ class RegistrationConfirmationControllerTest extends WebTestCase
             'id' => '4e47d4f1-787c-447a-9e77-2a09fe41cc04', // not exist
         ]);
 
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $this->assertContains('Sorry, this confirmation does not exist. Please check the web address in your email message.', $crawler->filter('.alert-danger')->text());
+        static::assertSame(200, $this->client->getResponse()->getStatusCode());
+        static::assertStringContainsString('Sorry, this confirmation does not exist. Please check the web address in your email message.', $crawler->filter('.alert-danger')->text(null, false));
     }
 }

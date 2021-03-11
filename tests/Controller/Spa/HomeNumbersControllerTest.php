@@ -16,9 +16,9 @@ class HomeNumbersControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+        static::assertSame(200, $this->client->getResponse()->getStatusCode());
         $json = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertArraySubset([
+        static::assertArraySubset([
             'organizations' => 4,
             'users' => 44,
             'ships' => 12,

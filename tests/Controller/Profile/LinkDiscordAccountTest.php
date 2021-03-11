@@ -31,12 +31,12 @@ class LinkDiscordAccountTest extends WebTestCase
             'nickname' => 'foobar',
         ], [], []);
 
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+        static::assertSame(200, $this->client->getResponse()->getStatusCode());
 
         $user = $this->doctrine->getRepository(User::class)->find($this->user->getId());
-        $this->assertSame('123456', $user->getDiscordId());
-        $this->assertSame('9876', $user->getDiscordTag());
-        $this->assertSame('foobar', $user->getNickname());
+        static::assertSame('123456', $user->getDiscordId());
+        static::assertSame('9876', $user->getDiscordTag());
+        static::assertSame('foobar', $user->getNickname());
     }
 
     /**
@@ -53,16 +53,16 @@ class LinkDiscordAccountTest extends WebTestCase
             'nickname' => 'Ioni',
         ], [], []);
 
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+        static::assertSame(200, $this->client->getResponse()->getStatusCode());
 
         /** @var User $user */
         $user = $this->doctrine->getRepository(User::class)->find($this->user->getId());
-        $this->assertSame('123456789001', $user->getDiscordId());
-        $this->assertSame('0001', $user->getDiscordTag());
-        $this->assertSame('Ioni', $user->getNickname());
-        $this->assertSame('7275c744-6a69-43c2-9ebf-1491a104d5e7', $user->getCitizen()->getId()->toString());
+        static::assertSame('123456789001', $user->getDiscordId());
+        static::assertSame('0001', $user->getDiscordTag());
+        static::assertSame('Ioni', $user->getNickname());
+        static::assertSame('7275c744-6a69-43c2-9ebf-1491a104d5e7', $user->getCitizen()->getId()->toString());
 
-        $this->assertNull($this->doctrine->getRepository(User::class)->find('d92e229e-e743-4583-905a-e02c57eacfe0'), 'The already linked user is not deleted.');
+        static::assertNull($this->doctrine->getRepository(User::class)->find('d92e229e-e743-4583-905a-e02c57eacfe0'), 'The already linked user is not deleted.');
     }
 
     /**
@@ -80,14 +80,14 @@ class LinkDiscordAccountTest extends WebTestCase
             'nickname' => 'Ioni',
         ], [], []);
 
-        $this->assertSame(302, $this->client->getResponse()->getStatusCode());
+        static::assertSame(302, $this->client->getResponse()->getStatusCode());
 
         /** @var RedirectResponse $response */
         $response = $this->client->getResponse();
-        $this->assertSame('/profile?error=already_linked_discord', $response->getTargetUrl());
+        static::assertSame('/profile?error=already_linked_discord', $response->getTargetUrl());
 
         $user = $this->doctrine->getRepository(User::class)->find($user->getId());
-        $this->assertNull($user->getDiscordId());
-        $this->assertSame('123456789001', $user->getPendingDiscordId());
+        static::assertNull($user->getDiscordId());
+        static::assertSame('123456789001', $user->getPendingDiscordId());
     }
 }
