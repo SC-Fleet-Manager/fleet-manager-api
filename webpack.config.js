@@ -15,6 +15,8 @@ Encore
     .addEntry('main', './assets/js/main.js')
     .addEntry('home', './assets/js/home.js')
 
+    // .enableStimulusBridge('./assets/controllers.json')
+
     .splitEntryChunks()
     .enableSingleRuntimeChunk()
 
@@ -27,6 +29,7 @@ Encore
     .enableSassLoader()
     .enablePostCssLoader()
 
+    .enableTypeScriptLoader()
     .enableVueLoader(function(options) {
         // https://vue-loader.vuejs.org/options.html
     })
