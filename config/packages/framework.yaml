@@ -3,8 +3,8 @@ framework:
 
     session:
         handler_id: '%env(REDIS_DSN)%'
-        cookie_secure: 'auto'
-        cookie_samesite: 'lax'
+        cookie_secure: auto
+        cookie_samesite: lax
 
     php_errors:
         log: true

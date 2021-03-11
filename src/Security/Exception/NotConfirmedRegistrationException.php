@@ -20,6 +20,6 @@ class NotConfirmedRegistrationException extends AccountStatusException
 
     public function getMessageKey(): string
     {
-        return 'not_confirmed_registration';
+        return 'You have not confirmed your registration yet. Please check your emails.';
     }
 }
