@@ -17,8 +17,8 @@ class LostPasswordControllerTest extends WebTestCase
     {
         /** @var User $user */
         $user = $this->doctrine->getRepository(User::class)->findOneBy(['email' => 'foo@example.com']);
-        $this->assertNull($user->getLostPasswordToken());
-        $this->assertNull($user->getLostPasswordRequestedAt());
+        static::assertNull($user->getLostPasswordToken());
+        static::assertNull($user->getLostPasswordRequestedAt());
 
         $this->client->xmlHttpRequest('POST', '/api/lost-password', [], [], [
             'CONTENT_TYPE' => 'application/json',
@@ -26,19 +26,19 @@ class LostPasswordControllerTest extends WebTestCase
             'email' => 'foo@example.com',
         ]));
 
-        $this->assertSame(204, $this->client->getResponse()->getStatusCode());
+        static::assertSame(204, $this->client->getResponse()->getStatusCode());
 
         /** @var User $user */
         $user = $this->doctrine->getRepository(User::class)->findOneBy(['email' => 'foo@example.com']);
-        $this->assertNotNull($user->getLostPasswordToken());
-        $this->assertNotNull($user->getLostPasswordRequestedAt());
+        static::assertNotNull($user->getLostPasswordToken());
+        static::assertNotNull($user->getLostPasswordRequestedAt());
 
         /** @var TransportInterface $transport */
         $transport = static::$container->get('messenger.transport.sync');
         $envelopes = $transport->get();
-        $this->assertCount(1, $envelopes);
-        $this->assertInstanceOf(SendLostPasswordRequestMail::class, $envelopes[0]->getMessage());
-        $this->assertSame($user->getId()->toString(), $envelopes[0]->getMessage()->getUserId()->toString());
+        static::assertCount(1, $envelopes);
+        static::assertInstanceOf(SendLostPasswordRequestMail::class, $envelopes[0]->getMessage());
+        static::assertSame($user->getId()->toString(), $envelopes[0]->getMessage()->getUserId()->toString());
     }
 
     /**
@@ -53,10 +53,10 @@ class LostPasswordControllerTest extends WebTestCase
             'email' => 'foo@example',
         ]));
 
-        $this->assertSame(400, $this->client->getResponse()->getStatusCode());
+        static::assertSame(400, $this->client->getResponse()->getStatusCode());
         $json = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame('invalid_form', $json['error']);
-        $this->assertSame('This value is not a valid email address.', $json['formErrors']['violations'][0]['title']);
+        static::assertSame('invalid_form', $json['error']);
+        static::assertSame('This value is not a valid email address.', $json['formErrors']['violations'][0]['title']);
     }
 
     /**
@@ -71,7 +71,7 @@ class LostPasswordControllerTest extends WebTestCase
             'email' => 'foo@example.com',
         ]));
 
-        $this->assertSame(204, $this->client->getResponse()->getStatusCode());
+        static::assertSame(204, $this->client->getResponse()->getStatusCode());
 
         /** @var User $user */
         $user = $this->doctrine->getRepository(User::class)->findOneBy(['email' => 'foo@example.com']);
@@ -81,7 +81,7 @@ class LostPasswordControllerTest extends WebTestCase
         /** @var TransportInterface $transport */
         $transport = static::$container->get('messenger.transport.sync');
         $envelopes = $transport->get();
-        $this->assertCount(1, $envelopes);
+        static::assertCount(1, $envelopes);
 
         // messenger transport reset
         $this->client->xmlHttpRequest('POST', '/api/lost-password', [], [], [
@@ -90,15 +90,15 @@ class LostPasswordControllerTest extends WebTestCase
             'email' => 'foo@example.com',
         ]));
 
-        $this->assertSame(204, $this->client->getResponse()->getStatusCode());
+        static::assertSame(204, $this->client->getResponse()->getStatusCode());
 
         /** @var User $user */
         $user = $this->doctrine->getRepository(User::class)->findOneBy(['email' => 'foo@example.com']);
-        $this->assertSame($token, $user->getLostPasswordToken());
-        $this->assertSame($requestedAt->format('Y-m-d H:i:s'), $user->getLostPasswordRequestedAt()->format('Y-m-d H:i:s'));
+        static::assertSame($token, $user->getLostPasswordToken());
+        static::assertSame($requestedAt->format('Y-m-d H:i:s'), $user->getLostPasswordRequestedAt()->format('Y-m-d H:i:s'));
 
         $transport = static::$container->get('messenger.transport.sync');
         $envelopes = $transport->get();
-        $this->assertCount(0, $envelopes);
+        static::assertCount(0, $envelopes);
     }
 }

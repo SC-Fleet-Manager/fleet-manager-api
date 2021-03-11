@@ -24,8 +24,8 @@ class LinkEmailPasswordControllerTest extends WebTestCase
      */
     public function testSuccess(): void
     {
-        $this->assertNull($this->user->getEmail());
-        $this->assertFalse($this->user->isEmailConfirmed());
+        static::assertNull($this->user->getEmail());
+        static::assertFalse($this->user->isEmailConfirmed());
         $this->logIn($this->user);
         $this->client->xmlHttpRequest('POST', '/api/profile/link-email-password', [
             'email' => 'ashuvidz@example.com',
@@ -34,16 +34,16 @@ class LinkEmailPasswordControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
-        $this->assertSame(204, $this->client->getResponse()->getStatusCode());
-        $this->assertSame('ashuvidz@example.com', $this->user->getEmail());
-        $this->assertFalse($this->user->isEmailConfirmed());
+        static::assertSame(204, $this->client->getResponse()->getStatusCode());
+        static::assertSame('ashuvidz@example.com', $this->user->getEmail());
+        static::assertFalse($this->user->isEmailConfirmed());
 
         /** @var TransportInterface $transport */
         $transport = static::$container->get('messenger.transport.sync');
         $envelopes = $transport->get();
-        $this->assertCount(1, $envelopes);
-        $this->assertInstanceOf(SendLinkEmailPasswordConfirmationMail::class, $envelopes[0]->getMessage());
-        $this->assertSame($this->user->getId()->toString(), $envelopes[0]->getMessage()->getUserId()->toString());
+        static::assertCount(1, $envelopes);
+        static::assertInstanceOf(SendLinkEmailPasswordConfirmationMail::class, $envelopes[0]->getMessage());
+        static::assertSame($this->user->getId()->toString(), $envelopes[0]->getMessage()->getUserId()->toString());
     }
 
     /**
@@ -60,10 +60,10 @@ class LinkEmailPasswordControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
-        $this->assertSame(400, $this->client->getResponse()->getStatusCode());
+        static::assertSame(400, $this->client->getResponse()->getStatusCode());
         $json = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame('invalid_form', $json['error']);
-        $this->assertSame('This value is not a valid email address.', $json['formErrors']['violations'][0]['title']);
-        $this->assertSame("Some extra characters and you'll have the 6 required. ;-)", $json['formErrors']['violations'][1]['title']);
+        static::assertSame('invalid_form', $json['error']);
+        static::assertSame('This value is not a valid email address.', $json['formErrors']['violations'][0]['title']);
+        static::assertSame("Some extra characters and you'll have the 6 required. ;-)", $json['formErrors']['violations'][1]['title']);
     }
 }

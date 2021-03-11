@@ -22,7 +22,7 @@ class ChangePasswordControllerTest extends WebTestCase
      */
     public function testChangePassword(): void
     {
-        $this->assertSame('123456', $this->user->getPassword());
+        static::assertSame('123456', $this->user->getPassword());
         $this->logIn($this->user);
         $this->client->xmlHttpRequest('POST', '/api/profile/change-password', [
             'oldPassword' => '123456',
@@ -30,8 +30,8 @@ class ChangePasswordControllerTest extends WebTestCase
         ], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
-        $this->assertSame(204, $this->client->getResponse()->getStatusCode());
-        $this->assertSame('456789', $this->user->getPassword());
+        static::assertSame(204, $this->client->getResponse()->getStatusCode());
+        static::assertSame('456789', $this->user->getPassword());
     }
 
     /**
@@ -48,10 +48,10 @@ class ChangePasswordControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
-        $this->assertSame(400, $this->client->getResponse()->getStatusCode());
+        static::assertSame(400, $this->client->getResponse()->getStatusCode());
         $json = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame('invalid_form', $json['error']);
-        $this->assertSame('Your current password is wrong.', $json['formErrors']['violations'][0]['title']);
+        static::assertSame('invalid_form', $json['error']);
+        static::assertSame('Your current password is wrong.', $json['formErrors']['violations'][0]['title']);
     }
 
     /**
@@ -68,9 +68,9 @@ class ChangePasswordControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
-        $this->assertSame(400, $this->client->getResponse()->getStatusCode());
+        static::assertSame(400, $this->client->getResponse()->getStatusCode());
         $json = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame('invalid_form', $json['error']);
-        $this->assertSame("Some extra characters and you'll have the 6 required. ;-)", $json['formErrors']['violations'][0]['title']);
+        static::assertSame('invalid_form', $json['error']);
+        static::assertSame("Some extra characters and you'll have the 6 required. ;-)", $json['formErrors']['violations'][0]['title']);
     }
 }

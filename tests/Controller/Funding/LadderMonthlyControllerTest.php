@@ -19,9 +19,9 @@ class LadderMonthlyControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+        static::assertSame(200, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertArraySubset([
+        static::assertArraySubset([
             'topFundings' => [
                 [
                     'rank' => 1,
@@ -165,9 +165,9 @@ class LadderMonthlyControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+        static::assertSame(200, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertArraySubset([
+        static::assertArraySubset([
             'topFundings' => [
                 [
                     'rank' => 1,

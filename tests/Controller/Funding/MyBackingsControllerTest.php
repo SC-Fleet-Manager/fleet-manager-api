@@ -26,9 +26,9 @@ class MyBackingsControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+        static::assertSame(200, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertArraySubset([
+        static::assertArraySubset([
             [
                 'id' => '1154f530-dbb5-425d-94e8-9a3200b75e35',
                 'gateway' => 'paypal',
@@ -66,8 +66,8 @@ class MyBackingsControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
-        $this->assertSame(401, $this->client->getResponse()->getStatusCode());
+        static::assertSame(401, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame('no_auth', $json['error']);
+        static::assertSame('no_auth', $json['error']);
     }
 }

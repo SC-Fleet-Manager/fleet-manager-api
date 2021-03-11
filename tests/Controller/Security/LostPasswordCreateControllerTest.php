@@ -17,16 +17,16 @@ class LostPasswordCreateControllerTest extends WebTestCase
             'id' => 'd477c5bd-4b1d-4a51-adf0-091ce599f408', // user_lostpasswordrequested@example.com
         ]);
 
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+        static::assertSame(200, $this->client->getResponse()->getStatusCode());
 
-        $this->assertContains('Your new password', $crawler->filter('label')->text());
-        $this->assertContains('Change my password', $crawler->filter('button')->text());
+        static::assertStringContainsString('Your new password', $crawler->filter('label')->text(null, false));
+        static::assertStringContainsString('Change my password', $crawler->filter('button')->text(null, false));
 
         $crawler = $this->client->submitForm('Change my password', [
             'lost_password_create_form[password]' => '123456789',
         ]);
 
-        $this->assertContains('Success! Your new password is now set correctly. You will be redirected to the homepage in 5 seconds.', $crawler->filter('.alert-success')->text());
+        static::assertStringContainsString('Success! Your new password is now set correctly. You will be redirected to the homepage in 5 seconds.', $crawler->filter('.alert-success')->text(null, false));
     }
 
     /**
@@ -40,9 +40,9 @@ class LostPasswordCreateControllerTest extends WebTestCase
             'id' => 'd477c5bd-4b1d-4a51-adf0-091ce599f408', // user_lostpasswordrequested@example.com
         ]);
 
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+        static::assertSame(200, $this->client->getResponse()->getStatusCode());
 
-        $this->assertContains('Sorry, we have not found you, please make a lost password request again. Go to homepage.', $crawler->filter('.alert-danger')->text());
+        static::assertStringContainsString('Sorry, we have not found you, please make a lost password request again. Go to homepage.', $crawler->filter('.alert-danger')->text(null, false));
     }
 
     /**
@@ -56,8 +56,8 @@ class LostPasswordCreateControllerTest extends WebTestCase
             'id' => 'f27a6609-57cc-4e98-b762-2d929d046afe', // user_lostpasswordexpired@example.com
         ]);
 
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+        static::assertSame(200, $this->client->getResponse()->getStatusCode());
 
-        $this->assertContains('Sorry, your lost password token has expired, please make a new lost password request. Go to homepage.', $crawler->filter('.alert-danger')->text());
+        static::assertStringContainsString('Sorry, your lost password token has expired, please make a new lost password request. Go to homepage.', $crawler->filter('.alert-danger')->text(null, false));
     }
 }

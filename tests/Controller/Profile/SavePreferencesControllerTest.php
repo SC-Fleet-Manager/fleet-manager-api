@@ -23,15 +23,15 @@ class SavePreferencesControllerTest extends WebTestCase
     {
         $this->logIn($this->user);
 
-        $this->assertTrue($this->user->isSupporterVisible(), 'SupporterVisible must be true.');
+        static::assertTrue($this->user->isSupporterVisible(), 'SupporterVisible must be true.');
 
         $this->client->xmlHttpRequest('POST', '/api/profile/save-preferences', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ], json_encode([
             'supporterVisible' => false,
         ]));
-        $this->assertSame(204, $this->client->getResponse()->getStatusCode());
-        $this->assertFalse($this->user->isSupporterVisible(), 'SupporterVisible must be false.');
+        static::assertSame(204, $this->client->getResponse()->getStatusCode());
+        static::assertFalse($this->user->isSupporterVisible(), 'SupporterVisible must be false.');
     }
 
     /**
@@ -45,12 +45,12 @@ class SavePreferencesControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ], '{}');
 
-        $this->assertSame(400, $this->client->getResponse()->getStatusCode());
+        static::assertSame(400, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame('invalid_form', $json['error']);
-        $this->assertCount(1, $json['formErrors']['violations']);
-        $this->assertSame('supporterVisible', $json['formErrors']['violations'][0]['propertyPath']);
-        $this->assertSame('You must choose a supporter visibility.', $json['formErrors']['violations'][0]['title']);
+        static::assertSame('invalid_form', $json['error']);
+        static::assertCount(1, $json['formErrors']['violations']);
+        static::assertSame('supporterVisible', $json['formErrors']['violations'][0]['propertyPath']);
+        static::assertSame('You must choose a supporter visibility.', $json['formErrors']['violations'][0]['title']);
     }
 
     /**
@@ -62,6 +62,6 @@ class SavePreferencesControllerTest extends WebTestCase
         $this->client->xmlHttpRequest('POST', '/api/profile/save-preferences', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
-        $this->assertSame(401, $this->client->getResponse()->getStatusCode());
+        static::assertSame(401, $this->client->getResponse()->getStatusCode());
     }
 }

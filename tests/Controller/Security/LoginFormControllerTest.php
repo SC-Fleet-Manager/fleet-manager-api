@@ -19,9 +19,9 @@ class LoginFormControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+        static::assertSame(200, $this->client->getResponse()->getStatusCode());
         $json = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame('/profile', $json['redirectTo']);
+        static::assertSame('/profile', $json['redirectTo']);
     }
 
     /**
@@ -37,9 +37,9 @@ class LoginFormControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
-        $this->assertSame(400, $this->client->getResponse()->getStatusCode());
+        static::assertSame(400, $this->client->getResponse()->getStatusCode());
         $json = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame('You have not confirmed your registration yet. Please check your emails.', $json['error']);
+        static::assertSame('You have not confirmed your registration yet. Please check your emails.', $json['error']);
     }
 
     /**
@@ -55,9 +55,9 @@ class LoginFormControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
-        $this->assertSame(400, $this->client->getResponse()->getStatusCode());
+        static::assertSame(400, $this->client->getResponse()->getStatusCode());
         $json = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame('Invalid credentials.', $json['error']);
+        static::assertSame('Invalid credentials.', $json['error']);
     }
 
     /**
@@ -73,8 +73,8 @@ class LoginFormControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
-        $this->assertSame(400, $this->client->getResponse()->getStatusCode());
+        static::assertSame(400, $this->client->getResponse()->getStatusCode());
         $json = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame('Invalid credentials.', $json['error']);
+        static::assertSame('Invalid credentials.', $json['error']);
     }
 }

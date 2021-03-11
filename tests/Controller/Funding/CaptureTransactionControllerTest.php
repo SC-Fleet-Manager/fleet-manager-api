@@ -30,7 +30,7 @@ class CaptureTransactionControllerTest extends WebTestCase
         $paypalHttpClient = static::$container->get(MockPayPalHttpClient::class);
         $paypalHttpClient->setCaptureResponse('618c4d07-6e1d-49e3-91e9-d269944de266', '1.00', '0.67');
 
-        $this->assertSame(5133, $this->user->getCoins()); // coins before capture
+        static::assertSame(5133, $this->user->getCoins()); // coins before capture
 
         $this->client->xmlHttpRequest('POST', '/api/funding/capture-transaction', [], [], [
             'CONTENT_TYPE' => 'application/json',
@@ -38,15 +38,15 @@ class CaptureTransactionControllerTest extends WebTestCase
             'orderID' => 'cf42c65f',
         ]));
 
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+        static::assertSame(200, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame('COMPLETED', $json['funding']['paypalStatus']);
+        static::assertSame('COMPLETED', $json['funding']['paypalStatus']);
         /** @var Funding $funding */
         $funding = $this->doctrine->getRepository(Funding::class)->find('618c4d07-6e1d-49e3-91e9-d269944de266');
-        $this->assertSame('COMPLETED', $funding->getPaypalStatus());
-        $this->assertSame(100, $funding->getAmount());
-        $this->assertSame(67, $funding->getNetAmount());
-        $this->assertArraySubset([
+        static::assertSame('COMPLETED', $funding->getPaypalStatus());
+        static::assertSame(100, $funding->getAmount());
+        static::assertSame(67, $funding->getNetAmount());
+        static::assertArraySubset([
             'payments' => [
                 'captures' => [
                     [
@@ -74,14 +74,14 @@ class CaptureTransactionControllerTest extends WebTestCase
                 ],
             ],
         ], $funding->getPaypalPurchase());
-        $this->assertSame(5133 + 100, $this->user->getCoins()); // added X coins
+        static::assertSame(5133 + 100, $this->user->getCoins()); // added X coins
 
         /** @var TransportInterface $transport */
         $transport = static::$container->get('messenger.transport.sync');
         $envelopes = $transport->get();
-        $this->assertCount(1, $envelopes);
-        $this->assertInstanceOf(SendOrderCaptureSummaryMail::class, $envelopes[0]->getMessage());
-        $this->assertSame($funding->getId()->toString(), $envelopes[0]->getMessage()->getFundingId()->toString());
+        static::assertCount(1, $envelopes);
+        static::assertInstanceOf(SendOrderCaptureSummaryMail::class, $envelopes[0]->getMessage());
+        static::assertSame($funding->getId()->toString(), $envelopes[0]->getMessage()->getFundingId()->toString());
     }
 
     /**
@@ -96,17 +96,17 @@ class CaptureTransactionControllerTest extends WebTestCase
         ], json_encode([
             'orderID' => '34da4bd8', // order to another user
         ]));
-        $this->assertSame(404, $this->client->getResponse()->getStatusCode());
+        static::assertSame(404, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame('order_not_exist', $json['error']);
-        $this->assertSame('Sorry, we cannot find the transaction. Please try again.', $json['errorMessage']);
+        static::assertSame('order_not_exist', $json['error']);
+        static::assertSame('Sorry, we cannot find the transaction. Please try again.', $json['errorMessage']);
 
         $this->client->xmlHttpRequest('POST', '/api/funding/capture-transaction', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ], json_encode([
             'orderID' => 'not_exist',
         ]));
-        $this->assertSame(404, $this->client->getResponse()->getStatusCode());
+        static::assertSame(404, $this->client->getResponse()->getStatusCode());
     }
 
     /**
@@ -122,7 +122,7 @@ class CaptureTransactionControllerTest extends WebTestCase
             'orderID' => 'e39b153c', // COMPLETED funding
         ]));
 
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+        static::assertSame(200, $this->client->getResponse()->getStatusCode());
     }
 
     /**
@@ -137,8 +137,8 @@ class CaptureTransactionControllerTest extends WebTestCase
             'orderID' => 'cf42c65f',
         ]));
 
-        $this->assertSame(401, $this->client->getResponse()->getStatusCode());
+        static::assertSame(401, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame('no_auth', $json['error']);
+        static::assertSame('no_auth', $json['error']);
     }
 }

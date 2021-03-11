@@ -27,9 +27,9 @@ class ConflictConnectControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+        static::assertSame(200, $this->client->getResponse()->getStatusCode());
         $json = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertArraySubset([
+        static::assertArraySubset([
             'me' => [
                 'id' => '6b5f4962-4660-4705-bd48-2c587c42fe95',
                 'email' => 'linksocialnetworks-with-citizen-pending@example.com',
@@ -77,8 +77,8 @@ class ConflictConnectControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
-        $this->assertSame(400, $this->client->getResponse()->getStatusCode());
+        static::assertSame(400, $this->client->getResponse()->getStatusCode());
         $json = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame('no_pending_discord', $json['error']);
+        static::assertSame('no_pending_discord', $json['error']);
     }
 }

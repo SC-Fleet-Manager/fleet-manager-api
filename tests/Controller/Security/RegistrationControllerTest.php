@@ -22,19 +22,19 @@ class RegistrationControllerTest extends WebTestCase
             'password' => '123456',
         ]));
 
-        $this->assertSame(204, $this->client->getResponse()->getStatusCode());
+        static::assertSame(204, $this->client->getResponse()->getStatusCode());
 
         /** @var User $user */
         $user = $this->doctrine->getRepository(User::class)->findOneBy(['email' => 'foobar@example.com']);
-        $this->assertNotNull($user, 'The user foobar@example.com must be persisted.');
-        $this->assertNotNull($user->getPassword(), 'The password of user foobar@example.com must not be null.');
+        static::assertNotNull($user, 'The user foobar@example.com must be persisted.');
+        static::assertNotNull($user->getPassword(), 'The password of user foobar@example.com must not be null.');
 
         /** @var TransportInterface $transport */
         $transport = static::$container->get('messenger.transport.sync');
         $envelopes = $transport->get();
-        $this->assertCount(1, $envelopes);
-        $this->assertInstanceOf(SendRegistrationConfirmationMail::class, $envelopes[0]->getMessage());
-        $this->assertSame($user->getId()->toString(), $envelopes[0]->getMessage()->getUserId()->toString());
+        static::assertCount(1, $envelopes);
+        static::assertInstanceOf(SendRegistrationConfirmationMail::class, $envelopes[0]->getMessage());
+        static::assertSame($user->getId()->toString(), $envelopes[0]->getMessage()->getUserId()->toString());
     }
 
     /**
@@ -50,10 +50,10 @@ class RegistrationControllerTest extends WebTestCase
             'password' => '123', // low password
         ]));
 
-        $this->assertSame(400, $this->client->getResponse()->getStatusCode());
+        static::assertSame(400, $this->client->getResponse()->getStatusCode());
         $json = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame('invalid_form', $json['error']);
-        $this->assertSame("Some extra characters and you'll have the 6 required. ;-)", $json['formErrors']['violations'][0]['title']);
+        static::assertSame('invalid_form', $json['error']);
+        static::assertSame("Some extra characters and you'll have the 6 required. ;-)", $json['formErrors']['violations'][0]['title']);
     }
 
     /**
@@ -69,10 +69,10 @@ class RegistrationControllerTest extends WebTestCase
             'password' => '123456',
         ]));
 
-        $this->assertSame(400, $this->client->getResponse()->getStatusCode());
+        static::assertSame(400, $this->client->getResponse()->getStatusCode());
         $json = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame('invalid_form', $json['error']);
-        $this->assertSame('This value is not a valid email address.', $json['formErrors']['violations'][0]['title']);
+        static::assertSame('invalid_form', $json['error']);
+        static::assertSame('This value is not a valid email address.', $json['formErrors']['violations'][0]['title']);
     }
 
     /**
@@ -88,9 +88,9 @@ class RegistrationControllerTest extends WebTestCase
             'password' => '123456',
         ]));
 
-        $this->assertSame(400, $this->client->getResponse()->getStatusCode());
+        static::assertSame(400, $this->client->getResponse()->getStatusCode());
         $json = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame('invalid_form', $json['error']);
-        $this->assertSame('This email is already taken. Please choose another.', $json['formErrors']['violations'][0]['title']);
+        static::assertSame('invalid_form', $json['error']);
+        static::assertSame('This email is already taken. Please choose another.', $json['formErrors']['violations'][0]['title']);
     }
 }

@@ -16,7 +16,7 @@ class MonthlyCostCoverageListControllerTest extends WebTestCase
     {
         $this->client->request('GET', '/bo/monthly-cost-coverage/list');
 
-        $this->assertSame(401, $this->client->getResponse()->getStatusCode());
+        static::assertSame(401, $this->client->getResponse()->getStatusCode());
     }
 
     /**
@@ -31,7 +31,7 @@ class MonthlyCostCoverageListControllerTest extends WebTestCase
         $this->logIn($user);
         $this->client->request('GET', '/bo/monthly-cost-coverage/list');
 
-        $this->assertSame(403, $this->client->getResponse()->getStatusCode());
+        static::assertSame(403, $this->client->getResponse()->getStatusCode());
     }
 
     /**
@@ -46,8 +46,8 @@ class MonthlyCostCoverageListControllerTest extends WebTestCase
         $this->logIn($user);
         $crawler = $this->client->request('GET', '/bo/monthly-cost-coverage/list');
 
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $this->assertSame('Monthly Cost Coverage List', $crawler->filter('h1')->text(null, false));
-        $this->assertContains('Default monthly cost coverage target', $crawler->filter('.container')->text(null, false));
+        static::assertSame(200, $this->client->getResponse()->getStatusCode());
+        static::assertSame('Monthly Cost Coverage List', $crawler->filter('h1')->text(null, false));
+        static::assertStringContainsString('Default monthly cost coverage target', $crawler->filter('.container')->text(null, false));
     }
 }

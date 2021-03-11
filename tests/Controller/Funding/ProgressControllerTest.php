@@ -17,10 +17,10 @@ class ProgressControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+        static::assertSame(200, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame(6312, $json['progress']);
-        $this->assertSame(15000, $json['target']);
+        static::assertSame(6312, $json['progress']);
+        static::assertSame(15000, $json['target']);
     }
 
     /**
@@ -37,9 +37,9 @@ class ProgressControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+        static::assertSame(200, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame(29352, $json['target']);
+        static::assertSame(29352, $json['target']);
     }
 
     /**
@@ -56,8 +56,8 @@ class ProgressControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+        static::assertSame(200, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame(10000, $json['target']);
+        static::assertSame(10000, $json['target']);
     }
 }

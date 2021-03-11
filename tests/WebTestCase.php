@@ -3,12 +3,15 @@
 namespace App\Tests;
 
 use App\Entity\User;
+use App\Tests\Constraint\ArraySubset;
 use Doctrine\Persistence\ManagerRegistry;
 use Hautelook\AliceBundle\PhpUnit\ReloadDatabaseTrait;
 use HWI\Bundle\OAuthBundle\Security\Core\Authentication\Token\OAuthToken;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase as BaseWebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
+use PHPUnit\Framework\ExpectationFailedException;
+use PHPUnit\Framework\InvalidArgumentException;
 
 class WebTestCase extends BaseWebTestCase
 {
@@ -55,5 +58,32 @@ class WebTestCase extends BaseWebTestCase
     protected function debugHtml(): void
     {
         file_put_contents(__DIR__.'/../var/debug.html', $this->client->getResponse()->getContent());
+    }
+
+    /**
+     * Asserts that an array has a specified subset.
+     *
+     * @param array|\ArrayAccess|mixed[] $subset
+     * @param array|\ArrayAccess|mixed[] $array
+     *
+     * @throws ExpectationFailedException
+     * @throws InvalidArgumentException
+     */
+    public static function assertArraySubset($subset, $array, bool $checkForObjectIdentity = false, string $message = ''): void
+    {
+        if (! (is_array($subset) || $subset instanceof \ArrayAccess)) {
+            throw InvalidArgumentException::create(
+                1,
+                'array or ArrayAccess'
+            );
+        }
+        if (! (is_array($array) || $array instanceof \ArrayAccess)) {
+            throw InvalidArgumentException::create(
+                2,
+                'array or ArrayAccess'
+            );
+        }
+        $constraint = new ArraySubset($subset, $checkForObjectIdentity);
+        static::assertThat($array, $constraint, $message);
     }
 }
