@@ -1,23 +1,10 @@
 monolog:
     handlers:
-        profile_link_account_stream:
-            type: stream
-            path: "%kernel.logs_dir%/%kernel.environment%_profile_link_account.log"
-            channels: ['profile_link_account']
-        streamed:
+        main:
             type: stream
             path: "%kernel.logs_dir%/%kernel.environment%.log"
-            level: info
+            level: debug
             channels: ["!event"]
-        filter_streamed_debug:
-            type: filter
-            handler: streamed_debug
-            max_level: 'debug'
-        streamed_debug:
-            type: stream
-            path: "%kernel.logs_dir%/%kernel.environment%-debug.log"
-            channels: ["!event"]
-        #######
         console:
             type: console
             process_psr_3_messages: false
