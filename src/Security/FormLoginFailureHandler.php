@@ -13,7 +13,7 @@ class FormLoginFailureHandler implements AuthenticationFailureHandlerInterface
     {
         return new JsonResponse([
             'error' => $exception->getMessageKey(),
-            'errorMessage' => $exception->getMessage(),
+            'errorMessage' => $exception->getMessageKey(),
         ], 400);
     }
 }

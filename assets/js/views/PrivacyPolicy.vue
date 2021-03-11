@@ -19,11 +19,8 @@
 
             <p>In order to better provide you with products and services offered on our Site, Fleet Manager may collect personally identifiable information, such as your:</p>
             <ul>
-                <li>RSI handle</li>
-                <li>RSI number</li>
                 <li>Discord handle</li>
                 <li>Email</li>
-                <li>Star Citizen Fleet informations</li>
             </ul>
 
             <p>Please keep in mind that if you directly disclose personally identifiable information or personally sensitive data through Fleet Manager public pages, this information may be collected and used by others.</p>
@@ -73,7 +70,7 @@
 
             <h2>Changes to this Statement</h2>
 
-            <p>Fleet Manager reserves the right to change this Privacy Policy from time to time. We will notify you about significant changes in the way we treat personal information by sending a notice on Fleet Manager's social networks (e.g., Discord, Reddit...), by placing a prominent notice on our site, and/or by updating any privacy information on this page. Your continued use of the Site and/or Services available through this Site after such modifications will constitute your: (a) acknowledgment of the modified Privacy Policy; and (b) agreement to abide and be bound by that Policy.</p>
+            <p>Fleet Manager reserves the right to change this Privacy Policy from time to time. We will notify you about significant changes in the way we treat personal information by sending a notice on Fleet Manager's social networks (e.g., Discord, Twitter...), by placing a prominent notice on our site, and/or by updating any privacy information on this page. Your continued use of the Site and/or Services available through this Site after such modifications will constitute your: (a) acknowledgment of the modified Privacy Policy; and (b) agreement to abide and be bound by that Policy.</p>
 
             <h2>Contact Information</h2>
 

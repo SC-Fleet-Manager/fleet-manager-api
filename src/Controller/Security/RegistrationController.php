@@ -2,17 +2,12 @@
 
 namespace App\Controller\Security;
 
-use Algatux\InfluxDbBundle\Events\AbstractInfluxDbEvent;
-use Algatux\InfluxDbBundle\Events\DeferredHttpEvent;
 use App\Entity\User;
 use App\Form\Dto\Registration;
 use App\Message\Registration\SendRegistrationConfirmationMail;
 use Doctrine\ORM\EntityManagerInterface;
-use InfluxDB\Database;
-use InfluxDB\Point;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -28,22 +23,19 @@ class RegistrationController extends AbstractController
     private UserPasswordEncoderInterface $passwordEncoder;
     private SerializerInterface $serializer;
     private MessageBusInterface $bus;
-    private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
         ValidatorInterface $validator,
         EntityManagerInterface $entityManager,
         UserPasswordEncoderInterface $passwordEncoder,
         SerializerInterface $serializer,
-        MessageBusInterface $bus,
-        EventDispatcherInterface $eventDispatcher
+        MessageBusInterface $bus
     ) {
         $this->validator = $validator;
         $this->entityManager = $entityManager;
         $this->passwordEncoder = $passwordEncoder;
         $this->serializer = $serializer;
         $this->bus = $bus;
-        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -68,16 +60,10 @@ class RegistrationController extends AbstractController
             ->setApiToken(User::generateToken())
             ->setRegistrationConfirmationToken(User::generateToken());
         $newUser->setPassword($this->passwordEncoder->encodePassword($newUser, $registration->password));
-        unset($registration); // prevent leak password
         $this->entityManager->persist($newUser);
         $this->entityManager->flush();
 
         $this->bus->dispatch(new SendRegistrationConfirmationMail($newUser->getId()));
-        $this->eventDispatcher->dispatch(new DeferredHttpEvent([new Point(
-            'app.registration',
-            1,
-            ['method' => 'email/password', 'host' => $request->getHost()],
-        )], Database::PRECISION_SECONDS), AbstractInfluxDbEvent::NAME);
 
         return $this->json(null, 204);
     }

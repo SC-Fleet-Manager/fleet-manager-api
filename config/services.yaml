@@ -1,13 +1,10 @@
 parameters:
-    env(REDIS_HOST): 'localhost'
-    env(REDIS_PORT): '6379'
-    env(REDIS_PASSWORD): ''
+    env(REDIS_DSN): ''
     currency: 'USD'
     env(PAYPAL_CHECKOUT_CLIENT_ID): ''
     env(PAYPAL_CHECKOUT_CLIENT_SECRET): ''
     env(PAYPAL_CHECKOUT_WEBHOOK_ID): ''
     env(PAYPAL_CHECKOUT_MODE): !php/const App\Service\Funding\PayPalHttpClientFactory::MODE_SANDBOX
-    env(WEBEXTENSION_VERSION_URL): ''
     env(MAILER_NOREPLY_ADDRESS): 'noreply@fleet-manager.space'
 
 services:
@@ -18,7 +15,6 @@ services:
             $profileLinkAccountLogger: '@monolog.logger.profile_link_account'
             $registrationFromAddress: '%env(MAILER_NOREPLY_ADDRESS)%'
             $noreplyAddress: '%env(MAILER_NOREPLY_ADDRESS)%'
-            $webExtensionVersionUrl: '%env(WEBEXTENSION_VERSION_URL)%'
 
     App\Command\:
         resource: '../src/Command'
@@ -45,38 +41,10 @@ services:
     App\Validator\:
         resource: '../src/Validator'
 
-    redis:
-        class: Redis
-        calls:
-            - [connect, ['%env(REDIS_HOST)%', '%env(REDIS_PORT)%']]
-            - [auth, ['%env(REDIS_PASSWORD)%']]
-
-    Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler:
-        arguments: ['@redis']
-
-    Doctrine\Common\Cache\RedisCache:
-        calls:
-            - [setRedis, ['@redis']]
-
     hwi_oauth.authentication.entry_point.oauth:
         class: App\Security\OAuthEntryPoint
         abstract: true
         arguments: ['@http_kernel', '@security.http_utils']
-
-    App\Service\Ship\InfosProvider\ShipInfosProviderInterface: '@App\Service\Ship\InfosProvider\GalaxyApiShipInfosProvider'
-    App\Service\Ship\InfosProvider\ApiShipInfosProvider: ~
-
-    App\Service\Organization\InfosProvider\OrganizationInfosProviderInterface: '@App\Service\Organization\InfosProvider\ApiOrganizationInfosProvider'
-    App\Service\Organization\InfosProvider\ApiOrganizationInfosProvider:
-        arguments: { '$cache': '@rsi.organizations.cache' }
-
-    App\Service\Organization\MembersInfosProvider\OrganizationMembersInfosProviderInterface: '@App\Service\Organization\MembersInfosProvider\ApiOrganizationMembersInfosProvider'
-    App\Service\Organization\MembersInfosProvider\ApiOrganizationMembersInfosProvider:
-        arguments: { '$cache': '@rsi.organizations_members.cache' }
-
-    App\Service\Citizen\InfosProvider\CitizenInfosProviderInterface: '@App\Service\Citizen\InfosProvider\ApiCitizenInfosProvider'
-    App\Service\Citizen\InfosProvider\ApiCitizenInfosProvider:
-        arguments: { '$cache': '@rsi.citizens.cache' }
 
     App\Listener\UpdateCitizenLastFleetListener:
         tags:
@@ -95,7 +63,6 @@ services:
             - { name: 'kernel.event_listener' }
 
     App\Service\Funding\PaypalCheckout: ~
-    #        lazy: true
     App\Service\Funding\PaypalCheckoutInterface: '@App\Service\Funding\PaypalCheckout'
 
     App\Service\Funding\VerifyWebhookSignatureFactory:

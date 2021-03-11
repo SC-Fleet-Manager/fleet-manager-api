@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\WebExtension;
+namespace App\Controller\Spa;
 
 use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,7 +20,7 @@ class MeController extends AbstractController
     }
 
     /**
-     * @Route("/api/me", name="web_extension_me", methods={"GET","OPTIONS"})
+     * @Route("/api/me", name="me", methods={"GET","OPTIONS"})
      */
     public function __invoke(Request $request): Response
     {

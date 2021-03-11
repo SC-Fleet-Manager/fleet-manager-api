@@ -7,9 +7,6 @@
                 <img class="navbar-brand-minimized" src="../../img/icon_fm_blue.svg" alt="FM" height="40">
             </b-link>
             <SidebarToggler class="d-md-down-none" display="lg" :defaultOpen="true" ref="sidebarDesktop"/>
-            <!--<b-navbar-nav>
-                <b-nav-item class="px-3" target="_blank" href="https://sc-galaxy.com"><img src="../../img/icon_scg_blue.svg" alt="SCG" height="20" /> SC Galaxy <i class="fas fa-external-link-alt"></i></b-nav-item>
-            </b-navbar-nav>-->
             <b-navbar-nav class="ml-auto">
                 <b-nav-text v-if="user != null" class="px-3 d-none d-sm-inline-block">Welcome, <img v-if="user.supporter" src="../../img/icon_supporter.svg" alt="Supporter" class="supporter-badge" height="30" /> {{ citizen ? citizen.actualHandle.handle : (user.nickname !== null ? user.nickname : user.email.substr(0, user.email.indexOf('@'))) }}</b-nav-text>
                 <b-nav-text v-if="user != null && user.coins > 0" class="px-3 d-none d-sm-inline-block"><img src="../../img/coin.svg" title="FM Coins" alt="FM Coins" height="30"> {{ user.coins }}</b-nav-text>
@@ -38,14 +35,9 @@
             </div>
             <b-nav class="ml-auto">
                 <b-nav-item link-classes="p-2" v-b-modal.modal-patch-notes>Patch notes</b-nav-item>
-                <b-nav-item link-classes="p-2" target="_blank" href="https://sc-galaxy.com" title="SC Galaxy"><img src="../../img/icon_scg_blue.svg" alt="SCG" height="24" /></b-nav-item>
-                <b-nav-text class="p-2">–</b-nav-text>
-                <b-nav-item link-classes="p-2" href="https://ext.fleet-manager.space/fleet_manager_extension-latest.xpi"><i style="font-size: 1.4rem;" class="fab fa-firefox"></i></b-nav-item>
-                <b-nav-item link-classes="p-2" target="_blank" href="https://chrome.google.com/webstore/detail/fleet-manager-extension/hbbadomkekhkhemjjmhkhgiokjhpobhk"><i style="font-size: 1.4rem;" class="fab fa-chrome"></i></b-nav-item>
                 <b-nav-text class="p-2">–</b-nav-text>
                 <b-nav-item href="https://discord.gg/f6mrA3Y" target="_blank" link-classes="p-2"><i class="fab fa-discord" style="font-size: 1.4rem;"></i></b-nav-item>
                 <b-nav-item href="https://github.com/Ioni14/starcitizen-fleet-manager" target="_blank" link-classes="p-2"><i class="fab fa-github" style="font-size: 1.4rem;"></i></b-nav-item>
-<!--                <b-nav-text><span class="mr-1">Created by </span><a target="_blank" href="https://github.com/ioni14">Ioni</a></b-nav-text>-->
             </b-nav>
         </TheFooter>
 
@@ -98,17 +90,7 @@
             axios.get('/api/profile').then(response => {
                 this.user = response.data;
                 this.updateUser(this.user);
-                this.citizen = this.user.citizen;
-                this.updateProfile(this.citizen);
-                // this.$refs.sidebarDesktop.toggle(true);
             });
-
-            this.$store.watch(
-                (state, getters) => getters.citizen,
-                (newValue, oldValue) => {
-                    this.citizen = newValue;
-                }
-            );
 
             this.findLastVersion();
 
@@ -132,28 +114,17 @@
             },
             nav() {
                 const nav = [];
-                if (this.citizen) {
-                    nav.push({
-                        name: 'My Fleet',
-                        url: `/citizen/${this.citizen ? this.citizen.actualHandle.handle : ''}`,
-                        icon: 'fas fa-fighter-jet',
-                        attributes: {
-                            disabled: !this.citizen,
-                        },
-                    });
-                    if (this.citizen.organizations.length > 0) {
-                        nav.push({
-                            name: 'My Orgas',
-                            url: '/organizations-fleets',
-                            icon: 'fas fa-space-shuttle',
-                            attributes: {
-                                disabled: !this.citizen || this.citizen.organizations.length === 0,
-                            },
-                        });
-                    }
-                }
-
                 nav.push(
+                    {
+                        name: 'My Fleet',
+                        url: `/my-fleet`,
+                        icon: 'fas fa-fighter-jet',
+                    },
+                    {
+                        name: 'My Orgas',
+                        url: '/my-organizations',
+                        icon: 'fas fa-space-shuttle',
+                    },
                     {
                         name: "Profile",
                         url: '/profile',
@@ -177,24 +148,11 @@
                     });
                 }
 
-                nav.push(
-                    {
-                        name: 'SC Galaxy',
-                        class: 'mt-auto',
-                        url: 'https://sc-galaxy.com',
-                        icon: 'fas fa-database',
-                        variant: 'primary',
-                        attributes: {
-                            target: '_blank',
-                        },
-                    },
-                );
-
                 return nav;
             }
         },
         methods: {
-            ...mapMutations(['updateProfile', 'updateUser']),
+            ...mapMutations(['updateUser']),
             findLastVersion() {
                 axios.get('https://api.github.com/repos/Ioni14/starcitizen-fleet-manager/tags').then(response => {
                     this.lastVersion = response.data[0].name;
@@ -208,7 +166,7 @@
                     if (err.response.data.errorMessage) {
                         this.$toastr.e(err.response.data.errorMessage);
                     } else {
-                        this.$toastr.e('Sorry, an unexpected error has occurred when requesting the last patch notes.');
+                        this.$toastr.e('Sorry, an unexpected error has occurred when requesting the last patch notes. Please try again later.');
                     }
                 }
             },

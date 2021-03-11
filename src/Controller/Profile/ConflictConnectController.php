@@ -42,7 +42,7 @@ class ConflictConnectController extends AbstractController
         if ($alreadyLinkedUser === null || $alreadyLinkedUser->getId()->equals($user->getId())) {
             return $this->json([
                 'error' => 'no_linked_user',
-                'errorMessage' => 'There is no other users with your Discord account.',
+                'errorMessage' => 'There are no other users with your Discord account.',
             ], 400);
         }
 

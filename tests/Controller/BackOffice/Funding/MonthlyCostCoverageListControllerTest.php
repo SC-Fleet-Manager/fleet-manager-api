@@ -47,7 +47,7 @@ class MonthlyCostCoverageListControllerTest extends WebTestCase
         $crawler = $this->client->request('GET', '/bo/monthly-cost-coverage/list');
 
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $this->assertSame('Monthly Cost Coverage List', $crawler->filter('h1')->text());
-        $this->assertContains('Default monthly cost coverage target', $crawler->filter('.container')->text());
+        $this->assertSame('Monthly Cost Coverage List', $crawler->filter('h1')->text(null, false));
+        $this->assertContains('Default monthly cost coverage target', $crawler->filter('.container')->text(null, false));
     }
 }

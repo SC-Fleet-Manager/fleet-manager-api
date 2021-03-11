@@ -2,8 +2,6 @@
 
 namespace App\Security;
 
-use Algatux\InfluxDbBundle\Events\AbstractInfluxDbEvent;
-use Algatux\InfluxDbBundle\Events\DeferredHttpEvent;
 use App\Entity\Funding;
 use App\Entity\User;
 use App\Repository\UserRepository;
@@ -13,8 +11,6 @@ use HWI\Bundle\OAuthBundle\Connect\AccountConnectorInterface;
 use HWI\Bundle\OAuthBundle\OAuth\Response\PathUserResponse;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthUserProvider as BaseProvider;
-use InfluxDB\Database;
-use InfluxDB\Point;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -26,19 +22,13 @@ class OAuthUserProvider extends BaseProvider implements AccountConnectorInterfac
 {
     private UserRepository $userRepository;
     private EntityManagerInterface $entityManager;
-    private EventDispatcherInterface $eventDispatcher;
-    private RequestStack $requestStack;
 
     public function __construct(
         UserRepository $userRepository,
-        EntityManagerInterface $entityManager,
-        EventDispatcherInterface $eventDispatcher,
-        RequestStack $requestStack
+        EntityManagerInterface $entityManager
     ) {
         $this->userRepository = $userRepository;
         $this->entityManager = $entityManager;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->requestStack = $requestStack;
     }
 
     public function connect(UserInterface $user, UserResponseInterface $response): void
@@ -154,12 +144,6 @@ class OAuthUserProvider extends BaseProvider implements AccountConnectorInterfac
         $newUser->setApiToken(User::generateToken());
 
         $this->entityManager->persist($newUser);
-
-        $this->eventDispatcher->dispatch(new DeferredHttpEvent([new Point(
-            'app.registration',
-            1,
-            ['method' => 'discord', 'host' => $this->requestStack->getCurrentRequest()->getHost()],
-        )], Database::PRECISION_SECONDS), AbstractInfluxDbEvent::NAME);
 
         return $newUser;
     }
