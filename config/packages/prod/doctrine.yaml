@@ -14,7 +14,7 @@ doctrine:
 framework:
     cache:
         pools:
-            doctrine.system_cache_pool:
-                adapter: cache.system
             doctrine.result_cache_pool:
                 adapter: cache.app
+            doctrine.system_cache_pool:
+                adapter: cache.system
