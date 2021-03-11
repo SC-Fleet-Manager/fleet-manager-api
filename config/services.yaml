@@ -21,7 +21,6 @@ services:
         exclude:
             - '../src/Domain'
             - '../src/Message'
-            - '../src/Migrations'
             - '../src/*/Dto'
             - '../src/*/*/Dto'
             - '../src/*/Exception'
