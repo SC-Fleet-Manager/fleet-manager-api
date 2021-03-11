@@ -2,9 +2,9 @@ framework:
     secret: '%env(APP_SECRET)%'
 
     session:
-        handler_id: Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler
+        handler_id: '%env(REDIS_DSN)%'
         cookie_secure: 'auto'
-        cookie_samesite: 'none'
+        cookie_samesite: 'lax'
 
     php_errors:
         log: true

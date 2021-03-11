@@ -1,7 +1,4 @@
 {
-    "algatux/influxdb-bundle": {
-        "version": "2.4.0"
-    },
     "clue/stream-filter": {
         "version": "v1.4.0"
     },
@@ -116,6 +113,9 @@
             ".php_cs.dist"
         ]
     },
+    "friendsofphp/proxy-manager-lts": {
+        "version": "v1.0.3"
+    },
     "guzzlehttp/guzzle": {
         "version": "6.3.3"
     },
@@ -145,9 +145,6 @@
             "version": "0.6",
             "ref": "20cacc9b2da49d96ea55c8a8dd31324c5be88bc9"
         }
-    },
-    "influxdb/influxdb-php": {
-        "version": "1.15.0"
     },
     "jean85/pretty-package-versions": {
         "version": "1.2"
@@ -543,23 +540,11 @@
             "tests/bootstrap.php"
         ]
     },
-    "symfony/polyfill-intl-icu": {
-        "version": "v1.10.0"
-    },
     "symfony/polyfill-intl-idn": {
         "version": "v1.11.0"
     },
     "symfony/polyfill-intl-normalizer": {
         "version": "v1.20.0"
-    },
-    "symfony/polyfill-mbstring": {
-        "version": "v1.9.0"
-    },
-    "symfony/polyfill-php72": {
-        "version": "v1.10.0"
-    },
-    "symfony/polyfill-php73": {
-        "version": "v1.11.0"
     },
     "symfony/polyfill-php80": {
         "version": "v1.20.0"

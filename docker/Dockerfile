@@ -39,7 +39,6 @@ ENV COMPOSER_HOME /.composer
 ENV APP_ENV $ENV
 RUN if [ $ENV = 'prod' ]; then \
         composer install --no-scripts --no-suggest --ignore-platform-reqs --optimize-autoloader --classmap-authoritative --no-dev --prefer-dist --no-progress --no-interaction; \
-        rm -rf vendor/*/*/docs; \
     else \
         composer install --no-scripts --no-suggest --optimize-autoloader --classmap-authoritative --prefer-dist --no-progress --no-interaction; \
     fi; \

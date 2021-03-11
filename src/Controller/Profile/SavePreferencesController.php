@@ -56,17 +56,7 @@ class SavePreferencesController extends AbstractController
             ], 400);
         }
 
-        $user->setPublicChoice($preferences->publicChoice);
         $user->setSupporterVisible($preferences->supporterVisible);
-
-        // Orga fleet policy
-        foreach ($preferences->getOrgaVisibilityChoices() as $sid => $visibilityChoice) {
-            $orga = $citizen->getOrgaBySid($sid);
-            if ($orga === null) {
-                continue;
-            }
-            $orga->setVisibility($visibilityChoice);
-        }
 
         $this->entityManager->flush();
 

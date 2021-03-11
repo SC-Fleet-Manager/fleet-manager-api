@@ -1,15 +1,4 @@
-parameters:
-    env(GALAXY_API_BASE_URL): ''
-
 framework:
     http_client:
         max_host_connections: 6
-        scoped_clients:
-            rsi.orga_members.client:
-                base_uri: 'https://robertsspaceindustries.com'
-            rsi.ship_infos.client:
-                base_uri: 'https://robertsspaceindustries.com'
-            galaxy.ship_infos.client:
-                base_uri: '%env(string:GALAXY_API_BASE_URL)%'
-                headers:
-                    'Accept': 'application/json'
+        scoped_clients: ~
