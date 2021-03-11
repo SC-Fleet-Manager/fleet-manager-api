@@ -136,7 +136,7 @@ FROM build_php as build_php_dev
 COPY public/index_test.php public/
 
 USER root
-COPY --from=composer:1.9.3 /usr/bin/composer /usr/local/bin/composer
+COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 ENV COMPOSER_MEMORY_LIMIT -1
 ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV COMPOSER_HOME /.composer
@@ -147,7 +147,7 @@ COPY --chown=root:root docker/php/php-fpm.dev.conf /usr/local/etc/php-fpm.conf
 COPY --chown=root:root docker/php/www.dev.conf /usr/local/etc/php-fpm.d/www.conf
 
 # Xdebug install
-ARG XDEBUG_VERSION=2.9.2
+ARG XDEBUG_VERSION=3.0.3
 RUN set -eux; \
     apt-get update && apt-get install -y $PHPIZE_DEPS chromium git \
 	&& pecl install xdebug-$XDEBUG_VERSION \
