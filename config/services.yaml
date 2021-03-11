@@ -16,30 +16,18 @@ services:
             $registrationFromAddress: '%env(MAILER_NOREPLY_ADDRESS)%'
             $noreplyAddress: '%env(MAILER_NOREPLY_ADDRESS)%'
 
-    App\Command\:
-        resource: '../src/Command'
+    App\:
+        resource: '../src'
+        exclude:
+            - '../src/Domain'
+            - '../src/Message'
+            - '../src/Migrations'
+            - '../src/*/Dto'
+            - '../src/*/*/Dto'
+            - '../src/*/Exception'
     App\Controller\:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
-    App\DataFixtures\:
-        resource: '../src/DataFixtures'
-    App\Form\:
-        resource: '../src/Form'
-        exclude: '../src/Form/Dto'
-    App\Listener\:
-        resource: '../src/Listener'
-    App\MessageHandler\:
-        resource: '../src/MessageHandler'
-    App\Repository\:
-        resource: '../src/Repository'
-    App\Security\:
-        resource: '../src/Security'
-        exclude: '../src/Security/Exception'
-    App\Service\:
-        resource: '../src/Service'
-        exclude: '../src/Service/{Dto,*/*/Fake*.php,Funding/FakePaypalCheckout.php,Funding/Dto,WebExtension/Dto}'
-    App\Validator\:
-        resource: '../src/Validator'
 
     hwi_oauth.authentication.entry_point.oauth:
         class: App\Security\OAuthEntryPoint

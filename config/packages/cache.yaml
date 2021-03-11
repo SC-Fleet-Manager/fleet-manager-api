@@ -1,6 +1,6 @@
 framework:
     cache:
+        prefix_seed: ioni14/fleet-manager
         app: cache.adapter.redis
         default_redis_provider: '%env(REDIS_DSN)%'
-
         pools: ~
