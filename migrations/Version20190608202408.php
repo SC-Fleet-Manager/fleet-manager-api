@@ -22,4 +22,9 @@ final class Version20190608202408 extends AbstractMigration
     {
         $this->addSql('ALTER TABLE citizen_organization DROP visibility');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

@@ -28,4 +28,9 @@ final class Version20200301151421 extends AbstractMigration
         $this->addSql('UPDATE user SET username=substring(email, 1, locate(\'@\', email) - 1) WHERE email is not null');
         $this->addSql('UPDATE user SET username=id WHERE username is null');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

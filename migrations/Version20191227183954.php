@@ -21,4 +21,9 @@ final class Version20191227183954 extends AbstractMigration
     {
         $this->addSql("DELETE FROM ship_chassis WHERE id='9bc30be9-0f1e-405a-a730-0d244292b6e5'");
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

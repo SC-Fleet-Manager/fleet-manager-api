@@ -25,4 +25,9 @@ final class Version20190528185409 extends AbstractMigration
         $this->addSql('DROP INDEX mainorga_idx ON citizen');
         $this->addSql('ALTER TABLE citizen DROP main_orga');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

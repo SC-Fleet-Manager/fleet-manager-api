@@ -25,4 +25,9 @@ final class Version20200417141406 extends AbstractMigration
         $this->addSql('DROP INDEX created_at_idx ON patch_note');
         $this->addSql('DROP TABLE patch_note');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

@@ -27,4 +27,9 @@ final class Version20190503194721 extends AbstractMigration
         $this->addSql('ALTER TABLE ship CHANGE owner_id owner_id CHAR(36) DEFAULT \'NULL\' COLLATE utf8mb4_unicode_ci COMMENT \'(DC2Type:uuid)\', CHANGE fleet_id fleet_id CHAR(36) DEFAULT \'NULL\' COLLATE utf8mb4_unicode_ci COMMENT \'(DC2Type:uuid)\', CHANGE raw_data raw_data LONGTEXT NOT NULL COLLATE utf8mb4_bin');
         $this->addSql('ALTER TABLE user DROP api_token, CHANGE citizen_id citizen_id CHAR(36) DEFAULT \'NULL\' COLLATE utf8mb4_unicode_ci COMMENT \'(DC2Type:uuid)\', CHANGE token token VARCHAR(64) NOT NULL COLLATE utf8mb4_unicode_ci');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

@@ -46,4 +46,9 @@ final class Version20191204184557 extends AbstractMigration
         $this->addSql('DROP TABLE funding');
         $this->addSql('ALTER TABLE user DROP coins');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

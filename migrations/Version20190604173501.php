@@ -21,4 +21,9 @@ final class Version20190604173501 extends AbstractMigration
     {
         $this->addSql('ALTER TABLE citizen DROP nickname');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

@@ -21,4 +21,9 @@ final class Version20191015185640 extends AbstractMigration
     {
         $this->addSql('ALTER TABLE user DROP pending_email, DROP updated_at');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

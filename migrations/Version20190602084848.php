@@ -21,4 +21,9 @@ final class Version20190602084848 extends AbstractMigration
     {
         $this->addSql('DROP INDEX discord_idx ON user');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

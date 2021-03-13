@@ -21,4 +21,9 @@ final class Version20190507185827 extends AbstractMigration
     {
         $this->addSql('ALTER TABLE user DROP public_choice');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

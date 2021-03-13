@@ -153,4 +153,9 @@ final class Version20191223183954 extends AbstractMigration
         $this->addSql('DROP TABLE ship_name');
         $this->addSql('DROP TABLE ship_chassis');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

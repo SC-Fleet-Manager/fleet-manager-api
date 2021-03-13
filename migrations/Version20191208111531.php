@@ -30,4 +30,9 @@ final class Version20191208111531 extends AbstractMigration
     {
         $this->addSql('DROP TABLE monthly_cost_coverage');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

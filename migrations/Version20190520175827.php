@@ -25,4 +25,9 @@ final class Version20190520175827 extends AbstractMigration
         $this->addSql('DROP INDEX name_idx ON ship');
         $this->addSql('ALTER TABLE ship CHANGE raw_data raw_data LONGTEXT NOT NULL COLLATE utf8mb4_bin');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

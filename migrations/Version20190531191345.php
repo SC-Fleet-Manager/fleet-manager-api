@@ -34,4 +34,9 @@ final class Version20190531191345 extends AbstractMigration
         $this->addSql('ALTER TABLE citizen ADD main_orga VARCHAR(31) DEFAULT NULL COLLATE utf8mb4_unicode_ci, DROP last_fleet_id, DROP main_orga_id');
         $this->addSql('CREATE INDEX mainorga_idx ON citizen (main_orga)');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

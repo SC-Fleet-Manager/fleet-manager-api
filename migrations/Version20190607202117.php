@@ -24,4 +24,9 @@ final class Version20190607202117 extends AbstractMigration
         $this->addSql('ALTER TABLE citizen_organization DROP organization_id');
         $this->addSql('ALTER TABLE user DROP discord_tag');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

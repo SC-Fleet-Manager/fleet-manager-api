@@ -14,13 +14,18 @@ final class Version20190802162716 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $this->addSql("ALTER TABLE user 
-            ADD lost_password_token CHAR(64) DEFAULT NULL, 
+        $this->addSql("ALTER TABLE user
+            ADD lost_password_token CHAR(64) DEFAULT NULL,
             ADD lost_password_requested_at DATETIME DEFAULT NULL COMMENT '(DC2Type:datetimetz_immutable)'");
     }
 
     public function down(Schema $schema): void
     {
         $this->addSql('ALTER TABLE user DROP lost_password_token, DROP lost_password_requested_at');
+    }
+
+    public function isTransactional(): bool
+    {
+        return false;
     }
 }

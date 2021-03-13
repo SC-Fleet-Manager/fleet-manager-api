@@ -92,4 +92,9 @@ final class Version20200413135835 extends AbstractMigration
         $this->addSql('CREATE INDEX my_hangar_name_idx ON ship_name (my_hangar_name)');
         $this->addSql('CREATE INDEX ship_matrix_name_idx ON ship_name (ship_matrix_name)');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }
