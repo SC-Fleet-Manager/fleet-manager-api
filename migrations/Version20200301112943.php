@@ -21,4 +21,9 @@ final class Version20200301112943 extends AbstractMigration
     {
         $this->addSql('ALTER TABLE ship DROP insurance_type');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

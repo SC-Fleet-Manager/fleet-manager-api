@@ -26,4 +26,9 @@ final class Version20181101203845 extends AbstractMigration
         $this->addSql('DROP TABLE ship');
         $this->addSql('DROP TABLE citizen');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

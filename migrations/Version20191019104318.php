@@ -26,4 +26,9 @@ final class Version20191019104318 extends AbstractMigration
         $this->addSql('DROP INDEX email_idx ON user');
         $this->addSql('ALTER TABLE user DROP pending_discord_id');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

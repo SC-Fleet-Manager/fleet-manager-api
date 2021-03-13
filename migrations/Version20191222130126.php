@@ -23,4 +23,9 @@ final class Version20191222130126 extends AbstractMigration
         $this->addSql('ALTER TABLE user DROP supporter_visible');
         $this->addSql('ALTER TABLE ship DROP insurance_duration');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

@@ -26,4 +26,9 @@ final class Version20190505124924 extends AbstractMigration
         $this->addSql('CREATE INDEX IDX_FA30EB247E3C61F9 ON ship (owner_id)');
         $this->addSql('ALTER TABLE user CHANGE citizen_id citizen_id CHAR(36) DEFAULT \'NULL\' COLLATE utf8mb4_unicode_ci COMMENT \'(DC2Type:uuid)\'');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

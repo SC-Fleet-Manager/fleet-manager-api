@@ -21,4 +21,9 @@ final class Version20190619171959 extends AbstractMigration
     {
         $this->addSql('ALTER TABLE organization DROP last_refresh');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

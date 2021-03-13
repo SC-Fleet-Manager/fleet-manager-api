@@ -21,4 +21,9 @@ final class Version20190526161634 extends AbstractMigration
     {
         $this->addSql('ALTER TABLE citizen DROP last_refresh');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

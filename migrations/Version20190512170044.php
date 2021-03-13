@@ -23,4 +23,9 @@ final class Version20190512170044 extends AbstractMigration
         $this->addSql('ALTER TABLE citizen CHANGE organisations organisations LONGTEXT NOT NULL COLLATE utf8mb4_bin');
         $this->addSql('ALTER TABLE user DROP last_connected_at');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

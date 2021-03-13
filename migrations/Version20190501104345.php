@@ -17,4 +17,9 @@ final class Version20190501104345 extends AbstractMigration
     {
         $this->addSql('ALTER TABLE user DROP discord_id');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

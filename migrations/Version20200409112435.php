@@ -31,4 +31,9 @@ final class Version20200409112435 extends AbstractMigration
         $this->addSql('ALTER TABLE ship DROP normalized_name, DROP galaxy_id');
         $this->addSql('ALTER TABLE ship_name DROP provider_id, DROP my_hangar_name_pattern');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

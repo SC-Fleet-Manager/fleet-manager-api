@@ -22,4 +22,9 @@ final class Version20191030184738 extends AbstractMigration
     {
         $this->addSql('ALTER TABLE user DROP roles');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

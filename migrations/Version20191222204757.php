@@ -21,4 +21,9 @@ final class Version20191222204757 extends AbstractMigration
     {
         $this->addSql('ALTER TABLE organization DROP supporter_visible');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

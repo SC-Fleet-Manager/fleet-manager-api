@@ -21,4 +21,9 @@ final class Version20190612170842 extends AbstractMigration
     {
         $this->addSql('ALTER TABLE fleet DROP refresh_date');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

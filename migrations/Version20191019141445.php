@@ -35,4 +35,9 @@ final class Version20191019141445 extends AbstractMigration
         $this->addSql('ALTER TABLE organization_change DROP FOREIGN KEY FK_45D92ED5F675F31B');
         $this->addSql('ALTER TABLE organization_change ADD CONSTRAINT FK_45D92ED5F675F31B FOREIGN KEY (author_id) REFERENCES citizen (id)');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

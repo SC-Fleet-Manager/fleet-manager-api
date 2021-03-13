@@ -21,4 +21,9 @@ final class Version20190531203028 extends AbstractMigration
     {
         $this->addSql('DROP TABLE organization');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }
