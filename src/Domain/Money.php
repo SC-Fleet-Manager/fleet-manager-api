@@ -16,9 +16,7 @@ class Money
         $this->cents = (int) bcmul($cost, 100, 2);
     }
 
-    /**
-     * @Groups({"my-fleet"})
-     */
+    #[Groups(["my-fleet"])]
     public function getCost(): float
     {
         return (float) bcdiv($this->cents, 100, 2);

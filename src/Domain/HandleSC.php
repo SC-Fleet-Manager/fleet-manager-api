@@ -6,19 +6,13 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 class HandleSC
 {
-    /**
-     * @var string
-     *
-     * @Groups({"profile", "public_profile", "orga_fleet", "orga_fleet_admin"})
-     */
-    private $handle;
-
-    public function __construct(string $handle)
-    {
-        $this->handle = $handle;
+    public function __construct(
+        #[Groups(["profile", "public_profile", "orga_fleet", "orga_fleet_admin"])]
+        private string $handle
+    ) {
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getHandle();
     }
