@@ -48,10 +48,10 @@ monolog:
             store: '%kernel.logs_dir%/monolog_handler_deduplicated'
             handler: mailer
         mailer:
-            type: swift_mailer
+            type: symfony_mailer
             from_email: '%env(MAILER_NOREPLY_ADDRESS)%'
-            to_email: '%env(MONOLOG_MAILER_TO)%'
-            subject: '[FM Monolog] Error : %%message%%'
+            to_email: ['%env(MONOLOG_MAILER_TO)%']
+            subject: '[FM Monolog prod] Error : %%message%%'
             formatter: monolog.formatter.html
             content_type: text/html
         ########

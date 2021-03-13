@@ -24,82 +24,54 @@ class ShipInfo
         self::SIZE_CAPITAL,
     ];
 
-    /**
-     * @Groups({"my-fleet", "public-fleet"})
-     */
+    #[Groups(["my-fleet", "public-fleet"])]
     public ?string $id = null;
 
     /**
      * @see self::FLIGHT_READY|self::NOT_READY
-     *
-     * @Groups({"my-fleet", "public-fleet"})
      */
+    #[Groups(["my-fleet", "public-fleet"])]
     public ?string $productionStatus = null;
 
-    /**
-     * @Groups({"my-fleet", "public-fleet"})
-     */
+    #[Groups(["my-fleet", "public-fleet"])]
     public ?int $minCrew = null;
 
-    /**
-     * @Groups({"my-fleet", "public-fleet"})
-     */
+    #[Groups(["my-fleet", "public-fleet"])]
     public ?int $maxCrew = null;
 
-    /**
-     * @Groups({"my-fleet", "public-fleet"})
-     */
+    #[Groups(["my-fleet", "public-fleet"])]
     public ?string $name = null;
 
     /**
      * @see self::SIZES
-     *
-     * @Groups({"my-fleet", "public-fleet"})
      */
+    #[Groups(["my-fleet", "public-fleet"])]
     public ?string $size = null;
 
-    /**
-     * @Groups({"my-fleet", "public-fleet"})
-     */
+    #[Groups(["my-fleet", "public-fleet"])]
     public ?int $cargoCapacity = null;
 
-    /**
-     * @Groups({"my-fleet", "public-fleet"})
-     */
+    #[Groups(["my-fleet", "public-fleet"])]
     public ?string $pledgeUrl = null;
 
-    /**
-     * @Groups({"my-fleet", "public-fleet"})
-     */
+    #[Groups(["my-fleet", "public-fleet"])]
     public ?string $manufacturerId = null;
 
-    /**
-     * @Groups({"my-fleet", "public-fleet"})
-     */
+    #[Groups(["my-fleet", "public-fleet"])]
     public ?string $manufacturerName = null;
 
-    /**
-     * @Groups({"my-fleet", "public-fleet"})
-     */
+    #[Groups(["my-fleet", "public-fleet"])]
     public ?string $manufacturerCode = null;
 
-    /**
-     * @Groups({"my-fleet", "public-fleet"})
-     */
+    #[Groups(["my-fleet", "public-fleet"])]
     public ?string $chassisId = null;
 
-    /**
-     * @Groups({"my-fleet", "public-fleet"})
-     */
+    #[Groups(["my-fleet", "public-fleet"])]
     public ?string $chassisName = null;
 
-    /**
-     * @Groups({"my-fleet", "public-fleet"})
-     */
+    #[Groups(["my-fleet", "public-fleet"])]
     public ?string $mediaUrl = null;
 
-    /**
-     * @Groups({"my-fleet", "public-fleet"})
-     */
+    #[Groups(["my-fleet", "public-fleet"])]
     public ?string $mediaThumbUrl = null;
 }

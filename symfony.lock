@@ -90,19 +90,16 @@
     "egulias/email-validator": {
         "version": "2.1.7"
     },
-    "fabpot/goutte": {
-        "version": "v3.2.3"
-    },
     "fakerphp/faker": {
         "version": "v1.13.0"
     },
     "friendsofphp/php-cs-fixer": {
-        "version": "2.2",
+        "version": "2.16",
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "master",
-            "version": "2.2",
-            "ref": "cc05ab6abf6894bddb9bbd6a252459010ebe040b"
+            "version": "2.16",
+            "ref": "c1947bad147704aeaf0285745f0baae927a58959"
         },
         "files": [
             ".php_cs.dist"
@@ -110,9 +107,6 @@
     },
     "friendsofphp/proxy-manager-lts": {
         "version": "v1.0.3"
-    },
-    "guzzlehttp/guzzle": {
-        "version": "6.3.3"
     },
     "guzzlehttp/promises": {
         "version": "v1.3.1"
@@ -217,9 +211,6 @@
     "php-http/discovery": {
         "version": "1.4.0"
     },
-    "php-http/guzzle6-adapter": {
-        "version": "v1.1.1"
-    },
     "php-http/httplug": {
         "version": "v1.1.0"
     },
@@ -236,7 +227,7 @@
         ]
     },
     "php-http/logger-plugin": {
-        "version": "v1.0.0"
+        "version": "1.2.1"
     },
     "php-http/message": {
         "version": "1.7.2"
@@ -248,7 +239,7 @@
         "version": "v1.0.0"
     },
     "php-http/stopwatch-plugin": {
-        "version": "1.1.0"
+        "version": "1.4.0"
     },
     "php-webdriver/webdriver": {
         "version": "1.7.1"
@@ -336,9 +327,6 @@
         "files": [
             "config/packages/sentry.yaml"
         ]
-    },
-    "swiftmailer/swiftmailer": {
-        "version": "v6.2.3"
     },
     "symfony/amazon-mailer": {
         "version": "4.4",
@@ -498,7 +486,7 @@
             "repo": "github.com/symfony/recipes",
             "branch": "master",
             "version": "4.3",
-            "ref": "8a2675c061737658bed85102e9241c752620e575"
+            "ref": "e9a414b113ceadbf4e52abe37bf8f1b443f06ccb"
         },
         "files": [
             "config/packages/messenger.yaml"
@@ -592,12 +580,12 @@
         "version": "v5.2.4"
     },
     "symfony/routing": {
-        "version": "4.2",
+        "version": "5.1",
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "master",
-            "version": "4.2",
-            "ref": "683dcb08707ba8d41b7e34adb0344bfd68d248a7"
+            "version": "5.1",
+            "ref": "b4f3e7c95e38b606eef467e8a42a8408fc460c43"
         },
         "files": [
             "config/packages/prod/routing.yaml",
@@ -606,12 +594,12 @@
         ]
     },
     "symfony/security-bundle": {
-        "version": "4.4",
+        "version": "5.1",
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "master",
-            "version": "4.4",
-            "ref": "30efd98dd3b4ead6e9ad4713b1efc43bbe94bf77"
+            "version": "5.1",
+            "ref": "0a4bae19389d3b9cba1ca0102e3b2bccea724603"
         },
         "files": [
             "config/packages/security.yaml"
@@ -644,20 +632,6 @@
     "symfony/string": {
         "version": "v5.2.4"
     },
-    "symfony/swiftmailer-bundle": {
-        "version": "2.5",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "master",
-            "version": "2.5",
-            "ref": "ae4d22af30bbd484506bc1817c5a3ef72c855b93"
-        },
-        "files": [
-            "config/packages/dev/swiftmailer.yaml",
-            "config/packages/swiftmailer.yaml",
-            "config/packages/test/swiftmailer.yaml"
-        ]
-    },
     "symfony/templating": {
         "version": "v4.1.7"
     },
@@ -681,12 +655,12 @@
         "version": "v4.1.6"
     },
     "symfony/twig-bundle": {
-        "version": "4.4",
+        "version": "5.0",
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "master",
-            "version": "4.4",
-            "ref": "15a41bbd66a1323d09824a189b485c126bbefa51"
+            "version": "5.0",
+            "ref": "fab9149bbaa4d5eca054ed93f9e1b66cc500895d"
         },
         "files": [
             "config/packages/test/twig.yaml",
