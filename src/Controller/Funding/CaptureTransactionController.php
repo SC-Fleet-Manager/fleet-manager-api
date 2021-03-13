@@ -22,37 +22,21 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class CaptureTransactionController extends AbstractController
 {
-    private Security $security;
-    private PaypalCheckoutInterface $paypalCheckout;
-    private SerializerInterface $serializer;
-    private FundingRepository $fundingRepository;
-    private EntityManagerInterface $entityManager;
-    private MessageBusInterface $bus;
-    private EventDispatcherInterface $eventDispatcher;
-
     public function __construct(
-        Security $security,
-        PaypalCheckoutInterface $paypalCheckout,
-        SerializerInterface $serializer,
-        FundingRepository $fundingRepository,
-        EntityManagerInterface $entityManager,
-        MessageBusInterface $bus,
-        EventDispatcherInterface $eventDispatcher
+        private Security $security,
+        private PaypalCheckoutInterface $paypalCheckout,
+        private SerializerInterface $serializer,
+        private FundingRepository $fundingRepository,
+        private EntityManagerInterface $entityManager,
+        private MessageBusInterface $bus,
+        private EventDispatcherInterface $eventDispatcher
     ) {
-        $this->security = $security;
-        $this->paypalCheckout = $paypalCheckout;
-        $this->serializer = $serializer;
-        $this->fundingRepository = $fundingRepository;
-        $this->entityManager = $entityManager;
-        $this->bus = $bus;
-        $this->eventDispatcher = $eventDispatcher;
     }
 
-    /**
-     * @Route("/api/funding/capture-transaction", name="funding_capture_transaction", methods={"POST"})
-     */
-    public function __invoke(Request $request): Response
-    {
+    #[Route("/api/funding/capture-transaction", name: "funding_capture_transaction", methods: ["POST"])]
+    public function __invoke(
+        Request $request
+    ): Response {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
 
         /** @var User $user */

@@ -12,20 +12,16 @@ use Symfony\Component\Security\Core\Security;
 
 class ConflictConnectController extends AbstractController
 {
-    private Security $security;
-    private UserRepository $userRepository;
-
-    public function __construct(Security $security, UserRepository $userRepository)
-    {
-        $this->security = $security;
-        $this->userRepository = $userRepository;
+    public function __construct(
+        private Security $security,
+        private UserRepository $userRepository
+    ) {
     }
 
-    /**
-     * @Route("/api/profile/conflict-connect/discord", name="profile_conflict_connect", methods={"GET"})
-     */
-    public function __invoke(Request $request): Response
-    {
+    #[Route("/api/profile/conflict-connect/discord", name: "profile_conflict_connect", methods: ["GET"])]
+    public function __invoke(
+        Request $request
+    ): Response {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
 
         /** @var User $user */

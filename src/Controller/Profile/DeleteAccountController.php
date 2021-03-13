@@ -15,30 +15,18 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class DeleteAccountController extends AbstractController
 {
-    private Security $security;
-    private EntityManagerInterface $entityManager;
-    private EventDispatcherInterface $eventDispatcher;
-    private FundingRepository $fundingRepository;
-
     public function __construct(
-        Security $security,
-        EntityManagerInterface $entityManager,
-        EventDispatcherInterface $eventDispatcher,
-        FundingRepository $fundingRepository
+        private Security $security,
+        private EntityManagerInterface $entityManager,
+        private EventDispatcherInterface $eventDispatcher,
+        private FundingRepository $fundingRepository
     ) {
-        $this->security = $security;
-        $this->entityManager = $entityManager;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->fundingRepository = $fundingRepository;
     }
 
-    /**
-     * Deletes the account and data of logged user.
-     *
-     * @Route("/api/profile/delete-account", name="profile_delete_account", methods={"POST"})
-     */
-    public function __invoke(Request $request): Response
-    {
+    #[Route("/api/profile/delete-account", name: "profile_delete_account", methods: ["POST"])]
+    public function __invoke(
+        Request $request
+    ): Response {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
 
         /** @var User $user */

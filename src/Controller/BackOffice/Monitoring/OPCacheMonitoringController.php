@@ -12,11 +12,11 @@ class OPCacheMonitoringController extends AbstractController
     /**
      * @see https://haydenjames.io/php-performance-opcache-control-panels/
      * @see https://gist.github.com/ck-on/4959032
-     *
-     * @Route("/bo/monitoring/opcache", name="bo_monitoring_opcache", methods={"GET"})
      */
-    public function __invoke(Request $request): Response
-    {
+    #[Route("/bo/monitoring/opcache", name: "bo_monitoring_opcache", methods: ["GET"])]
+    public function __invoke(
+        Request $request
+    ): Response {
         $time = time();
 
         if ($request->query->getBoolean('reset', false)) {

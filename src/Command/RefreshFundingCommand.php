@@ -16,29 +16,22 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class RefreshFundingCommand extends Command
 {
-    private PaypalCheckout $paypalCheckout;
-    private FundingRepository $fundingRepository;
-    private EntityManagerInterface $entityManager;
-    private EventDispatcherInterface $eventDispatcher;
+    protected static $defaultName = 'app:refresh-funding';
+
     private SymfonyStyle $io;
 
     public function __construct(
-        PaypalCheckout $paypalCheckout,
-        FundingRepository $fundingRepository,
-        EntityManagerInterface $entityManager,
-        EventDispatcherInterface $eventDispatcher)
-    {
+        private PaypalCheckout $paypalCheckout,
+        private FundingRepository $fundingRepository,
+        private EntityManagerInterface $entityManager,
+        private EventDispatcherInterface $eventDispatcher
+    ) {
         parent::__construct();
-        $this->paypalCheckout = $paypalCheckout;
-        $this->fundingRepository = $fundingRepository;
-        $this->entityManager = $entityManager;
-        $this->eventDispatcher = $eventDispatcher;
     }
 
     protected function configure(): void
     {
-        $this->setName('app:refresh-funding')
-            ->addArgument('fundingIds', InputArgument::IS_ARRAY);
+        $this->addArgument('fundingIds', InputArgument::IS_ARRAY);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -68,6 +61,6 @@ class RefreshFundingCommand extends Command
         $this->entityManager->flush();
         $this->eventDispatcher->dispatch(new FundingUpdatedEvent($funding));
 
-        $this->io->success('The funding has now the status: '.$funding->getPaypalStatus());
+        $this->io->success('The funding has now the status: ' . $funding->getPaypalStatus());
     }
 }

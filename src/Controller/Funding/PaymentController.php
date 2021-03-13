@@ -19,31 +19,19 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class PaymentController extends AbstractController
 {
-    private Security $security;
-    private PaypalCheckoutInterface $paypalCheckout;
-    private ValidatorInterface $validator;
-    private SerializerInterface $serializer;
-    private EntityManagerInterface $entityManager;
-
     public function __construct(
-        Security $security,
-        PaypalCheckoutInterface $paypalCheckout,
-        ValidatorInterface $validator,
-        SerializerInterface $serializer,
-        EntityManagerInterface $entityManager
+        private Security $security,
+        private PaypalCheckoutInterface $paypalCheckout,
+        private ValidatorInterface $validator,
+        private SerializerInterface $serializer,
+        private EntityManagerInterface $entityManager
     ) {
-        $this->security = $security;
-        $this->paypalCheckout = $paypalCheckout;
-        $this->validator = $validator;
-        $this->serializer = $serializer;
-        $this->entityManager = $entityManager;
     }
 
-    /**
-     * @Route("/api/funding/payment", name="funding_payment", methods={"POST"})
-     */
-    public function __invoke(Request $request): Response
-    {
+    #[Route("/api/funding/payment", name: "funding_payment", methods: ["POST"])]
+    public function __invoke(
+        Request $request
+    ): Response {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
 
         /** @var FundingPayment $fundingPayment */

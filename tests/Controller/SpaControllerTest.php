@@ -59,8 +59,6 @@ class SpaControllerTest extends PantherTestCase
     /**
      * @group end2end
      * @group spa
-     *
-     * @group toto
      */
     public function testGlobalSpa(): void
     {

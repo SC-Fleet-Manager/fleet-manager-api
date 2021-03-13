@@ -11,7 +11,7 @@ EXEC_PHP_ROOT=$(DOCKER_COMPOSE) exec -u 0 php
 EXEC_MYSQL=$(DOCKER_COMPOSE) exec -T mysql
 EXEC_COMPOSER=$(EXEC_PHP) composer
 EXEC_CONSOLE=$(EXEC_PHP) $(CONSOLE)
-EXEC_NODE=docker container run --rm -it -u ${UID}:${GID} -v ${PROJECT_DIR}:/app -w /app node:12-alpine
+EXEC_NODE=docker container run --rm -it -u ${UID}:${GID} -v ${PROJECT_DIR}:/app -w /app -p 8888:8888 node:12-alpine
 EXEC_YARN=$(EXEC_NODE) yarn
 
 .PHONY: help

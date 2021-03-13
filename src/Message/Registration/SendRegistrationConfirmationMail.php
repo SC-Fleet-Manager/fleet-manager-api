@@ -6,11 +6,9 @@ use Ramsey\Uuid\UuidInterface;
 
 class SendRegistrationConfirmationMail
 {
-    private $userId;
-
-    public function __construct(UuidInterface $userId)
-    {
-        $this->userId = $userId;
+    public function __construct(
+        private UuidInterface $userId
+    ) {
     }
 
     public function getUserId(): UuidInterface

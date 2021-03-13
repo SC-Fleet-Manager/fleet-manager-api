@@ -6,11 +6,9 @@ use Ramsey\Uuid\UuidInterface;
 
 class SendOrderRefundMail
 {
-    private UuidInterface $fundingId;
-
-    public function __construct(UuidInterface $fundingId)
-    {
-        $this->fundingId = $fundingId;
+    public function __construct(
+        private UuidInterface $fundingId
+    ) {
     }
 
     public function getFundingId(): UuidInterface

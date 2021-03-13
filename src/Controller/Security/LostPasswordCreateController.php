@@ -15,25 +15,17 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class LostPasswordCreateController extends AbstractController
 {
-    private $userRepository;
-    private $entityManager;
-    private $passwordEncoder;
-
     public function __construct(
-        UserRepository $userRepository,
-        EntityManagerInterface $entityManager,
-        UserPasswordEncoderInterface $passwordEncoder
+        private UserRepository $userRepository,
+        private EntityManagerInterface $entityManager,
+        private UserPasswordEncoderInterface $passwordEncoder
     ) {
-        $this->userRepository = $userRepository;
-        $this->entityManager = $entityManager;
-        $this->passwordEncoder = $passwordEncoder;
     }
 
-    /**
-     * @Route("/lost-password-create", name="security_lost_password_create", methods={"GET","POST"})
-     */
-    public function __invoke(Request $request): Response
-    {
+    #[Route("/lost-password-create", name: "security_lost_password_create", methods: ["GET", "POST"])]
+    public function __invoke(
+        Request $request
+    ): Response {
         $token = $request->query->get('token');
         $userId = $request->query->get('id');
 

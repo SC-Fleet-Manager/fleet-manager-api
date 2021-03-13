@@ -10,18 +10,15 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class PatchNoteListController extends AbstractController
 {
-    private PatchNoteRepository $patchNoteRepository;
-
-    public function __construct(PatchNoteRepository $patchNoteRepository)
-    {
-        $this->patchNoteRepository = $patchNoteRepository;
+    public function __construct(
+        private PatchNoteRepository $patchNoteRepository
+    ) {
     }
 
-    /**
-     * @Route("/bo/patch-note/list", name="bo_patch_note_list", methods={"GET"})
-     */
-    public function __invoke(Request $request): Response
-    {
+    #[Route("/bo/patch-note/list", name: "bo_patch_note_list", methods: ["GET"])]
+    public function __invoke(
+        Request $request
+    ): Response {
         $patchNotes = $this->patchNoteRepository->findBy([], ['createdAt' => 'DESC']);
 
         return $this->render('back_office/patch_note/list.html.twig', [

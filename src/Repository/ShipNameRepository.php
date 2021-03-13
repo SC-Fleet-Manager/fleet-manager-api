@@ -12,19 +12,4 @@ class ShipNameRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, ShipName::class);
     }
-
-    /**
-     * @return ShipName[]
-     */
-    public function findAllMappingsWithPatternAndProviderId(): array
-    {
-        $dql = <<<DQL
-                SELECT s FROM App\Entity\ShipName s WHERE s.myHangarNamePattern IS NOT NULL AND s.providerId IS NOT NULL
-            DQL;
-
-        $query = $this->_em->createQuery($dql);
-        $query->enableResultCache(300);
-
-        return $query->getResult();
-    }
 }

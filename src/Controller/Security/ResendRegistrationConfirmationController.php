@@ -2,7 +2,6 @@
 
 namespace App\Controller\Security;
 
-use App\Form\Dto\Registration;
 use App\Message\Registration\SendRegistrationConfirmationMail;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,25 +14,17 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ResendRegistrationConfirmationController extends AbstractController
 {
-    private $validator;
-    private $bus;
-    private $userRepository;
-
     public function __construct(
-        ValidatorInterface $validator,
-        MessageBusInterface $bus,
-        UserRepository $userRepository
+        private ValidatorInterface $validator,
+        private MessageBusInterface $bus,
+        private UserRepository $userRepository
     ) {
-        $this->validator = $validator;
-        $this->bus = $bus;
-        $this->userRepository = $userRepository;
     }
 
-    /**
-     * @Route("/api/resend-registration-confirmation", name="security_resend_registration_confirmation", methods={"POST"})
-     */
-    public function __invoke(Request $request): Response
-    {
+    #[Route("/api/resend-registration-confirmation", name: "security_resend_registration_confirmation", methods: ["POST"])]
+    public function __invoke(
+        Request $request
+    ): Response {
         $username = $request->request->get('username');
         $errors = $this->validator->validate($username, [
             new NotBlank(),

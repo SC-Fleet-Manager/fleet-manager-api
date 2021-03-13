@@ -18,31 +18,19 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ChangeEmailRequestController extends AbstractController
 {
-    private Security $security;
-    private EntityManagerInterface $entityManager;
-    private SerializerInterface $serializer;
-    private ValidatorInterface $validator;
-    private MessageBusInterface $bus;
-
     public function __construct(
-        Security $security,
-        EntityManagerInterface $entityManager,
-        SerializerInterface $serializer,
-        ValidatorInterface $validator,
-        MessageBusInterface $bus
+        private Security $security,
+        private EntityManagerInterface $entityManager,
+        private SerializerInterface $serializer,
+        private ValidatorInterface $validator,
+        private MessageBusInterface $bus
     ) {
-        $this->security = $security;
-        $this->entityManager = $entityManager;
-        $this->serializer = $serializer;
-        $this->validator = $validator;
-        $this->bus = $bus;
     }
 
-    /**
-     * @Route("/api/profile/change-email-request", name="profile_change_email_request", methods={"POST"})
-     */
-    public function __invoke(Request $request): Response
-    {
+    #[Route("/api/profile/change-email-request", name: "profile_change_email_request", methods: ["POST"])]
+    public function __invoke(
+        Request $request
+    ): Response {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
 
         /** @var User $user */

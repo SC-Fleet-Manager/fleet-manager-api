@@ -18,31 +18,19 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class RegistrationController extends AbstractController
 {
-    private ValidatorInterface $validator;
-    private EntityManagerInterface $entityManager;
-    private UserPasswordEncoderInterface $passwordEncoder;
-    private SerializerInterface $serializer;
-    private MessageBusInterface $bus;
-
     public function __construct(
-        ValidatorInterface $validator,
-        EntityManagerInterface $entityManager,
-        UserPasswordEncoderInterface $passwordEncoder,
-        SerializerInterface $serializer,
-        MessageBusInterface $bus
+        private ValidatorInterface $validator,
+        private EntityManagerInterface $entityManager,
+        private UserPasswordEncoderInterface $passwordEncoder,
+        private SerializerInterface $serializer,
+        private MessageBusInterface $bus
     ) {
-        $this->validator = $validator;
-        $this->entityManager = $entityManager;
-        $this->passwordEncoder = $passwordEncoder;
-        $this->serializer = $serializer;
-        $this->bus = $bus;
     }
 
-    /**
-     * @Route("/api/register", name="security_registration", methods={"POST"})
-     */
-    public function __invoke(Request $request): Response
-    {
+    #[Route("/api/register", name: "security_registration", methods: ["POST"])]
+    public function __invoke(
+        Request $request
+    ): Response {
         /** @var Registration $registration */
         $registration = $this->serializer->deserialize($request->getContent(), Registration::class, $request->getContentType());
         $errors = $this->validator->validate($registration);

@@ -11,18 +11,13 @@ use Symfony\Component\Security\Core\Security;
 
 class HasNewPatchNoteController extends AbstractController
 {
-    private Security $security;
-    private PatchNoteRepository $patchNoteRepository;
-
-    public function __construct(Security $security, PatchNoteRepository $patchNoteRepository)
-    {
-        $this->security = $security;
-        $this->patchNoteRepository = $patchNoteRepository;
+    public function __construct(
+        private Security $security,
+        private PatchNoteRepository $patchNoteRepository
+    ) {
     }
 
-    /**
-     * @Route("/api/has-new-patch-note", name="has_new_patch_note", methods={"GET"})
-     */
+    #[Route("/api/has-new-patch-note", name: "has_new_patch_note", methods: ["GET"])]
     public function __invoke(): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');

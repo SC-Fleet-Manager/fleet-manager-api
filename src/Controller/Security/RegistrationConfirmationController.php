@@ -12,20 +12,16 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class RegistrationConfirmationController extends AbstractController
 {
-    private $userRepository;
-    private $entityManager;
-
-    public function __construct(UserRepository $userRepository, EntityManagerInterface $entityManager)
-    {
-        $this->userRepository = $userRepository;
-        $this->entityManager = $entityManager;
+    public function __construct(
+        private UserRepository $userRepository,
+        private EntityManagerInterface $entityManager
+    ) {
     }
 
-    /**
-     * @Route("/register-confirmation", name="security_registration_confirmation", methods={"GET"})
-     */
-    public function __invoke(Request $request): Response
-    {
+    #[Route("/register-confirmation", name: "security_registration_confirmation", methods: ["GET"])]
+    public function __invoke(
+        Request $request
+    ): Response {
         $token = $request->query->get('token');
         $userId = $request->query->get('id');
 

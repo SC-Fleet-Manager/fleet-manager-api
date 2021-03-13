@@ -13,20 +13,14 @@ use Symfony\Component\Security\Core\Security;
 
 class LastPatchNoteController extends AbstractController
 {
-    private Security $security;
-    private PatchNoteRepository $patchNoteRepository;
-    private EntityManagerInterface $entityManager;
-
-    public function __construct(Security $security, PatchNoteRepository $patchNoteRepository, EntityManagerInterface $entityManager)
-    {
-        $this->security = $security;
-        $this->patchNoteRepository = $patchNoteRepository;
-        $this->entityManager = $entityManager;
+    public function __construct(
+        private Security $security,
+        private PatchNoteRepository $patchNoteRepository,
+        private EntityManagerInterface $entityManager
+    ) {
     }
 
-    /**
-     * @Route("/api/last-patch-notes", name="last_patch_notes", methods={"GET"})
-     */
+    #[Route("/api/last-patch-notes", name: "last_patch_notes", methods: ["GET"])]
     public function __invoke(): Response
     {
         /** @var PatchNote[] $patchNotes */

@@ -9,13 +9,10 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class UpdateSupporterAdvantagesListener
 {
-    private FundingRepository $fundingRepository;
-    private EntityManagerInterface $entityManager;
-
-    public function __construct(FundingRepository $fundingRepository, EntityManagerInterface $entityManager)
-    {
-        $this->fundingRepository = $fundingRepository;
-        $this->entityManager = $entityManager;
+    public function __construct(
+        private FundingRepository $fundingRepository,
+        private EntityManagerInterface $entityManager
+    ) {
     }
 
     public function __invoke(FundingUpdatedEvent $event): void
