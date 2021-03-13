@@ -29,7 +29,7 @@ security:
                 provider: oauth_user_provider
                 authenticators: ['App\Security\TokenAuthenticator']
         main:
-            provider: chain_user # default provider
+            provider: chain_user # default provider
             anonymous: true
             user_checker: App\Security\ConfirmedUserChecker
             switch_user:
