@@ -14,25 +14,17 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ProgressController extends AbstractController
 {
-    private FundingRepository $fundingRepository;
-    private MonthlyCostCoverageRepository $monthlyCostCoverageRepository;
-    private EntityManagerInterface $entityManager;
-
     public function __construct(
-        FundingRepository $fundingRepository,
-        MonthlyCostCoverageRepository $monthlyCostCoverageRepository,
-        EntityManagerInterface $entityManager
+        private FundingRepository $fundingRepository,
+        private MonthlyCostCoverageRepository $monthlyCostCoverageRepository,
+        private EntityManagerInterface $entityManager
     ) {
-        $this->fundingRepository = $fundingRepository;
-        $this->monthlyCostCoverageRepository = $monthlyCostCoverageRepository;
-        $this->entityManager = $entityManager;
     }
 
-    /**
-     * @Route("/api/funding/progress", name="funding_progress", methods={"GET"})
-     */
-    public function __invoke(Request $request): Response
-    {
+    #[Route("/api/funding/progress", name: "funding_progress", methods: ["GET"])]
+    public function __invoke(
+        Request $request
+    ): Response {
         $progress = $this->fundingRepository->getCurrentProgressCostCoverage();
 
         $lastMonth = new \DateTimeImmutable('first day of last month');

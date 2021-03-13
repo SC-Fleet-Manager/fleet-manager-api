@@ -13,20 +13,16 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class MonthlyCostCoverageListController extends AbstractController
 {
-    private MonthlyCostCoverageRepository $monthlyCostCoverageRepository;
-    private EntityManagerInterface $entityManager;
-
-    public function __construct(MonthlyCostCoverageRepository $monthlyCostCoverageRepository, EntityManagerInterface $entityManager)
-    {
-        $this->monthlyCostCoverageRepository = $monthlyCostCoverageRepository;
-        $this->entityManager = $entityManager;
+    public function __construct(
+        private MonthlyCostCoverageRepository $monthlyCostCoverageRepository,
+        private EntityManagerInterface $entityManager
+    ) {
     }
 
-    /**
-     * @Route("/bo/monthly-cost-coverage/list", name="bo_monthly_cost_coverage_list", methods={"GET"})
-     */
-    public function __invoke(Request $request): Response
-    {
+    #[Route("/bo/monthly-cost-coverage/list", name: "bo_monthly_cost_coverage_list", methods: ["GET"])]
+    public function __invoke(
+        Request $request
+    ): Response {
         /** @var MonthlyCostCoverage[] $costCoverages */
         $costCoverages = $this->monthlyCostCoverageRepository->findBy([], ['month' => 'asc']);
         $defaultCostCoverage = null;

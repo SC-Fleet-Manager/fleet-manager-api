@@ -13,22 +13,16 @@ use Symfony\Component\Security\Core\Security;
 
 class ProfileController extends AbstractController
 {
-    private Security $security;
-    private EntityManagerInterface $entityManager;
-
-    public function __construct(Security $security, EntityManagerInterface $entityManager)
-    {
-        $this->security = $security;
-        $this->entityManager = $entityManager;
+    public function __construct(
+        private Security $security,
+        private EntityManagerInterface $entityManager
+    ) {
     }
 
-    /**
-     * Retrieves profile infos : user properties.
-     *
-     * @Route("/api/profile", name="profile", methods={"GET"})
-     */
-    public function __invoke(Request $request): Response
-    {
+    #[Route("/api/profile", name: "profile", methods: ["GET"])]
+    public function __invoke(
+        Request $request
+    ): Response {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
 
         /** @var User $user */

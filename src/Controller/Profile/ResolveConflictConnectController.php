@@ -19,34 +19,20 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ResolveConflictConnectController extends AbstractController
 {
-    private Security $security;
-    private ValidatorInterface $validator;
-    private SerializerInterface $serializer;
-    private EntityManagerInterface $entityManager;
-    private UserRepository $userRepository;
-    private EventDispatcherInterface $eventDispatcher;
-
     public function __construct(
-        Security $security,
-        ValidatorInterface $validator,
-        SerializerInterface $serializer,
-        EntityManagerInterface $entityManager,
-        UserRepository $userRepository,
-        EventDispatcherInterface $eventDispatcher
+        private Security $security,
+        private ValidatorInterface $validator,
+        private SerializerInterface $serializer,
+        private EntityManagerInterface $entityManager,
+        private UserRepository $userRepository,
+        private EventDispatcherInterface $eventDispatcher
     ) {
-        $this->security = $security;
-        $this->validator = $validator;
-        $this->serializer = $serializer;
-        $this->entityManager = $entityManager;
-        $this->userRepository = $userRepository;
-        $this->eventDispatcher = $eventDispatcher;
     }
 
-    /**
-     * @Route("/api/profile/resolve-conflict-connect/discord", name="profile_resolve_conflict_connect", methods={"POST"})
-     */
-    public function __invoke(Request $request): Response
-    {
+    #[Route("/api/profile/resolve-conflict-connect/discord", name: "profile_resolve_conflict_connect", methods: ["POST"])]
+    public function __invoke(
+        Request $request
+    ): Response {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
 
         /** @var User $user */

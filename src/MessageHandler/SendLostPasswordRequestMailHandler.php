@@ -12,15 +12,11 @@ use Symfony\Component\Mime\Address;
 
 class SendLostPasswordRequestMailHandler implements MessageHandlerInterface
 {
-    private $userRepository;
-    private $mailer;
-    private $registrationFromAddress;
-
-    public function __construct(UserRepository $userRepository, MailerInterface $mailer, string $registrationFromAddress)
-    {
-        $this->userRepository = $userRepository;
-        $this->mailer = $mailer;
-        $this->registrationFromAddress = $registrationFromAddress;
+    public function __construct(
+        private UserRepository $userRepository,
+        private MailerInterface $mailer,
+        private string $registrationFromAddress
+    ) {
     }
 
     public function __invoke(SendLostPasswordRequestMail $message): void

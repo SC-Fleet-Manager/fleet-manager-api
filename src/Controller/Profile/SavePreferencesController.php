@@ -15,24 +15,18 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class SavePreferencesController extends AbstractController
 {
-    private Security $security;
-    private EntityManagerInterface $entityManager;
-    private SerializerInterface $serializer;
-    private ValidatorInterface $validator;
-
-    public function __construct(Security $security, EntityManagerInterface $entityManager, SerializerInterface $serializer, ValidatorInterface $validator)
-    {
-        $this->security = $security;
-        $this->entityManager = $entityManager;
-        $this->serializer = $serializer;
-        $this->validator = $validator;
+    public function __construct(
+        private Security $security,
+        private EntityManagerInterface $entityManager,
+        private SerializerInterface $serializer,
+        private ValidatorInterface $validator
+    ) {
     }
 
-    /**
-     * @Route("/api/profile/save-preferences", name="profile_save_preferences", methods={"POST"})
-     */
-    public function __invoke(Request $request): Response
-    {
+    #[Route("/api/profile/save-preferences", name: "profile_save_preferences", methods: ["POST"])]
+    public function __invoke(
+        Request $request
+    ): Response {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
 
         /** @var ProfilePreferences $preferences */

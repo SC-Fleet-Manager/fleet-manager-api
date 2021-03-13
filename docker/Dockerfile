@@ -81,7 +81,7 @@ COPY --chown=www-data:www-data translations translations
 COPY --chown=www-data:www-data .env* Makefile composer.json composer.lock ./
 #COPY --chown=www-data:www-data --from=node_deps /app/public/build/entrypoints.json public/build/entrypoints.json
 #COPY --chown=www-data:www-data --from=node_deps /app/public/build/manifest.json public/build/manifest.json
-COPY --chown=www-data:www-data public/build/entrypoints.json public/build/manifest.json public/build/
+#COPY --chown=www-data:www-data public/build/entrypoints.json public/build/manifest.json public/build/
 COPY --chown=www-data:www-data --from=composer_deps /app/vendor vendor
 COPY --chown=www-data:www-data --from=composer_deps /app/.env.local.php .env.local.php
 

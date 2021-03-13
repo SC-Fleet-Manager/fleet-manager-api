@@ -12,24 +12,13 @@ use Symfony\Component\Mime\Address;
 
 class SendOrderCaptureSummaryMailHandler implements MessageHandlerInterface
 {
-    private FundingRepository $fundingRepository;
-    private MailerInterface $mailer;
-    private LoggerInterface $logger;
-    private string $noreplyAddress;
-    private array $orderCaptureSummaryAddresses;
-
     public function __construct(
-        FundingRepository $fundingRepository,
-        MailerInterface $mailer,
-        LoggerInterface $logger,
-        string $noreplyAddress,
-        array $orderCaptureSummaryAddresses
+        private FundingRepository $fundingRepository,
+        private MailerInterface $mailer,
+        private LoggerInterface $logger,
+        private string $noreplyAddress,
+        private array $orderCaptureSummaryAddresses
     ) {
-        $this->fundingRepository = $fundingRepository;
-        $this->mailer = $mailer;
-        $this->logger = $logger;
-        $this->noreplyAddress = $noreplyAddress;
-        $this->orderCaptureSummaryAddresses = $orderCaptureSummaryAddresses;
     }
 
     public function __invoke(SendOrderCaptureSummaryMail $message): void

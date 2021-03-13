@@ -14,28 +14,20 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class DeleteUserCommand extends Command
 {
-    private UserRepository $userRepository;
-    private EntityManagerInterface $entityManager;
-    private EventDispatcherInterface $eventDispatcher;
-    private FundingRepository $fundingRepository;
+    protected static $defaultName = 'app:delete-user';
 
     public function __construct(
-        UserRepository $userRepository,
-        FundingRepository $fundingRepository,
-        EntityManagerInterface $entityManager,
-        EventDispatcherInterface $eventDispatcher
+        private UserRepository $userRepository,
+        private FundingRepository $fundingRepository,
+        private EntityManagerInterface $entityManager,
+        private EventDispatcherInterface $eventDispatcher
     ) {
         parent::__construct();
-        $this->userRepository = $userRepository;
-        $this->entityManager = $entityManager;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->fundingRepository = $fundingRepository;
     }
 
     protected function configure(): void
     {
-        $this->setName('app:delete-user')
-            ->addArgument('userId', InputArgument::REQUIRED);
+        $this->addArgument('userId', InputArgument::REQUIRED);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

@@ -15,20 +15,19 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class PatchNoteEditController extends AbstractController
 {
-    private PatchNoteRepository $patchNoteRepository;
-    private EntityManagerInterface $entityManager;
-
-    public function __construct(PatchNoteRepository $patchNoteRepository, EntityManagerInterface $entityManager)
-    {
-        $this->patchNoteRepository = $patchNoteRepository;
-        $this->entityManager = $entityManager;
+    public function __construct(
+        private PatchNoteRepository $patchNoteRepository,
+        private EntityManagerInterface $entityManager
+    ) {
     }
 
     /**
-     * @Route("/bo/patch-note/edit/{id}", name="bo_patch_note_edit", methods={"GET","POST"})
+     * @
      */
-    public function __invoke(Request $request, string $id): Response
-    {
+    #[Route("/bo/patch-note/edit/{id}", name: "bo_patch_note_edit", methods: ["GET", "POST"])]
+    public function __invoke(
+        Request $request, string $id
+    ): Response {
         /** @var PatchNote $patchNote */
         $patchNote = $this->patchNoteRepository->find($id);
         if ($patchNote === null) {

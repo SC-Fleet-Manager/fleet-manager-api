@@ -14,18 +14,15 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class PatchNoteCreateController extends AbstractController
 {
-    private EntityManagerInterface $entityManager;
-
-    public function __construct(EntityManagerInterface $entityManager)
-    {
-        $this->entityManager = $entityManager;
+    public function __construct(
+        private EntityManagerInterface $entityManager
+    ) {
     }
 
-    /**
-     * @Route("/bo/patch-note/create", name="bo_patch_note_create", methods={"GET","POST"})
-     */
-    public function __invoke(Request $request): Response
-    {
+    #[Route("/bo/patch-note/create", name: "bo_patch_note_create", methods: ["GET", "POST"])]
+    public function __invoke(
+        Request $request
+    ): Response {
         $patchNote = new PatchNoteDto();
         $form = $this->createForm(PatchNoteForm::class, $patchNote);
         $form->handleRequest($request);

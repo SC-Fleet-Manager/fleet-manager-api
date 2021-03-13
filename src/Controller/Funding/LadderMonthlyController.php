@@ -10,18 +10,15 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class LadderMonthlyController extends AbstractController
 {
-    private LadderHandler $ladderHandler;
-
-    public function __construct(LadderHandler $ladderHandler)
-    {
-        $this->ladderHandler = $ladderHandler;
+    public function __construct(
+        private LadderHandler $ladderHandler
+    ) {
     }
 
-    /**
-     * @Route("/api/funding/ladder-monthly", name="funding_ladder_monthly", methods={"GET"})
-     */
-    public function __invoke(Request $request): Response
-    {
+    #[Route("/api/funding/ladder-monthly", name: "funding_ladder_monthly", methods: ["GET"])]
+    public function __invoke(
+        Request $request
+    ): Response {
         $orgaMode = $request->query->getBoolean('orgaMode', false);
 
         $topFundings = $orgaMode ? $this->ladderHandler->getMonthlyOrgaLadder() : $this->ladderHandler->getMonthlyLadder();

@@ -16,20 +16,16 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class MonthlyCostCoverageCreateController extends AbstractController
 {
-    private MonthlyCostCoverageRepository $monthlyCostCoverageRepository;
-    private EntityManagerInterface $entityManager;
-
-    public function __construct(MonthlyCostCoverageRepository $monthlyCostCoverageRepository, EntityManagerInterface $entityManager)
-    {
-        $this->monthlyCostCoverageRepository = $monthlyCostCoverageRepository;
-        $this->entityManager = $entityManager;
+    public function __construct(
+        private MonthlyCostCoverageRepository $monthlyCostCoverageRepository,
+        private EntityManagerInterface $entityManager
+    ) {
     }
 
-    /**
-     * @Route("/bo/monthly-cost-coverage/create", name="bo_monthly_cost_coverage_create", methods={"GET","POST"})
-     */
-    public function __invoke(Request $request): Response
-    {
+    #[Route("/bo/monthly-cost-coverage/create", name: "bo_monthly_cost_coverage_create", methods: ["GET", "POST"])]
+    public function __invoke(
+        Request $request
+    ): Response {
         $monthlyCostCoverage = new MonthlyCostCoverageDto(new \DateTimeImmutable('first day of'), 0);
         $form = $this->createForm(MonthlyCostCoverageForm::class, $monthlyCostCoverage, [
             'mode' => MonthlyCostCoverageForm::MODE_CREATE,

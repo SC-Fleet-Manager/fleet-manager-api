@@ -17,31 +17,19 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ChangePasswordController extends AbstractController
 {
-    private Security $security;
-    private EntityManagerInterface $entityManager;
-    private UserPasswordEncoderInterface $passwordEncoder;
-    private SerializerInterface $serializer;
-    private ValidatorInterface $validator;
-
     public function __construct(
-        Security $security,
-        EntityManagerInterface $entityManager,
-        UserPasswordEncoderInterface $passwordEncoder,
-        SerializerInterface $serializer,
-        ValidatorInterface $validator
+        private Security $security,
+        private EntityManagerInterface $entityManager,
+        private UserPasswordEncoderInterface $passwordEncoder,
+        private SerializerInterface $serializer,
+        private ValidatorInterface $validator
     ) {
-        $this->security = $security;
-        $this->entityManager = $entityManager;
-        $this->passwordEncoder = $passwordEncoder;
-        $this->serializer = $serializer;
-        $this->validator = $validator;
     }
 
-    /**
-     * @Route("/api/profile/change-password", name="profile_change_password", methods={"POST"})
-     */
-    public function __invoke(Request $request): Response
-    {
+    #[Route("/api/profile/change-password", name: "profile_change_password", methods: ["POST"])]
+    public function __invoke(
+        Request $request
+    ): Response {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
 
         /** @var User $user */

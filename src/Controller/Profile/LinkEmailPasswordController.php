@@ -18,34 +18,20 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class LinkEmailPasswordController extends AbstractController
 {
-    private Security $security;
-    private EntityManagerInterface $entityManager;
-    private SerializerInterface $serializer;
-    private ValidatorInterface $validator;
-    private MessageBusInterface $bus;
-    private UserPasswordEncoderInterface $passwordEncoder;
-
     public function __construct(
-        Security $security,
-        EntityManagerInterface $entityManager,
-        SerializerInterface $serializer,
-        ValidatorInterface $validator,
-        MessageBusInterface $bus,
-        UserPasswordEncoderInterface $userPasswordEncoder
+        private Security $security,
+        private EntityManagerInterface $entityManager,
+        private SerializerInterface $serializer,
+        private ValidatorInterface $validator,
+        private MessageBusInterface $bus,
+        private UserPasswordEncoderInterface $passwordEncoder
     ) {
-        $this->security = $security;
-        $this->entityManager = $entityManager;
-        $this->serializer = $serializer;
-        $this->validator = $validator;
-        $this->bus = $bus;
-        $this->passwordEncoder = $userPasswordEncoder;
     }
 
-    /**
-     * @Route("/api/profile/link-email-password", name="profile_link_email_password", methods={"POST"})
-     */
-    public function __invoke(Request $request): Response
-    {
+    #[Route("/api/profile/link-email-password", name: "profile_link_email_password", methods: ["POST"])]
+    public function __invoke(
+        Request $request
+    ): Response {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
 
         /** @var User $user */

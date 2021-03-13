@@ -9,20 +9,16 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ConfigurationController extends AbstractController
 {
-    private string $currency;
-    private string $paypalClientId;
-
-    public function __construct(string $currency, string $paypalClientId)
-    {
-        $this->currency = $currency;
-        $this->paypalClientId = $paypalClientId;
+    public function __construct(
+        private string $currency,
+        private string $paypalClientId
+    ) {
     }
 
-    /**
-     * @Route("/api/funding/configuration", name="funding_ladder_configuration", methods={"GET"})
-     */
-    public function __invoke(Request $request): Response
-    {
+    #[Route("/api/funding/configuration", name: "funding_ladder_configuration", methods: ["GET"])]
+    public function __invoke(
+        Request $request
+    ): Response {
         return $this->json([
             'currency' => $this->currency,
             'paypalClientId' => $this->paypalClientId,

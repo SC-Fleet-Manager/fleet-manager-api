@@ -17,31 +17,19 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class LostPasswordController extends AbstractController
 {
-    private $validator;
-    private $entityManager;
-    private $serializer;
-    private $bus;
-    private $userRepository;
-
     public function __construct(
-        ValidatorInterface $validator,
-        EntityManagerInterface $entityManager,
-        SerializerInterface $serializer,
-        MessageBusInterface $bus,
-        UserRepository $userRepository
+        private ValidatorInterface $validator,
+        private EntityManagerInterface $entityManager,
+        private SerializerInterface $serializer,
+        private MessageBusInterface $bus,
+        private UserRepository $userRepository
     ) {
-        $this->validator = $validator;
-        $this->entityManager = $entityManager;
-        $this->serializer = $serializer;
-        $this->bus = $bus;
-        $this->userRepository = $userRepository;
     }
 
-    /**
-     * @Route("/api/lost-password", name="security_lost_password", methods={"POST"})
-     */
-    public function __invoke(Request $request): Response
-    {
+    #[Route("/api/lost-password", name: "security_lost_password", methods: ["POST"])]
+    public function __invoke(
+        Request $request
+    ): Response {
         /** @var LostPassword $lostPassword */
         $lostPassword = $this->serializer->deserialize($request->getContent(), LostPassword::class, $request->getContentType());
         $errors = $this->validator->validate($lostPassword);
