@@ -11,8 +11,6 @@ EXEC_PHP_ROOT=$(DOCKER_COMPOSE) exec -u 0 php
 EXEC_MYSQL=$(DOCKER_COMPOSE) exec -T mysql
 EXEC_COMPOSER=$(EXEC_PHP) composer
 EXEC_CONSOLE=$(EXEC_PHP) $(CONSOLE)
-EXEC_NODE=docker container run --rm -it -u ${UID}:${GID} -v ${PROJECT_DIR}:/app -w /app -p 8888:8888 node:12-alpine
-EXEC_YARN=$(EXEC_NODE) yarn
 
 .PHONY: help
 help:
@@ -21,19 +19,7 @@ help:
 ##
 ##Utilities
 ##---------------------------------------------------------------------------
-.PHONY: node yarn yi yu watch composer ci cu console cc
-node:									## execute a node command
-	$(EXEC_NODE) $(c)
-yarn: 									## launch an ephemeral node container for executing yarn with arbitrary args c="<args>"
-	$(EXEC_YARN) $(c)
-yi:										## yarn install
-	$(EXEC_YARN) install
-yu:										## yarn upgrade
-	$(EXEC_YARN) upgrade
-watch:									## yarn watch
-	$(EXEC_YARN) watch
-webpack-stats:							## launch a webpack stats webserver for optimizing libraries imports
-	$(EXEC_NODE) ./node_modules/.bin/webpack-bundle-analyzer -h 0.0.0.0 ./public/build/stats.json
+.PHONY: composer ci cu console cc
 composer: 								## exec PHP composer with arbitrary args c="<args>"
 	$(EXEC_COMPOSER) $(c)
 ci:										## composer install
@@ -51,8 +37,8 @@ server-dump:							## launch the dump server for test env
 ##
 ##Setups
 ##---------------------------------------------------------------------------
-.PHONY: install start stop up down tty tty-root clear clean deps assets
-install: up clean deps						## launch containers and install dependencies
+.PHONY: install start stop up down tty tty-root clear clean
+install: up clean						## launch containers and install dependencies
 start:										## start stopped containers
 	$(DOCKER_COMPOSE) start
 stop:										## stop
@@ -69,12 +55,8 @@ tty-root:									## get a root shell
 clear:										## remove all the cache, the logs, the sessions and the built assets
 	-$(EXEC_PHP_ROOT) rm -rf var/cache/* var/sessions/* var/log/*
 	-$(EXEC_PHP_ROOT) rm -rf .php_cs.cache npm-debug.log yarn-error.log
-	-$(EXEC_PHP_ROOT) rm -rf public/build/
 clean: clear								## clear and remove dependencies
-	-$(EXEC_PHP_ROOT) rm -rf vendor node_modules
-
-deps: vendor assets							## build dependencies
-assets: public/build						## shortcut for building assets public/build
+	-$(EXEC_PHP_ROOT) rm -rf vendor
 
 ##
 ##Databases
@@ -124,11 +106,3 @@ vendor: composer.lock
 	$(MAKE) ci
 composer.lock: composer.json
 	$(MAKE) cu
-
-node_modules: yarn.lock
-	$(MAKE) yi
-	@touch -c node_modules
-yarn.lock: package.json
-	$(MAKE) yu
-public/build: node_modules
-	$(EXEC_YARN) dev
