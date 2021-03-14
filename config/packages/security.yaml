@@ -1,52 +1,55 @@
 security:
+#    enable_authenticator_manager: true
     encoders:
         App\Entity\User:
             algorithm: auto
     providers:
+        auth0_jwt:
+            id: 'jwt_auth.security.user.jwt_user_provider'
         oauth_user_provider:
             id: App\Security\OAuthUserProvider
         user_entity_uuid:
             id: 'App\Security\UuidProvider'
-        user_entity_email:
-            entity:
-                class: 'App\Entity\User'
-                property: 'email'
-        user_entity_nickname:
-            entity:
-                class: 'App\Entity\User'
-                property: 'nickname'
+        user_entity_jwt:
+            id: 'App\Security\UserEntityJwtProvider'
+#        user_entity_email:
+#            entity:
+#                class: 'App\Entity\User'
+#                property: 'email'
+#        user_entity_nickname:
+#            entity:
+#                class: 'App\Entity\User'
+#                property: 'nickname'
         chain_user:
             chain:
-                providers: ['user_entity_uuid', 'oauth_user_provider', 'user_entity_email', 'user_entity_nickname']
+                providers: ['user_entity_uuid', 'user_entity_jwt'] # , 'oauth_user_provider', 'user_entity_email', 'user_entity_nickname'
     firewalls:
         dev:
-            pattern: ^/(_(profiler|wdt)|build|icons|favicon\.ico|robots\.txt)/
+            pattern: ^/(_(profiler|wdt)|favicon\.ico)/
             security: false
-        token:
-            pattern: ^/api/export$
-            stateless: true
-            guard:
-                provider: oauth_user_provider
-                authenticators: ['App\Security\TokenAuthenticator']
         main:
             provider: chain_user # default provider
+            stateless: true
             anonymous: true
-            user_checker: App\Security\ConfirmedUserChecker
+#            user_checker: App\Security\ConfirmedUserChecker
             switch_user:
                 provider: chain_user
                 role: ROLE_ADMIN
-            remember_me:
-                secret: '%kernel.secret%'
-                lifetime: 604800 # 1 week
-                path: /
-                user_providers: ['chain_user']
-            form_login:
-                provider: user_entity_email
-                login_path: /login/
-                check_path: /api/login/check-form-login
-                success_handler: App\Security\FormLoginSuccessHandler
-                failure_handler: App\Security\FormLoginFailureHandler
-                remember_me:  true
+            guard:
+                authenticators:
+                    - jwt_auth.security.guard.jwt_guard_authenticator
+#            remember_me:
+#                secret: '%kernel.secret%'
+#                lifetime: 604800 # 1 week
+#                path: /
+#                user_providers: ['chain_user']
+#            form_login:
+#                provider: user_entity_email
+#                login_path: /login/
+#                check_path: /api/login/check-form-login
+#                success_handler: App\Security\FormLoginSuccessHandler
+#                failure_handler: App\Security\FormLoginFailureHandler
+#                remember_me:  true
             oauth:
                 provider: oauth_user_provider
                 resource_owners:

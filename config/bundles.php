@@ -17,4 +17,5 @@ return [
     Sentry\SentryBundle\SentryBundle::class => ['prod' => true],
     Twig\Extra\TwigExtraBundle\TwigExtraBundle::class => ['all' => true],
     Http\HttplugBundle\HttplugBundle::class => ['all' => true],
+    Auth0\JWTAuthBundle\JWTAuthBundle::class => ['all' => true],
 ];

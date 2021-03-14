@@ -40,6 +40,13 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=127, nullable=true)
+     * should be Unique
+     * @Groups({"profile"})
+     */
+    private ?string $auth0Username = null;
+
+    /**
+     * @ORM\Column(type="string", length=127, nullable=true)
      * @Groups({"profile"})
      */
     private ?string $email = null;
@@ -158,12 +165,12 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="datetimetz_immutable", nullable=true)
      */
-    private ?\DateTimeImmutable  $lastConnectedAt = null;
+    private ?\DateTimeImmutable $lastConnectedAt = null;
 
     /**
      * @ORM\Column(type="datetimetz_immutable", nullable=true)
      */
-    private ?\DateTimeImmutable  $lastPatchNoteReadAt = null;
+    private ?\DateTimeImmutable $lastPatchNoteReadAt = null;
 
     public function __construct(?UuidInterface $id = null)
     {
@@ -193,7 +200,19 @@ class User implements UserInterface
 
     public function getUsername(): string
     {
-        return $this->id->toString();
+        return $this->auth0Username ?? $this->id->toString();
+    }
+
+    public function getAuth0Username(): ?string
+    {
+        return $this->auth0Username;
+    }
+
+    public function setAuth0Username(?string $auth0Username): self
+    {
+        $this->auth0Username = $auth0Username;
+
+        return $this;
     }
 
     public function getPassword(): ?string

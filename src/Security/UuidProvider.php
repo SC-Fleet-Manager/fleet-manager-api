@@ -4,7 +4,6 @@ namespace App\Security;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
@@ -14,18 +13,12 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class UuidProvider implements UserProviderInterface
 {
-    private UserRepository $userRepository;
-    private EntityManagerInterface $entityManager;
-
     public function __construct(
-        UserRepository $userRepository,
-        EntityManagerInterface $entityManager
+        private UserRepository $userRepository
     ) {
-        $this->userRepository = $userRepository;
-        $this->entityManager = $entityManager;
     }
 
-    public function loadUserByUsername($uid)
+    public function loadUserByUsername($uid): UserInterface
     {
         if ($uid === null) {
             throw new UsernameNotFoundException('User not found with this UUID.');
@@ -44,7 +37,7 @@ class UuidProvider implements UserProviderInterface
         return $user;
     }
 
-    public function refreshUser(UserInterface $user)
+    public function refreshUser(UserInterface $user): UserInterface
     {
         /** @var User $user */
         if (!$this->supportsClass(get_class($user))) {

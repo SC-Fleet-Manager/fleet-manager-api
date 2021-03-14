@@ -12,6 +12,7 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-zend-opcache": "*",
+        "auth0/jwt-auth-bundle": "dev-master",
         "doctrine/annotations": "^1.12",
         "doctrine/common": "^3.0",
         "doctrine/doctrine-bundle": "^2.2",
@@ -54,7 +55,8 @@
         "twig/cssinliner-extra": "^3.3",
         "twig/extra-bundle": "^3.3",
         "twig/inky-extra": "^3.3",
-        "twig/twig": "^3.3"
+        "twig/twig": "^3.3",
+        "webmozart/assert": "^1.10"
     },
     "require-dev": {
         "doctrine/data-fixtures": "^1.4",
