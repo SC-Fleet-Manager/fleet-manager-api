@@ -42,4 +42,9 @@ class UserRepository extends ServiceEntityRepository
             ->createQuery('SELECT COUNT(u) FROM App\Entity\User u')
             ->getSingleScalarResult();
     }
+
+    public function findByAuth0Username(string $username): ?User
+    {
+        return $this->findOneBy(['auth0Username' => $username]);
+    }
 }
