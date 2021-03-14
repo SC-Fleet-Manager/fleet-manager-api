@@ -22,7 +22,7 @@ class HomeNumbersController
     public function __invoke(
         Request $request
     ): Response {
-        $countUsers = count($this->entityManager->getRepository(User::class)->findAll());
+        $countUsers = $this->entityManager->getRepository(User::class)->countUsers();
 
         $json = $this->serializer->serialize([
             'users' => $countUsers,

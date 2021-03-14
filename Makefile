@@ -80,19 +80,17 @@ fixtures: vendor								## executes all fixtures
 ##
 ##QA
 ##---------------------------------------------------------------------------
-.PHONY: qa tests phpunit-tests functional-tests end2end-tests phpcsfix lint-twig lint-yaml
+.PHONY: qa tests phpunit-tests functional-tests phpcsfix lint-twig lint-yaml
 qa: phpcsfix lint-twig lint-yaml tests					## launch tests + syntax checks
 
 tests:													## reset db tests + launch all tests
 	$(MAKE) db-reset-tests
 	$(MAKE) para-tests
-para-tests: unit-tests functional-tests end2end-tests	## launch all tests parallelisable
+para-tests: unit-tests functional-tests								## launch all tests parallelisable
 unit-tests:												## launch unit tests
 	$(EXEC_PHP_NOTTY) $(PHPUNIT) --group=unit $(c)
 functional-tests:										## launch functional tests
 	$(EXEC_PHP_NOTTY) $(PHPUNIT) --group=functional $(c)
-end2end-tests:											## launch end2end tests
-	$(EXEC_PHP_NOTTY) $(PHPUNIT) --group=end2end $(c)
 
 phpcsfix:												## fix syntax of all PHP sources
 	$(EXEC_PHP) $(PHP_CS_FIXER) --allow-risky=yes fix

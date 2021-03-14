@@ -35,4 +35,11 @@ class UserRepository extends ServiceEntityRepository
     {
         return $this->findOneBy(['apiToken' => $token]);
     }
+
+    public function countUsers(): int
+    {
+        return $this->_em
+            ->createQuery('SELECT COUNT(u) FROM App\Entity\User u')
+            ->getSingleScalarResult();
+    }
 }

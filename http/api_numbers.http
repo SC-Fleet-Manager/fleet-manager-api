@@ -1,0 +1,3 @@
+GET {{base_url}}/api/numbers
+
+###

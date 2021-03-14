@@ -1,4 +1,4 @@
-FROM php:8.0-fpm-buster as req_php
+FROM php:8.0-fpm-buster as runtime_php
 
 RUN apt-get update && apt-get install -y \
     unzip \
@@ -23,7 +23,7 @@ USER www-data
 WORKDIR /app
 
 ########################################
-FROM req_php as composer_deps
+FROM runtime_php as composer_deps
 
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 
@@ -44,26 +44,15 @@ RUN if [ $ENV = 'prod' ]; then \
     fi; \
     composer dump-env $ENV
 
-################################
-#FROM node:12-alpine as node_deps
-#
-#WORKDIR /app
-#COPY package.json yarn.lock ./
-#RUN yarn install
-#
-#COPY assets assets
-#COPY .babelrc webpack.config.js postcss.config.js ./
-#RUN mkdir public && yarn encore production
-
 ####################################
-FROM req_php as build_php
+FROM runtime_php as build_php
 
 # prod|dev
 ARG ENV=prod
 ARG DUMP_ENV=0
 
 USER root
-COPY --chown=root:root docker/php/php.prod.ini /usr/local/etc/php/php-fpm.ini
+COPY --chown=root:root docker/php/php-fpm.prod.ini /usr/local/etc/php/php-fpm.ini
 COPY --chown=root:root docker/php/php-cli.prod.ini /usr/local/etc/php/php-cli.ini
 COPY --chown=root:root docker/php/php-fpm.prod.conf /usr/local/etc/php-fpm.conf
 COPY --chown=root:root docker/php/www.prod.conf /usr/local/etc/php-fpm.d/www.conf
@@ -71,28 +60,21 @@ COPY --chown=root:root docker/php/entrypoint.sh /usr/local/bin/docker-app-entryp
 RUN chmod +x /usr/local/bin/docker-app-entrypoint
 
 USER www-data
-COPY --chown=www-data:www-data assets assets
 COPY --chown=www-data:www-data bin/console bin/
 COPY --chown=www-data:www-data config config
 COPY --chown=www-data:www-data public/index.php public/
 COPY --chown=www-data:www-data src src
 COPY --chown=www-data:www-data templates templates
-COPY --chown=www-data:www-data translations translations
 COPY --chown=www-data:www-data .env* Makefile composer.json composer.lock ./
-#COPY --chown=www-data:www-data --from=node_deps /app/public/build/entrypoints.json public/build/entrypoints.json
-#COPY --chown=www-data:www-data --from=node_deps /app/public/build/manifest.json public/build/manifest.json
-#COPY --chown=www-data:www-data public/build/entrypoints.json public/build/manifest.json public/build/
 COPY --chown=www-data:www-data --from=composer_deps /app/vendor vendor
 COPY --chown=www-data:www-data --from=composer_deps /app/.env.local.php .env.local.php
 
 RUN if [ ${DUMP_ENV} -eq 0 ]; then echo "<?php return ['APP_ENV'=>'${ENV}','APP_SECRET'=>''];" > .env.local.php; fi; \
     sed -i "s/^APP_ENV=.*$/APP_ENV=${ENV}/" .env; \
     if [ -e .env.local ]; then sed -i "s/^APP_ENV=.*$/APP_ENV=${ENV}/" .env.local; fi
-RUN mkdir -p public/bundles \
-#    && bin/console assets:install -v \
+RUN mkdir -p public/bundles var/{log,cache} \
     && rm -rf var/cache/* \
-    && bin/console cache:warmup -v \
-    && mkdir -p var/log
+    && bin/console cache:warmup -v
 
 ENTRYPOINT ["docker-app-entrypoint"]
 CMD ["php-fpm"]
@@ -109,23 +91,10 @@ RUN apt-get update && apt-get install -y curl \
 
 COPY docker/apache/httpd.conf /usr/local/apache2/conf/httpd.conf
 
-USER www-data
 WORKDIR /app
-COPY --chown=www-data:www-data public/favicon.ico public/robots.txt public/
-COPY --chown=www-data:www-data public/icons public/icons
-#COPY --chown=www-data:www-data --from=node_deps /app/public/build public/build
-#COPY --chown=www-data:www-data --from=build_php /app/public/bundles public/bundles
-RUN touch public/index.php
-
-USER root
-
-##############################
-FROM build_apache as build_apache_test
-
-COPY docker/apache/httpd_test.conf /usr/local/apache2/conf/httpd.conf
 
 USER www-data
-RUN touch public/index_test.php
+COPY public public
 
 USER root
 
@@ -140,7 +109,7 @@ ENV COMPOSER_MEMORY_LIMIT -1
 ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV COMPOSER_HOME /.composer
 
-COPY --chown=root:root docker/php/php.dev.ini /usr/local/etc/php/php-fpm.ini
+COPY --chown=root:root docker/php/php-fpm.dev.ini /usr/local/etc/php/php-fpm.ini
 COPY --chown=root:root docker/php/php-cli.dev.ini /usr/local/etc/php/php-cli.ini
 COPY --chown=root:root docker/php/php-fpm.dev.conf /usr/local/etc/php-fpm.conf
 COPY --chown=root:root docker/php/www.dev.conf /usr/local/etc/php-fpm.d/www.conf
