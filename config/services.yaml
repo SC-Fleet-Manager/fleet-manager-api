@@ -24,6 +24,7 @@ services:
             - '../src/*/Dto'
             - '../src/*/*/Dto'
             - '../src/*/Exception'
+            - '../src/Validator/Constraints/UniqueField.php'
     App\Controller\:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']

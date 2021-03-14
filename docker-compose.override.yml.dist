@@ -28,7 +28,7 @@ services:
         volumes:
             - .:/app
         ports:
-            - 127.0.0.1:8000:80
+            - 8100:80
     apache-test:
         build:
             context: .
@@ -47,14 +47,14 @@ services:
 #            - db:/var/lib/mysql
 #            - ./docker/mysql/config-file.cnf:/etc/mysql/conf.d/config-file.cnf
         ports:
-            - 127.0.0.1:3306:3306
+            - 3306:3306
         environment:
             MYSQL_ROOT_PASSWORD: root
             MYSQL_DATABASE: fleet_manager
     smtp:
         image: schickling/mailcatcher
         ports:
-            - 127.0.0.1:1080:1080 # web-ui
+            - 1080:1080 # web-ui
     redis:
         environment:
             REDIS_PASSWORD: root

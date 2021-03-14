@@ -1,12 +1,12 @@
 version: '3.5'
 services:
     php:
-        image: fleet-manager-spa-php:latest
+        image: fleet-manager-api-php:latest
         hostname: php
         depends_on:
             - redis
     apache:
-        image: fleet-manager-spa-apache:latest
+        image: fleet-manager-api-apache:latest
         hostname: apache
         environment:
             PHP_HANDLER_HOST: php:9000
