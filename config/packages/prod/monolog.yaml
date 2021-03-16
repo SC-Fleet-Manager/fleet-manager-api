@@ -1,5 +1,5 @@
 parameters:
-    env(MONOLOG_MAILER_TO): ''
+    env(MONOLOG_MAILER_TO): 'root@localhost'
     env(MAILER_NOREPLY_ADDRESS): 'noreply@fleet-manager.space'
 
 monolog:

@@ -141,15 +141,6 @@
     "http-interop/http-factory-guzzle": {
         "version": "1.0.0"
     },
-    "hwi/oauth-bundle": {
-        "version": "0.6",
-        "recipe": {
-            "repo": "github.com/symfony/recipes-contrib",
-            "branch": "master",
-            "version": "0.6",
-            "ref": "20cacc9b2da49d96ea55c8a8dd31324c5be88bc9"
-        }
-    },
     "jean85/pretty-package-versions": {
         "version": "1.2"
     },
@@ -649,9 +640,6 @@
     },
     "symfony/string": {
         "version": "v5.2.4"
-    },
-    "symfony/templating": {
-        "version": "v4.1.7"
     },
     "symfony/translation": {
         "version": "3.3",
