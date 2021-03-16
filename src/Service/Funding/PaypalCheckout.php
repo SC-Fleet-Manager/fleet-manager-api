@@ -48,7 +48,7 @@ class PaypalCheckout implements PaypalCheckoutInterface
         $orderRequest->body = [
             'intent' => 'CAPTURE',
             'payer' => [
-                'email_address' => $user->getEmail(),
+                'email_address' => null,
             ],
             'application_context' => [
                 'locale' => str_replace('_', '-', $locale),
@@ -90,11 +90,7 @@ class PaypalCheckout implements PaypalCheckoutInterface
 
         try {
             $response = $this->client->execute($orderRequest);
-        } catch (HttpException $e) {
-            if (!isset($e->headers['Content-Type'])) {
-                $this->fundingLogger->error('[Create Order] An error has occurred when creating an order on PayPal.', ['exception' => $e]);
-                throw new \LogicException('Unable to create an order on PayPal.');
-            }
+        } catch (\Throwable $e) {
             $error = json_decode($e->getMessage(), true);
             $this->fundingLogger->error('[Create Order] An error has occurred when creating an order on PayPal.', ['exception' => $e, 'error' => $error]);
 

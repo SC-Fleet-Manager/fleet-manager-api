@@ -30,10 +30,7 @@ class UserEntityJwtProvider extends JwtUserProvider
     {
         $user = $this->userRepository->findByAuth0Username($username);
         if ($user === null) {
-            $user = new User(Uuid::uuid4());
-            $user->setAuth0Username($username);
-            $user->setToken(User::generateToken());
-            $user->setApiToken(User::generateToken());
+            $user = new User(Uuid::uuid4(), $username);
 
             $this->entityManager->persist($user);
             $this->entityManager->flush();

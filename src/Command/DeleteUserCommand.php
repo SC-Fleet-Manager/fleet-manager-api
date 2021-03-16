@@ -38,12 +38,8 @@ class DeleteUserCommand extends Command
             throw new \RuntimeException('User does not exist.');
         }
 
-        $citizen = $user->getCitizen();
-        if ($citizen !== null) {
-            $this->entityManager->remove($citizen);
-            // TODO : if transaction rollbacks, the event is inconsistent : set citizen + its organizations in Event and dispatch it after commit()
-            $this->eventDispatcher->dispatch(new CitizenDeletedEvent($citizen));
-        }
+        // TODO : add delete request to Auth0
+
         $fundings = $this->fundingRepository->findBy(['user' => $user]);
         foreach ($fundings as $funding) {
             $funding->setUser(null);
