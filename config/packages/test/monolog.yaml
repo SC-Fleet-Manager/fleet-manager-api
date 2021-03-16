@@ -9,7 +9,7 @@ monolog:
         nested:
             type: stream
             path: "%kernel.logs_dir%/%kernel.environment%-error.log"
-            level: debug
+            level: info
         ####################
         filter:
             type: filter

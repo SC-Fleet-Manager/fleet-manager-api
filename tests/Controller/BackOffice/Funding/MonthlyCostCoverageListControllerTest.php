@@ -2,7 +2,6 @@
 
 namespace App\Tests\Controller\BackOffice\Funding;
 
-use App\Entity\User;
 use App\Tests\WebTestCase;
 
 class MonthlyCostCoverageListControllerTest extends WebTestCase
@@ -16,7 +15,7 @@ class MonthlyCostCoverageListControllerTest extends WebTestCase
     {
         $this->client->request('GET', '/bo/monthly-cost-coverage/list');
 
-        static::assertSame(401, $this->client->getResponse()->getStatusCode());
+        static::assertSame(403, $this->client->getResponse()->getStatusCode());
     }
 
     /**
@@ -26,10 +25,9 @@ class MonthlyCostCoverageListControllerTest extends WebTestCase
      */
     public function testNotAdmin(): void
     {
-        /** @var User $user */
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Gardien1']); // ROLE_USER
-        $this->logIn($user);
-        $this->client->request('GET', '/bo/monthly-cost-coverage/list');
+        $this->client->request('GET', '/bo/monthly-cost-coverage/list', [], [], [
+            'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Gardien1'),
+        ]);
 
         static::assertSame(403, $this->client->getResponse()->getStatusCode());
     }
@@ -41,10 +39,9 @@ class MonthlyCostCoverageListControllerTest extends WebTestCase
      */
     public function testAdmin(): void
     {
-        /** @var User $user */
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']); // ROLE_ADMIN
-        $this->logIn($user);
-        $crawler = $this->client->request('GET', '/bo/monthly-cost-coverage/list');
+        $crawler = $this->client->request('GET', '/bo/monthly-cost-coverage/list', [], [], [
+            'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
+        ]);
 
         static::assertSame(200, $this->client->getResponse()->getStatusCode());
         static::assertSame('Monthly Cost Coverage List', $crawler->filter('h1')->text(null, false));

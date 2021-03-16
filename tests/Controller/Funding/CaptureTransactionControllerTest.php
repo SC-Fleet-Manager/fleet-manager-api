@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Controller\Profile;
+namespace App\Tests\Controller\Funding;
 
 use App\Entity\Funding;
 use App\Entity\User;
@@ -25,8 +25,6 @@ class CaptureTransactionControllerTest extends WebTestCase
      */
     public function testIndex(): void
     {
-        $this->logIn($this->user);
-
         $paypalHttpClient = static::$container->get(MockPayPalHttpClient::class);
         $paypalHttpClient->setCaptureResponse('618c4d07-6e1d-49e3-91e9-d269944de266', '1.00', '0.67');
 
@@ -34,6 +32,7 @@ class CaptureTransactionControllerTest extends WebTestCase
 
         $this->client->xmlHttpRequest('POST', '/api/funding/capture-transaction', [], [], [
             'CONTENT_TYPE' => 'application/json',
+            'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ], json_encode([
             'orderID' => 'cf42c65f',
         ]));
@@ -90,9 +89,9 @@ class CaptureTransactionControllerTest extends WebTestCase
      */
     public function testOrderNotExist(): void
     {
-        $this->logIn($this->user);
         $this->client->xmlHttpRequest('POST', '/api/funding/capture-transaction', [], [], [
             'CONTENT_TYPE' => 'application/json',
+            'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ], json_encode([
             'orderID' => '34da4bd8', // order to another user
         ]));
@@ -103,6 +102,7 @@ class CaptureTransactionControllerTest extends WebTestCase
 
         $this->client->xmlHttpRequest('POST', '/api/funding/capture-transaction', [], [], [
             'CONTENT_TYPE' => 'application/json',
+            'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ], json_encode([
             'orderID' => 'not_exist',
         ]));
@@ -115,9 +115,9 @@ class CaptureTransactionControllerTest extends WebTestCase
      */
     public function testOrderAlreadyHandled(): void
     {
-        $this->logIn($this->user);
         $this->client->xmlHttpRequest('POST', '/api/funding/capture-transaction', [], [], [
             'CONTENT_TYPE' => 'application/json',
+            'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ], json_encode([
             'orderID' => 'e39b153c', // COMPLETED funding
         ]));
@@ -137,8 +137,8 @@ class CaptureTransactionControllerTest extends WebTestCase
             'orderID' => 'cf42c65f',
         ]));
 
-        static::assertSame(401, $this->client->getResponse()->getStatusCode());
+        static::assertSame(403, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
-        static::assertSame('no_auth', $json['error']);
+        static::assertSame('forbidden', $json['error']);
     }
 }

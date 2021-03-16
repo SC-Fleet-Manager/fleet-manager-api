@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Tests\Controller\Profile;
+namespace App\Tests\Controller\Funding;
 
-use App\Entity\User;
 use App\Tests\WebTestCase;
 
 class LadderMonthlyControllerTest extends WebTestCase
@@ -13,10 +12,9 @@ class LadderMonthlyControllerTest extends WebTestCase
      */
     public function testIndex(): void
     {
-        $this->logIn($this->doctrine->getRepository(User::class)->findOneBy(['nickname' => '10_fundings']));
-
         $this->client->xmlHttpRequest('GET', '/api/funding/ladder-monthly', [], [], [
             'CONTENT_TYPE' => 'application/json',
+            'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('10_fundings'),
         ]);
 
         static::assertSame(200, $this->client->getResponse()->getStatusCode());

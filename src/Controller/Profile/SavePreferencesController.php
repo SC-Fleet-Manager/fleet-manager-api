@@ -27,7 +27,7 @@ class SavePreferencesController extends AbstractController
     public function __invoke(
         Request $request
     ): Response {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
+        $this->denyAccessUnlessGranted('ROLE_USER');
 
         /** @var ProfilePreferences $preferences */
         $preferences = $this->serializer->deserialize($request->getContent(), ProfilePreferences::class, $request->getContentType());
@@ -42,16 +42,7 @@ class SavePreferencesController extends AbstractController
 
         /** @var User $user */
         $user = $this->security->getUser();
-        $citizen = $user->getCitizen();
-        if ($citizen === null) {
-            return $this->json([
-                'error' => 'no_citizen_created',
-                'errorMessage' => 'Your RSI account must be linked first. Go to the <a href="/profile">profile page</a>.',
-            ], 400);
-        }
-
         $user->setSupporterVisible($preferences->supporterVisible);
-
         $this->entityManager->flush();
 
         return $this->json(null, 204);

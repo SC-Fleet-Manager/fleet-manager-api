@@ -18,7 +18,7 @@ class MyBackingsController extends AbstractController
     #[Route("/api/funding/my-backings", name: "funding_my_backings", methods: ["GET"])]
     public function __invoke(): Response
     {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
+        $this->denyAccessUnlessGranted('ROLE_USER');
 
         /** @var User $user */
         $user = $this->getUser();

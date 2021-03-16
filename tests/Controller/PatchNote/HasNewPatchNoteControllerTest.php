@@ -13,12 +13,9 @@ class HasNewPatchNoteControllerTest extends WebTestCase
      */
     public function testUserHasAlreadyReadAllPatchNotes(): void
     {
-        /** @var User $user */
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
-        $this->logIn($user);
-
         $this->client->xmlHttpRequest('GET', '/api/has-new-patch-note', [], [], [
             'CONTENT_TYPE' => 'application/json',
+            'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ]);
 
         static::assertSame(200, $this->client->getResponse()->getStatusCode());
@@ -32,12 +29,9 @@ class HasNewPatchNoteControllerTest extends WebTestCase
      */
     public function testUserHasNotReadAllPatchNotes(): void
     {
-        /** @var User $user */
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ashuvidz']);
-        $this->logIn($user);
-
         $this->client->xmlHttpRequest('GET', '/api/has-new-patch-note', [], [], [
             'CONTENT_TYPE' => 'application/json',
+            'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ashuvidz'),
         ]);
 
         static::assertSame(200, $this->client->getResponse()->getStatusCode());
@@ -55,8 +49,8 @@ class HasNewPatchNoteControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
-        static::assertSame(401, $this->client->getResponse()->getStatusCode());
+        static::assertSame(403, $this->client->getResponse()->getStatusCode());
         $json = json_decode($this->client->getResponse()->getContent(), true);
-        static::assertSame('no_auth', $json['error']);
+        static::assertSame('forbidden', $json['error']);
     }
 }

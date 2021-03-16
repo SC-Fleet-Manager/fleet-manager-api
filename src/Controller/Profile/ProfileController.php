@@ -23,16 +23,10 @@ class ProfileController extends AbstractController
     public function __invoke(
         Request $request
     ): Response {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
+        $this->denyAccessUnlessGranted('ROLE_USER');
 
         /** @var User $user */
         $user = $this->security->getUser();
-
-        if (!$this->security->getToken() instanceof SwitchUserToken) {
-            // we don't want tracking when impersonation
-            $user->setLastConnectedAt(new \DateTimeImmutable());
-            $this->entityManager->flush();
-        }
 
         return $this->json($user, 200, [], ['groups' => 'profile']);
     }

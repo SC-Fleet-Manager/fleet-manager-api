@@ -12,7 +12,6 @@ services:
         autowire: true
         autoconfigure: true
         bind:
-            $profileLinkAccountLogger: '@monolog.logger.profile_link_account'
             $registrationFromAddress: '%env(MAILER_NOREPLY_ADDRESS)%'
             $noreplyAddress: '%env(MAILER_NOREPLY_ADDRESS)%'
 
@@ -28,15 +27,6 @@ services:
     App\Controller\:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
-
-    hwi_oauth.authentication.entry_point.oauth:
-        class: App\Security\OAuthEntryPoint
-        abstract: true
-        arguments: ['@http_kernel', '@security.http_utils']
-
-    App\Security\Listener\AlreadyLinkedDiscordListener:
-        tags:
-            - { name: 'kernel.event_listener', event: 'kernel.exception', method: 'onException' }
 
     App\MessageHandler\Funding\SendOrderCaptureSummaryMailHandler:
         arguments:

@@ -2,7 +2,6 @@
 
 namespace App\Tests\Controller\BackOffice\Funding;
 
-use App\Entity\User;
 use App\Tests\WebTestCase;
 
 class MonthlyCostCoverageCreateControllerTest extends WebTestCase
@@ -16,7 +15,7 @@ class MonthlyCostCoverageCreateControllerTest extends WebTestCase
     {
         $this->client->request('GET', '/bo/monthly-cost-coverage/create');
 
-        static::assertSame(401, $this->client->getResponse()->getStatusCode());
+        static::assertSame(403, $this->client->getResponse()->getStatusCode());
     }
 
     /**
@@ -26,10 +25,9 @@ class MonthlyCostCoverageCreateControllerTest extends WebTestCase
      */
     public function testNotAdmin(): void
     {
-        /** @var User $user */
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Gardien1']); // ROLE_USER
-        $this->logIn($user);
-        $this->client->request('GET', '/bo/monthly-cost-coverage/create');
+        $this->client->request('GET', '/bo/monthly-cost-coverage/create', [], [], [
+            'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Gardien1'),
+        ]);
 
         static::assertSame(403, $this->client->getResponse()->getStatusCode());
     }
@@ -41,10 +39,9 @@ class MonthlyCostCoverageCreateControllerTest extends WebTestCase
      */
     public function testAdmin(): void
     {
-        /** @var User $user */
-        $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']); // ROLE_ADMIN
-        $this->logIn($user);
-        $this->client->request('GET', '/bo/monthly-cost-coverage/create');
+        $this->client->request('GET', '/bo/monthly-cost-coverage/create', [], [], [
+            'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
+        ]);
 
         static::assertSame(200, $this->client->getResponse()->getStatusCode());
     }

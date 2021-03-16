@@ -1,29 +1,20 @@
 <?php
 
-namespace App\Tests\Controller\Profile;
+namespace App\Tests\Controller\Funding;
 
-use App\Entity\User;
 use App\Tests\WebTestCase;
 
 class MyBackingsControllerTest extends WebTestCase
 {
-    private ?User $user;
-
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
-    }
-
     /**
      * @group functional
      * @group funding
      */
     public function testIndex(): void
     {
-        $this->logIn($this->user);
         $this->client->xmlHttpRequest('GET', '/api/funding/my-backings', [], [], [
             'CONTENT_TYPE' => 'application/json',
+            'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ]);
 
         static::assertSame(200, $this->client->getResponse()->getStatusCode());
@@ -66,8 +57,8 @@ class MyBackingsControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
         ]);
 
-        static::assertSame(401, $this->client->getResponse()->getStatusCode());
+        static::assertSame(403, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
-        static::assertSame('no_auth', $json['error']);
+        static::assertSame('forbidden', $json['error']);
     }
 }

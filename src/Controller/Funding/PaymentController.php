@@ -32,7 +32,7 @@ class PaymentController extends AbstractController
     public function __invoke(
         Request $request
     ): Response {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
+        $this->denyAccessUnlessGranted('ROLE_USER');
 
         /** @var FundingPayment $fundingPayment */
         $fundingPayment = $this->serializer->deserialize($request->getContent(), FundingPayment::class, $request->getContentType());
