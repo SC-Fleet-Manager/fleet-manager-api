@@ -6,10 +6,11 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     libxslt-dev \
     libgcrypt-dev \
-    && docker-php-ext-install -j$(nproc) intl zip pdo_mysql xml xsl bcmath \
+    libpq-dev \
+    && docker-php-ext-install -j$(nproc) intl zip pdo_pgsql xml xsl bcmath \
     && pecl channel-update pecl.php.net \
     && pecl install redis apcu \
-    && apt-get remove -y icu-devtools libicu-dev libzip-dev libxml2-dev libxslt-dev libgcrypt-dev \
+    && apt-get remove -y icu-devtools libicu-dev libzip-dev libxml2-dev libxslt-dev libgcrypt-dev libpq-dev \
     && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-enable --ini-name 05-opcache.ini opcache \
     && docker-php-ext-enable --ini-name 10-apcu.ini apcu \

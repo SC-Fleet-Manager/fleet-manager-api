@@ -29,18 +29,21 @@ services:
             - .:/app
         ports:
             - 8100:80
-    mysql:
-        image: mysql:5.7
-        hostname: mysql
-        tmpfs: /var/lib/mysql
-#        volumes:
-#            - db:/var/lib/mysql
-#            - ./docker/mysql/config-file.cnf:/etc/mysql/conf.d/config-file.cnf
-        ports:
-            - 3306:3306
+    postgres:
+        image: postgres:13
+        hostname: postgres
+        command: ['postgres', '-c', 'config_file=/etc/postgresql/postgresql.conf']
+        tmpfs:
+            - /var/lib/postgresql/data
+        volumes:
+            # - db:/var/lib/postgresql/data
+            - ./docker/postgres/postgresql.conf:/etc/postgresql/postgresql.conf:ro
         environment:
-            MYSQL_ROOT_PASSWORD: root
-            MYSQL_DATABASE: fleet_manager
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: root
+            POSTGRES_DB: fleet_manager
+        ports:
+            - 5432:5432
     smtp:
         image: schickling/mailcatcher
         ports:
