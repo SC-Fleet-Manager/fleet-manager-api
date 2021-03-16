@@ -29,16 +29,6 @@ services:
             - .:/app
         ports:
             - 8100:80
-    apache-test:
-        build:
-            context: .
-            target: build_apache_test
-            dockerfile: ./docker/Dockerfile
-        hostname: apache_test
-        volumes:
-            - .:/app
-        environment:
-            PHP_HANDLER_HOST: php:9000
     mysql:
         image: mysql:5.7
         hostname: mysql
@@ -58,15 +48,3 @@ services:
     redis:
         environment:
             REDIS_PASSWORD: root
-    selenium-hub:
-        image: selenium/hub
-        ports:
-            - 127.0.0.1:4444:4444
-    selenium-chrome:
-        image: selenium/node-chrome-debug
-        environment:
-            HUB_HOST: selenium-hub
-        volumes:
-            - /dev/shm:/dev/shm
-        ports:
-            - 127.0.0.1:5900:5900 # VNC
