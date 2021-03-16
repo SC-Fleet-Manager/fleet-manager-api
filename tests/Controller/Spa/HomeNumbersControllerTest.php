@@ -19,7 +19,7 @@ class HomeNumbersControllerTest extends WebTestCase
         static::assertSame(200, $this->client->getResponse()->getStatusCode());
         $json = json_decode($this->client->getResponse()->getContent(), true);
         static::assertArraySubset([
-            'users' => 44,
+            'users' => 31,
         ], $json);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Controller\Profile;
+namespace App\Tests\Controller\Funding;
 
 use App\Entity\Funding;
 use App\Message\Funding\SendOrderRefundMail;

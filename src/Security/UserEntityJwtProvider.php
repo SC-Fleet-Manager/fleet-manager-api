@@ -8,6 +8,7 @@ use Auth0\JWTAuthBundle\Security\Auth0Service;
 use Auth0\JWTAuthBundle\Security\User\JwtUserProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
+use stdClass;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -18,6 +19,11 @@ class UserEntityJwtProvider extends JwtUserProvider
         private EntityManagerInterface $entityManager,
         private Auth0Service $auth0Service
     ) {
+    }
+
+    public function loadUserByJWT(stdClass $jwt): UserInterface
+    {
+        return $this->loadUserByUsername($jwt->sub);
     }
 
     public function loadUserByUsername($username): UserInterface

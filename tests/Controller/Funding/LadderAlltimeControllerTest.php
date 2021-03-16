@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Tests\Controller\Profile;
+namespace App\Tests\Controller\Funding;
 
-use App\Entity\User;
 use App\Tests\WebTestCase;
 
 class LadderAlltimeControllerTest extends WebTestCase
@@ -13,10 +12,9 @@ class LadderAlltimeControllerTest extends WebTestCase
      */
     public function testIndex(): void
     {
-        $this->logIn($this->doctrine->getRepository(User::class)->findOneBy(['nickname' => '10_fundings']));
-
         $this->client->xmlHttpRequest('GET', '/api/funding/ladder-alltime', [], [], [
             'CONTENT_TYPE' => 'application/json',
+            'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('10_fundings'),
         ]);
 
         static::assertSame(200, $this->client->getResponse()->getStatusCode());
@@ -142,12 +140,6 @@ class LadderAlltimeControllerTest extends WebTestCase
                     'amount' => 116,
                     'name' => '16_fundings',
                     'me' => false,
-                ],
-                [
-                    'rank' => 26,
-                    'amount' => 110,
-                    'name' => '10_fundings',
-                    'me' => true,
                 ],
             ],
         ], $json);

@@ -20,7 +20,7 @@ class MeController extends AbstractController
     public function __invoke(
         Request $request
     ): Response {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
+        $this->denyAccessUnlessGranted('ROLE_USER');
 
         /** @var User $user */
         $user = $this->security->getUser();

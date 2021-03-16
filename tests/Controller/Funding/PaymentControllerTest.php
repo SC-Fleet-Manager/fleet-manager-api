@@ -1,31 +1,21 @@
 <?php
 
-namespace App\Tests\Controller\Profile;
+namespace App\Tests\Controller\Funding;
 
 use App\Entity\Funding;
-use App\Entity\User;
 use App\Tests\WebTestCase;
 
 class PaymentControllerTest extends WebTestCase
 {
-    /** @var User */
-    private $user;
-
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Ioni']);
-    }
-
     /**
      * @group functional
      * @group funding
      */
     public function testIndex(): void
     {
-        $this->logIn($this->user);
         $this->client->xmlHttpRequest('POST', '/api/funding/payment', [], [], [
             'CONTENT_TYPE' => 'application/json',
+            'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ], json_encode([
             'amount' => 100,
         ]));
@@ -52,9 +42,9 @@ class PaymentControllerTest extends WebTestCase
      */
     public function testInvalidAmountMinimum(): void
     {
-        $this->logIn($this->user);
         $this->client->xmlHttpRequest('POST', '/api/funding/payment', [], [], [
             'CONTENT_TYPE' => 'application/json',
+            'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ], json_encode([
             'amount' => 99,
         ]));
@@ -72,9 +62,9 @@ class PaymentControllerTest extends WebTestCase
      */
     public function testInvalidAmountMaximum(): void
     {
-        $this->logIn($this->user);
         $this->client->xmlHttpRequest('POST', '/api/funding/payment', [], [], [
             'CONTENT_TYPE' => 'application/json',
+            'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ], json_encode([
             'amount' => 1000000000,
         ]));
@@ -92,9 +82,9 @@ class PaymentControllerTest extends WebTestCase
      */
     public function testInvalidAmountBlank(): void
     {
-        $this->logIn($this->user);
         $this->client->xmlHttpRequest('POST', '/api/funding/payment', [], [], [
             'CONTENT_TYPE' => 'application/json',
+            'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ], '{}');
 
         static::assertSame(400, $this->client->getResponse()->getStatusCode());
@@ -116,8 +106,8 @@ class PaymentControllerTest extends WebTestCase
             'amount' => 100,
         ]));
 
-        static::assertSame(401, $this->client->getResponse()->getStatusCode());
+        static::assertSame(403, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
-        static::assertSame('no_auth', $json['error']);
+        static::assertSame('forbidden', $json['error']);
     }
 }

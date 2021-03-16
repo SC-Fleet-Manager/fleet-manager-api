@@ -20,7 +20,7 @@ class HasNewPatchNoteController extends AbstractController
     #[Route("/api/has-new-patch-note", name: "has_new_patch_note", methods: ["GET"])]
     public function __invoke(): Response
     {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
+        $this->denyAccessUnlessGranted('ROLE_USER');
 
         /** @var User $user */
         $user = $this->security->getUser();

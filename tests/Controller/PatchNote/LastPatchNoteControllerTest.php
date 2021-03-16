@@ -15,12 +15,11 @@ class LastPatchNoteControllerTest extends WebTestCase
     {
         /** @var User $user */
         $user = $this->doctrine->getRepository(User::class)->findOneBy(['nickname' => 'Gardien1']);
-        $this->logIn($user);
-
         static::assertNull($user->getLastPatchNoteReadAt(), 'The LastPatchNoteReadAt property is not null.');
 
         $this->client->xmlHttpRequest('GET', '/api/last-patch-notes', [], [], [
             'CONTENT_TYPE' => 'application/json',
+            'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Gardien1'),
         ]);
 
         static::assertSame(200, $this->client->getResponse()->getStatusCode());

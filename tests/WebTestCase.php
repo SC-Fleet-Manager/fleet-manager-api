@@ -7,11 +7,16 @@ use App\Tests\Constraint\ArraySubset;
 use Doctrine\Persistence\ManagerRegistry;
 use Hautelook\AliceBundle\PhpUnit\ReloadDatabaseTrait;
 use HWI\Bundle\OAuthBundle\Security\Core\Authentication\Token\OAuthToken;
+use Lcobucci\JWT\Builder;
+use Lcobucci\JWT\Signer\Hmac\Sha256;
+use Lcobucci\JWT\Signer\Key;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Bundle\FrameworkBundle\Test\TestBrowserToken;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase as BaseWebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\InvalidArgumentException;
+use Symfony\Component\Security\Guard\Token\PostAuthenticationGuardToken;
 
 class WebTestCase extends BaseWebTestCase
 {
@@ -37,22 +42,16 @@ class WebTestCase extends BaseWebTestCase
         $this->doctrine->getManager()->clear();
     }
 
-    protected function logIn(User $user): void
+    protected static function generateToken(string $username): string
     {
-        $session = static::$container->get('session');
-
-        $token = new OAuthToken(md5(mt_rand()), $user->getRoles());
-        $token->setResourceOwnerName('discord');
-        $token->setUser($user);
-        $token->setAuthenticated(true);
-        $tokenStorage = static::$container->get('security.token_storage');
-        $tokenStorage->setToken($token);
-        $session->set('_security_main', serialize($token));
-        $session->save();
-
-        $this->client->getCookieJar()->expire($session->getName());
-        $this->client->getCookieJar()->flushExpiredCookies();
-        $this->client->getCookieJar()->set(new Cookie($session->getName(), $session->getId()));
+        return (new Builder())
+            ->withClaim("iss", "https://test_domain/")
+            ->withClaim("sub", $username)
+            ->withClaim("aud", ["test_audience"])
+            ->withClaim("exp", 1616009284)
+            ->withClaim("azp", "test_clientid")
+            ->getToken(new Sha256(), new Key('secret'))
+        ;
     }
 
     protected function debugHtml(): void

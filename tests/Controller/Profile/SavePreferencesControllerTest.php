@@ -21,12 +21,11 @@ class SavePreferencesControllerTest extends WebTestCase
      */
     public function testSavePreferences(): void
     {
-        $this->logIn($this->user);
-
         static::assertTrue($this->user->isSupporterVisible(), 'SupporterVisible must be true.');
 
         $this->client->xmlHttpRequest('POST', '/api/profile/save-preferences', [], [], [
             'CONTENT_TYPE' => 'application/json',
+            'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ], json_encode([
             'supporterVisible' => false,
         ]));
@@ -40,9 +39,9 @@ class SavePreferencesControllerTest extends WebTestCase
      */
     public function testSavePreferencesErrors(): void
     {
-        $this->logIn($this->user);
         $this->client->xmlHttpRequest('POST', '/api/profile/save-preferences', [], [], [
             'CONTENT_TYPE' => 'application/json',
+            'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ], '{}');
 
         static::assertSame(400, $this->client->getResponse()->getStatusCode());
@@ -62,6 +61,6 @@ class SavePreferencesControllerTest extends WebTestCase
         $this->client->xmlHttpRequest('POST', '/api/profile/save-preferences', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
-        static::assertSame(401, $this->client->getResponse()->getStatusCode());
+        static::assertSame(403, $this->client->getResponse()->getStatusCode());
     }
 }

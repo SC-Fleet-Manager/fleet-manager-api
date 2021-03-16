@@ -1,8 +1,5 @@
 security:
 #    enable_authenticator_manager: true
-    encoders:
-        App\Entity\User:
-            algorithm: auto
     providers:
         auth0_jwt:
             id: 'jwt_auth.security.user.jwt_user_provider'
@@ -12,13 +9,9 @@ security:
             id: 'App\Security\UuidProvider'
         user_entity_jwt:
             id: 'App\Security\UserEntityJwtProvider'
-#        user_entity_email:
-#            entity:
-#                class: 'App\Entity\User'
-#                property: 'email'
         chain_user:
             chain:
-                providers: ['user_entity_uuid', 'user_entity_jwt'] # , 'oauth_user_provider', 'user_entity_email', 'user_entity_nickname'
+                providers: ['user_entity_uuid', 'user_entity_jwt']
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|favicon\.ico)/
@@ -27,7 +20,6 @@ security:
             provider: chain_user # default provider
             stateless: true
             anonymous: true
-#            user_checker: App\Security\ConfirmedUserChecker
             switch_user:
                 provider: chain_user
                 role: ROLE_ADMIN
@@ -36,7 +28,7 @@ security:
                     - jwt_auth.security.guard.jwt_guard_authenticator
             logout:
                 path: logout
-#            access_denied_handler: App\Security\ApiAccessDeniedHandler
+            access_denied_handler: App\Security\ApiAccessDeniedHandler
 
     role_hierarchy:
         ROLE_ADMIN: ROLE_USER
