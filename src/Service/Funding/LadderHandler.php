@@ -76,7 +76,7 @@ class LadderHandler
     {
         /** @var User|null $user */
         $user = null;
-        if ($this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+        if ($this->security->isGranted('ROLE_USER')) {
             $user = $this->security->getUser();
         }
 

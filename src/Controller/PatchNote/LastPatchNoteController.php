@@ -27,7 +27,7 @@ class LastPatchNoteController extends AbstractController
         $patchNotes = $this->patchNoteRepository->findBy([], ['createdAt' => 'DESC'], 5);
 
         $lastPatchNote = $patchNotes[0] ?? null;
-        if ($this->security->isGranted('IS_AUTHENTICATED_REMEMBERED') && $lastPatchNote !== null) {
+        if ($this->security->isGranted('ROLE_USER') && $lastPatchNote !== null) {
             /** @var User $user */
             $user = $this->security->getUser();
             if ($user->getLastPatchNoteReadAt() === null

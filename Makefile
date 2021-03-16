@@ -32,7 +32,7 @@ cc:										## clear and rebuild the cache
 	$(EXEC_CONSOLE) cache:clear --no-warmup
 	$(EXEC_CONSOLE) cache:warmup
 server-dump:							## launch the dump server for test env
-	$(EXEC_CONSOLE) server:dump -e test
+	$(EXEC_CONSOLE) server:dump
 
 ##
 ##Setups

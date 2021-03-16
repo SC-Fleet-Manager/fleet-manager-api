@@ -101,8 +101,6 @@ USER root
 ###############################
 FROM build_php as build_php_dev
 
-COPY public/index_test.php public/
-
 USER root
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 ENV COMPOSER_MEMORY_LIMIT -1
