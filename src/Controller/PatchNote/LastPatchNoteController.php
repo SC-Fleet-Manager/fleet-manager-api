@@ -2,9 +2,9 @@
 
 namespace App\Controller\PatchNote;
 
+use App\Application\Repository\PatchNoteRepositoryInterface;
 use App\Entity\PatchNote;
 use App\Entity\User;
-use App\Repository\PatchNoteRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,7 +15,7 @@ class LastPatchNoteController extends AbstractController
 {
     public function __construct(
         private Security $security,
-        private PatchNoteRepository $patchNoteRepository,
+        private PatchNoteRepositoryInterface $patchNoteRepository,
         private EntityManagerInterface $entityManager
     ) {
     }

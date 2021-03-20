@@ -68,4 +68,5 @@ services:
     PayPal\Rest\ApiContext:
         factory: ['@App\Service\Funding\PayPalHttpClientFactory', 'createApiContext']
 
-    App\Application\Repository\UserRepositoryInterface: '@App\Infrastructure\Repository\DoctrineUserRepository'
+    App\Application\Repository\UserRepositoryInterface: '@App\Infrastructure\Repository\User\DoctrineUserRepository'
+    App\Application\Repository\PatchNoteRepositoryInterface: '@App\Infrastructure\Repository\PatchNote\DoctrinePatchNoteRepository'

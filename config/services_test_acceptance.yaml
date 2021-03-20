@@ -7,4 +7,5 @@ services:
         autoconfigure: true
         public: true
 
-    App\Application\Repository\UserRepositoryInterface: '@App\Infrastructure\Repository\InMemoryUserRepository'
+    App\Application\Repository\UserRepositoryInterface: '@App\Infrastructure\Repository\User\InMemoryUserRepository'
+    App\Application\Repository\PatchNoteRepositoryInterface: '@App\Infrastructure\Repository\PatchNote\InMemoryPatchNoteRepository'

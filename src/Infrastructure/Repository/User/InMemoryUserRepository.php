@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Infrastructure\Repository;
+namespace App\Infrastructure\Repository\User;
 
 use App\Application\Repository\UserRepositoryInterface;
 use App\Domain\UserId;
