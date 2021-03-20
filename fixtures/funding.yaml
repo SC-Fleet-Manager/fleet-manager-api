@@ -1,28 +1,31 @@
 App\Entity\Funding:
     funding_created_1:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("618c4d07-6e1d-49e3-91e9-d269944de266"))>']
+        __construct:
+            - '<(new \App\Domain\FundingId(\Symfony\Component\Uid\Ulid::fromString("01F17YHCD4QQ3GPMAG6CMENBDE")))>'
+            - 'paypal'
+            - '<(\Money\Money::USD(1000))>'
+            - '<(new \DateTimeImmutable("2019-11-15 11:22:33"))>'
         user: '@user_ioni'
-        gateway: 'paypal'
         paypalOrderId: 'cf42c65f'
         paypalStatus: 'CREATED'
         paypalPurchase: null
-        amount: 100
-        currency: 'USD'
-        createdAt: '<(new \DateTimeImmutable("2019-11-15 11:22:33"))>'
     funding_created_2:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("94837ade-f7c6-4eb6-8a46-0d1adb933b67"))>']
+        __construct:
+            - '<(new \App\Domain\FundingId(\Symfony\Component\Uid\Ulid::fromString("01F17YK2ZMFMB4FD7CWMH563V7")))>'
+            - 'paypal'
+            - '<(\Money\Money::USD(123456))>'
+            - '<(new \DateTimeImmutable("2019-11-16 12:22:33"))>'
         user: '@user_ashuvidz'
-        gateway: 'paypal'
         paypalOrderId: '34da4bd8'
         paypalStatus: 'CREATED'
         paypalPurchase: null
-        amount: 123456
-        currency: 'USD'
-        createdAt: '<(new \DateTimeImmutable("2019-11-16 12:22:33"))>'
     funding_completed_1:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("1154f530-dbb5-425d-94e8-9a3200b75e35"))>']
+        __construct:
+            - '<(new \App\Domain\FundingId(\Symfony\Component\Uid\Ulid::fromString("01F17YN3HZWP0F4TPZDD8BZ2AT")))>'
+            - 'paypal'
+            - '<(\Money\Money::USD(5133))>'
+            - '<(new \DateTimeImmutable("third sunday of last month"))>'
         user: '@user_ioni'
-        gateway: 'paypal'
         paypalOrderId: 'e39b153c'
         paypalStatus: 'COMPLETED'
         paypalPurchase:
@@ -44,14 +47,14 @@ App\Entity\Funding:
                                 currency_code: 'USD'
                                 value: '49.83'
                         custom_id: '1154f530-dbb5-425d-94e8-9a3200b75e35'
-        amount: 5133
         netAmount: 4983
-        currency: 'USD'
-        createdAt: '<(new \DateTimeImmutable("third sunday of last month"))>'
     funding_completed_2:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("5aabd357-f6e7-4658-995f-872ea1128a53"))>']
+        __construct:
+            - '<(new \App\Domain\FundingId(\Symfony\Component\Uid\Ulid::fromString("01F17YWGX49MNG428F104518J1")))>'
+            - 'paypal'
+            - '<(\Money\Money::USD(90))>'
+            - '<(new \DateTimeImmutable("first day of"))>'
         user: '@user_gardiens1'
-        gateway: 'paypal'
         paypalOrderId: '850f4235'
         paypalStatus: 'COMPLETED'
         paypalPurchase:
@@ -72,14 +75,14 @@ App\Entity\Funding:
                                 currency_code: 'USD'
                                 value: '0.80'
                         custom_id: '5aabd357-f6e7-4658-995f-872ea1128a53'
-        amount: 90
         netAmount: 80
-        currency: 'USD'
-        createdAt: '<(new \DateTimeImmutable("first day of"))>'
     funding_partially_refunded_1:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("fc296ec6-0e4f-405e-a44c-05e089428751"))>']
+        __construct:
+            - '<(new \App\Domain\FundingId(\Symfony\Component\Uid\Ulid::fromString("01F17YYNVEPS1G47DGTCWF4X2M")))>'
+            - 'paypal'
+            - '<(\Money\Money::USD(1200))>'
+            - '<(new \DateTimeImmutable("third saturday of last month"))>'
         user: '@user_ashuvidz'
-        gateway: 'paypal'
         paypalOrderId: '3aaf10e4'
         paypalStatus: 'PARTIALLY_REFUNDED'
         paypalPurchase:
@@ -126,16 +129,16 @@ App\Entity\Funding:
                         custom_id: 'fc296ec6-0e4f-405e-a44c-05e089428751'
                         create_time: '2019-11-17T14:22:33Z'
                         update_time: '2019-11-17T14:22:33Z'
-        amount: 1200
         netAmount: 1085
         refundedAmount: 500
         refundedNetAmount: 420
-        currency: 'USD'
-        createdAt: '<(new \DateTimeImmutable("third saturday of last month"))>'
     funding_completed_this_month_1:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("69abc917-376a-40fe-bdc4-dadf6d04e3e8"))>']
+        __construct:
+            - '<(new \App\Domain\FundingId(\Symfony\Component\Uid\Ulid::fromString("01F17YZAZVAV6FKSA9PQ8Z7VYH")))>'
+            - 'paypal'
+            - '<(\Money\Money::USD(1500))>'
+            - '<(new \DateTimeImmutable("first day of"))>'
         user: '@user_fundings_1'
-        gateway: 'paypal'
         paypalOrderId: '6a0e99f8'
         paypalStatus: 'COMPLETED'
         paypalPurchase:
@@ -159,14 +162,14 @@ App\Entity\Funding:
                         custom_id: '69abc917-376a-40fe-bdc4-dadf6d04e3e8'
                         create_time: '2019-12-10T12:00:00Z'
                         update_time: '2019-12-10T12:00:00Z'
-        amount: 1500
         netAmount: 1400
-        currency: 'USD'
-        createdAt: '<(new \DateTimeImmutable("first day of"))>'
     funding_completed_this_month_2:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("9bb02459-4adb-4853-8cd7-f7854d268041"))>']
+        __construct:
+            - '<(new \App\Domain\FundingId(\Symfony\Component\Uid\Ulid::fromString("01F17Z3FSD39W0VHT4WE0B70MC")))>'
+            - 'paypal'
+            - '<(\Money\Money::USD(1150))>'
+            - '<(new \DateTimeImmutable("third friday of"))>'
         user: '@user_fundings_1'
-        gateway: 'paypal'
         paypalOrderId: '040c1d3e'
         paypalStatus: 'PARTIALLY_REFUNDED'
         paypalPurchase:
@@ -211,109 +214,16 @@ App\Entity\Funding:
                         custom_id: '9bb02459-4adb-4853-8cd7-f7854d268041'
                         create_time: '2019-12-06T14:22:33Z'
                         update_time: '2019-12-06T14:22:33Z'
-        amount: 1150
         netAmount: 1035
         refundedAmount: 500
         refundedNetAmount: 420
-        currency: 'USD'
-        createdAt: '<(new \DateTimeImmutable("third friday of"))>'
-    funding_completed_this_month_3:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("dd4ab9e3-610f-4be1-8d9f-ea956dd452fc"))>']
-        user: '@user_fundings_2'
-        gateway: 'paypal'
-        paypalOrderId: '2d336dee'
-        paypalStatus: 'COMPLETED'
-        paypalPurchase:
-            payments:
-                captures:
-                    -
-                        status: 'COMPLETED'
-                        amount:
-                            currency_code: 'USD'
-                            value: '15.55'
-                        seller_receivable_breakdown:
-                            gross_amount:
-                                currency_code: 'USD'
-                                value: '15.55'
-                            paypal_fee:
-                                currency_code: 'USD'
-                                value: '1.00'
-                            net_amount:
-                                currency_code: 'USD'
-                                value: '14.55'
-                        custom_id: 'dd4ab9e3-610f-4be1-8d9f-ea956dd452fc'
-                        create_time: '2019-12-25T12:00:00Z'
-                        update_time: '2019-12-25T12:00:00Z'
-        amount: 1555
-        netAmount: 1455
-        currency: 'USD'
-        createdAt: '<(new \DateTimeImmutable("second tuesday of"))>'
-    funding_completed_this_month_4:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("de8ce750-be07-4a58-b527-3988f814e17a"))>']
-        user: '@user_fundings_3'
-        gateway: 'paypal'
-        paypalOrderId: '9c38ef64'
-        paypalStatus: 'COMPLETED'
-        paypalPurchase:
-            payments:
-                captures:
-                    -
-                        status: 'COMPLETED'
-                        amount:
-                            currency_code: 'USD'
-                            value: '7.05'
-                        seller_receivable_breakdown:
-                            gross_amount:
-                                currency_code: 'USD'
-                                value: '7.05'
-                            paypal_fee:
-                                currency_code: 'USD'
-                                value: '1.00'
-                            net_amount:
-                                currency_code: 'USD'
-                                value: '6.05'
-                        custom_id: 'de8ce750-be07-4a58-b527-3988f814e17a'
-                        create_time: '2019-12-20T12:00:00Z'
-                        update_time: '2019-12-20T12:00:00Z'
-        amount: 705
-        netAmount: 605
-        currency: 'USD'
-        createdAt: '<(new \DateTimeImmutable("first friday of"))>'
-    funding_completed_this_month_5:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("8824c5be-3bf3-45de-a284-ce77c3953e5e"))>']
-        user: '@user_fundings_3'
-        gateway: 'paypal'
-        paypalOrderId: '4238d052'
-        paypalStatus: 'COMPLETED'
-        paypalPurchase:
-            payments:
-                captures:
-                    -
-                        status: 'COMPLETED'
-                        amount:
-                            currency_code: 'USD'
-                            value: '8.50'
-                        seller_receivable_breakdown:
-                            gross_amount:
-                                currency_code: 'USD'
-                                value: '8.50'
-                            paypal_fee:
-                                currency_code: 'USD'
-                                value: '1.00'
-                            net_amount:
-                                currency_code: 'USD'
-                                value: '7.50'
-                        custom_id: '8824c5be-3bf3-45de-a284-ce77c3953e5e'
-                        create_time: '2019-12-21T12:00:00Z'
-                        update_time: '2019-12-21T12:00:00Z'
-        amount: 850
-        netAmount: 750
-        currency: 'USD'
-        createdAt: '<(new \DateTimeImmutable("first tuesday of"))>'
     funding_completed_this_month_{10..30}:
-        __construct: ['<createUuid("2a05fc82-100b-41c7-9615-fc4cec4647", $current)>']
+        __construct:
+            - '<(new \App\Domain\FundingId(\Symfony\Component\Uid\Ulid::fromString("01F17Z4CC30DCDNC4NP8EWMP".$current)))>'
+            - 'paypal'
+            - '<(\Money\Money::USD(100+$current))>'
+            - '<(new \DateTimeImmutable("second monday of"))>'
         user: '@user_fundings_<current()>'
-        gateway: 'paypal'
         paypalOrderId: '4238d0<current()>'
         paypalStatus: 'COMPLETED'
         paypalPurchase:
@@ -337,7 +247,4 @@ App\Entity\Funding:
                         custom_id: '2a05fc82-100b-41c7-9615-fc4cec4647<current()>'
                         create_time: '2019-12-07T12:00:00Z'
                         update_time: '2019-12-07T12:00:00Z'
-        amount: 1<current()>
         netAmount: 67
-        currency: 'USD'
-        createdAt: '<(new \DateTimeImmutable("second monday of"))>'

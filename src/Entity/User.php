@@ -10,7 +10,7 @@ use Symfony\Component\Uid\Ulid;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
- * @ORM\Table(name="user")
+ * @ORM\Table(name="users")
  */
 class User implements UserInterface
 {
@@ -57,11 +57,11 @@ class User implements UserInterface
      */
     private ?\DateTimeImmutable $lastPatchNoteReadAt = null;
 
-    public function __construct(UserId $id, string $auth0Username)
+    public function __construct(UserId $id, string $auth0Username, \DateTimeInterface $createdAt)
     {
         $this->id = $id->getId();
         $this->auth0Username = $auth0Username;
-        $this->createdAt = new \DateTimeImmutable();
+        $this->createdAt = \DateTimeImmutable::createFromInterface($createdAt);
     }
 
     public function getId(): UserId
@@ -72,6 +72,11 @@ class User implements UserInterface
     public function getRoles(): array
     {
         return $this->roles;
+    }
+
+    public function setRoles(array $roles): void
+    {
+        $this->roles = $roles;
     }
 
     public function getUsername(): string
@@ -117,14 +122,21 @@ class User implements UserInterface
         return $this->coins >= 100;
     }
 
-    public function getLastPatchNoteReadAt(): ?\DateTimeImmutable
+    public function getLastPatchNoteReadAt(): ?\DateTimeInterface
     {
         return $this->lastPatchNoteReadAt;
     }
 
-    public function setLastPatchNoteReadAt(\DateTimeImmutable $lastPatchNoteReadAt): void
+    public function setLastPatchNoteReadAt(?\DateTimeInterface $lastPatchNoteReadAt): void
     {
-        $this->lastPatchNoteReadAt = $lastPatchNoteReadAt;
+        $this->lastPatchNoteReadAt = $lastPatchNoteReadAt !== null
+            ? \DateTimeImmutable::createFromInterface($lastPatchNoteReadAt)
+            : null;
+    }
+
+    public function getCreatedAt(): \DateTimeInterface
+    {
+        return $this->createdAt;
     }
 
     public function getSalt(): ?string

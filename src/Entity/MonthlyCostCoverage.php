@@ -2,38 +2,40 @@
 
 namespace App\Entity;
 
+use App\Domain\MonthlyCostCoverageId;
 use Doctrine\ORM\Mapping as ORM;
-use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Uid\Ulid;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\MonthlyCostCoverageRepository")
- * @ORM\Table(indexes={})
+ * @ORM\Table(name="monthly_cost_coverage")
  */
 class MonthlyCostCoverage
 {
-    public const DEFAULT_DATE = '0000-01-01';
+    public const DEFAULT_DATE = '1970-01-01';
 
     /**
      * @ORM\Id()
-     * @ORM\Column(type="uuid", unique=true)
-     *
-     * @Groups({"supporter"})
+     * @ORM\Column(name="id", type="ulid", unique=true)
      */
-    private ?UuidInterface $id = null;
+    #[Groups(['supporter'])]
+    private Ulid $id;
 
     /**
+     * TODO : create a specific ValueObject.
+     *
      * @ORM\Column(type="date_immutable", unique=true)
-     *
-     * @Groups({"supporter"})
      */
-    private \DateTimeInterface $month;
+    #[Groups(['supporter'])]
+    private \DateTimeImmutable $month;
 
     /**
-     * @ORM\Column(type="integer")
+     * Amount in cents to reach for this month.
      *
-     * @Groups({"supporter"})
+     * @ORM\Column(type="integer")
      */
+    #[Groups(['supporter'])]
     private int $target;
 
     /**
@@ -41,19 +43,18 @@ class MonthlyCostCoverage
      *
      * @ORM\Column(type="boolean", options={"default":1})
      */
-    private bool $postpone;
+    private bool $postpone = true;
 
-    public function __construct(?UuidInterface $id = null)
+    public function __construct(MonthlyCostCoverageId $id, \DateTimeInterface $month)
     {
-        $this->id = $id;
-        $this->month = (new \DateTimeImmutable('first day of'))->setTime(0, 0);
+        $this->id = $id->getId();
+        $this->month = \DateTimeImmutable::createFromInterface($month)->setTime(0, 0);
         $this->target = 0;
-        $this->postpone = true;
     }
 
-    public function getId(): ?UuidInterface
+    public function getId(): MonthlyCostCoverageId
     {
-        return $this->id;
+        return new MonthlyCostCoverageId($this->id);
     }
 
     public function getMonth(): \DateTimeInterface
@@ -97,8 +98,8 @@ class MonthlyCostCoverage
         return $this->month->format('Y-m-d') === self::DEFAULT_DATE;
     }
 
-    public function isPast(): bool
+    public function isPast(\DateTimeInterface $now): bool
     {
-        return $this->month->format('Ym') < date('Ym');
+        return $this->month->format('Ym') < $now->format('Ym');
     }
 }

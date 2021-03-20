@@ -2,64 +2,59 @@
 
 namespace App\Entity;
 
+use App\Domain\PatchNoteId;
 use Doctrine\ORM\Mapping as ORM;
-use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Uid\Ulid;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\PatchNoteRepository")
- * @ORM\Table(indexes={
- *     @ORM\Index(name="created_at_idx", columns={"created_at"})
+ * @ORM\Table(name="patch_note", indexes={
+ *     @ORM\Index(name="patch_note_created_at_idx", columns={"created_at"})
  * })
  */
 class PatchNote
 {
     /**
      * @ORM\Id()
-     * @ORM\Column(type="uuid", unique=true)
+     * @ORM\Column(name="id", type="ulid", unique=true)
      */
-    private ?UuidInterface $id = null;
+    private Ulid $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private ?string $title = null;
+    private string $title;
 
     /**
      * @ORM\Column(type="text")
      */
-    private ?string $body = null;
+    private string $body;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private ?string $link = null;
+    private ?string $link;
 
     /**
      * @ORM\Column(type="datetimetz_immutable")
      */
     private \DateTimeImmutable $createdAt;
 
-    /**
-     * @ORM\Column(type="datetimetz_immutable")
-     */
-    private \DateTimeImmutable $updatedAt;
-
-    public function __construct(?UuidInterface $id = null, string $title = '', string $body = '', ?string $link = null)
+    public function __construct(PatchNoteId $id, string $title, string $body, ?string $link, \DateTimeInterface $createdAt)
     {
-        $this->id = $id;
+        $this->id = $id->getId();
         $this->title = $title;
         $this->body = $body;
         $this->link = $link;
-        $this->createdAt = new \DateTimeImmutable();
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->createdAt = \DateTimeImmutable::createFromInterface($createdAt);
     }
 
-    public function getId(): ?UuidInterface
+    public function getId(): PatchNoteId
     {
-        return $this->id;
+        return new PatchNoteId($this->id);
     }
 
-    public function getTitle(): ?string
+    public function getTitle(): string
     {
         return $this->title;
     }
@@ -71,7 +66,7 @@ class PatchNote
         return $this;
     }
 
-    public function getBody(): ?string
+    public function getBody(): string
     {
         return $this->body;
     }
@@ -98,24 +93,5 @@ class PatchNote
     public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): \DateTimeImmutable
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(\DateTimeImmutable $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
     }
 }

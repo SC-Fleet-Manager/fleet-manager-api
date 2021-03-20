@@ -1,28 +1,16 @@
 security:
-#    enable_authenticator_manager: true
+    #    enable_authenticator_manager: true
     providers:
-        auth0_jwt:
-            id: 'jwt_auth.security.user.jwt_user_provider'
-        oauth_user_provider:
-            id: App\Security\OAuthUserProvider
-        user_entity_uuid:
-            id: 'App\Security\UuidProvider'
         user_entity_jwt:
             id: 'App\Security\UserEntityJwtProvider'
-        chain_user:
-            chain:
-                providers: ['user_entity_uuid', 'user_entity_jwt']
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|favicon\.ico)/
             security: false
         main:
-            provider: chain_user # default provider
+            provider: user_entity_jwt
             stateless: true
             anonymous: true
-            switch_user:
-                provider: chain_user
-                role: ROLE_ADMIN
             guard:
                 authenticators:
                     - jwt_auth.security.guard.jwt_guard_authenticator

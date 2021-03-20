@@ -31,7 +31,7 @@ class MonthlyCostCoverageEditController extends AbstractController
             throw new NotFoundHttpException('Monthly cost coverage not found.');
         }
 
-        if (!$costCoverage->isDefault() && $costCoverage->isPast()) {
+        if (!$costCoverage->isDefault() && $costCoverage->isPast(new \DateTimeImmutable('now'))) {
             throw new NotFoundHttpException('Monthly cost coverage is past.');
         }
 

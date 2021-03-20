@@ -62,7 +62,7 @@ class PaypalCheckout implements PaypalCheckoutInterface
                 [
                     'reference_id' => self::BACKING_REFID,
                     'description' => 'Fleet Manager backing',
-                    'custom_id' => $funding->getId()->toString() ?? '',
+                    'custom_id' => (string) $funding->getId(),
                     'amount' => [
                         'currency_code' => 'USD',
                         'value' => $amountValue,
@@ -142,7 +142,7 @@ class PaypalCheckout implements PaypalCheckoutInterface
             }
             $funding->setPaypalPurchase($this->transformPurchase($purchaseUnit));
             foreach ($purchaseUnit->payments->captures as $paymentCapture) {
-                if ($paymentCapture->custom_id !== $funding->getId()->toString()) {
+                if ($paymentCapture->custom_id !== (string) $funding->getId()) {
                     continue;
                 }
 
@@ -211,7 +211,7 @@ class PaypalCheckout implements PaypalCheckoutInterface
             $funding->setPaypalPurchase($this->transformPurchase($purchaseUnit));
             if (isset($purchaseUnit->payments->captures)) {
                 foreach ($purchaseUnit->payments->captures as $paymentCapture) {
-                    if ($paymentCapture->custom_id !== $funding->getId()->toString()) {
+                    if ($paymentCapture->custom_id !== (string) $funding->getId()) {
                         continue;
                     }
                     $funding->setPaypalStatus($paymentCapture->status);

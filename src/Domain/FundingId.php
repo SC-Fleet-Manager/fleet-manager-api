@@ -2,6 +2,6 @@
 
 namespace App\Domain;
 
-class UserId extends EntityId
+class FundingId extends EntityId
 {
 }

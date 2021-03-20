@@ -2,19 +2,21 @@
 
 namespace App\Controller\Funding;
 
+use App\Domain\FundingId;
 use App\Entity\Funding;
 use App\Entity\User;
 use App\Exception\UnableToCreatePaypalOrderException;
 use App\Form\Dto\FundingPayment;
 use App\Service\Funding\PaypalCheckoutInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use Ramsey\Uuid\Uuid;
+use Money\Money;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class PaymentController extends AbstractController
@@ -48,10 +50,7 @@ class PaymentController extends AbstractController
         /** @var User $user */
         $user = $this->security->getUser();
 
-        $funding = new Funding(Uuid::uuid4());
-        $funding->setGateway(Funding::PAYPAL);
-        $funding->setCurrency('USD');
-        $funding->setAmount($fundingPayment->amount);
+        $funding = new Funding(new FundingId(new Ulid()), Funding::PAYPAL, Money::USD($fundingPayment->amount), new \DateTimeImmutable('now'));
         $funding->setUser($user);
 
         try {

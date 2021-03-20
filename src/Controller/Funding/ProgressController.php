@@ -2,15 +2,16 @@
 
 namespace App\Controller\Funding;
 
+use App\Domain\MonthlyCostCoverageId;
 use App\Entity\MonthlyCostCoverage;
 use App\Repository\FundingRepository;
 use App\Repository\MonthlyCostCoverageRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Uid\Ulid;
 
 class ProgressController extends AbstractController
 {
@@ -74,10 +75,7 @@ class ProgressController extends AbstractController
 
     private function createDefaultCostCoverage(): MonthlyCostCoverage
     {
-        $entity = new MonthlyCostCoverage(Uuid::uuid4());
-        $entity->setMonth(new \DateTimeImmutable(MonthlyCostCoverage::DEFAULT_DATE));
-        $entity->setTarget(0);
-        $entity->setPostpone(true);
+        $entity = new MonthlyCostCoverage(new MonthlyCostCoverageId(new Ulid()), new \DateTimeImmutable(MonthlyCostCoverage::DEFAULT_DATE));
         $this->entityManager->persist($entity);
         $this->entityManager->flush();
 

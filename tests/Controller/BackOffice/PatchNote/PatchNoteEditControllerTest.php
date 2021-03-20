@@ -55,7 +55,7 @@ class PatchNoteEditControllerTest extends WebTestCase
     {
         $this->client->request('GET', '/bo/patch-note/edit/a4491559-e9bd-465d-85e2-a810dcedc275', [], [], [
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
-        ]); // fake uuid
+        ]);
 
         static::assertSame(404, $this->client->getResponse()->getStatusCode());
     }

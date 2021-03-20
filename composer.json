@@ -19,6 +19,7 @@
         "doctrine/doctrine-migrations-bundle": "^2.2",
         "doctrine/orm": "^2.7",
         "doctrine/persistence": "^2.1",
+        "moneyphp/money": "^3.3",
         "nelmio/cors-bundle": "^2.1",
         "nyholm/psr7": "^1.4",
         "paypal/paypal-checkout-sdk": "^1.0",
