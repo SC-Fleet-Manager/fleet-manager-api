@@ -2,16 +2,16 @@
 
 namespace App\Tests\Constraint;
 
+use function array_replace_recursive;
 use ArrayAccess;
 use ArrayObject;
+use function is_array;
+use function iterator_to_array;
 use PHPUnit\Framework\Constraint\Constraint;
 use PHPUnit\Framework\ExpectationFailedException;
 use SebastianBergmann\Comparator\ComparisonFailure;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 use Traversable;
-use function array_replace_recursive;
-use function is_array;
-use function iterator_to_array;
 use function var_export;
 
 /**
@@ -41,7 +41,7 @@ final class ArraySubset extends Constraint
     }
 
     /**
-     * Evaluates the constraint for parameter $other
+     * Evaluates the constraint for parameter $other.
      *
      * If $returnResult is set to false (the default), an exception is thrown
      * in case of a failure. null is returned otherwise.
@@ -51,7 +51,8 @@ final class ArraySubset extends Constraint
      * failure.
      *
      * @param mixed[]|ArrayAccess $other
-     * @return mixed[]|null|bool
+     *
+     * @return mixed[]|bool|null
      *
      * @throws ExpectationFailedException
      * @throws InvalidArgumentException
@@ -60,9 +61,9 @@ final class ArraySubset extends Constraint
     {
         //type cast $other & $this->subset as an array to allow
         //support in standard array functions.
-        $other        = $this->toArray($other);
+        $other = $this->toArray($other);
         $this->subset = $this->toArray($this->subset);
-        $patched      = array_replace_recursive($other, $this->subset);
+        $patched = array_replace_recursive($other, $this->subset);
         if ($this->strict) {
             $result = $other === $patched;
         } else {
@@ -91,11 +92,11 @@ final class ArraySubset extends Constraint
      */
     public function toString(): string
     {
-        return 'has the subset ' . $this->exporter()->export($this->subset);
+        return 'has the subset '.$this->exporter()->export($this->subset);
     }
 
     /**
-     * Returns the description of the failure
+     * Returns the description of the failure.
      *
      * The beginning of failure messages is "Failed asserting that" in most
      * cases. This method should return the second part of that sentence.
@@ -106,7 +107,7 @@ final class ArraySubset extends Constraint
      */
     protected function failureDescription($other): string
     {
-        return 'an array ' . $this->toString();
+        return 'an array '.$this->toString();
     }
 
     /**

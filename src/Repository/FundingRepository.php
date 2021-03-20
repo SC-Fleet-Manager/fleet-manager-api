@@ -2,11 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\Citizen;
-use App\Entity\CitizenOrganization;
 use App\Entity\Funding;
-use App\Entity\Organization;
-use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Persistence\ManagerRegistry;

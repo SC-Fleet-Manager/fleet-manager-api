@@ -1,7 +1,0 @@
-logout:
-    path: /logout
-
-discord_login:
-    path: /login/check-discord
-    defaults:
-        _remember_me: true

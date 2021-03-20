@@ -15,19 +15,21 @@
     </php>
 
     <testsuites>
-        <testsuite name="Project Test Suite">
-            <directory>tests</directory>
+        <testsuite name="unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="acceptance">
+            <directory>tests/Acceptance</directory>
+        </testsuite>
+        <testsuite name="integration">
+            <directory>tests/Integration</directory>
+        </testsuite>
+        <testsuite name="e2e">
+            <directory>tests/End2End</directory>
         </testsuite>
     </testsuites>
 
     <listeners>
         <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener"/>
     </listeners>
-
-    <!-- Run `composer require symfony/panther` before enabling this extension -->
-    <!--
-      <extensions>
-          <extension class="Symfony\Component\Panther\ServerExtension" />
-      </extensions>
-      -->
 </phpunit>
