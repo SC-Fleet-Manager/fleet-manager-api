@@ -1,7 +1,0 @@
-New email confirmation
-To confirm your new email address, simply click on the link below.
-
-{{ url('profile_change_email_confirmation', {'id': user.getId().toString(), 'token': user.getRegistrationConfirmationToken()}) }}
-
-This email has been sent to {{ user.pendingEmail }}.
-You're getting this email because you've requested an email change on Fleet Manager.

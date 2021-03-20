@@ -9,7 +9,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Ulid;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
+ * @ORM\Entity
  * @ORM\Table(name="users")
  */
 class User implements UserInterface
@@ -18,7 +18,6 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\Column(name="id", type="ulid", unique=true)
      */
-    #[Groups(['profile', 'me:read'])]
     private Ulid $id;
 
     /**
@@ -31,25 +30,21 @@ class User implements UserInterface
     /**
      * @ORM\Column(name="auth0_username", type="string", length=127, unique=true)
      */
-    #[Groups(['profile'])]
     private string $auth0Username;
 
     /**
      * @ORM\Column(name="supporter_visible", type="boolean", options={"default":true})
      */
-    #[Groups(['profile'])]
     private bool $supporterVisible = true;
 
     /**
      * @ORM\Column(name="coins", type="integer", options={"default":0})
      */
-    #[Groups(['profile'])]
     private int $coins = 0;
 
     /**
      * @ORM\Column(name="created_at", type="datetimetz_immutable")
      */
-    #[Groups(['profile', 'me:read'])]
     private \DateTimeImmutable $createdAt;
 
     /**

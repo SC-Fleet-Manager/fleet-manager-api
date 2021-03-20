@@ -18,6 +18,9 @@ services:
     App\:
         resource: '../src'
         exclude:
+            - '../src/Application/**/*/Output'
+            - '../src/Application/Exception'
+            - '../src/Infrastructure/**/*/Input'
             - '../src/Domain'
             - '../src/Entity'
             - '../src/Message'
@@ -27,7 +30,10 @@ services:
             - '../src/*/Exception'
             - '../src/Validator/Constraints/UniqueField.php'
     App\Controller\:
-        resource: '../src/Controller'
+        resource: '../src/Controller/**/*Controller.php'
+        tags: ['controller.service_arguments']
+    App\Infrastructure\Controller\:
+        resource: '../src/Infrastructure/Controller/**/*Controller.php'
         tags: ['controller.service_arguments']
 
     App\MessageHandler\Funding\SendOrderCaptureSummaryMailHandler:
@@ -61,3 +67,5 @@ services:
         factory: ['@App\Service\Funding\PayPalHttpClientFactory', 'createPayPalHttpClient']
     PayPal\Rest\ApiContext:
         factory: ['@App\Service\Funding\PayPalHttpClientFactory', 'createApiContext']
+
+    App\Application\Repository\UserRepositoryInterface: '@App\Infrastructure\Repository\DoctrineUserRepository'

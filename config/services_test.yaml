@@ -4,6 +4,13 @@ services:
         autoconfigure: true
         public: true
 
+    App\Application\:
+        resource: '../src/Application'
+        exclude:
+            - '../src/Application/**/*/Output'
+            - '../src/Application/Exception'
+            - '../src/Infrastructure/**/*/Input'
+
     App\Tests\Service\PayPal\MockPayPalHttpClient: ~
     App\Tests\Service\PayPal\MockVerifyWebhookSignatureFactory: ~
     App\Service\Funding\PaypalCheckout:

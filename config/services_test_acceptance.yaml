@@ -1,0 +1,10 @@
+imports:
+    - { resource: services_test.yaml }
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: true
+
+    App\Application\Repository\UserRepositoryInterface: '@App\Infrastructure\Repository\InMemoryUserRepository'

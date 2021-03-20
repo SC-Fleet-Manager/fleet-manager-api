@@ -83,14 +83,15 @@ fixtures: vendor								## executes all fixtures
 .PHONY: qa tests phpunit-tests functional-tests phpcsfix lint-twig lint-yaml
 qa: phpcsfix lint-twig lint-yaml tests					## launch tests + syntax checks
 
-tests:													## reset db tests + launch all tests
-	$(MAKE) db-reset-tests
-	$(MAKE) para-tests
-para-tests: unit-tests functional-tests								## launch all tests parallelisable
+tests: unit-tests acceptance-tests integration-tests end2end-tests					## launch all tests
 unit-tests:												## launch unit tests
-	$(EXEC_PHP_NOTTY) $(PHPUNIT) --group=unit $(c)
-functional-tests:										## launch functional tests
-	$(EXEC_PHP_NOTTY) $(PHPUNIT) --group=functional $(c)
+	$(EXEC_PHP_NOTTY) $(PHPUNIT) --testsuite=unit $(c)
+acceptance-tests:											## launch acceptance tests
+	$(EXEC_PHP_NOTTY) $(PHPUNIT) --testsuite=acceptance $(c)
+integration-tests: db-reset-tests									## launch integration tests
+	$(EXEC_PHP_NOTTY) $(PHPUNIT) --testsuite=integration $(c)
+end2end-tests: db-reset-tests										## launch functional tests
+	$(EXEC_PHP_NOTTY) $(PHPUNIT) --testsuite=e2e $(c)
 
 phpcsfix:												## fix syntax of all PHP sources
 	$(EXEC_PHP) $(PHP_CS_FIXER) --allow-risky=yes fix
