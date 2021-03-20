@@ -23,7 +23,7 @@ class SendOrderCaptureSummaryMailHandler implements MessageHandlerInterface
 
     public function __invoke(SendOrderCaptureSummaryMail $message): void
     {
-        $funding = $this->fundingRepository->find($message->getFundingId());
+        $funding = $this->fundingRepository->find($message->getFundingId()->getId());
         if ($funding === null) {
             throw new \LogicException(sprintf('Funding %s does not exist.', $message->getFundingId()));
         }

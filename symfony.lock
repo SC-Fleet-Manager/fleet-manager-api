@@ -153,6 +153,9 @@
     "lorenzo/pinky": {
         "version": "1.0.3"
     },
+    "moneyphp/money": {
+        "version": "v3.3.1"
+    },
     "monolog/monolog": {
         "version": "1.23.0"
     },

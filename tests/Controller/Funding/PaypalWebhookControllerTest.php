@@ -95,7 +95,7 @@ class PaypalWebhookControllerTest extends WebTestCase
         $envelopes = $transport->get();
         static::assertCount(1, $envelopes);
         static::assertInstanceOf(SendOrderRefundMail::class, $envelopes[0]->getMessage());
-        static::assertSame($funding->getId()->toString(), $envelopes[0]->getMessage()->getFundingId()->toString());
+        static::assertEquals($funding->getId(), $envelopes[0]->getMessage()->getFundingId());
     }
 
     /**
@@ -206,7 +206,7 @@ class PaypalWebhookControllerTest extends WebTestCase
         $envelopes = $transport->get();
         static::assertCount(1, $envelopes);
         static::assertInstanceOf(SendOrderRefundMail::class, $envelopes[0]->getMessage());
-        static::assertSame($funding->getId()->toString(), $envelopes[0]->getMessage()->getFundingId()->toString());
+        static::assertEquals($funding->getId(), $envelopes[0]->getMessage()->getFundingId());
     }
 
     /**

@@ -2,16 +2,16 @@
 
 namespace App\Message\Funding;
 
-use Ramsey\Uuid\UuidInterface;
+use App\Domain\FundingId;
 
 class SendOrderRefundMail
 {
     public function __construct(
-        private UuidInterface $fundingId
+        private FundingId $fundingId
     ) {
     }
 
-    public function getFundingId(): UuidInterface
+    public function getFundingId(): FundingId
     {
         return $this->fundingId;
     }

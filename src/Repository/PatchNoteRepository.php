@@ -2,10 +2,10 @@
 
 namespace App\Repository;
 
+use App\Domain\PatchNoteId;
 use App\Entity\PatchNote;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Ramsey\Uuid\UuidInterface;
 
 class PatchNoteRepository extends ServiceEntityRepository
 {
@@ -14,7 +14,7 @@ class PatchNoteRepository extends ServiceEntityRepository
         parent::__construct($registry, PatchNote::class);
     }
 
-    public function findOneRecentPatchNoteId(?\DateTimeInterface $afterDate): ?UuidInterface
+    public function findOneRecentPatchNoteId(?\DateTimeInterface $afterDate): ?PatchNoteId
     {
         $qb = $this->createQueryBuilder('patch_note');
         $qb->select('patch_note.id');
@@ -25,6 +25,6 @@ class PatchNoteRepository extends ServiceEntityRepository
         }
         $result = $qb->getQuery()->getOneOrNullResult();
 
-        return $result['id'] ?? null;
+        return isset($result['id']) ? new PatchNoteId($result['id']) : null;
     }
 }

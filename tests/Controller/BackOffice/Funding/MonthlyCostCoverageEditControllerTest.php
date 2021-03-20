@@ -2,7 +2,6 @@
 
 namespace App\Tests\Controller\BackOffice\Funding;
 
-use App\Entity\User;
 use App\Tests\WebTestCase;
 
 class MonthlyCostCoverageEditControllerTest extends WebTestCase
@@ -56,7 +55,7 @@ class MonthlyCostCoverageEditControllerTest extends WebTestCase
     {
         $this->client->request('GET', '/bo/monthly-cost-coverage/edit/624efc18-d5ee-445f-9448-6803b57924aa', [], [], [
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
-        ]); // fake uuid
+        ]);
 
         static::assertSame(404, $this->client->getResponse()->getStatusCode());
     }

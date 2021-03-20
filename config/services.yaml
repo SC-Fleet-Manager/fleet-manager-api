@@ -19,7 +19,9 @@ services:
         resource: '../src'
         exclude:
             - '../src/Domain'
+            - '../src/Entity'
             - '../src/Message'
+            - '../src/Event'
             - '../src/*/Dto'
             - '../src/*/*/Dto'
             - '../src/*/Exception'

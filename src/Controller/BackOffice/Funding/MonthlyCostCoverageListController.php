@@ -2,14 +2,15 @@
 
 namespace App\Controller\BackOffice\Funding;
 
+use App\Domain\MonthlyCostCoverageId;
 use App\Entity\MonthlyCostCoverage;
 use App\Repository\MonthlyCostCoverageRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Uid\Ulid;
 
 class MonthlyCostCoverageListController extends AbstractController
 {
@@ -35,9 +36,7 @@ class MonthlyCostCoverageListController extends AbstractController
         }
 
         if ($defaultCostCoverage === null) {
-            $defaultCostCoverage = (new MonthlyCostCoverage(Uuid::uuid4()))
-                ->setMonth(new \DateTimeImmutable(MonthlyCostCoverage::DEFAULT_DATE))
-                ->setTarget(0)
+            $defaultCostCoverage = (new MonthlyCostCoverage(new MonthlyCostCoverageId(new Ulid()), new \DateTimeImmutable(MonthlyCostCoverage::DEFAULT_DATE)))
                 ->setPostpone(false);
             $this->entityManager->persist($defaultCostCoverage);
             $this->entityManager->flush();

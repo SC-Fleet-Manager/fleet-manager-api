@@ -80,7 +80,7 @@ class CaptureTransactionControllerTest extends WebTestCase
         $envelopes = $transport->get();
         static::assertCount(1, $envelopes);
         static::assertInstanceOf(SendOrderCaptureSummaryMail::class, $envelopes[0]->getMessage());
-        static::assertSame($funding->getId()->toString(), $envelopes[0]->getMessage()->getFundingId()->toString());
+        static::assertEquals($funding->getId(), $envelopes[0]->getMessage()->getFundingId());
     }
 
     /**

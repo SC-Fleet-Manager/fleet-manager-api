@@ -1,19 +1,21 @@
 App\Entity\PatchNote:
     patch_note_1:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("2d3e46c8-f783-45c6-a4de-92978985b8a6"))>']
-        title: 'My new patch 1'
-        body: |
-            Hello everyone,
-            Here is my new patch 1
-            Goodbye!
-        link: 'https://blog.fleet-manager.space/my-patch-1'
-        createdAt: '<(new \DateTimeImmutable("2019-04-03 11:22:33"))>'
+        __construct:
+            - '<(new \App\Domain\PatchNoteId(\Symfony\Component\Uid\Ulid::fromString("01F17Y39FNFNJG7ECMM4YG9SBE")))>'
+            - 'My new patch 1'
+            - |
+                Hello everyone,
+                Here is my new patch 1
+                Goodbye!
+            - 'https://blog.fleet-manager.space/my-patch-1'
+            - '<(new \DateTimeImmutable("2019-04-03 11:22:33"))>'
     patch_note_2:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("686afb82-c344-4b25-be84-5d327b2af47b"))>']
-        title: 'My new patch 2'
-        body: |
-            Hello everyone,
-            Here is my new patch 2
-            Goodbye!
-        link: 'https://blog.fleet-manager.space/my-patch-2'
-        createdAt: '<(new \DateTimeImmutable("2019-04-04 11:22:33"))>'
+        __construct:
+            - '<(new \App\Domain\PatchNoteId(\Symfony\Component\Uid\Ulid::fromString("01F17Y4GWNQ89CNPM6T6M1R894")))>'
+            - 'My new patch 2'
+            - |
+                Hello everyone,
+                Here is my new patch 2
+                Goodbye!
+            - null
+            - '<(new \DateTimeImmutable("2019-04-04 11:22:33"))>'
