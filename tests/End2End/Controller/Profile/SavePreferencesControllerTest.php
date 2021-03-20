@@ -11,7 +11,7 @@ class SavePreferencesControllerTest extends WebTestCase
      */
     public function it_should_save_user_preferences(): void
     {
-        static::$connection->executeQuery(<<<SQL
+        static::$connection->executeStatement(<<<SQL
                 INSERT INTO users(id, roles, auth0_username, supporter_visible, coins, created_at, last_patch_note_read_at)
                 VALUES ('00000000-0000-0000-0000-000000000001', '["ROLE_USER"]', 'Ioni', true, 0, '2021-03-20T15:50:00+01:00', '2021-03-21T15:50:00+01:00');
             SQL
@@ -38,7 +38,7 @@ class SavePreferencesControllerTest extends WebTestCase
      */
     public function it_should_receive_errors_when_send_an_empty_payload(): void
     {
-        static::$connection->executeQuery(<<<SQL
+        static::$connection->executeStatement(<<<SQL
                 INSERT INTO users(id, roles, auth0_username, supporter_visible, coins, created_at, last_patch_note_read_at)
                 VALUES ('00000000-0000-0000-0000-000000000001', '["ROLE_USER"]', 'Ioni', true, 0, '2021-03-20T15:50:00+01:00', '2021-03-21T15:50:00+01:00');
             SQL

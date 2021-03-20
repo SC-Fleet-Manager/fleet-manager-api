@@ -1,20 +1,21 @@
 <?php
 
-namespace App\Repository;
+namespace App\Infrastructure\Repository\PatchNote;
 
+use App\Application\Repository\PatchNoteRepositoryInterface;
 use App\Domain\PatchNoteId;
 use App\Entity\PatchNote;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-class PatchNoteRepository extends ServiceEntityRepository
+class DoctrinePatchNoteRepository extends ServiceEntityRepository implements PatchNoteRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, PatchNote::class);
     }
 
-    public function findOneRecentPatchNoteId(?\DateTimeInterface $afterDate): ?PatchNoteId
+    public function getOneRecentPatchNoteId(?\DateTimeInterface $afterDate): ?PatchNoteId
     {
         $qb = $this->createQueryBuilder('patch_note');
         $qb->select('patch_note.id');

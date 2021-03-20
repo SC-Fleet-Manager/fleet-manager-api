@@ -7,7 +7,7 @@ use App\Application\Home\Output\NumbersOutput;
 use App\Application\Repository\UserRepositoryInterface;
 use App\Domain\UserId;
 use App\Entity\User;
-use App\Infrastructure\Repository\InMemoryUserRepository;
+use App\Infrastructure\Repository\User\InMemoryUserRepository;
 use App\Tests\Acceptance\KernelTestCase;
 use Symfony\Component\Uid\Ulid;
 

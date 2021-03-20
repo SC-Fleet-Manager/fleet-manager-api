@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Ulid;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\PatchNoteRepository")
+ * @ORM\Entity
  * @ORM\Table(name="patch_note", indexes={
  *     @ORM\Index(name="patch_note_created_at_idx", columns={"created_at"})
  * })
