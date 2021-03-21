@@ -11,6 +11,11 @@ abstract class EntityId
     ) {
     }
 
+    public static function fromString(string $ulid): static
+    {
+        return new static(Ulid::fromString($ulid));
+    }
+
     public function getId(): Ulid
     {
         return $this->ulid;

@@ -28,4 +28,13 @@ class DoctrinePatchNoteRepository extends ServiceEntityRepository implements Pat
 
         return isset($result['id']) ? new PatchNoteId($result['id']) : null;
     }
+
+    public function getLastPatchNotes(int $count): array
+    {
+        return $this->createQueryBuilder('patch_note')
+            ->orderBy('patch_note.createdAt', 'DESC')
+            ->setMaxResults($count)
+            ->getQuery()
+            ->getResult();
+    }
 }
