@@ -147,4 +147,14 @@ class User implements UserInterface
     {
         return null;
     }
+
+    public function hasReadPatchNote(PatchNote $lastPatchNote): bool
+    {
+        return $this->lastPatchNoteReadAt !== null && $lastPatchNote->getCreatedAt() <= $this->lastPatchNoteReadAt;
+    }
+
+    public function readPatchNote(PatchNote $patchNote): void
+    {
+        $this->lastPatchNoteReadAt = \DateTimeImmutable::createFromInterface($patchNote->getCreatedAt());
+    }
 }
