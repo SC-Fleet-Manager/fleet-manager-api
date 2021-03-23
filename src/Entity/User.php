@@ -111,7 +111,6 @@ class User implements UserInterface
         return $this;
     }
 
-    #[Groups(['profile'])]
     public function isSupporter(): bool
     {
         return $this->coins >= 100;

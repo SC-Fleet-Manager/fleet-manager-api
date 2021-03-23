@@ -1,0 +1,63 @@
+service: fleet-manager
+
+useDotenv: false
+
+provider:
+    name: aws
+    region: eu-west-1
+    runtime: provided.al2
+    lambdaHashingVersion: '20201221'
+    stage: dev
+    environment:
+        BREF_PING_DISABLE: 1
+        APP_ENV: dev
+        APP_LOG_DIR: /tmp/log
+        APP_CACHE_DIR: /tmp/cache
+        APP_BUILD_DIR: /tmp/build
+    vpc:
+        securityGroupIds:
+            - sg-0df162558b94a84d1 # fm_web
+        subnetIds:
+            - subnet-08501d94e8874b89f # fm subnet A
+            - subnet-0400f4d3d9b5ed08f # fm subnet B
+            - subnet-0112f9d1e5ebf3c91 # fm subnet C
+
+plugins:
+    - ./vendor/bref/bref
+#    - serverless-api-stage
+
+functions:
+    console:
+        handler: bin/console
+        layers:
+            - ${bref:layer.php-80}
+            - ${bref:layer.console}
+    api:
+        handler: public/index.php
+        timeout: 10
+        layers:
+            - ${bref:layer.php-80-fpm}
+        reservedConcurrency: 100
+        events:
+            -   httpApi: '*'
+            # https://bref.sh/docs/runtimes/http.html#cold-starts
+            -   schedule:
+                    rate: rate(8 minutes)
+                    input:
+                        warmer: true
+
+#custom:
+#    stageSettings:
+#        MethodSettings:
+#            ThrottlingRateLimit: 100 # number requests/second
+#            ThrottlingBurstLimit: 25 # max requests served in parallel
+
+package:
+    exclude:
+        - 'tests/**'
+        - 'docker/**'
+        - 'dumps/**'
+        - 'var/log/**'
+        - '.env*'
+    include:
+        - '.env.local.php'
