@@ -25,4 +25,13 @@ class Kernel extends BaseKernel
         $routes->import('../config/{routes}/'.$this->environment.'/*.yaml');
         $routes->import('../config/{routes}/*.yaml');
     }
+
+    public function getBuildDir(): string
+    {
+        if (isset($_SERVER['APP_BUILD_DIR'])) {
+            return $_SERVER['APP_BUILD_DIR'].'/'.$this->environment;
+        }
+
+        return $this->getProjectDir().'/var/build/'.$this->environment;
+    }
 }

@@ -13,6 +13,7 @@
         "ext-mbstring": "*",
         "ext-zend-opcache": "*",
         "auth0/jwt-auth-bundle": "dev-master",
+        "bref/bref": "^1.2",
         "doctrine/annotations": "^1.12",
         "doctrine/common": "^3.0",
         "doctrine/doctrine-bundle": "^2.2",
