@@ -21,12 +21,6 @@ cd starcitizen-fleet-manager
 echo "APP_ENV=dev" > .env.local
 ```
 
-You can add your Discord OAuth2 config via `DISCORD_ID` and `DISCORD_SECRET`:
-
-1. Create an app on https://discordapp.com/developers/applications/
-2. Generate a client secret
-3. Add your domain in OAuth2 redirects uri
-
 **Customize docker-compose.override.yml**
 
     cp docker-compose.override.yml.dist docker-compose.override.yml

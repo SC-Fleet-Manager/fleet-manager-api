@@ -1,6 +1,5 @@
 parameters:
     env(MONOLOG_MAILER_TO): 'root@localhost'
-    env(MAILER_NOREPLY_ADDRESS): 'noreply@fleet-manager.space'
 
 monolog:
     handlers:
@@ -17,16 +16,11 @@ monolog:
             handler: mailer
         mailer:
             type: symfony_mailer
-            from_email: '%env(MAILER_NOREPLY_ADDRESS)%'
+            from_email: 'noreply@fleet-manager.space'
             to_email: ['%env(MONOLOG_MAILER_TO)%']
             subject: '[FM Monolog prod] Error : %%message%%'
             formatter: monolog.formatter.html
             content_type: text/html
-        ##############
-        stderr:
-            type: stream
-            path: "php://stderr"
-            level: info
         ################
         console:
             type: console

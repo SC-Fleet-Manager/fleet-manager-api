@@ -5,6 +5,9 @@
     "async-aws/lambda": {
         "version": "1.3.0"
     },
+    "async-aws/ses": {
+        "version": "1.4.0"
+    },
     "auth0/auth0-php": {
         "version": "7.6.2"
     },
@@ -52,6 +55,9 @@
     },
     "doctrine/dbal": {
         "version": "v2.8.0"
+    },
+    "doctrine/deprecations": {
+        "version": "v0.5.3"
     },
     "doctrine/doctrine-bundle": {
         "version": "2.0",
