@@ -5,15 +5,14 @@ parameters:
     env(PAYPAL_CHECKOUT_CLIENT_SECRET): ''
     env(PAYPAL_CHECKOUT_WEBHOOK_ID): ''
     env(PAYPAL_CHECKOUT_MODE): !php/const App\Service\Funding\PayPalHttpClientFactory::MODE_SANDBOX
-    env(MAILER_NOREPLY_ADDRESS): 'noreply@fleet-manager.space'
 
 services:
     _defaults:
         autowire: true
         autoconfigure: true
         bind:
-            $registrationFromAddress: '%env(MAILER_NOREPLY_ADDRESS)%'
-            $noreplyAddress: '%env(MAILER_NOREPLY_ADDRESS)%'
+            $registrationFromAddress: 'noreply@fleet-manager.space'
+            $noreplyAddress: 'noreply@fleet-manager.space'
 
     App\:
         resource: '../src'

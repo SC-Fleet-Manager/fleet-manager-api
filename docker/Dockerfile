@@ -128,14 +128,6 @@ RUN set -eux; \
     && apt-get remove -y $PHPIZE_DEPS \
     && rm -rf /var/lib/apt/lists/* /tmp/*
 
-# Serverless + AWS
-COPY --from=serverless_install /root/.serverless/bin/serverless /usr/local/bin/serverless
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscliv2.zip \
-    && unzip /tmp/awscliv2.zip -d /tmp \
-    && /tmp/aws/install \
-    && rm -rf /tmp/* \
-    && mkdir -p /.serverless && chown -R www-data /.serverless && chmod -R 777 /.serverless
-
 ENV PANTHER_NO_SANDBOX 1
 
 USER www-data
