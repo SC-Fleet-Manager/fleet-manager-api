@@ -34,27 +34,17 @@ services:
         image: 186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-spa-php:${APP_VERSION:-prod-latest}
         hostname: php
         restart: unless-stopped
-        env_file:
-            - php.env
+        env_file: php.env
         depends_on:
             - redis
         environment:
             APP_ENV: prod
-            APP_SECRET: ${APP_SECRET}
-            SENTRY_DSN: ${SENTRY_DSN}
-            MAILER_DSN: ${MAILER_DSN}
             FUNDING_ORDER_CAPTURE_ADDRESSES: 'fleet-manager@protonmail.com'
             MONOLOG_MAILER_TO: 'fleet-manager@protonmail.com'
-            DATABASE_URL: ${DATABASE_URL}
-            REDIS_DSN: ${REDIS_DSN}
-            PAYPAL_CHECKOUT_CLIENT_ID: ${PAYPAL_CHECKOUT_CLIENT_ID}
-            PAYPAL_CHECKOUT_CLIENT_SECRET: ${PAYPAL_CHECKOUT_CLIENT_SECRET}
             PAYPAL_CHECKOUT_WEBHOOK_ID: '72Y11928S1077440L'
             PAYPAL_CHECKOUT_MODE: 'sandbox'
             DEFAULT_URI: 'https://fleet-manager.space'
             AUTH0_DOMAIN: 'fleet-manager.eu.auth0.com'
-            AUTH0_CLIENT_ID: ${AUTH0_CLIENT_ID}
-            AUTH0_API_AUDIENCE: ${AUTH0_API_AUDIENCE}
             CORS_ALLOW_ORIGIN: '^https://fleet-manager.space$$'
     apache:
         image: 186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-spa-apache:${APP_VERSION:-prod-latest}
@@ -81,9 +71,6 @@ services:
         restart: unless-stopped
         volumes:
             - redis_db:/bitnami/redis/data
-        env_file:
-            - redis.env
-        environment:
-            REDIS_PASSWORD: ${REDIS_PASSWORD}
+        env_file: redis.env
         ports:
             - 127.0.0.1:6379:6379
