@@ -9,13 +9,19 @@ services:
         image: traefik:v2.3
         hostname: traefik
         restart: unless-stopped
+        command:
+            - '--api.dashboard=true'
+            - '--accesslog=true'
+            - '--log.level=DEBUG'
+            - '--entrypoints.web-secure.address=:443'
+            - '--providers.docker.exposedbydefault=false'
+            - '--providers.docker.network=traefik'
         ports:
             - 443:443
         networks:
             - traefik
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
-            - ./traefik/static.yml:/etc/traefik/traefik.yml:ro
             - ./traefik/acme.json:/acme.json:rw
         labels:
             - "traefik.enable=true"
@@ -49,7 +55,7 @@ services:
             AUTH0_DOMAIN: 'fleet-manager.eu.auth0.com'
             AUTH0_CLIENT_ID: ${AUTH0_CLIENT_ID}
             AUTH0_API_AUDIENCE: ${AUTH0_API_AUDIENCE}
-            CORS_ALLOW_ORIGIN: '^https://fleet-manager.space$'
+            CORS_ALLOW_ORIGIN: '^https://fleet-manager.space$$'
     apache:
         image: 186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-spa-apache:${APP_VERSION:-prod-latest}
         hostname: apache
