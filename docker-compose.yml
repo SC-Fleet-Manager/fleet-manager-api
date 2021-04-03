@@ -1,12 +1,12 @@
 version: '3.5'
 services:
     php:
-        image: fleet-manager-api-php:latest
+        image: 186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-api-php:test-latest
         hostname: php
         depends_on:
             - redis
     apache:
-        image: fleet-manager-api-apache:latest
+        image: 186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-api-apache:test-latest
         hostname: apache
         environment:
             PHP_HANDLER_HOST: php:9000

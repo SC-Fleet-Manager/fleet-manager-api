@@ -1,5 +1,4 @@
 parameters:
-    env(REDIS_DSN): ''
     currency: 'USD'
     env(PAYPAL_CHECKOUT_CLIENT_ID): ''
     env(PAYPAL_CHECKOUT_CLIENT_SECRET): ''

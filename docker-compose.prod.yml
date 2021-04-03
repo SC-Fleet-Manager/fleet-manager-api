@@ -6,16 +6,22 @@ volumes:
     redis_db: ~
 services:
     traefik:
-        image: traefik:v2.3
+        image: traefik:v2.4
         hostname: traefik
         restart: unless-stopped
         command:
             - '--api.dashboard=true'
             - '--accesslog=true'
-            - '--log.level=DEBUG'
+            - '--accesslog.format=json'
+            - '--log.format=json'
+            - '--log.level=INFO'
             - '--entrypoints.web-secure.address=:443'
             - '--providers.docker.exposedbydefault=false'
             - '--providers.docker.network=traefik'
+            - '--certificatesresolvers.route53.acme.email=fleet-manager@protonmail.com'
+            - '--certificatesresolvers.route53.acme.storage=acme.json'
+            - '--certificatesresolvers.route53.acme.dnschallenge=true'
+            - '--certificatesresolvers.route53.acme.dnschallenge.provider=route53'
         ports:
             - 443:443
         networks:
@@ -23,15 +29,18 @@ services:
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
             - ./traefik/acme.json:/acme.json:rw
-        labels:
-            - "traefik.enable=true"
-            - "traefik.http.routers.dashboard.rule=Host(`traefik.fleet-manager.space`)"
-            - "traefik.http.routers.dashboard.tls=true"
-            - "traefik.http.routers.dashboard.entrypoints=web-secure"
-            - "traefik.http.routers.dashboard.service=api@internal"
-            - "traefik.http.services.dashboard.loadbalancer.server.port=8080"
+#        labels:
+#            TODO : add HTTP basic
+#            - "traefik.enable=true"
+#            - "traefik.http.routers.dashboard.rule=Host(`traefik.fleet-manager.space`)"
+#            - "traefik.http.routers.dashboard.tls=true"
+#            - "traefik.http.routers.dashboard.tls.certresolver=route53"
+#            - "traefik.http.routers.dashboard.tls.domains[0].main=*.fleet-manager.space"
+#            - "traefik.http.routers.dashboard.entrypoints=web-secure"
+#            - "traefik.http.routers.dashboard.service=api@internal"
+#            - "traefik.http.services.dashboard.loadbalancer.server.port=8080"
     php:
-        image: 186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-spa-php:${APP_VERSION:-prod-latest}
+        image: 186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-api-php:${APP_VERSION:-prod-latest}
         hostname: php
         restart: unless-stopped
         env_file: php.env
@@ -40,14 +49,13 @@ services:
         environment:
             APP_ENV: prod
             FUNDING_ORDER_CAPTURE_ADDRESSES: 'fleet-manager@protonmail.com'
-            MONOLOG_MAILER_TO: 'fleet-manager@protonmail.com'
             PAYPAL_CHECKOUT_WEBHOOK_ID: '72Y11928S1077440L'
             PAYPAL_CHECKOUT_MODE: 'sandbox'
             DEFAULT_URI: 'https://fleet-manager.space'
             AUTH0_DOMAIN: 'fleet-manager.eu.auth0.com'
             CORS_ALLOW_ORIGIN: '^https://fleet-manager.space$$'
     apache:
-        image: 186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-spa-apache:${APP_VERSION:-prod-latest}
+        image: 186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-api-apache:${APP_VERSION:-prod-latest}
         hostname: apache
         restart: unless-stopped
         depends_on:
@@ -63,6 +71,8 @@ services:
             - "traefik.enable=true"
             - "traefik.http.routers.fleet-manager_api.rule=Host(`api.fleet-manager.space`)"
             - "traefik.http.routers.fleet-manager_api.tls=true"
+            - "traefik.http.routers.fleet-manager_api.tls.certresolver=route53"
+            - "traefik.http.routers.fleet-manager_api.tls.domains[0].main=*.fleet-manager.space"
             - "traefik.http.routers.fleet-manager_api.entrypoints=web-secure"
             - "traefik.http.services.fleet-manager_api.loadbalancer.server.port=80"
     redis:
