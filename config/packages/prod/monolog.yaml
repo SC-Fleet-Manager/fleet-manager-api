@@ -1,24 +1,34 @@
 parameters:
-    env(MONOLOG_MAILER_TO): 'root@localhost'
+    env(MONOLOG_MAILER_TO_0): 'root@localhost'
+    env(MONOLOG_MAILER_TO_1): 'root@localhost'
 
 monolog:
     handlers:
         main:
+            type: stream
+            path: "php://stderr"
+            level: debug
+            formatter: monolog.formatter.json
+            channels: ["!event"]
+        ################
+        fingers:
             type: fingers_crossed
             action_level: error
             handler: dedup_mail
             excluded_http_codes: [404, 405]
-            buffer_size:  50 # How many messages should be saved? Prevent memory leaks
+            buffer_size: 50
         dedup_mail:
             type: deduplication
             time: 60 # no duplicated messages within 60 seconds
-            store: '%kernel.logs_dir%/monolog_handler_deduplicated'
+            store: '/tmp/monolog_handler_deduplicated'
             handler: mailer
         mailer:
             type: symfony_mailer
             from_email: 'noreply@fleet-manager.space'
-            to_email: ['%env(MONOLOG_MAILER_TO)%']
-            subject: '[FM Monolog prod] Error : %%message%%'
+            to_email:
+                - '%env(MONOLOG_MAILER_TO_0)%'
+                - '%env(MONOLOG_MAILER_TO_1)%'
+            subject: '[FM API %kernel.environment%] Error : %%message%%'
             formatter: monolog.formatter.html
             content_type: text/html
         ################

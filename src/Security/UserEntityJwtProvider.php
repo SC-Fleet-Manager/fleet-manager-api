@@ -32,8 +32,8 @@ class UserEntityJwtProvider extends JwtUserProvider
         if ($user === null) {
             $user = new User(new UserId(new Ulid()), $username, new \DateTimeImmutable('now'));
 
-            $this->entityManager->persist($user);
-            $this->entityManager->flush();
+            $this->userRepository->save($user);
+            $user = $this->userRepository->findByAuth0Username($username); // refresh
         }
 
         return $user;

@@ -1,16 +1,17 @@
 PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
-UID := $(shell id -u)
-GID := $(shell id -g)
+USER_ID ?= $(shell id -u)
+GROUP_ID ?= $(shell id -g)
 DOCKER_COMPOSE?=docker-compose
 CONSOLE=bin/console
 PHPUNIT=bin/phpunit
 PHP_CS_FIXER=vendor/bin/php-cs-fixer
-EXEC_PHP=$(DOCKER_COMPOSE) exec -u ${UID}:${GID} php
-EXEC_PHP_NOTTY=$(DOCKER_COMPOSE) exec -T -u ${UID}:${GID} php
+EXEC_PHP=$(DOCKER_COMPOSE) exec -u ${USER_ID}:${GROUP_ID} php
+EXEC_PHP_NOTTY=$(DOCKER_COMPOSE) exec -T -u ${USER_ID}:${GROUP_ID} php
 EXEC_PHP_ROOT=$(DOCKER_COMPOSE) exec -u 0 php
-EXEC_MYSQL=$(DOCKER_COMPOSE) exec -T mysql
+EXEC_DB=$(DOCKER_COMPOSE) exec -T postgres
 EXEC_COMPOSER=$(EXEC_PHP) composer
 EXEC_CONSOLE=$(EXEC_PHP) $(CONSOLE)
+EXEC_CONSOLE_NOTTY=$(EXEC_PHP_NOTTY) $(CONSOLE)
 
 .PHONY: help
 help:
@@ -62,43 +63,41 @@ clean: clear								## clear and remove dependencies
 ##Databases
 ##---------------------------------------------------------------------------
 .PHONY: db-migrate db-dump db-reset-tests fixtures
-db-migrate: vendor								## execute all database migrations
-	$(EXEC_CONSOLE) doctrine:migrations:migrate -n
-db-dump:									## create a database dump to ./dumps/
-	$(EXEC_MYSQL) sh -c 'exec mysqldump -uroot -p"$${MYSQL_ROOT_PASSWORD}" "$${MYSQL_DATABASE}"' > ./dumps/dump-$(shell date -Iminutes).sql
-db-reset: vendor								## recreate the database without data
-	-$(EXEC_CONSOLE) doctrine:database:drop --if-exists --force
-	$(EXEC_CONSOLE) doctrine:database:create
+db-migrate:									## execute all database migrations
+	$(EXEC_CONSOLE_NOTTY) doctrine:migrations:migrate -n
+db-reset:									## recreate the database without data
+	-$(EXEC_CONSOLE_NOTTY) doctrine:database:drop --if-exists --force
+	$(EXEC_CONSOLE_NOTTY) doctrine:database:create
 	$(MAKE) db-migrate
-db-reset-tests: vendor								## recreate the database without data for testing
-	-$(EXEC_CONSOLE) --env=test doctrine:database:drop --if-exists --force
-	$(EXEC_CONSOLE) --env=test doctrine:database:create
-	$(EXEC_CONSOLE) --env=test doctrine:migrations:migrate -n
-fixtures: vendor								## executes all fixtures
-	$(EXEC_CONSOLE) hautelook:fixtures:load -n
+db-reset-tests:									## recreate the database without data for testing
+	-$(EXEC_CONSOLE_NOTTY) --env=test doctrine:database:drop --if-exists --force
+	$(EXEC_CONSOLE_NOTTY) --env=test doctrine:database:create
+	$(EXEC_CONSOLE_NOTTY) --env=test doctrine:migrations:migrate -n
+fixtures:									## executes all fixtures
+	$(EXEC_CONSOLE_NOTTY) hautelook:fixtures:load -n
 
 ##
 ##QA
 ##---------------------------------------------------------------------------
 .PHONY: qa tests phpunit-tests functional-tests phpcsfix lint-twig lint-yaml
-qa: phpcsfix lint-twig lint-yaml tests					## launch tests + syntax checks
+qa: phpcsfix lint-twig lint-yaml tests									## launch tests + syntax checks
 
 tests: unit-tests acceptance-tests integration-tests end2end-tests					## launch all tests
 unit-tests:												## launch unit tests
 	# $(EXEC_PHP_NOTTY) $(PHPUNIT) --testsuite=unit $(c)
 acceptance-tests:											## launch acceptance tests
 	$(EXEC_PHP_NOTTY) $(PHPUNIT) --testsuite=acceptance $(c)
-integration-tests: db-reset-tests									## launch integration tests
+integration-tests:											## launch integration tests
 	$(EXEC_PHP_NOTTY) $(PHPUNIT) --testsuite=integration $(c)
-end2end-tests: db-reset-tests										## launch functional tests
+end2end-tests:												## launch functional tests
 	$(EXEC_PHP_NOTTY) $(PHPUNIT) --testsuite=e2e $(c)
 
 phpcsfix:												## fix syntax of all PHP sources
-	$(EXEC_PHP) $(PHP_CS_FIXER) --allow-risky=yes fix
+	$(EXEC_PHP_NOTTY) $(PHP_CS_FIXER) --allow-risky=yes fix
 lint-twig:												## check syntax of templates
-	$(EXEC_CONSOLE) lint:twig templates
+	$(EXEC_CONSOLE_NOTTY) lint:twig templates
 lint-yaml:												## check syntax of yaml files
-	$(EXEC_CONSOLE) lint:yaml --parse-tags *.yml fixtures/*.yaml
+	$(EXEC_CONSOLE_NOTTY) lint:yaml --parse-tags *.yml fixtures/*.yaml
 
 # Files generation
 vendor: composer.lock
