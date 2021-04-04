@@ -33,22 +33,13 @@ Customize the ports according to your needs, configure your dev reverse-proxy, e
 make up
 ```
 
-**Prepare the database (create db & apply migrations)**
+**Prepare the database (create db & apply migrations & add fixtures)**
 ```
-make db-reset
-```
-
-**Install dependencies (yarn install)**
-```
-make yi
-```
-
-**Compile & Watch assets**
-```
-make watch
+make db-reset fixtures
 ```
 
 **Launch all tests**
 ```
+make db-reset-tests
 make tests
 ```

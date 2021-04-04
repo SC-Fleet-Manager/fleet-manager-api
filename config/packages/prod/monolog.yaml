@@ -3,6 +3,7 @@ parameters:
     env(MONOLOG_MAILER_TO_1): 'root@localhost'
 
 monolog:
+    channels: [ deprecation ]
     handlers:
         main:
             type: stream
@@ -36,3 +37,9 @@ monolog:
             type: console
             process_psr_3_messages: false
             channels: ["!event", "!doctrine"]
+        ################
+        deprecation:
+            type: stream
+            path: "php://stderr"
+            formatter: monolog.formatter.json
+            channels: [deprecation]
