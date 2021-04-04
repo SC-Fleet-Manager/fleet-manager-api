@@ -24,6 +24,8 @@ class ProfileService
         return new ProfileOutput(
             $userId,
             $user->getAuth0Username(),
+            $user->getProfile()->getNickname(),
+            $user->getProfile()->getPictureUrl(),
             $user->isSupporterVisible(),
             $user->getCoins(),
             $user->getCreatedAt(),

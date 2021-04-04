@@ -8,12 +8,17 @@ use App\Repository\UserRepository;
 use Auth0\JWTAuthBundle\Security\Auth0Service;
 use Auth0\JWTAuthBundle\Security\User\JwtUserProvider;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Ulid;
+use Webmozart\Assert\Assert;
 
-class UserEntityJwtProvider extends JwtUserProvider
+class UserEntityJwtProvider extends JwtUserProvider implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     public function __construct(
         private UserRepository $userRepository,
         private EntityManagerInterface $entityManager,
@@ -23,7 +28,18 @@ class UserEntityJwtProvider extends JwtUserProvider
 
     public function loadUserByJWT(\stdClass $jwt): UserInterface
     {
-        return $this->loadUserByUsername($jwt->sub);
+        /** @var User $user */
+        $user = $this->loadUserByUsername($jwt->sub);
+
+        try {
+            $profile = $this->auth0Service->getUserProfileByA0UID($jwt->token);
+            Assert::notNull($profile, 'UserProfile from Auth0 should not be null.');
+            $this->injectProfile($user, $profile);
+        } catch (\Throwable $e) {
+            $this->logger->warning('Unable to retrieve Auth0 profile : '.$e->getMessage(), ['exception' => $e, 'username' => $user->getUsername()]);
+        }
+
+        return $user;
     }
 
     public function loadUserByUsername($username): UserInterface
@@ -52,5 +68,19 @@ class UserEntityJwtProvider extends JwtUserProvider
     public function supportsClass($class): bool
     {
         return User::class === $class;
+    }
+
+    private function injectProfile(User $user, array $profile): void
+    {
+        $nickname = $profile['name'] ?? $profile['nickname'] ?? null;
+        if ($nickname !== null && ($profile['email'] ?? null) === $nickname) {
+            $nickname = explode('@', $nickname)[0];
+        }
+        $user->provideProfile(
+            nickname: $nickname,
+            pictureUrl: $profile['picture'] ?? null,
+            locale: $profile['locale'] ?? null,
+            email: $profile['email'] ?? null,
+        );
     }
 }

@@ -2,7 +2,9 @@
 
 namespace App\Tests\End2End\Controller\Profile;
 
+use App\Infrastructure\Security\FakeAuth0Service;
 use App\Tests\End2End\WebTestCase;
+use Auth0\JWTAuthBundle\Security\Auth0Service;
 
 class ProfileControllerTest extends WebTestCase
 {
@@ -17,6 +19,13 @@ class ProfileControllerTest extends WebTestCase
             SQL
         );
 
+        /** @var FakeAuth0Service $auth0Service */
+        $auth0Service = static::$container->get(Auth0Service::class);
+        $auth0Service->setUserProfile([
+            'name' => 'Ioni_nickname',
+            'picture' => 'https://example.com/picture.jpg',
+        ]);
+
         static::$client->xmlHttpRequest('GET', '/api/profile', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
@@ -27,6 +36,8 @@ class ProfileControllerTest extends WebTestCase
         static::assertSame([
             'id' => '00000000000000000000000001',
             'auth0Username' => 'Ioni',
+            'nickname' => 'Ioni_nickname',
+            'pictureUrl' => 'https://example.com/picture.jpg',
             'supporterVisible' => false,
             'coins' => 5,
             'createdAt' => '2021-03-20T14:50:00+00:00',

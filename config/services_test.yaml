@@ -17,3 +17,8 @@ services:
         arguments:
             $client: '@App\Tests\Service\PayPal\MockPayPalHttpClient'
             $verifyWebhookSignatureFactory: '@App\Tests\Service\PayPal\MockVerifyWebhookSignatureFactory'
+
+    App\Infrastructure\Security\FakeAuth0Service:
+        parent: 'jwt_auth.auth0_service'
+
+    Auth0\JWTAuthBundle\Security\Auth0Service: '@App\Infrastructure\Security\FakeAuth0Service'
