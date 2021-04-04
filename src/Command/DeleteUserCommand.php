@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Event\CitizenDeletedEvent;
+use App\Infrastructure\Repository\User\DoctrineUserRepository;
 use App\Repository\FundingRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,7 +18,7 @@ class DeleteUserCommand extends Command
     protected static $defaultName = 'app:delete-user';
 
     public function __construct(
-        private UserRepository $userRepository,
+        private DoctrineUserRepository $userRepository,
         private FundingRepository $fundingRepository,
         private EntityManagerInterface $entityManager,
         private EventDispatcherInterface $eventDispatcher
