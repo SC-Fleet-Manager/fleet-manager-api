@@ -6,6 +6,7 @@ use App\Application\Repository\UserRepositoryInterface;
 use App\Domain\UserId;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\Persistence\ManagerRegistry;
 
 class DoctrineUserRepository extends ServiceEntityRepository implements UserRepositoryInterface
@@ -35,6 +36,10 @@ class DoctrineUserRepository extends ServiceEntityRepository implements UserRepo
     public function save(User $user): void
     {
         $this->_em->persist($user);
-        $this->_em->flush();
+        try {
+            $this->_em->flush();
+        } catch (UniqueConstraintViolationException $e) {
+            // alright, it's already persisted
+        }
     }
 }

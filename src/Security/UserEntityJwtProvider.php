@@ -2,9 +2,9 @@
 
 namespace App\Security;
 
+use App\Application\Repository\UserRepositoryInterface;
 use App\Domain\UserId;
 use App\Entity\User;
-use App\Repository\UserRepository;
 use Auth0\JWTAuthBundle\Security\Auth0Service;
 use Auth0\JWTAuthBundle\Security\User\JwtUserProvider;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,7 +20,7 @@ class UserEntityJwtProvider extends JwtUserProvider implements LoggerAwareInterf
     use LoggerAwareTrait;
 
     public function __construct(
-        private UserRepository $userRepository,
+        private UserRepositoryInterface $userRepository,
         private EntityManagerInterface $entityManager,
         private Auth0Service $auth0Service
     ) {

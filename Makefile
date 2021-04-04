@@ -84,7 +84,7 @@ qa: phpcsfix lint-twig lint-yaml tests									## launch tests + syntax checks
 
 tests: unit-tests acceptance-tests integration-tests end2end-tests					## launch all tests
 unit-tests:												## launch unit tests
-	# $(EXEC_PHP_NOTTY) $(PHPUNIT) --testsuite=unit $(c)
+	$(EXEC_PHP_NOTTY) $(PHPUNIT) --testsuite=unit $(c)
 acceptance-tests:											## launch acceptance tests
 	$(EXEC_PHP_NOTTY) $(PHPUNIT) --testsuite=acceptance $(c)
 integration-tests:											## launch integration tests
