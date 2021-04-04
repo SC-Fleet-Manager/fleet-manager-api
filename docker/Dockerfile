@@ -32,7 +32,6 @@ COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 # prod|dev
 ARG ENV=prod
 
-COPY src src
 COPY .env* composer.json composer.lock symfony.lock ./
 
 ENV COMPOSER_ALLOW_SUPERUSER 1
@@ -40,11 +39,18 @@ ENV COMPOSER_MEMORY_LIMIT -1
 ENV COMPOSER_HOME /.composer
 ENV APP_ENV $ENV
 RUN if [ $ENV = 'prod' ]; then \
-        composer install --no-scripts --no-suggest --ignore-platform-reqs --optimize-autoloader --classmap-authoritative --no-dev --prefer-dist --no-progress --no-interaction; \
+        composer install --no-scripts --no-suggest --no-autoloader --prefer-dist --no-progress --no-interaction --no-dev --ignore-platform-reqs; \
     else \
-        composer install --no-scripts --no-suggest --optimize-autoloader --classmap-authoritative --prefer-dist --no-progress --no-interaction; \
+        composer install --no-scripts --no-suggest --no-autoloader --prefer-dist --no-progress --no-interaction; \
+    fi;
+
+COPY src src
+RUN if [ $ENV = 'prod' ]; then \
+        composer dump-autoload --optimize --classmap-authoritative --no-dev; \
+    else \
+        composer dump-autoload --optimize --classmap-authoritative; \
     fi; \
-    composer dump-env $ENV
+    composer dump-env $ENV;
 
 ####################################
 FROM runtime_php as build_php
@@ -126,8 +132,9 @@ COPY bin/phpunit bin/
 COPY tests tests
 COPY phpunit.xml.dist ./
 
-RUN composer dump-autoload \
+RUN composer dump-autoload --optimize --classmap-authoritative; \
+    composer dump-env $ENV; \
     # install phpunit
-    && bin/phpunit --version
+    bin/phpunit --version;
 
 USER www-data

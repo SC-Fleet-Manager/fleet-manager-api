@@ -69,3 +69,5 @@ services:
     App\Application\Repository\UserRepositoryInterface: '@App\Infrastructure\Repository\User\DoctrineUserRepository'
     App\Application\Repository\PatchNoteRepositoryInterface: '@App\Infrastructure\Repository\PatchNote\DoctrinePatchNoteRepository'
     App\Application\Repository\FleetRepositoryInterface: '@App\Infrastructure\Repository\Fleet\DoctrineFleetRepository'
+
+    App\Application\Common\Clock: '@App\Infrastructure\Common\SystemClock'

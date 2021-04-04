@@ -9,21 +9,26 @@ use App\Entity\Fleet;
 class InMemoryFleetRepository implements FleetRepositoryInterface
 {
     /** @var Fleet[] */
-    private array $fleetByUser = [];
+    private array $fleets = [];
 
     /**
      * @param Fleet[] $fleets
      */
     public function setFleets(array $fleets): void
     {
-        $this->fleetByUser = [];
+        $this->fleets = [];
         foreach ($fleets as $fleet) {
-            $this->fleetByUser[(string) $fleet->getUserId()] = $fleet;
+            $this->fleets[(string) $fleet->getUserId()] = $fleet;
         }
     }
 
     public function getFleetByUser(UserId $userId): ?Fleet
     {
-        return $this->fleetByUser[(string) $userId] ?? null;
+        return $this->fleets[(string) $userId] ?? null;
+    }
+
+    public function save(Fleet $fleet): void
+    {
+        $this->fleets[(string) $fleet->getUserId()] = $fleet;
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Tests\Unit\Entity;
 
-use App\Domain\FleetId;
 use App\Domain\ShipId;
 use App\Domain\UserId;
 use App\Entity\Fleet;
@@ -75,6 +74,6 @@ class ShipTest extends TestCase
 
     private static function createFleet(): Fleet
     {
-        return new Fleet(FleetId::fromString('00000000000000000000000010'), UserId::fromString('00000000000000000000000020'), new \DateTimeImmutable('2021-01-01T10:00:00Z'));
+        return new Fleet(UserId::fromString('00000000000000000000000020'), new \DateTimeImmutable('2021-01-01T10:00:00Z'));
     }
 }

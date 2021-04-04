@@ -9,7 +9,9 @@ use Webmozart\Assert\Assert;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="ships")
+ * @ORM\Table(name="ships", uniqueConstraints={
+ *     @ORM\UniqueConstraint(name="fleetid_name_idx", columns={"fleet_id", "name"})
+ * })
  */
 class Ship
 {
@@ -21,11 +23,12 @@ class Ship
 
     /**
      * @ORM\ManyToOne(targetEntity="Fleet", inversedBy="ships")
+     * @ORM\JoinColumn(name="fleet_id", referencedColumnName="user_id")
      */
     private Fleet $fleet;
 
     /**
-     * @ORM\Column(name="name", type="string", length=32)
+     * @ORM\Column(name="name", type="string", length=32, options={"collation":"en_strict"})
      */
     private string $name;
 
@@ -42,9 +45,7 @@ class Ship
     public function __construct(ShipId $id, Fleet $fleet, string $name, ?string $imageUrl = null, int $quantity = 1)
     {
         Assert::greaterThanEq($quantity, 1);
-        if ($imageUrl !== null) {
-            Assert::startsWith($imageUrl, 'http');
-        }
+        Assert::startsWith($imageUrl ?? 'http', 'http');
         Assert::lengthBetween($name, 2, 32);
         Assert::maxLength($imageUrl, 1023);
         $this->id = $id->getId();

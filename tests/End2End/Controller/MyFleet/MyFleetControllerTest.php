@@ -15,12 +15,12 @@ class MyFleetControllerTest extends WebTestCase
         static::$connection->executeStatement(<<<SQL
                 INSERT INTO users(id, roles, auth0_username, created_at)
                 VALUES ('00000000-0000-0000-0000-000000000001', '["ROLE_USER"]', 'Ioni', '2021-01-01T10:00:00Z');
-                INSERT INTO fleets(id, user_id, updated_at)
-                VALUES ('00000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000001', '2021-01-02T10:00:00Z');
+                INSERT INTO fleets(user_id, updated_at)
+                VALUES ('00000000-0000-0000-0000-000000000001', '2021-01-02T10:00:00Z');
                 INSERT INTO ships(id, fleet_id, name, image_url, quantity)
-                VALUES ('00000000-0000-0000-0000-000000000020', '00000000-0000-0000-0000-000000000010', 'Avenger', null, 2),
-                       ('00000000-0000-0000-0000-000000000021', '00000000-0000-0000-0000-000000000010', 'Mercury Star Runner', 'https://example.com/mercury.jpg', 10),
-                       ('00000000-0000-0000-0000-000000000022', '00000000-0000-0000-0000-000000000010', 'Javelin', 'https://example.com/javelin.jpg', 1);
+                VALUES ('00000000-0000-0000-0000-000000000020', '00000000-0000-0000-0000-000000000001', 'Avenger', null, 2),
+                       ('00000000-0000-0000-0000-000000000021', '00000000-0000-0000-0000-000000000001', 'Mercury Star Runner', 'https://example.com/mercury.jpg', 10),
+                       ('00000000-0000-0000-0000-000000000022', '00000000-0000-0000-0000-000000000001', 'Javelin', 'https://example.com/javelin.jpg', 1);
             SQL
         );
 
@@ -31,8 +31,11 @@ class MyFleetControllerTest extends WebTestCase
 
         static::assertSame(200, static::$client->getResponse()->getStatusCode());
         $json = json_decode(static::$client->getResponse()->getContent(), true);
+
+        usort($json['ships']['items'], static function (array $ship1, array $ship2) {
+            return $ship1['id'] <=> $ship2['id'];
+        });
         static::assertSame([
-            'id' => (string) Ulid::fromString('00000000-0000-0000-0000-000000000010'),
             'ships' => [
                 'items' => [
                     [
