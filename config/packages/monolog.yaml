@@ -1,2 +1,2 @@
 monolog:
-    channels: ['funding', 'profile', 'login']
+    channels: ['funding']

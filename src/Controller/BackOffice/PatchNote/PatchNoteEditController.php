@@ -22,9 +22,6 @@ class PatchNoteEditController extends AbstractController
     ) {
     }
 
-    /**
-     * @
-     */
     #[Route("/bo/patch-note/edit/{id}", name: "bo_patch_note_edit", methods: ["GET", "POST"])]
     public function __invoke(
         Request $request, string $id
