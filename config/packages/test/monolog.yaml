@@ -11,11 +11,7 @@ monolog:
             path: "%kernel.logs_dir%/%kernel.environment%-error.log"
             level: info
         ####################
-        filter:
-            type: filter
-            handler: streamed_main
-            min_level: 'info'
-            max_level: 'warning'
         streamed_main:
             type: stream
             path: "%kernel.logs_dir%/%kernel.environment%.log"
+            level: debug

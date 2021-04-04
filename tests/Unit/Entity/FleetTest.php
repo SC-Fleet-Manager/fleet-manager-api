@@ -2,7 +2,7 @@
 
 namespace App\Tests\Unit\Entity;
 
-use App\Domain\FleetId;
+use App\Domain\ShipId;
 use App\Domain\UserId;
 use App\Entity\Fleet;
 use PHPUnit\Framework\TestCase;
@@ -14,9 +14,27 @@ class FleetTest extends TestCase
      */
     public function it_should_create_regular_fleet(): void
     {
-        $fleet = new Fleet(FleetId::fromString('00000000000000000000000001'), UserId::fromString('00000000000000000000000010'), new \DateTimeImmutable('2021-01-01T10:00:00Z'));
-        static::assertSame('00000000000000000000000001', (string) $fleet->getId());
+        $fleet = new Fleet(UserId::fromString('00000000000000000000000010'), new \DateTimeImmutable('2021-01-01T10:00:00Z'));
         static::assertSame('00000000000000000000000010', (string) $fleet->getUserId());
         static::assertEquals(new \DateTimeImmutable('2021-01-01T10:00:00Z'), $fleet->getUpdatedAt());
+    }
+
+    /**
+     * @test
+     * @dataProvider it_should_return_same_name_ship_provide
+     */
+    public function it_should_return_same_name_ship(string $name): void
+    {
+        $fleet = new Fleet(UserId::fromString('00000000000000000000000010'), new \DateTimeImmutable('2021-01-01T10:00:00Z'));
+        $fleet->addShip(ShipId::fromString('00000000000000000000000001'), 'Avenger', null, 1, new \DateTimeImmutable('2021-01-02T10:00:00Z'));
+
+        static::assertNotNull($fleet->getShipByName($name));
+    }
+
+    public function it_should_return_same_name_ship_provide(): iterable
+    {
+        yield ['Avenger'];
+        yield ['ävênger'];
+        yield [' -Av,engêr '];
     }
 }

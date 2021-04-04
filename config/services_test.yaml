@@ -20,5 +20,4 @@ services:
 
     App\Infrastructure\Security\FakeAuth0Service:
         parent: 'jwt_auth.auth0_service'
-
     Auth0\JWTAuthBundle\Security\Auth0Service: '@App\Infrastructure\Security\FakeAuth0Service'

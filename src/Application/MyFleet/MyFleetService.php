@@ -29,7 +29,6 @@ class MyFleetService
         }
 
         return new MyFleetOutput(
-            id: $fleet->getId(),
             ships: new MyFleetShipsCollectionOutput(items: $shipOutputItems, count: count($shipOutputItems)),
             updatedAt: $fleet->getUpdatedAt(),
         );

@@ -10,3 +10,7 @@ services:
     App\Application\Repository\UserRepositoryInterface: '@App\Infrastructure\Repository\User\InMemoryUserRepository'
     App\Application\Repository\PatchNoteRepositoryInterface: '@App\Infrastructure\Repository\PatchNote\InMemoryPatchNoteRepository'
     App\Application\Repository\FleetRepositoryInterface: '@App\Infrastructure\Repository\Fleet\InMemoryFleetRepository'
+
+    App\Application\Common\Clock: '@App\Infrastructure\Common\FakeClock'
+
+    Symfony\Component\Validator\Validator\ValidatorInterface: '@validator'
