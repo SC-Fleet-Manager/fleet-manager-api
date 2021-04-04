@@ -11,13 +11,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class DeleteOldCreatedFundingCommand extends Command
 {
-    private FundingRepository $fundingRepository;
-    private SymfonyStyle $io;
-
-    public function __construct(FundingRepository $fundingRepository)
+    public function __construct(private FundingRepository $fundingRepository)
     {
         parent::__construct();
-        $this->fundingRepository = $fundingRepository;
     }
 
     protected function configure(): void
@@ -27,9 +23,9 @@ class DeleteOldCreatedFundingCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->io = new SymfonyStyle($input, $output);
+        $io = new SymfonyStyle($input, $output);
 
-        $answer = $this->io->askQuestion(new ConfirmationQuestion('Would you really want to delete old created fundings?', false));
+        $answer = $io->askQuestion(new ConfirmationQuestion('Would you really want to delete old created fundings?', false));
         if ($answer) {
             $this->fundingRepository->deleteOldCreated(new \DateTimeImmutable('-1 week'));
         }

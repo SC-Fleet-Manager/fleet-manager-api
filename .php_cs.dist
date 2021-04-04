@@ -1,15 +1,11 @@
 <?php
 
-$finder = PhpCsFixer\Finder::create()
-    ->in('src/')
-    ->in('tests/')
-;
-
-return PhpCsFixer\Config::create()
+return (new PhpCsFixer\Config())
     ->setRules([
         '@Symfony' => true,
         'array_syntax' => ['syntax' => 'short'],
-        '@PHP73Migration' => true,
+        '@PHP74Migration' => true,
+        '@PHP80Migration' => true,
         'combine_consecutive_unsets' => true,
         'no_extra_consecutive_blank_lines' => ['break', 'continue', 'extra', 'return', 'throw', 'use', 'parenthesis_brace_block', 'square_brace_block', 'curly_brace_block'],
         'no_useless_else' => true,
@@ -31,6 +27,8 @@ return PhpCsFixer\Config::create()
             'use_escape_sequences_in_strings' => true,
         ],
         'self_accessor' => true,
+        'php_unit_test_case_static_method_calls' => ['call_type' => 'static'],
+        'php_unit_method_casing' => ['case' => 'snake_case'],
     ])
-    ->setFinder($finder)
+    ->setFinder(PhpCsFixer\Finder::create()->in(['src/', 'tests/']))
 ;

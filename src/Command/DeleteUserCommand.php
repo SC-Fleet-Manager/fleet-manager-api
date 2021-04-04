@@ -14,28 +14,20 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class DeleteUserCommand extends Command
 {
-    private UserRepository $userRepository;
-    private EntityManagerInterface $entityManager;
-    private EventDispatcherInterface $eventDispatcher;
-    private FundingRepository $fundingRepository;
+    protected static $defaultName = 'app:delete-user';
 
     public function __construct(
-        UserRepository $userRepository,
-        FundingRepository $fundingRepository,
-        EntityManagerInterface $entityManager,
-        EventDispatcherInterface $eventDispatcher
+        private UserRepository $userRepository,
+        private FundingRepository $fundingRepository,
+        private EntityManagerInterface $entityManager,
+        private EventDispatcherInterface $eventDispatcher
     ) {
         parent::__construct();
-        $this->userRepository = $userRepository;
-        $this->entityManager = $entityManager;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->fundingRepository = $fundingRepository;
     }
 
     protected function configure(): void
     {
-        $this->setName('app:delete-user')
-            ->addArgument('userId', InputArgument::REQUIRED);
+        $this->addArgument('userId', InputArgument::REQUIRED);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -46,12 +38,8 @@ class DeleteUserCommand extends Command
             throw new \RuntimeException('User does not exist.');
         }
 
-        $citizen = $user->getCitizen();
-        if ($citizen !== null) {
-            $this->entityManager->remove($citizen);
-            // TODO : if transaction rollbacks, the event is inconsistent : set citizen + its organizations in Event and dispatch it after commit()
-            $this->eventDispatcher->dispatch(new CitizenDeletedEvent($citizen));
-        }
+        // TODO : add delete request to Auth0
+
         $fundings = $this->fundingRepository->findBy(['user' => $user]);
         foreach ($fundings as $funding) {
             $funding->setUser(null);

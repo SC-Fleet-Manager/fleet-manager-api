@@ -48,7 +48,7 @@ class PaypalCheckout implements PaypalCheckoutInterface
         $orderRequest->body = [
             'intent' => 'CAPTURE',
             'payer' => [
-                'email_address' => $user->getEmail(),
+                'email_address' => null,
             ],
             'application_context' => [
                 'locale' => str_replace('_', '-', $locale),
@@ -62,7 +62,7 @@ class PaypalCheckout implements PaypalCheckoutInterface
                 [
                     'reference_id' => self::BACKING_REFID,
                     'description' => 'Fleet Manager backing',
-                    'custom_id' => $funding->getId()->toString() ?? '',
+                    'custom_id' => (string) $funding->getId(),
                     'amount' => [
                         'currency_code' => 'USD',
                         'value' => $amountValue,
@@ -90,11 +90,7 @@ class PaypalCheckout implements PaypalCheckoutInterface
 
         try {
             $response = $this->client->execute($orderRequest);
-        } catch (HttpException $e) {
-            if (!isset($e->headers['Content-Type'])) {
-                $this->fundingLogger->error('[Create Order] An error has occurred when creating an order on PayPal.', ['exception' => $e]);
-                throw new \LogicException('Unable to create an order on PayPal.');
-            }
+        } catch (\Throwable $e) {
             $error = json_decode($e->getMessage(), true);
             $this->fundingLogger->error('[Create Order] An error has occurred when creating an order on PayPal.', ['exception' => $e, 'error' => $error]);
 
@@ -146,7 +142,7 @@ class PaypalCheckout implements PaypalCheckoutInterface
             }
             $funding->setPaypalPurchase($this->transformPurchase($purchaseUnit));
             foreach ($purchaseUnit->payments->captures as $paymentCapture) {
-                if ($paymentCapture->custom_id !== $funding->getId()->toString()) {
+                if ($paymentCapture->custom_id !== (string) $funding->getId()) {
                     continue;
                 }
 
@@ -215,7 +211,7 @@ class PaypalCheckout implements PaypalCheckoutInterface
             $funding->setPaypalPurchase($this->transformPurchase($purchaseUnit));
             if (isset($purchaseUnit->payments->captures)) {
                 foreach ($purchaseUnit->payments->captures as $paymentCapture) {
-                    if ($paymentCapture->custom_id !== $funding->getId()->toString()) {
+                    if ($paymentCapture->custom_id !== (string) $funding->getId()) {
                         continue;
                     }
                     $funding->setPaypalStatus($paymentCapture->status);

@@ -1,284 +1,36 @@
-include:
-    - citizen.yaml
-
 App\Entity\User:
     user_ioni:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("d92e229e-e743-4583-905a-e02c57eacfe0"))>']
-        nickname: 'Ioni'
-        email: 'ioni@example.com'
-        emailConfirmed: true
-        password: '123456'
-        discordId: '123456789001'
-        discordTag: '0001'
-        token: '4682bc58961264de31d38bf6af18cfe717ab2ba59f34b906668b4d7c0ca65b33'
-        apiToken: 'e41818d1d9d1568faefdf3f11274718a73e09a871cc4cc2bd176da0339414b8e'
-        citizen: '@citizen_ionni'
-        publicChoice: 'public'
-        createdAt: '<(new \DateTimeImmutable("2019-04-02 11:22:33"))>'
-        lastConnectedAt: '<(new \DateTimeImmutable("2019-04-03 22:33:44"))>'
+        __construct:
+            - '<(new \App\Domain\UserId(\Symfony\Component\Uid\Ulid::fromString("01F17XPBYW95G5AT8NHFXA28Q0")))>'
+            - 'Ioni'
+            - '<(new \DateTimeImmutable("2019-04-02 11:22:33"))>'
         coins: 5133
         roles: ['ROLE_USER', 'ROLE_ADMIN']
         lastPatchNoteReadAt: '<(new \DateTimeImmutable("2019-04-04 11:22:33"))>'
     user_ashuvidz:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("4cbc6f40-3348-4e0f-a443-d4a4325eb728"))>']
-        nickname: 'Ashuvidz'
-        discordId: '123456789002'
-        discordTag: '0002'
-        token: '7eqv9mrnehcyzwmwaz42vjz8r15xj3mjznqycrwxh58mne2lyjp74bzs83ic9ok6'
-        apiToken: 'v86zuv8ogplyv69hh4j798pjca8abilpcuvale3qpzuptsnpo259l3zj701fwt58'
-        citizen: '@citizen_ashuvidz'
-        publicChoice: 'private'
-        createdAt: '<(new \DateTimeImmutable("2019-04-03 11:22:33"))>'
-        lastConnectedAt: '<(new \DateTimeImmutable("2019-04-04 22:33:44"))>'
+        __construct:
+            - '<(new \App\Domain\UserId(\Symfony\Component\Uid\Ulid::fromString("01F17XSXB9KDCJ6SAR1320RH9Q")))>'
+            - 'Ashuvidz'
+            - '<(new \DateTimeImmutable("2019-04-03 11:22:33"))>'
         coins: 700
         roles: ['ROLE_USER', 'ROLE_ADMIN']
         lastPatchNoteReadAt: '<(new \DateTimeImmutable("2019-04-01 11:22:33"))>'
-    user_nocitizen:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("2a288e5d-f83f-4b0d-9275-3351b8cb3848"))>']
-        nickname: 'NoCitizen'
-        discordId: '123456789003'
-        discordTag: '0003'
-        token: '18vkFOQV3iWVggC4xuvft11FXPZUiqLzMyxTjRZMECnQTD10lvXLWB1TFt9CUOaT'
-        apiToken: 'tPqQe1CCvCmAVlwPmuP6oFnCD6tRaf6IrsnQRD4gopReK0DU3W460VsgCldnEHgD'
-        citizen: null
-        publicChoice: 'private'
-        createdAt: '<(new \DateTimeImmutable("2019-04-04 11:22:33"))>'
-        lastConnectedAt: '<(new \DateTimeImmutable("2019-04-05 22:33:44"))>'
     user_gardiens1:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("46380677-9915-4b7c-87ba-418840cb1772"))>']
-        nickname: 'Gardien1'
-        discordId: '123456789004'
-        discordTag: '0004'
-        token: 'AoINntaTQPdHZJDrPfDkI687GOkvhAu97LYiDQ2yNmbi4SVMxqlOHKUuXPSvrg4M'
-        apiToken: 'WTuPrMeBZNrSlXvNEXzgAVJafHb1RLmkQBdWzeTZWrheAg0YNqqdMGvvJPJPtGAO'
-        citizen: '@citizen_gardiens1'
-        publicChoice: 'public'
-        createdAt: '<(new \DateTimeImmutable("2019-04-05 11:22:33"))>'
-        lastConnectedAt: '<(new \DateTimeImmutable("2019-04-06 22:33:44"))>'
+        __construct:
+            - '<(new \App\Domain\UserId(\Symfony\Component\Uid\Ulid::fromString("01F17XT5MRZ31J1MMXMJQT5VE2")))>'
+            - 'Gardien1'
+            - '<(new \DateTimeImmutable("2019-04-05 11:22:33"))>'
         coins: 90
         lastPatchNoteReadAt: null
-    user_ihaveships:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("503e3bc1-cff9-42b8-9f27-a6064b0a78f2"))>']
-        nickname: 'iHaveShips'
-        discordId: '123456789005'
-        discordTag: '0005'
-        token: 'Kowz1B5krJ7LlxsTelMs0hKTiTvlrKe8TxM28uGAgNTLmMCST0yG6tmm3I10O0wl'
-        apiToken: 'oHdYkwCwDSUnqAW6uSkpljMRXQoNsnH25CE2daQLzXveIOJLi3v0lNOSgMlFErEc'
-        citizen: '@citizen_ihaveships'
-        publicChoice: 'public'
-        createdAt: '<(new \DateTimeImmutable("2019-04-06 11:22:33"))>'
-        lastConnectedAt: '<(new \DateTimeImmutable("2019-04-07 22:33:44"))>'
-        coins: 90
-        lastPatchNoteReadAt: '<(new \DateTimeImmutable("+5 minutes"))>'
-    user_orgastats1:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("f2ab3ea1-315e-4a72-b03c-add203335acb"))>']
-        nickname: 'orgaStats1'
-        discordId: '1234567890051'
-        discordTag: '1005'
-        token: '2b5d7082-adb6-413a-8a4c-8fd493556671'
-        apiToken: '6d9c3497-b38a-406f-b07e-41e54789030f'
-        citizen: '@citizen_orgastats1'
-        publicChoice: 'orga'
-        createdAt: '<(new \DateTimeImmutable("2019-05-06 11:22:33"))>'
-        lastConnectedAt: '<(new \DateTimeImmutable("2019-05-07 22:33:44"))>'
-    user_orgastats2:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("9dfbd543-cd2c-4262-8ae2-03904ddbadef"))>']
-        nickname: 'orgaStats2'
-        discordId: '1234567890052'
-        discordTag: '2005'
-        token: '2354d268-a861-4b97-ae53-754ed23928c9'
-        apiToken: '51d4e93a-8b4d-4dca-b5e3-f2b2b67a23d5'
-        citizen: '@citizen_orgastats2'
-        publicChoice: 'public'
-        createdAt: '<(new \DateTimeImmutable("2019-06-06 11:22:33"))>'
-        lastConnectedAt: '<(new \DateTimeImmutable("2019-06-07 22:33:44"))>'
-    user_need_refresh:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("9a634812-97dd-4c10-892f-6b7a9b7a2921"))>']
-        nickname: 'needRefresh'
-        discordId: '123456789006'
-        discordTag: '0006'
-        token: '5Ysoc291ezVnpxT8BnPYbS5gu5HDjWRH3TIejY9bPIOlQQgULiUqF0fFZuQYXHIe'
-        apiToken: 'nvOrHMQHwkUpXKzeRlgkLPdy8x1yml5RwqcQw3mkvmWPSu9GYVyfMVq6w7Qxevi5'
-        citizen: '@citizen_need_refresh'
-        publicChoice: 'private'
-        createdAt: '<(new \DateTimeImmutable("2019-04-07 11:22:33"))>'
-        lastConnectedAt: '<(new \DateTimeImmutable("2019-04-08 22:33:44"))>'
-    user_pulsar42_admin:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("def951eb-14ce-4fd7-8226-3d127e547f62"))>']
-        nickname: 'Pulsar42Admin'
-        discordId: '123456789007'
-        discordTag: '0007'
-        token: 'lOYWxz6vBWyKwg0Vcz9N55z8d38j9vbxzrtXM6btyQY1ZyFthT4apoHHWbcySK0g'
-        apiToken: 'hAljE2UzoKAyFLv0IbdvXhjfdVBKAKr7YcMqrJW0wwEEQFQpI1ICTbPdbIxWvACx'
-        citizen: '@citizen_pulsar42_admin'
-        publicChoice: 'orga'
-        createdAt: '<(new \DateTimeImmutable("2019-04-08 11:22:33"))>'
-        lastConnectedAt: '<(new \DateTimeImmutable("2019-05-09 22:33:44"))>'
-    user_pulsar42_member1:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("0c2f6a5d-6621-44b2-8351-e94239034a3a"))>']
-        nickname: 'Pulsar42Member1'
-        discordId: '123456789008'
-        discordTag: '0008'
-        token: 'hAKpwxjLEji7amVfILVGZUv8yzvI4Q5ZMdXre0GnS0sfV8WMLB64UArgkVb8bX9A'
-        apiToken: 'gdJ2xT71CSbnc3dpG4hCICEw8hgBi6wOtnWa8n8jk30IfBab43Z9VQLnAjcHO4rD'
-        citizen: '@citizen_pulsar42_member1'
-        publicChoice: 'orga'
-        createdAt: '<(new \DateTimeImmutable("2019-04-09 11:22:33"))>'
-        lastConnectedAt: '<(new \DateTimeImmutable("2019-09-10 22:33:44"))>'
-    user_pulsar42_member2:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("4354da33-d2e7-442e-aa5d-22f9bbbdd132"))>']
-        nickname: 'Pulsar42Member2'
-        discordId: '123456789009'
-        discordTag: '0009'
-        token: 'OChMVj51wW5k4BJfUo41vsZW7P1mDIJG3JXJcDXRtyJG3EntUaVPFiJBaYlMpUar'
-        apiToken: 'NnBoeF0MM6aSYyEuDCCbDFcbQLu21IObgaCzKlcxLU8CYVp5QboDuPBh6p3J4pRK'
-        citizen: '@citizen_pulsar42_member2'
-        publicChoice: 'orga'
-        createdAt: '<(new \DateTimeImmutable("2019-04-10 11:22:33"))>'
-        lastConnectedAt: '<(new \DateTimeImmutable("2019-04-11 22:33:44"))>'
-    user_pulsar42_member3:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("3f90d959-c0fd-4bc0-b0bb-35c570c3c2f5"))>']
-        nickname: 'Pulsar42Member3'
-        discordId: '123456789010'
-        discordTag: '0010'
-        token: '7IHAbJBOOke0Y0kClifOfHRGKPbLMbDkbNdpqu2lF8wjSNpmdlAubLdWCiYv41yK'
-        apiToken: 'P05E9a9EHFXhJAJtWqgqnVLlGZgYbvXnJjmvd2dYTG2iZVhMjhI0LnlDC8U8Mgqw'
-        citizen: '@citizen_pulsar42_member3'
-        publicChoice: 'orga'
-        createdAt: '<(new \DateTimeImmutable("2019-04-11 11:22:33"))>'
-        lastConnectedAt: '<(new \DateTimeImmutable("2019-04-12 22:33:44"))>'
-    user_foo@example.com:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("65ca8ef6-bcf6-46ff-b9ae-1ade7a51ec26"))>']
-        email: 'foo@example.com'
-        emailConfirmed: false
-        password: '123456'
-        token: 'QstI8SfzTfpRVtnVI8dPlhuvIMBr9rvsYyiGo0v50bLpreRpHJXYftVGx8wpCJMq'
-        apiToken: 'GQGq4mOHLJ4OALnLCiT0RDKL4PtE2mpOZm0fMyX6TSqf9nY3TTY6AB9HvqBBbi8T'
-        registrationConfirmationToken: 'ltkE9lPcaZzPKKh0kCtN9Mywa7ugqrfoi1L3MUjn67jbAusfQW576s4ozTHNjMHN'
-        publicChoice: 'orga'
-        createdAt: '<(new \DateTimeImmutable("2019-04-12 11:22:33"))>'
-        lastConnectedAt: '<(new \DateTimeImmutable("2019-04-13 22:33:44"))>'
-    user_alreadyconfirmed@example.com:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("c869de61-1a88-4aaa-a2f9-9b4b116afe85"))>']
-        email: 'alreadyconfirmed@example.com'
-        emailConfirmed: true
-        password: '123456'
-        token: 'tqDuFvNbbtxdPYvuYxSAIZMsRMGMT1wq4RTQ0a81I3FhsagIRcw1gyQGoccKymcL'
-        apiToken: '02ufKIp1d7DmnkJ0XZBSCHxxSNgnEB1Kii1jldA1X56OVmRcWLiJDKVx8XD0oTrW'
-        registrationConfirmationToken: 'ImDM9wv50tfoM9hfJAick4MmAvXpPaGadyqWC5nDUx2UVgGIq8vkNnu36HeoSm39'
-        publicChoice: 'orga'
-        createdAt: '<(new \DateTimeImmutable("2019-04-13 11:22:33"))>'
-        lastConnectedAt: '<(new \DateTimeImmutable("2019-04-14 22:33:44"))>'
-    user_lostpasswordrequested@example.com:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("d477c5bd-4b1d-4a51-adf0-091ce599f408"))>']
-        email: 'lostpasswordrequested@example.com'
-        emailConfirmed: true
-        password: '123456'
-        token: 'rpYkHkxIF9KoOZzpDqv80PSj8kM2nznnGIk5eMBw5ZcRVWbRTd7cZZxXJcVnl3eE'
-        apiToken: 'T7noH2JSCGBKHA2thglKXYv2iEGiAzuduIyX8NqfgnouUfnh3xyN3AHGmRIpJ6Jk'
-        registrationConfirmationToken: 'Sqnnw52G435CZmaS0VetnDeQVnHwOZDaektu3O3M748bd0T07KnwK8us0AbGLifb'
-        lostPasswordRequestedAt: '<(new \DateTimeImmutable("-5 minutes"))>'
-        lostPasswordToken: '4kTh4QvvKm6LtHcnJ0Oj6dzfXvgirQKt8LHrIu5JqlOWl1AMfl8S3KS6waUiQFFA'
-        createdAt: '<(new \DateTimeImmutable("2019-04-14 11:22:33"))>'
-        lastConnectedAt: '<(new \DateTimeImmutable("2019-04-15 22:33:44"))>'
-    user_lostpasswordexpired@example.com:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("f27a6609-57cc-4e98-b762-2d929d046afe"))>']
-        email: 'lostpasswordexpired@example.com'
-        emailConfirmed: true
-        password: '123456'
-        token: 'dcVDG9bfxVoIdtmZLX0RdXsbL8bwORPAYgpZtpvusyGyRoaolFxXeCegtSGLQ9uc'
-        apiToken: 'x2MNKh4ZupiTT0URTgCfUyVFm0CnRlomGyShb2m8xVoodbsSQh0JbIBvEZ1cJa1Q'
-        registrationConfirmationToken: 'qvtEBYssXPVuwsuLC9VcJltEFtuuyXJjrjRdhniCcxnxC4GZ667M26sAAwb9yudC'
-        lostPasswordRequestedAt: '<(new \DateTimeImmutable("-20 minutes"))>'
-        lostPasswordToken: '2X9FV6J4l8itnDZHSLYDUFDorK9uDeWQski6YmqwzGPTcaONoMdV7Rc0xwLiQKHB'
-        createdAt: '<(new \DateTimeImmutable("2019-04-15 11:22:33"))>'
-        lastConnectedAt: '<(new \DateTimeImmutable("2019-04-16 22:33:44"))>'
-    user_changepasswordrequested@example.com:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("013b7f07-142c-495e-8efc-2f9d21c50ee3"))>']
-        email: 'changepasswordrequested@example.com'
-        emailConfirmed: true
-        password: '123456'
-        token: '72qtKzel5CUS69CoXR9TG2fGXqIyzuSbkXvtLwZcufKOdGMknnF7p66KXazjYmms'
-        apiToken: 'HOfCC5AoMht80L4r6uEVIAfibwOv4Y0s7TdeDCS29V9TYUirMQDY4tLaEEOISmMM'
-        registrationConfirmationToken: 'T9lNOh0FHR6Qdy94R7bTwrcqmYycuB8TM6tzUlwQZquxBIDGo29ERQ9jcD9LANPV'
-        createdAt: '<(new \DateTimeImmutable("2019-04-14 11:22:33"))>'
-        lastConnectedAt: '<(new \DateTimeImmutable("2019-04-15 22:33:44"))>'
-    user_linksocialnetworks-without-citizen@example.com:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("26fd729d-6d32-4a1d-a6af-c06555c5628a"))>']
-        email: 'linksocialnetworks-without-citizen@example.com'
-        emailConfirmed: true
-        password: '123456'
-        token: 'QsCdGjFiNt9DmRY9nnu8ZKCPqvHiNVuNQHU5MB6BTvZw8sETHIMo3iB033UJPFBk'
-        apiToken: 'XSQkT8PsVjmSOaMtRIDNSBducDPMWdmG2rhPNi3vEfW6Fn2BT4jDCzcFPuaEWbor'
-        registrationConfirmationToken: 'qAoTjjy1o2W4LznKMkofNPPue6pFbt3vIADxm0lWd1QM3GTuRk08swRjCfd3uijN'
-        createdAt: '<(new \DateTimeImmutable("2019-04-16 11:22:33"))>'
-        lastConnectedAt: '<(new \DateTimeImmutable("2019-04-17 22:33:44"))>'
-    user_linksocialnetworks-with-citizen@example.com:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("77ea3d73-a786-4f0f-83dd-36a37265f952"))>']
-        email: 'linksocialnetworks-with-citizen@example.com'
-        emailConfirmed: true
-        password: '123456'
-        token: 'PFLQbMDMvwQHiHgp8bIjkDpXgaDB3cDaRwSWD6uXw0IVbYPGEaq44SDdQN8sKrhi'
-        apiToken: 'Sxqi7NfNTZY7AmB107cRWapLGZE4s5B6GOfnrHnDUjOppRMYdwz9HpH6mvPGwHfn'
-        registrationConfirmationToken: 'XhXQzbm4N6rFLcCqh27JMu6CzbKbEPgQM1y10BjAG2fxEavc8UrUFlxceeFt1A7V'
-        citizen: '@citizen_linksocialnetworks'
-        createdAt: '<(new \DateTimeImmutable("2019-04-17 11:22:33"))>'
-        lastConnectedAt: '<(new \DateTimeImmutable("2019-04-18 22:33:44"))>'
-    user_linksocialnetworks-with-citizen-pending@example.com:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("6b5f4962-4660-4705-bd48-2c587c42fe95"))>']
-        email: 'linksocialnetworks-with-citizen-pending@example.com'
-        emailConfirmed: true
-        password: '123456'
-        pendingDiscordId: '123456789002' # ashuvidz's one
-        token: 'zwExDr7Q7SN2bv4qFqEMiGZme3NcmKO39ALjDDwdMfDWQVAPM1fPDHDHZJGGFnEd'
-        apiToken: '80LjqS9M6s1HIi8jk5tHnLFFCSfBQBSmTzpFshdLGvf65HQfhW5IGwMbf4EPK4B9'
-        registrationConfirmationToken: 'qbivZ5TuU8biBCk43RhkJwCVx9CAS7SwBxHFT9kzSoERrJp3R0sMysP3sPolw1Yu'
-        citizen: '@citizen_linksocialnetworks_pending'
-        createdAt: '<(new \DateTimeImmutable("2019-04-18 11:22:33"))>'
-        lastConnectedAt: '<(new \DateTimeImmutable("2019-04-19 22:33:44"))>'
     user_fundings_1:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("a70526d9-5319-4445-901a-4bcccd50d911"))>']
-        nickname: 'fundings-1'
-        email: 'fundings-1@example.com'
-        emailConfirmed: true
-        password: '123456'
-        token: 'J4608WcQicWa1FK3Gei6MwM5bjAjiAmB9xV7RnHAcrNRcXAeRz0XyvL8bHQyydb4'
-        apiToken: 'npNtci5QL77wPDC5pyLfwFWgRiiGjqhVjztkcIPKVI4DmJxIwrLjupVXe8gIsyqE'
-        registrationConfirmationToken: 'KrbnPSofXCPV7uWi22wp4aYG6bnmOaVvGdh8ZnPAV2WBPzwgYPzmnFNipD2RhZW8'
-        createdAt: '<(new \DateTimeImmutable("2019-04-19 11:22:33"))>'
-        lastConnectedAt: '<(new \DateTimeImmutable("2019-04-20 22:33:44"))>'
+        __construct:
+            - '<(new \App\Domain\UserId(\Symfony\Component\Uid\Ulid::fromString("01F17XT9KTD7AY8FE3T2TE87GV")))>'
+            - 'fundings-1'
+            - '<(new \DateTimeImmutable("2019-04-22 11:21:01"))>'
         supporterVisible: false
-    user_fundings_2:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("c704d896-2d69-4b3e-b373-51659c5fbc08"))>']
-        nickname: 'fundings-2'
-        email: 'fundings-2@example.com'
-        emailConfirmed: true
-        password: '123456'
-        token: 'fuKrAgkB9pr2SjzgXWcmtGpE1kQHuRlWloA4DEp2eTHdbdY8rMNNJNTbZ3OIMS51'
-        apiToken: 'SePDz2qZFNAf1yAndm9HdfUgMvwYOy9MDj4O1AVJglFNDycgB1NANlVtNLAATTBf'
-        registrationConfirmationToken: '00AUVH8JtGSkbmMezFcIfeSBhsXgYQQ5Ch02pE8YOxv2Jsq6i3nkyQGqjAttHHFZ'
-        createdAt: '<(new \DateTimeImmutable("2019-04-20 11:22:33"))>'
-        lastConnectedAt: '<(new \DateTimeImmutable("2019-04-21 22:33:44"))>'
-    user_fundings_3:
-        __construct: ['<(\Ramsey\Uuid\Uuid::fromString("129b2e1a-d808-4370-a07d-51837b436cb3"))>']
-        nickname: 'fundings-3'
-        email: 'fundings-3@example.com'
-        emailConfirmed: true
-        password: '123456'
-        token: 'fuKrAgkB9pr2SjzgXWcmtGpE1kQHuRlWloA4DEp2eTHdbdY8rMNNJNTbZ3OIMS52'
-        apiToken: 'SePDz2qZFNAf1yAndm9HdfUgMvwYOy9MDj4O1AVJglFNDycgB1NANlVtNLAATTB1'
-        registrationConfirmationToken: '00AUVH8JtGSkbmMezFcIfeSBhsXgYQQ5Ch02pE8YOxv2Jsq6i3nkyQGqjAttHHF1'
-        createdAt: '<(new \DateTimeImmutable("2019-04-21 11:22:33"))>'
-        lastConnectedAt: '<(new \DateTimeImmutable("2019-04-22 22:33:44"))>'
     user_fundings_{10..30}:
-        __construct: ['<createUuid("14203774-91fa-4300-b464-bcda42697b", $current)>']
-        nickname: '<current()>_fundings'
-        email: '<current()>_fundings@example.com'
-        emailConfirmed: true
-        password: '123456'
-        token: 'fuKrAgkB9pr2SjzgXWcmtGpE1kQHuRlWloA4DEp2eTHdbdY8rMNNJNTbZ3OIMS<current()>'
-        apiToken: 'SePDz2qZFNAf1yAndm9HdfUgMvwYOy9MDj4O1AVJglFNDycgB1NANlVtNLAATT<current()>'
-        registrationConfirmationToken: '00AUVH8JtGSkbmMezFcIfeSBhsXgYQQ5Ch02pE8YOxv2Jsq6i3nkyQGqjAttHH<current()>'
-        createdAt: '<(new \DateTimeImmutable("2019-04-22 11:22:33"))>'
-        lastConnectedAt: '<(new \DateTimeImmutable("2019-04-23 22:33:44"))>'
+        __construct:
+            - '<(new \App\Domain\UserId(\Symfony\Component\Uid\Ulid::fromString("01F17XTC6VN0V18PW6PHVWZW".$current)))>'
+            - '<current()>_fundings'
+            - '<(new \DateTimeImmutable("2019-04-22 11:22:".$current))>'
         coins: 100

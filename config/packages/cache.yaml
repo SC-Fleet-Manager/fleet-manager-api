@@ -1,18 +1,9 @@
+parameters:
+    env(REDIS_DSN): 'redis://localhost:6379'
+
 framework:
     cache:
+        prefix_seed: ioni14/fleet-manager
         app: cache.adapter.redis
-        default_redis_provider: 'redis://%env(REDIS_PASSWORD)%@%env(REDIS_HOST)%:%env(REDIS_PORT)%'
-
-        pools:
-            rsi.citizens.cache:
-                adapter: cache.adapter.redis
-                tags: true
-            rsi.organizations.cache:
-                adapter: cache.adapter.redis
-                tags: true
-            rsi.organizations_members.cache:
-                adapter: cache.adapter.redis
-                tags: true
-            rsi.ships.cache:
-                adapter: cache.adapter.redis
-                tags: true
+        default_redis_provider: '%env(REDIS_DSN)%'
+        pools: ~

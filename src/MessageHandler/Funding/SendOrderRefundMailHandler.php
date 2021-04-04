@@ -11,21 +11,12 @@ use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
 class SendOrderRefundMailHandler implements MessageHandlerInterface
 {
-    private FundingRepository $fundingRepository;
-    private MailerInterface $mailer;
-    private LoggerInterface $logger;
-    private string $noreplyAddress;
-
     public function __construct(
-        FundingRepository $fundingRepository,
-        MailerInterface $mailer,
-        LoggerInterface $logger,
-        string $noreplyAddress
+        private FundingRepository $fundingRepository,
+        private MailerInterface $mailer,
+        private LoggerInterface $logger,
+        private string $noreplyAddress
     ) {
-        $this->fundingRepository = $fundingRepository;
-        $this->mailer = $mailer;
-        $this->logger = $logger;
-        $this->noreplyAddress = $noreplyAddress;
     }
 
     public function __invoke(SendOrderRefundMail $message): void

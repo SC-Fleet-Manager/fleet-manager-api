@@ -2,34 +2,31 @@
 
 namespace App\Controller\BackOffice\Funding;
 
+use App\Domain\MonthlyCostCoverageId;
 use App\Entity\MonthlyCostCoverage;
 use App\Form\Dto\MonthlyCostCoverage as MonthlyCostCoverageDto;
 use App\Form\MonthlyCostCoverageForm;
 use App\Repository\MonthlyCostCoverageRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Uid\Ulid;
 
 class MonthlyCostCoverageCreateController extends AbstractController
 {
-    private MonthlyCostCoverageRepository $monthlyCostCoverageRepository;
-    private EntityManagerInterface $entityManager;
-
-    public function __construct(MonthlyCostCoverageRepository $monthlyCostCoverageRepository, EntityManagerInterface $entityManager)
-    {
-        $this->monthlyCostCoverageRepository = $monthlyCostCoverageRepository;
-        $this->entityManager = $entityManager;
+    public function __construct(
+        private MonthlyCostCoverageRepository $monthlyCostCoverageRepository,
+        private EntityManagerInterface $entityManager
+    ) {
     }
 
-    /**
-     * @Route("/bo/monthly-cost-coverage/create", name="bo_monthly_cost_coverage_create", methods={"GET","POST"})
-     */
-    public function __invoke(Request $request): Response
-    {
+    #[Route("/bo/monthly-cost-coverage/create", name: "bo_monthly_cost_coverage_create", methods: ["GET", "POST"])]
+    public function __invoke(
+        Request $request
+    ): Response {
         $monthlyCostCoverage = new MonthlyCostCoverageDto(new \DateTimeImmutable('first day of'), 0);
         $form = $this->createForm(MonthlyCostCoverageForm::class, $monthlyCostCoverage, [
             'mode' => MonthlyCostCoverageForm::MODE_CREATE,
@@ -42,8 +39,7 @@ class MonthlyCostCoverageCreateController extends AbstractController
             }
 
             if ($form->isValid()) {
-                $costCoverage = new MonthlyCostCoverage(Uuid::uuid4());
-                $costCoverage->setMonth(clone $monthlyCostCoverage->month);
+                $costCoverage = new MonthlyCostCoverage(new MonthlyCostCoverageId(new Ulid()), $monthlyCostCoverage->month);
                 $costCoverage->setTarget($monthlyCostCoverage->target);
                 $costCoverage->setPostpone($monthlyCostCoverage->postpone);
                 $this->entityManager->persist($costCoverage);

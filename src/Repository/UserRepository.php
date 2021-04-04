@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\Persistence\ManagerRegistry;
 
 class UserRepository extends ServiceEntityRepository
@@ -13,26 +14,25 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
-    public function getByDiscordId(string $id): ?User
+    public function countUsers(): int
     {
-        /** @var User $userEntity */
-        $userEntity = $this->createQueryBuilder('u')
-            ->addSelect('c')
-            ->addSelect('co')
-            ->addSelect('o')
-            ->leftJoin('u.citizen', 'c')
-            ->leftJoin('c.organizations', 'co')
-            ->leftJoin('co.organization', 'o')
-            ->where('u.discordId = :id')
-            ->setParameter('id', $id)
-            ->getQuery()
-            ->getOneOrNullResult();
-
-        return $userEntity;
+        return $this->_em
+            ->createQuery('SELECT COUNT(u) FROM App\Entity\User u')
+            ->getSingleScalarResult();
     }
 
-    public function getByToken(string $token): ?User
+    public function findByAuth0Username(string $username): ?User
     {
-        return $this->findOneBy(['apiToken' => $token]);
+        return $this->findOneBy(['auth0Username' => $username]);
+    }
+
+    public function save(User $user): void
+    {
+        $this->_em->persist($user);
+        try {
+            $this->_em->flush();
+        } catch (UniqueConstraintViolationException $e) {
+            // alright, it's already persisted
+        }
     }
 }

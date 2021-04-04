@@ -4,17 +4,12 @@ services:
         autoconfigure: true
         public: true
 
-    App\Tests\Controller\ConnectController:
-        tags: ['controller.service_arguments']
-
-    App\Service\Citizen\InfosProvider\FakeCitizenInfosProvider: ~
-    App\Service\Ship\InfosProvider\FakeShipInfosProvider: ~
-    App\Service\Organization\MembersInfosProvider\FakeOrganizationMembersInfosProvider: ~
-    App\Service\Organization\InfosProvider\FakeOrganizationInfosProvider: ~
-    App\Service\Citizen\InfosProvider\CitizenInfosProviderInterface: '@App\Service\Citizen\InfosProvider\FakeCitizenInfosProvider'
-    App\Service\Ship\InfosProvider\ShipInfosProviderInterface: '@App\Service\Ship\InfosProvider\FakeShipInfosProvider'
-    App\Service\Organization\MembersInfosProvider\OrganizationMembersInfosProviderInterface: '@App\Service\Organization\MembersInfosProvider\FakeOrganizationMembersInfosProvider'
-    App\Service\Organization\InfosProvider\OrganizationInfosProviderInterface: '@App\Service\Organization\InfosProvider\FakeOrganizationInfosProvider'
+    App\Application\:
+        resource: '../src/Application'
+        exclude:
+            - '../src/Application/**/*/Output'
+            - '../src/Application/Exception'
+            - '../src/Infrastructure/**/*/Input'
 
     App\Tests\Service\PayPal\MockPayPalHttpClient: ~
     App\Tests\Service\PayPal\MockVerifyWebhookSignatureFactory: ~
@@ -22,3 +17,8 @@ services:
         arguments:
             $client: '@App\Tests\Service\PayPal\MockPayPalHttpClient'
             $verifyWebhookSignatureFactory: '@App\Tests\Service\PayPal\MockVerifyWebhookSignatureFactory'
+
+    App\Infrastructure\Security\FakeAuth0Service:
+        parent: 'jwt_auth.auth0_service'
+
+    Auth0\JWTAuthBundle\Security\Auth0Service: '@App\Infrastructure\Security\FakeAuth0Service'

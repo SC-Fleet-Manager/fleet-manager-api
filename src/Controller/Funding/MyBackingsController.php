@@ -10,19 +10,15 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class MyBackingsController extends AbstractController
 {
-    private FundingRepository $fundingRepository;
-
-    public function __construct(FundingRepository $fundingRepository)
-    {
-        $this->fundingRepository = $fundingRepository;
+    public function __construct(
+        private FundingRepository $fundingRepository
+    ) {
     }
 
-    /**
-     * @Route("/api/funding/my-backings", name="funding_my_backings", methods={"GET"})
-     */
+    #[Route("/api/funding/my-backings", name: "funding_my_backings", methods: ["GET"])]
     public function __invoke(): Response
     {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
+        $this->denyAccessUnlessGranted('ROLE_USER');
 
         /** @var User $user */
         $user = $this->getUser();

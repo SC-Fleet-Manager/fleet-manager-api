@@ -25,34 +25,20 @@ class PaypalWebhookController extends AbstractController implements LoggerAwareI
 {
     use LoggerAwareTrait;
 
-    private PaypalCheckoutInterface $paypalCheckout;
-    private FundingRepository $fundingRepository;
-    private DecoderInterface $decoder;
-    private EntityManagerInterface $entityManager;
-    private MessageBusInterface $bus;
-    private EventDispatcherInterface $eventDispatcher;
-
     public function __construct(
-        PaypalCheckoutInterface $paypalCheckout,
-        FundingRepository $fundingRepository,
-        DecoderInterface $decoder,
-        EntityManagerInterface $entityManager,
-        MessageBusInterface $bus,
-        EventDispatcherInterface $eventDispatcher
+        private PaypalCheckoutInterface $paypalCheckout,
+        private FundingRepository $fundingRepository,
+        private DecoderInterface $decoder,
+        private EntityManagerInterface $entityManager,
+        private MessageBusInterface $bus,
+        private EventDispatcherInterface $eventDispatcher
     ) {
-        $this->paypalCheckout = $paypalCheckout;
-        $this->fundingRepository = $fundingRepository;
-        $this->decoder = $decoder;
-        $this->entityManager = $entityManager;
-        $this->bus = $bus;
-        $this->eventDispatcher = $eventDispatcher;
     }
 
-    /**
-     * @Route("/api/funding/paypal-webhook", name="funding_paypal_webhook", methods={"POST"})
-     */
-    public function __invoke(Request $request): Response
-    {
+    #[Route("/api/funding/paypal-webhook", name: "funding_paypal_webhook", methods: ["POST"])]
+    public function __invoke(
+        Request $request
+    ): Response {
         if (!$this->paypalCheckout->verifySignature($request)) {
             return new JsonResponse(['error' => 'bad signature.'], 400);
         }

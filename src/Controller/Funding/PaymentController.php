@@ -2,49 +2,39 @@
 
 namespace App\Controller\Funding;
 
+use App\Domain\FundingId;
 use App\Entity\Funding;
 use App\Entity\User;
 use App\Exception\UnableToCreatePaypalOrderException;
 use App\Form\Dto\FundingPayment;
 use App\Service\Funding\PaypalCheckoutInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use Ramsey\Uuid\Uuid;
+use Money\Money;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class PaymentController extends AbstractController
 {
-    private Security $security;
-    private PaypalCheckoutInterface $paypalCheckout;
-    private ValidatorInterface $validator;
-    private SerializerInterface $serializer;
-    private EntityManagerInterface $entityManager;
-
     public function __construct(
-        Security $security,
-        PaypalCheckoutInterface $paypalCheckout,
-        ValidatorInterface $validator,
-        SerializerInterface $serializer,
-        EntityManagerInterface $entityManager
+        private Security $security,
+        private PaypalCheckoutInterface $paypalCheckout,
+        private ValidatorInterface $validator,
+        private SerializerInterface $serializer,
+        private EntityManagerInterface $entityManager
     ) {
-        $this->security = $security;
-        $this->paypalCheckout = $paypalCheckout;
-        $this->validator = $validator;
-        $this->serializer = $serializer;
-        $this->entityManager = $entityManager;
     }
 
-    /**
-     * @Route("/api/funding/payment", name="funding_payment", methods={"POST"})
-     */
-    public function __invoke(Request $request): Response
-    {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
+    #[Route("/api/funding/payment", name: "funding_payment", methods: ["POST"])]
+    public function __invoke(
+        Request $request
+    ): Response {
+        $this->denyAccessUnlessGranted('ROLE_USER');
 
         /** @var FundingPayment $fundingPayment */
         $fundingPayment = $this->serializer->deserialize($request->getContent(), FundingPayment::class, $request->getContentType());
@@ -60,10 +50,7 @@ class PaymentController extends AbstractController
         /** @var User $user */
         $user = $this->security->getUser();
 
-        $funding = new Funding(Uuid::uuid4());
-        $funding->setGateway(Funding::PAYPAL);
-        $funding->setCurrency('USD');
-        $funding->setAmount($fundingPayment->amount);
+        $funding = new Funding(new FundingId(new Ulid()), Funding::PAYPAL, Money::USD($fundingPayment->amount), new \DateTimeImmutable('now'));
         $funding->setUser($user);
 
         try {

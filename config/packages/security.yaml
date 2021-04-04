@@ -1,64 +1,19 @@
 security:
-    encoders:
-        App\Entity\User:
-            algorithm: auto
+    #    enable_authenticator_manager: true
     providers:
-        oauth_user_provider:
-            id: App\Security\OAuthUserProvider
-        user_entity_uuid:
-            id: 'App\Security\UuidProvider'
-        user_entity_email:
-            entity:
-                class: 'App\Entity\User'
-                property: 'email'
-        user_entity_nickname:
-            entity:
-                class: 'App\Entity\User'
-                property: 'nickname'
-        chain_user:
-            chain:
-                providers: ['user_entity_uuid', 'oauth_user_provider', 'user_entity_email', 'user_entity_nickname']
+        user_entity_jwt:
+            id: 'App\Security\UserEntityJwtProvider'
     firewalls:
         dev:
-            pattern: ^/(_(profiler|wdt)|build|icons|favicon\.ico|robots\.txt)/
+            pattern: ^/(_(profiler|wdt)|favicon\.ico)/
             security: false
-        token:
-            pattern: ^/api/export$
-            stateless: true
-            guard:
-                provider: oauth_user_provider
-                authenticators: ['App\Security\TokenAuthenticator']
         main:
-            provider: chain_user # default provider
+            provider: user_entity_jwt
+            stateless: true
             anonymous: true
-            user_checker: App\Security\ConfirmedUserChecker
-            switch_user:
-                provider: chain_user
-                role: ROLE_ADMIN
-            remember_me:
-                secret: '%kernel.secret%'
-                lifetime: 604800 # 1 week
-                path: /
-                user_providers: ['chain_user']
-            form_login:
-                provider: user_entity_email
-                login_path: /login/
-                check_path: /api/login/check-form-login
-                success_handler: App\Security\FormLoginSuccessHandler
-                failure_handler: App\Security\FormLoginFailureHandler
-                remember_me:  true
-            oauth:
-                provider: oauth_user_provider
-                resource_owners:
-                    discord: /login/check-discord
-                login_path: /login/
-                use_forward: false
-                failure_path: /login/
-                always_use_default_target_path: true
-                default_target_path: /profile
-                oauth_user_provider:
-                    service: App\Security\OAuthUserProvider
-                remember_me:  true
+            guard:
+                authenticators:
+                    - jwt_auth.security.guard.jwt_guard_authenticator
             logout:
                 path: logout
             access_denied_handler: App\Security\ApiAccessDeniedHandler

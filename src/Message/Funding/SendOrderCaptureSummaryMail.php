@@ -2,18 +2,16 @@
 
 namespace App\Message\Funding;
 
-use Ramsey\Uuid\UuidInterface;
+use App\Domain\FundingId;
 
 class SendOrderCaptureSummaryMail
 {
-    private UuidInterface $fundingId;
-
-    public function __construct(UuidInterface $fundingId)
-    {
-        $this->fundingId = $fundingId;
+    public function __construct(
+        private FundingId $fundingId
+    ) {
     }
 
-    public function getFundingId(): UuidInterface
+    public function getFundingId(): FundingId
     {
         return $this->fundingId;
     }

@@ -2,31 +2,28 @@
 
 namespace App\Controller\BackOffice\Funding;
 
+use App\Domain\MonthlyCostCoverageId;
 use App\Entity\MonthlyCostCoverage;
 use App\Repository\MonthlyCostCoverageRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Uid\Ulid;
 
 class MonthlyCostCoverageListController extends AbstractController
 {
-    private MonthlyCostCoverageRepository $monthlyCostCoverageRepository;
-    private EntityManagerInterface $entityManager;
-
-    public function __construct(MonthlyCostCoverageRepository $monthlyCostCoverageRepository, EntityManagerInterface $entityManager)
-    {
-        $this->monthlyCostCoverageRepository = $monthlyCostCoverageRepository;
-        $this->entityManager = $entityManager;
+    public function __construct(
+        private MonthlyCostCoverageRepository $monthlyCostCoverageRepository,
+        private EntityManagerInterface $entityManager
+    ) {
     }
 
-    /**
-     * @Route("/bo/monthly-cost-coverage/list", name="bo_monthly_cost_coverage_list", methods={"GET"})
-     */
-    public function __invoke(Request $request): Response
-    {
+    #[Route("/bo/monthly-cost-coverage/list", name: "bo_monthly_cost_coverage_list", methods: ["GET"])]
+    public function __invoke(
+        Request $request
+    ): Response {
         /** @var MonthlyCostCoverage[] $costCoverages */
         $costCoverages = $this->monthlyCostCoverageRepository->findBy([], ['month' => 'asc']);
         $defaultCostCoverage = null;
@@ -39,9 +36,7 @@ class MonthlyCostCoverageListController extends AbstractController
         }
 
         if ($defaultCostCoverage === null) {
-            $defaultCostCoverage = (new MonthlyCostCoverage(Uuid::uuid4()))
-                ->setMonth(new \DateTimeImmutable(MonthlyCostCoverage::DEFAULT_DATE))
-                ->setTarget(0)
+            $defaultCostCoverage = (new MonthlyCostCoverage(new MonthlyCostCoverageId(new Ulid()), new \DateTimeImmutable(MonthlyCostCoverage::DEFAULT_DATE)))
                 ->setPostpone(false);
             $this->entityManager->persist($defaultCostCoverage);
             $this->entityManager->flush();

@@ -21,9 +21,4 @@
 /.php_cs.cache
 ###< friendsofphp/php-cs-fixer ###
 
-###> symfony/webpack-encore-bundle ###
-/node_modules/
-/public/build/
-npm-debug.log
-yarn-error.log
-###< symfony/webpack-encore-bundle ###
+/http/http-client.env.json

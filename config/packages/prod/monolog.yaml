@@ -1,70 +1,45 @@
 parameters:
-    env(MONOLOG_MAILER_TO): ''
+    env(MONOLOG_MAILER_TO_0): 'root@localhost'
+    env(MONOLOG_MAILER_TO_1): 'root@localhost'
 
 monolog:
+    channels: [ deprecation ]
     handlers:
         main:
+            type: stream
+            path: "php://stderr"
+            level: debug
+            formatter: monolog.formatter.json
+            channels: ["!event"]
+        ################
+        fingers:
             type: fingers_crossed
             action_level: error
-            handler: grouped
+            handler: dedup_mail
             excluded_http_codes: [404, 405]
-            buffer_size:  50 # How many messages should be saved? Prevent memory leaks
-        grouped:
-            type:    group
-            members: [streamed_error, deduplicated]
-        streamed_error:
-            type: stream
-            path: "%kernel.logs_dir%/%kernel.environment%-error.log"
-        #######
-        filter:
-            type: filter
-            handler: streamed
-            min_level: 'info'
-            max_level: 'warning'
-        streamed:
-            type: stream
-            path: "%kernel.logs_dir%/%kernel.environment%.log"
-        #######
-        profile_link_account_stream:
-            type: stream
-            path: "%kernel.logs_dir%/%kernel.environment%_profile_link_account.log"
-            channels: ['profile_link_account']
-        #######
-#        elasticsearch:
-#            elasticsearch:
-#                host: elasticsearch
-#                port: 9200
-#            index: monolog
-#            document_type: logs
-#            level: info
-        ########
-        fingers_mail:
-            type: fingers_crossed
-            action_level: warning
-            handler: deduplicated
-            excluded_http_codes: [403, 404, 405]
-        deduplicated:
+            buffer_size: 50
+        dedup_mail:
             type: deduplication
             time: 60 # no duplicated messages within 60 seconds
-            store: '%kernel.logs_dir%/monolog_handler_deduplicated'
+            store: '/tmp/monolog_handler_deduplicated'
             handler: mailer
         mailer:
-            type: swift_mailer
+            type: symfony_mailer
             from_email: 'noreply@fleet-manager.space'
-            to_email: '%env(MONOLOG_MAILER_TO)%'
-            subject: '[FM Monolog] Error : %%message%%'
+            to_email:
+                - '%env(MONOLOG_MAILER_TO_0)%'
+                - '%env(MONOLOG_MAILER_TO_1)%'
+            subject: '[FM API %kernel.environment%] Error : %%message%%'
             formatter: monolog.formatter.html
             content_type: text/html
-        ########
+        ################
         console:
             type: console
             process_psr_3_messages: false
             channels: ["!event", "!doctrine"]
+        ################
         deprecation:
             type: stream
-            path: "%kernel.logs_dir%/%kernel.environment%.deprecations.log"
-        deprecation_filter:
-            type: filter
-            handler: deprecation
-            max_level: info
-            channels: ["php"]
+            path: "php://stderr"
+            formatter: monolog.formatter.json
+            channels: [deprecation]

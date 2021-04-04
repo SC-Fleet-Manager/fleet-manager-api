@@ -15,40 +15,25 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class DeleteAccountController extends AbstractController
 {
-    private Security $security;
-    private EntityManagerInterface $entityManager;
-    private EventDispatcherInterface $eventDispatcher;
-    private FundingRepository $fundingRepository;
-
     public function __construct(
-        Security $security,
-        EntityManagerInterface $entityManager,
-        EventDispatcherInterface $eventDispatcher,
-        FundingRepository $fundingRepository
+        private Security $security,
+        private EntityManagerInterface $entityManager,
+        private EventDispatcherInterface $eventDispatcher,
+        private FundingRepository $fundingRepository
     ) {
-        $this->security = $security;
-        $this->entityManager = $entityManager;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->fundingRepository = $fundingRepository;
     }
 
-    /**
-     * Deletes the account and data of logged user.
-     *
-     * @Route("/api/profile/delete-account", name="profile_delete_account", methods={"POST"})
-     */
-    public function __invoke(Request $request): Response
-    {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
+    #[Route("/api/profile/delete-account", name: "profile_delete_account", methods: ["POST"])]
+    public function __invoke(
+        Request $request
+    ): Response {
+        $this->denyAccessUnlessGranted('ROLE_USER');
 
         /** @var User $user */
         $user = $this->security->getUser();
-        $citizen = $user->getCitizen();
-        if ($citizen !== null) {
-            $this->entityManager->remove($citizen);
-            // TODO : if transaction rollbacks, the event is inconsistent : set citizen + its organizations in Event and dispatch it after commit()
-            $this->eventDispatcher->dispatch(new CitizenDeletedEvent($citizen));
-        }
+
+        // TODO : add delete request to Auth0
+
         $fundings = $this->fundingRepository->findBy(['user' => $user]);
         foreach ($fundings as $funding) {
             $funding->setUser(null);

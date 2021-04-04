@@ -1,11 +1,13 @@
-version: '3.4'
+version: '3.5'
 volumes:
     #    db: ~
     redis_db: ~
 services:
     php:
         build:
+            context: .
             target: build_php_dev
+            dockerfile: ./docker/Dockerfile
             args:
                 ENV: 'dev'
                 DUMP_ENV: 1
@@ -19,49 +21,33 @@ services:
 #                remote_port=9001
 #                idekey=PHPSTORM
     apache:
-        volumes:
-            - .:/app
-        ports:
-            - 127.0.0.1:8000:80
-    apache-test:
         build:
             context: .
-            target: build_apache_test
+            target: build_apache
             dockerfile: ./docker/Dockerfile
-        hostname: apache_test
         volumes:
             - .:/app
-        environment:
-            PHP_HANDLER_HOST: php:9000
-    mysql:
-        tmpfs: /var/lib/mysql
-#        volumes:
-#            - db:/var/lib/mysql
-#            - ./docker/mysql/config-file.cnf:/etc/mysql/conf.d/config-file.cnf
         ports:
-            - 127.0.0.1:3306:3306
+            - 8100:80
+    postgres:
+        image: postgres:13
+        hostname: postgres
+        command: ['postgres', '-c', 'config_file=/etc/postgresql/postgresql.conf']
+        tmpfs:
+            - /var/lib/postgresql/data
+        volumes:
+            # - db:/var/lib/postgresql/data
+            - ./docker/postgres/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: root
+            POSTGRES_DB: fleet_manager
+        ports:
+            - 5432:5432
     smtp:
         image: schickling/mailcatcher
         ports:
-            - 127.0.0.1:1080:1080 # web-ui
-    redis-commander:
-        image: rediscommander/redis-commander:latest
-        hostname: redis-commander
+            - 1080:1080 # web-ui
+    redis:
         environment:
-            REDIS_HOST: redis
-            REDIS_PORT: 6379
-            REDIS_PASSWORD: ${REDIS_PASSWORD}
-        ports:
-            - 127.0.0.1:8081:8081
-    selenium-hub:
-        image: selenium/hub
-        ports:
-            - 127.0.0.1:4444:4444
-    selenium-chrome:
-        image: selenium/node-chrome-debug
-        environment:
-            HUB_HOST: selenium-hub
-        volumes:
-            - /dev/shm:/dev/shm
-        ports:
-            - 127.0.0.1:5900:5900 # VNC
+            REDIS_PASSWORD: root

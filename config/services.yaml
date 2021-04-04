@@ -1,89 +1,38 @@
 parameters:
-    env(REDIS_HOST): 'localhost'
-    env(REDIS_PORT): '6379'
-    env(REDIS_PASSWORD): ''
     currency: 'USD'
     env(PAYPAL_CHECKOUT_CLIENT_ID): ''
     env(PAYPAL_CHECKOUT_CLIENT_SECRET): ''
     env(PAYPAL_CHECKOUT_WEBHOOK_ID): ''
     env(PAYPAL_CHECKOUT_MODE): !php/const App\Service\Funding\PayPalHttpClientFactory::MODE_SANDBOX
-    env(WEBEXTENSION_VERSION_URL): ''
 
 services:
     _defaults:
         autowire: true
         autoconfigure: true
         bind:
-            $profileLinkAccountLogger: '@monolog.logger.profile_link_account'
             $registrationFromAddress: 'noreply@fleet-manager.space'
             $noreplyAddress: 'noreply@fleet-manager.space'
-            $webExtensionVersionUrl: '%env(WEBEXTENSION_VERSION_URL)%'
 
-    App\Command\:
-        resource: '../src/Command'
+    App\:
+        resource: '../src'
+        exclude:
+            - '../src/Application/**/*/Output'
+            - '../src/Application/Exception'
+            - '../src/Infrastructure/**/*/Input'
+            - '../src/Domain'
+            - '../src/Entity'
+            - '../src/Message'
+            - '../src/Event'
+            - '../src/*/Dto'
+            - '../src/*/*/Dto'
+            - '../src/*/Exception'
+            - '../src/Validator/Constraints/UniqueField.php'
     App\Controller\:
-        resource: '../src/Controller'
+        resource: '../src/Controller/**/*Controller.php'
         tags: ['controller.service_arguments']
-    App\DataFixtures\:
-        resource: '../src/DataFixtures'
-    App\Form\:
-        resource: '../src/Form'
-        exclude: '../src/Form/Dto'
-    App\Listener\:
-        resource: '../src/Listener'
-    App\MessageHandler\:
-        resource: '../src/MessageHandler'
-    App\Repository\:
-        resource: '../src/Repository'
-    App\Security\:
-        resource: '../src/Security'
-        exclude: '../src/Security/Exception'
-    App\Service\:
-        resource: '../src/Service'
-        exclude: '../src/Service/{Dto,*/*/Fake*.php,Funding/FakePaypalCheckout.php,Funding/Dto,WebExtension/Dto}'
-    App\Validator\:
-        resource: '../src/Validator'
-
-    redis:
-        class: Redis
-        calls:
-            - [connect, ['%env(REDIS_HOST)%', '%env(REDIS_PORT)%']]
-            - [auth, ['%env(REDIS_PASSWORD)%']]
-
-    Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler:
-        arguments: ['@redis']
-
-    Doctrine\Common\Cache\RedisCache:
-        calls:
-            - [setRedis, ['@redis']]
-
-    hwi_oauth.authentication.entry_point.oauth:
-        class: App\Security\OAuthEntryPoint
-        abstract: true
-        arguments: ['@http_kernel', '@security.http_utils']
-
-    App\Service\Ship\InfosProvider\ShipInfosProviderInterface: '@App\Service\Ship\InfosProvider\GalaxyApiShipInfosProvider'
-    App\Service\Ship\InfosProvider\ApiShipInfosProvider: ~
-
-    App\Service\Organization\InfosProvider\OrganizationInfosProviderInterface: '@App\Service\Organization\InfosProvider\ApiOrganizationInfosProvider'
-    App\Service\Organization\InfosProvider\ApiOrganizationInfosProvider:
-        arguments: { '$cache': '@rsi.organizations.cache' }
-
-    App\Service\Organization\MembersInfosProvider\OrganizationMembersInfosProviderInterface: '@App\Service\Organization\MembersInfosProvider\ApiOrganizationMembersInfosProvider'
-    App\Service\Organization\MembersInfosProvider\ApiOrganizationMembersInfosProvider:
-        arguments: { '$cache': '@rsi.organizations_members.cache' }
-
-    App\Service\Citizen\InfosProvider\CitizenInfosProviderInterface: '@App\Service\Citizen\InfosProvider\ApiCitizenInfosProvider'
-    App\Service\Citizen\InfosProvider\ApiCitizenInfosProvider:
-        arguments: { '$cache': '@rsi.citizens.cache' }
-
-    App\Listener\UpdateCitizenLastFleetListener:
-        tags:
-            - { name: 'doctrine.event_listener', event: 'prePersist', method: 'prePersist' }
-
-    App\Security\Listener\AlreadyLinkedDiscordListener:
-        tags:
-            - { name: 'kernel.event_listener', event: 'kernel.exception', method: 'onException' }
+    App\Infrastructure\Controller\:
+        resource: '../src/Infrastructure/Controller/**/*Controller.php'
+        tags: ['controller.service_arguments']
 
     App\MessageHandler\Funding\SendOrderCaptureSummaryMailHandler:
         arguments:
@@ -94,7 +43,6 @@ services:
             - { name: 'kernel.event_listener' }
 
     App\Service\Funding\PaypalCheckout: ~
-    #        lazy: true
     App\Service\Funding\PaypalCheckoutInterface: '@App\Service\Funding\PaypalCheckout'
 
     App\Service\Funding\VerifyWebhookSignatureFactory:
@@ -117,3 +65,6 @@ services:
         factory: ['@App\Service\Funding\PayPalHttpClientFactory', 'createPayPalHttpClient']
     PayPal\Rest\ApiContext:
         factory: ['@App\Service\Funding\PayPalHttpClientFactory', 'createApiContext']
+
+    App\Application\Repository\UserRepositoryInterface: '@App\Infrastructure\Repository\User\DoctrineUserRepository'
+    App\Application\Repository\PatchNoteRepositoryInterface: '@App\Infrastructure\Repository\PatchNote\DoctrinePatchNoteRepository'

@@ -2,40 +2,39 @@
 
 namespace App\Controller\BackOffice\PatchNote;
 
+use App\Domain\PatchNoteId;
 use App\Entity\PatchNote;
 use App\Form\Dto\PatchNote as PatchNoteDto;
 use App\Form\PatchNoteForm;
 use Doctrine\ORM\EntityManagerInterface;
-use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Uid\Ulid;
 
 class PatchNoteCreateController extends AbstractController
 {
-    private EntityManagerInterface $entityManager;
-
-    public function __construct(EntityManagerInterface $entityManager)
-    {
-        $this->entityManager = $entityManager;
+    public function __construct(
+        private EntityManagerInterface $entityManager
+    ) {
     }
 
-    /**
-     * @Route("/bo/patch-note/create", name="bo_patch_note_create", methods={"GET","POST"})
-     */
-    public function __invoke(Request $request): Response
-    {
+    #[Route("/bo/patch-note/create", name: "bo_patch_note_create", methods: ["GET", "POST"])]
+    public function __invoke(
+        Request $request
+    ): Response {
         $patchNote = new PatchNoteDto();
         $form = $this->createForm(PatchNoteForm::class, $patchNote);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $shipName = new PatchNote(
-                Uuid::uuid4(),
+                new PatchNoteId(new Ulid()),
                 $patchNote->title,
                 $patchNote->body,
-                $patchNote->link);
+                $patchNote->link,
+                new \DateTimeImmutable());
             $this->entityManager->persist($shipName);
             $this->entityManager->flush();
 

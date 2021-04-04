@@ -1,35 +1,17 @@
-version: '3.4'
+version: '3.5'
 services:
     php:
-        build:
-            context: .
-            target: build_php
-            dockerfile: ./docker/Dockerfile
-            args:
-                DUMP_ENV: 1
+        image: 186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-api-php:test-latest
         hostname: php
-        environment:
-            REDIS_HOST: redis
-            REDIS_PORT: 6379
-            REDIS_PASSWORD: ${REDIS_PASSWORD}
+        depends_on:
+            - redis
     apache:
-        build:
-            context: .
-            target: build_apache
-            dockerfile: ./docker/Dockerfile
+        image: 186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-api-apache:test-latest
         hostname: apache
         environment:
             PHP_HANDLER_HOST: php:9000
-    mysql:
-        image: mysql:5.7
-        hostname: mysql
-        environment:
-            MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-            MYSQL_DATABASE: ${DB_NAME}
+        depends_on:
+            - php
     redis:
-        image: bitnami/redis:5.0.5-debian-9-r56
+        image: bitnami/redis:5.0.9-debian-10-r6
         hostname: redis
-        environment:
-            REDIS_PASSWORD: ${REDIS_PASSWORD}
-    smtp:
-        image: namshi/smtp

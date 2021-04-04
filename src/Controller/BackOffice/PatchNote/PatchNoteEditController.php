@@ -2,10 +2,11 @@
 
 namespace App\Controller\BackOffice\PatchNote;
 
+use App\Application\Repository\PatchNoteRepositoryInterface;
 use App\Entity\PatchNote;
 use App\Form\Dto\PatchNote as PatchNoteDto;
 use App\Form\PatchNoteForm;
-use App\Repository\PatchNoteRepository;
+use App\Repository\DoctrinePatchNoteRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,20 +16,16 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class PatchNoteEditController extends AbstractController
 {
-    private PatchNoteRepository $patchNoteRepository;
-    private EntityManagerInterface $entityManager;
-
-    public function __construct(PatchNoteRepository $patchNoteRepository, EntityManagerInterface $entityManager)
-    {
-        $this->patchNoteRepository = $patchNoteRepository;
-        $this->entityManager = $entityManager;
+    public function __construct(
+        private PatchNoteRepositoryInterface $patchNoteRepository,
+        private EntityManagerInterface $entityManager
+    ) {
     }
 
-    /**
-     * @Route("/bo/patch-note/edit/{id}", name="bo_patch_note_edit", methods={"GET","POST"})
-     */
-    public function __invoke(Request $request, string $id): Response
-    {
+    #[Route("/bo/patch-note/edit/{id}", name: "bo_patch_note_edit", methods: ["GET", "POST"])]
+    public function __invoke(
+        Request $request, string $id
+    ): Response {
         /** @var PatchNote $patchNote */
         $patchNote = $this->patchNoteRepository->find($id);
         if ($patchNote === null) {

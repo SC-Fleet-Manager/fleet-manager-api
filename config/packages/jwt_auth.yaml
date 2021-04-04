@@ -1,0 +1,25 @@
+jwt_auth:
+    #  The domain of your registered Auth0 tenant.
+    domain: "%env(AUTH0_DOMAIN)%"
+    # The client ID string of your registered Auth0 application.
+    client_id: "%env(AUTH0_CLIENT_ID)%"
+    # The audience/identifier string of your registered Auth0 API.
+    audience: "%env(AUTH0_API_AUDIENCE)%"
+
+    # Defaults to RS256. Supported options are RS256 or HS256.
+    algorithm: "RS256"
+    # If you're using HS256, you need to provide the client secret for your registered Auth0 application.
+#    client_secret: "%env(AUTH0_CLIENT_SECRET)%"
+
+    cache: "cache.app"
+
+    # Token validations to run during JWT decoding:
+    validations:
+        # Validate AUD claim against a value, such as an API identifier. Set to false to skip. Defaults to jwt_auth.audience.
+        aud: "%env(AUTH0_API_AUDIENCE)%"
+        # Validate the AZP claim against a value, such as a client ID. Set to false to skip. Defaults to false.
+        azp: "%env(AUTH0_CLIENT_ID)%"
+        # Maximum age (in seconds) since the auth_time of the token. Set to false to skip. Defaults to false.
+        max_age: 3600
+        # Clock tolerance (in seconds) for token expiration checks. Requires an integer value. Defaults to 60 seconds.
+        leeway: 60
