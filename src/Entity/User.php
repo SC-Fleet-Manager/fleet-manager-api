@@ -3,9 +3,9 @@
 namespace App\Entity;
 
 use App\Domain\UserId;
+use App\Domain\UserProfile;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Ulid;
 
 /**
@@ -52,9 +52,12 @@ class User implements UserInterface
      */
     private ?\DateTimeImmutable $lastPatchNoteReadAt = null;
 
+    private UserProfile $profile;
+
     public function __construct(UserId $id, string $auth0Username, \DateTimeInterface $createdAt)
     {
         $this->id = $id->getId();
+        $this->profile = new UserProfile();
         $this->auth0Username = $auth0Username;
         $this->createdAt = \DateTimeImmutable::createFromInterface($createdAt);
     }
@@ -155,5 +158,20 @@ class User implements UserInterface
     public function readPatchNote(PatchNote $patchNote): void
     {
         $this->lastPatchNoteReadAt = \DateTimeImmutable::createFromInterface($patchNote->getCreatedAt());
+    }
+
+    public function getProfile(): UserProfile
+    {
+        return $this->profile;
+    }
+
+    public function provideProfile(?string $nickname, ?string $pictureUrl, ?string $locale, ?string $email): void
+    {
+        $this->profile = new UserProfile(
+            nickname: $nickname,
+            pictureUrl: $pictureUrl,
+            locale: $locale,
+            email: $email,
+        );
     }
 }

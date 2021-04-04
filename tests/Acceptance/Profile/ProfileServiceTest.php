@@ -24,6 +24,7 @@ class ProfileServiceTest extends KernelTestCase
         $user = new User(new UserId(Ulid::fromString('00000000000000000000000001')), 'Ioni', new \DateTimeImmutable('2021-03-20T17:42:00+01:00'));
         $user->setCoins(5);
         $user->setSupporterVisible(false);
+        $user->provideProfile('Ioni_nickname', 'https://example.org/picture.jpg', null, null);
         $userRepository->setUsers([$user]);
 
         /** @var ProfileService $service */
@@ -33,6 +34,8 @@ class ProfileServiceTest extends KernelTestCase
         static::assertEquals(new ProfileOutput(
             id: new UserId(Ulid::fromString('00000000000000000000000001')),
             auth0Username: 'Ioni',
+            nickname: 'Ioni_nickname',
+            pictureUrl: 'https://example.org/picture.jpg',
             supporterVisible: false,
             coins: 5,
             createdAt: new \DateTimeImmutable('2021-03-20T16:42:00+00:00'),
