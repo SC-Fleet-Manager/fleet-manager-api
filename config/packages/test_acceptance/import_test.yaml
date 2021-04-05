@@ -1,2 +1,2 @@
 imports:
-    - { resource: '../test/{debug,framework,jwt_auth,messenger,monolog,routing,twig,validator}.* }' }
+    - { resource: '../test/{debug,framework,jwt_auth,messenger,monolog,routing,twig,validator}.*' }

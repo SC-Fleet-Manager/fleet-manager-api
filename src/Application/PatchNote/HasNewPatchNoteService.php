@@ -2,7 +2,7 @@
 
 namespace App\Application\PatchNote;
 
-use App\Application\Exception\NotFoundUserException;
+use App\Domain\Exception\NotFoundUserException;
 use App\Application\PatchNote\Output\HasNewPatchNoteOutput;
 use App\Application\Repository\PatchNoteRepositoryInterface;
 use App\Application\Repository\UserRepositoryInterface;

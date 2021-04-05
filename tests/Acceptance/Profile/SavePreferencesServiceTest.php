@@ -2,7 +2,7 @@
 
 namespace App\Tests\Acceptance\Profile;
 
-use App\Application\Exception\NotFoundUserException;
+use App\Domain\Exception\NotFoundUserException;
 use App\Application\Profile\SavePreferencesService;
 use App\Application\Repository\UserRepositoryInterface;
 use App\Domain\UserId;

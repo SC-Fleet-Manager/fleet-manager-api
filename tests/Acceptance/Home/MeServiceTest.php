@@ -2,7 +2,7 @@
 
 namespace App\Tests\Acceptance\Home;
 
-use App\Application\Exception\NotFoundUserException;
+use App\Domain\Exception\NotFoundUserException;
 use App\Application\Home\MeService;
 use App\Application\Home\Output\MeOutput;
 use App\Application\Repository\UserRepositoryInterface;

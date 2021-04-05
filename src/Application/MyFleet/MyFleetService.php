@@ -2,7 +2,7 @@
 
 namespace App\Application\MyFleet;
 
-use App\Application\Exception\NotFoundFleetByUserException;
+use App\Domain\Exception\NotFoundFleetByUserException;
 use App\Application\MyFleet\Output\MyFleetOutput;
 use App\Application\MyFleet\Output\MyFleetShipOutput;
 use App\Application\MyFleet\Output\MyFleetShipsCollectionOutput;

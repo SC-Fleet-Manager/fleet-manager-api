@@ -3,14 +3,13 @@
 namespace App\Tests\End2End\Controller\MyFleet;
 
 use App\Tests\End2End\WebTestCase;
-use Symfony\Component\Uid\Ulid;
 
-class IncrementQuantityShipControllerTest extends WebTestCase
+class DeleteShipControllerTest extends WebTestCase
 {
     /**
      * @test
      */
-    public function it_should_increment_quantity_ship_by_3_for_logged_user(): void
+    public function it_should_delete_a_ship_of_logged_user(): void
     {
         static::$connection->executeStatement(<<<SQL
                 INSERT INTO users(id, roles, auth0_username, created_at)
@@ -18,53 +17,48 @@ class IncrementQuantityShipControllerTest extends WebTestCase
                 INSERT INTO fleets(user_id, updated_at)
                 VALUES ('00000000-0000-0000-0000-000000000001', '2021-01-02T10:00:00Z');
                 INSERT INTO ships(id, fleet_id, name, quantity)
-                VALUES ('00000000-0000-0000-0000-000000000020', '00000000-0000-0000-0000-000000000001', 'Avenger', 2);
+                VALUES ('00000000-0000-0000-0000-000000000011', '00000000-0000-0000-0000-000000000001', 'Avenger', 2);
             SQL
         );
 
-        static::$client->xmlHttpRequest('POST', '/api/increment-quantity-ship/00000000-0000-0000-0000-000000000020', [], [], [
+        static::$client->xmlHttpRequest('POST', '/api/delete-ship/00000000-0000-0000-0000-000000000011', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
-        ], json_encode([
-            'step' => 3,
-        ]));
+        ]);
 
-        static::assertSame(200, static::$client->getResponse()->getStatusCode());
-        $json = json_decode(static::$client->getResponse()->getContent(), true);
-        static::assertSame(5, $json['newQuantity']);
+        static::assertSame(204, static::$client->getResponse()->getStatusCode());
 
         $result = static::$connection->executeQuery(<<<SQL
-                SELECT * FROM ships WHERE fleet_id = '00000000-0000-0000-0000-000000000001';
+                SELECT * FROM ships WHERE id = '00000000-0000-0000-0000-000000000011';
             SQL
         )->fetchAssociative();
-        static::assertSame(5, $result['quantity']);
+        static::assertFalse($result, 'The ship should be deleted.');
     }
 
     /**
      * @test
      */
-    public function it_should_decrement_until_1_if_too_large_step(): void
+    public function it_should_error_logged_user_has_no_fleet(): void
     {
         static::$connection->executeStatement(<<<SQL
                 INSERT INTO users(id, roles, auth0_username, created_at)
                 VALUES ('00000000-0000-0000-0000-000000000001', '["ROLE_USER"]', 'Ioni', '2021-01-01T10:00:00Z');
-                INSERT INTO fleets(user_id, updated_at)
-                VALUES ('00000000-0000-0000-0000-000000000001', '2021-01-02T10:00:00Z');
-                INSERT INTO ships(id, fleet_id, name, quantity)
-                VALUES ('00000000-0000-0000-0000-000000000020', '00000000-0000-0000-0000-000000000001', 'Avenger', 3);
             SQL
         );
 
-        static::$client->xmlHttpRequest('POST', '/api/increment-quantity-ship/00000000-0000-0000-0000-000000000020', [], [], [
+        static::$client->xmlHttpRequest('POST', '/api/delete-ship/00000000-0000-0000-0000-000000000011', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
-        ], json_encode([
-            'step' => -3,
-        ]));
+        ]);
 
-        static::assertSame(200, static::$client->getResponse()->getStatusCode());
+        static::assertSame(404, static::$client->getResponse()->getStatusCode());
         $json = json_decode(static::$client->getResponse()->getContent(), true);
-        static::assertSame(1, $json['newQuantity']);
+
+        static::assertSame([
+            'error' => 'not_found_fleet',
+            'errorMessage' => 'This user has no fleet. Please try to create a ship.',
+            'context' => ['userId' => '00000000-0000-0000-0000-000000000001'],
+        ], $json);
     }
 
     /**

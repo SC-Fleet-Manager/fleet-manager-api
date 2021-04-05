@@ -6,6 +6,8 @@ use Symfony\Component\Uid\Ulid;
 
 abstract class EntityId
 {
+    public const PATTERN = '^[\da-fA-F]{8}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{12}$';
+
     public function __construct(
         private Ulid $ulid
     ) {

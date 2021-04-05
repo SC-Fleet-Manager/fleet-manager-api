@@ -2,8 +2,8 @@
 
 namespace App\Infrastructure\Repository\Fleet;
 
-use App\Application\Exception\AlreadyExistingFleetForUserException;
-use App\Application\Exception\ConflictVersionException;
+use App\Domain\Exception\AlreadyExistingFleetForUserException;
+use App\Domain\Exception\ConflictVersionException;
 use App\Application\Repository\FleetRepositoryInterface;
 use App\Domain\UserId;
 use App\Entity\Fleet;
@@ -11,9 +11,13 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\ManagerRegistry;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 
-class DoctrineFleetRepository extends ServiceEntityRepository implements FleetRepositoryInterface
+class DoctrineFleetRepository extends ServiceEntityRepository implements FleetRepositoryInterface, LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Fleet::class);
@@ -37,9 +41,10 @@ class DoctrineFleetRepository extends ServiceEntityRepository implements FleetRe
         try {
             $this->_em->flush();
         } catch (OptimisticLockException $e) {
-            throw new ConflictVersionException($fleet, '', 0, $e);
+            $this->logger->warning('conflict version on save ship.', ['exception' => $e]);
+            throw new ConflictVersionException($fleet, 'Unable to save your fleet. Please, try again.', context: ['userId' => $fleet->getUserId()], previous: $e);
         } catch (UniqueConstraintViolationException $e) {
-            throw new AlreadyExistingFleetForUserException($fleet->getUserId(), '', 0, $e);
+            throw new AlreadyExistingFleetForUserException($fleet->getUserId(), previous: $e);
         }
     }
 }

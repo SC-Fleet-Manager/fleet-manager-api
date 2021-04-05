@@ -34,6 +34,11 @@ services:
         resource: '../src/Infrastructure/Controller/**/*Controller.php'
         tags: ['controller.service_arguments']
 
+    App\Infrastructure\Listener\:
+        resource: '../src/Infrastructure/Listener'
+        tags:
+            - { name: 'kernel.event_listener' }
+
     App\MessageHandler\Funding\SendOrderCaptureSummaryMailHandler:
         arguments:
             $orderCaptureSummaryAddresses: '%env(csv:FUNDING_ORDER_CAPTURE_ADDRESSES)%'
