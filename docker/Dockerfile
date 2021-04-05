@@ -82,6 +82,7 @@ RUN if [ ${DUMP_ENV} -eq 0 ]; then echo "<?php return ['APP_ENV'=>'${ENV}','APP_
     if [ -e .env.local ]; then sed -i "s/^APP_ENV=.*$/APP_ENV=${ENV}/" .env.local; fi
 RUN mkdir -p public/bundles var/log var/cache \
     && bin/console cache:warmup -v \
+    && bin/console assets:install public -v \
     && chown -R www-data:www-data var/log var/cache
 
 USER www-data

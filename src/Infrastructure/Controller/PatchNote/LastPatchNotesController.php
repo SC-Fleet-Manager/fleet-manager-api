@@ -3,6 +3,9 @@
 namespace App\Infrastructure\Controller\PatchNote;
 
 use App\Application\PatchNote\LastPatchNotesService;
+use App\Application\PatchNote\Output\LastPatchNotesOutput;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Annotations as OpenApi;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -18,7 +21,12 @@ class LastPatchNotesController
     ) {
     }
 
-    #[Route("/api/last-patch-notes", name: "last_patch_notes", methods: ["GET"])]
+    /**
+     * @OpenApi\Tag(name="PatchNote")
+     * @OpenApi\Get(description="Retrieve the last 5 patch notes. If a user is logged, its last patch note date will be updated (cf. /api/has-new-patch-note).")
+     * @OpenApi\Response(response=200, description="Ok.", @Model(type=LastPatchNotesOutput::class))
+     */
+    #[Route('/api/last-patch-notes', name: 'last_patch_notes', methods: ['GET'])]
     public function __invoke(): Response
     {
         $userId = $this->security->isGranted('ROLE_USER')

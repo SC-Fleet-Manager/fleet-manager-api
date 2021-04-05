@@ -3,7 +3,10 @@
 namespace App\Infrastructure\Controller\Home;
 
 use App\Application\Home\MeService;
+use App\Application\Home\Output\MeOutput;
 use App\Entity\User;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Annotations as OpenApi;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +24,11 @@ class MeController
     ) {
     }
 
-    #[Route("/api/me", name: "me", methods: ["GET"])]
+    /**
+     * @OpenApi\Tag(name="Home")
+     * @OpenApi\Response(response=200, description="Returns summary infos about user.", @Model(type=MeOutput::class))
+     */
+    #[Route('/api/me', name: 'me', methods: ['GET'])]
     public function __invoke(
         Request $request
     ): Response {
