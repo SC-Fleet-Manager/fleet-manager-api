@@ -3,9 +3,12 @@
 namespace App\Infrastructure\Controller\MyFleet;
 
 use App\Application\MyFleet\IncrementQuantityShipService;
+use App\Application\MyFleet\Output\IncrementQuantityShipOutput;
 use App\Domain\ShipId;
 use App\Entity\User;
 use App\Infrastructure\Controller\MyFleet\Input\IncrementQuantityShipInput;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Annotations as OpenApi;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -29,6 +32,22 @@ class IncrementQuantityShipController implements LoggerAwareInterface
     ) {
     }
 
+    /**
+     * @OpenApi\Tag(name="MyFleet")
+     * @OpenApi\Post(description="Increment or decrement the quantity of a ship of the logged user. Cannot be less than 1.")
+     * @OpenApi\Parameter(
+     *     name="shipId",
+     *     in="path",
+     *     description="The ship to delete.",
+     *     schema=@OpenApi\Property(type="string", format="uid"),
+     *     example="00000000-0000-0000-0000-000000000001"
+     * )
+     * @OpenApi\RequestBody(
+     *     @Model(type=IncrementQuantityShipInput::class)
+     * )
+     * @OpenApi\Response(response=200, description="Quantity updated.", @Model(type=IncrementQuantityShipOutput::class))
+     * @OpenApi\Response(response=400, description="Invalid payload.")
+     */
     #[Route('/api/increment-quantity-ship/{shipId}',
         name: 'increment_quantity_ship',
         requirements: ['shipId' => ShipId::PATTERN],

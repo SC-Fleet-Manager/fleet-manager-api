@@ -6,6 +6,8 @@ use App\Application\MyFleet\CreateShipService;
 use App\Domain\ShipId;
 use App\Entity\User;
 use App\Infrastructure\Controller\MyFleet\Input\CreateShipInput;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Annotations as OpenApi;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,6 +28,14 @@ class CreateShipController
     ) {
     }
 
+    /**
+     * @OpenApi\Tag(name="MyFleet")
+     * @OpenApi\RequestBody(
+     *     @Model(type=CreateShipInput::class)
+     * )
+     * @OpenApi\Response(response=204, description="Creates a new ship for the logged user's fleet.")
+     * @OpenApi\Response(response=400, description="Invalid payload.")
+     */
     #[Route('/api/create-ship', name: 'create_ship', methods: ['POST'])]
     public function __invoke(
         Request $request

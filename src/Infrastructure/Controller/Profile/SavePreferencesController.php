@@ -5,6 +5,8 @@ namespace App\Infrastructure\Controller\Profile;
 use App\Application\Profile\SavePreferencesService;
 use App\Entity\User;
 use App\Infrastructure\Controller\Profile\Input\SavePreferencesInput;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Annotations as OpenApi;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,7 +26,16 @@ class SavePreferencesController
     ) {
     }
 
-    #[Route("/api/profile/save-preferences", name: "profile_save_preferences", methods: ["POST"])]
+    /**
+     * @OpenApi\Tag(name="Profile")
+     * @OpenApi\Post(description="Updates the preferences of the logged user.")
+     * @OpenApi\RequestBody(
+     *     @Model(type=SavePreferencesInput::class)
+     * )
+     * @OpenApi\Response(response=204, description="Ok.")
+     * @OpenApi\Response(response=400, description="Invalid payload.")
+     */
+    #[Route('/api/profile/save-preferences', name: 'profile_save_preferences', methods: ['POST'])]
     public function __invoke(
         Request $request
     ): Response {

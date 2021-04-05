@@ -1,0 +1,7 @@
+nelmio_api_doc:
+    documentation:
+        info:
+            title: Fleet Manager
+    areas:
+        path_patterns:
+            - ^/api(?!(/doc(.json)?$|/_)) # Accepts routes under /api except /api/doc

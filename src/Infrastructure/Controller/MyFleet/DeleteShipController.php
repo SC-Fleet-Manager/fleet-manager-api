@@ -2,15 +2,12 @@
 
 namespace App\Infrastructure\Controller\MyFleet;
 
-use App\Domain\Exception\ConflictVersionException;
-use App\Domain\Exception\NotFoundFleetByUserException;
 use App\Application\MyFleet\DeleteShipService;
-use App\Domain\Exception\NotFoundShipException;
 use App\Domain\ShipId;
 use App\Entity\User;
+use OpenApi\Annotations as OpenApi;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -31,6 +28,17 @@ class DeleteShipController implements LoggerAwareInterface
     ) {
     }
 
+    /**
+     * @OpenApi\Tag(name="MyFleet")
+     * @OpenApi\Parameter(
+     *     name="shipId",
+     *     in="path",
+     *     description="The ship to delete.",
+     *     schema=@OpenApi\Property(type="string", format="uid"),
+     *     example="00000000-0000-0000-0000-000000000001"
+     * )
+     * @OpenApi\Response(response=204, description="Deletes a ship of the logged user.")
+     */
     #[Route('/api/delete-ship/{shipId}',
         name: 'delete_ship',
         requirements: ['shipId' => ShipId::PATTERN],

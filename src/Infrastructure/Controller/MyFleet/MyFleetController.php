@@ -2,9 +2,11 @@
 
 namespace App\Infrastructure\Controller\MyFleet;
 
-use App\Application\Home\MeService;
 use App\Application\MyFleet\MyFleetService;
+use App\Application\MyFleet\Output\MyFleetOutput;
 use App\Entity\User;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Annotations as OpenApi;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,7 +24,12 @@ class MyFleetController
     ) {
     }
 
-    #[Route("/api/my-fleet", name: "my_fleet", methods: ["GET"])]
+    /**
+     * @OpenApi\Tag(name="MyFleet")
+     * @OpenApi\Get(description="Retrieve the logged user's fleet with all its ships.")
+     * @OpenApi\Response(response=200, description="Ok.", @Model(type=MyFleetOutput::class))
+     */
+    #[Route('/api/my-fleet', name: 'my_fleet', methods: ['GET'])]
     public function __invoke(
         Request $request
     ): Response {

@@ -2,9 +2,12 @@
 
 namespace App\Infrastructure\Controller\Profile;
 
+use App\Application\Profile\Output\ProfileOutput;
 use App\Application\Profile\ProfileService;
 use App\Application\Repository\UserRepositoryInterface;
 use App\Entity\User;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Annotations as OpenApi;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,7 +27,12 @@ class ProfileController extends AbstractController
     ) {
     }
 
-    #[Route("/api/profile", name: "profile", methods: ["GET"])]
+    /**
+     * @OpenApi\Tag(name="Profile")
+     * @OpenApi\Get(description="Retrieve the detailed profile of the logged user.")
+     * @OpenApi\Response(response=200, description="Ok.", @Model(type=ProfileOutput::class))
+     */
+    #[Route('/api/profile', name: 'profile', methods: ['GET'])]
     public function __invoke(
         Request $request
     ): Response {

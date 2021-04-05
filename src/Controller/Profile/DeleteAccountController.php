@@ -3,7 +3,6 @@
 namespace App\Controller\Profile;
 
 use App\Entity\User;
-use App\Event\CitizenDeletedEvent;
 use App\Repository\FundingRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
