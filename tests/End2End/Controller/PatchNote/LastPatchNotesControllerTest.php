@@ -3,7 +3,6 @@
 namespace App\Tests\End2End\Controller\PatchNote;
 
 use App\Tests\End2End\WebTestCase;
-use Symfony\Component\Uid\Ulid;
 
 class LastPatchNotesControllerTest extends WebTestCase
 {
@@ -35,35 +34,35 @@ class LastPatchNotesControllerTest extends WebTestCase
         static::assertSame([
             'patchNotes' => [
                 [
-                    'id' => (string) Ulid::fromString('00000000-0000-0000-0000-000000000015'),
+                    'id' => '00000000-0000-0000-0000-000000000015',
                     'title' => 'Title 5',
                     'body' => 'Body 5',
                     'link' => null,
                     'createdAt' => '2021-03-25T09:00:00+00:00',
                 ],
                 [
-                    'id' => (string) Ulid::fromString('00000000-0000-0000-0000-000000000014'),
+                    'id' => '00000000-0000-0000-0000-000000000014',
                     'title' => 'Title 4',
                     'body' => 'Body 4',
                     'link' => null,
                     'createdAt' => '2021-03-24T09:00:00+00:00',
                 ],
                 [
-                    'id' => (string) Ulid::fromString('00000000-0000-0000-0000-000000000013'),
+                    'id' => '00000000-0000-0000-0000-000000000013',
                     'title' => 'Title 3',
                     'body' => 'Body 3',
                     'link' => null,
                     'createdAt' => '2021-03-23T09:00:00+00:00',
                 ],
                 [
-                    'id' => (string) Ulid::fromString('00000000-0000-0000-0000-000000000012'),
+                    'id' => '00000000-0000-0000-0000-000000000012',
                     'title' => 'Title 2',
                     'body' => 'Body 2',
                     'link' => null,
                     'createdAt' => '2021-03-22T09:00:00+00:00',
                 ],
                 [
-                    'id' => (string) Ulid::fromString('00000000-0000-0000-0000-000000000011'),
+                    'id' => '00000000-0000-0000-0000-000000000011',
                     'title' => 'Title 1',
                     'body' => 'Body 1',
                     'link' => null,

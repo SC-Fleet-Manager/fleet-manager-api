@@ -25,7 +25,7 @@ class MeControllerTest extends WebTestCase
         static::assertSame(200, static::$client->getResponse()->getStatusCode());
         $json = json_decode(static::$client->getResponse()->getContent(), true);
         static::assertArraySubset([
-            'id' => '00000000000000000000000001',
+            'id' => '00000000-0000-0000-0000-000000000001',
             'createdAt' => '2021-03-20T14:50:00+00:00',
         ], $json);
     }

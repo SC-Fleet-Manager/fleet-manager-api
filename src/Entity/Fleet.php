@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Application\Common\Clock;
+use App\Domain\Exception\NotFoundShipException;
 use App\Domain\ShipId;
 use App\Domain\UserId;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -16,6 +18,8 @@ use Webmozart\Assert\Assert;
  */
 class Fleet
 {
+    use VersionnableTrait;
+
     /**
      * @ORM\Id()
      * @ORM\Column(name="user_id", type="ulid")
@@ -25,7 +29,7 @@ class Fleet
     /**
      * @var Collection|Ship[]
      *
-     * @ORM\OneToMany(targetEntity="Ship", mappedBy="fleet", cascade="persist", fetch="EAGER")
+     * @ORM\OneToMany(targetEntity="Ship", mappedBy="fleet", cascade="all", fetch="EAGER", indexBy="id")
      */
     private Collection $ships;
 
@@ -47,17 +51,17 @@ class Fleet
     }
 
     /**
-     * @return Collection|Ship[]
+     * @return Ship[]
      */
-    public function getShips(): Collection
+    public function getShips(): array
     {
-        return $this->ships;
+        return $this->ships->toArray();
     }
 
     public function addShip(ShipId $id, string $name, ?string $imageUrl, int $quantity, \DateTimeInterface $updatedAt): void
     {
         Assert::null($this->getShipByName($name), sprintf('Cannot add ship with same name "%s".', $name));
-        $this->ships[] = new Ship($id, $this, $name, $imageUrl, $quantity);
+        $this->ships[(string) $id] = new Ship($id, $this, $name, $imageUrl, $quantity);
         $this->updatedAt = \DateTimeImmutable::createFromInterface($updatedAt);
     }
 
@@ -78,5 +82,26 @@ class Fleet
         }
 
         return null;
+    }
+
+    /**
+     * @return int the new quantity of the ship
+     */
+    public function incrementShipQuantity(ShipId $shipId, int $step, Clock $clock): int
+    {
+        $ship = $this->getShip($shipId);
+        if ($ship === null) {
+            throw new NotFoundShipException($this->getUserId(), $shipId);
+        }
+
+        $ship->incrementQuantity($step);
+        $this->updatedAt = $clock->now();
+
+        return $ship->getQuantity();
+    }
+
+    private function getShip(ShipId $shipId): ?Ship
+    {
+        return $this->ships[(string) $shipId] ?? null;
     }
 }

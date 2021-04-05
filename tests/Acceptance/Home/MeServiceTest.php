@@ -10,7 +10,6 @@ use App\Domain\UserId;
 use App\Entity\User;
 use App\Infrastructure\Repository\User\InMemoryUserRepository;
 use App\Tests\Acceptance\KernelTestCase;
-use Symfony\Component\Uid\Ulid;
 
 class MeServiceTest extends KernelTestCase
 {
@@ -19,18 +18,20 @@ class MeServiceTest extends KernelTestCase
      */
     public function it_should_return_basic_logged_user_infos(): void
     {
+        $userId = UserId::fromString('00000000-0000-0000-0000-000000000001');
+
         /** @var InMemoryUserRepository $userRepository */
         $userRepository = static::$container->get(UserRepositoryInterface::class);
         $userRepository->setUsers([
-            new User(new UserId(Ulid::fromString('00000000000000000000000001')), 'Ioni', new \DateTimeImmutable('2021-03-20T17:42:00Z')),
+            new User($userId, 'Ioni', new \DateTimeImmutable('2021-03-20T17:42:00Z')),
         ]);
 
         /** @var MeService $service */
         $service = static::$container->get(MeService::class);
-        $output = $service->handle(new UserId(Ulid::fromString('00000000000000000000000001')));
+        $output = $service->handle($userId);
 
         static::assertEquals(new MeOutput(
-            id: new UserId(Ulid::fromString('00000000000000000000000001')),
+            id: $userId,
             createdAt: new \DateTimeImmutable('2021-03-20T17:42:00Z'),
         ), $output);
     }
@@ -44,6 +45,6 @@ class MeServiceTest extends KernelTestCase
 
         /** @var MeService $service */
         $service = static::$container->get(MeService::class);
-        $service->handle(new UserId(Ulid::fromString('00000000000000000000000001')));
+        $service->handle(UserId::fromString('00000000-0000-0000-0000-000000000001'));
     }
 }

@@ -16,8 +16,8 @@ class ShipTest extends TestCase
      */
     public function it_should_create_regular_ship(): void
     {
-        $ship = new Ship(ShipId::fromString('00000000000000000000000001'), static::createFleet(), 'Avenger', null, 1);
-        static::assertSame('00000000000000000000000001', (string) $ship->getId());
+        $ship = new Ship(ShipId::fromString('00000000-0000-0000-0000-000000000001'), static::createFleet(), 'Avenger', null, 1);
+        static::assertSame('00000000-0000-0000-0000-000000000001', (string) $ship->getId());
         static::assertSame('Avenger', $ship->getName());
         static::assertNull($ship->getImageUrl());
         static::assertSame(1, $ship->getQuantity());
@@ -30,7 +30,7 @@ class ShipTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
 
-        new Ship(ShipId::fromString('00000000000000000000000001'), static::createFleet(), 'A', null, 1);
+        new Ship(ShipId::fromString('00000000-0000-0000-0000-000000000001'), static::createFleet(), 'A', null, 1);
     }
 
     /**
@@ -40,7 +40,7 @@ class ShipTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
 
-        new Ship(ShipId::fromString('00000000000000000000000001'), static::createFleet(), str_repeat('A', 33), null, 1);
+        new Ship(ShipId::fromString('00000000-0000-0000-0000-000000000001'), static::createFleet(), str_repeat('A', 33), null, 1);
     }
 
     /**
@@ -50,7 +50,7 @@ class ShipTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
 
-        new Ship(ShipId::fromString('00000000000000000000000001'), static::createFleet(), 'Avenger', null, 0);
+        new Ship(ShipId::fromString('00000000-0000-0000-0000-000000000001'), static::createFleet(), 'Avenger', null, 0);
     }
 
     /**
@@ -60,7 +60,7 @@ class ShipTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
 
-        new Ship(ShipId::fromString('00000000000000000000000001'), static::createFleet(), 'Avenger', 'bad://example.com', 1);
+        new Ship(ShipId::fromString('00000000-0000-0000-0000-000000000001'), static::createFleet(), 'Avenger', 'bad://example.com', 1);
     }
 
     /**
@@ -68,12 +68,12 @@ class ShipTest extends TestCase
      */
     public function it_should_create_with_image_url(): void
     {
-        $ship = new Ship(ShipId::fromString('00000000000000000000000001'), static::createFleet(), 'Avenger', 'https://example.com/picture.jpg', 1);
+        $ship = new Ship(ShipId::fromString('00000000-0000-0000-0000-000000000001'), static::createFleet(), 'Avenger', 'https://example.com/picture.jpg', 1);
         static::assertSame('https://example.com/picture.jpg', $ship->getImageUrl());
     }
 
     private static function createFleet(): Fleet
     {
-        return new Fleet(UserId::fromString('00000000000000000000000020'), new \DateTimeImmutable('2021-01-01T10:00:00Z'));
+        return new Fleet(UserId::fromString('00000000-0000-0000-0000-000000000010'), new \DateTimeImmutable('2021-01-01T10:00:00Z'));
     }
 }

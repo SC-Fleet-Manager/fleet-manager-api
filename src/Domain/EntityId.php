@@ -21,8 +21,13 @@ abstract class EntityId
         return $this->ulid;
     }
 
+    public function equals(EntityId $other): bool
+    {
+        return $this->ulid->equals($other->ulid);
+    }
+
     public function __toString(): string
     {
-        return (string)$this->ulid;
+        return $this->ulid->toRfc4122();
     }
 }

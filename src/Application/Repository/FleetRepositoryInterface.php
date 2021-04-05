@@ -3,6 +3,7 @@
 namespace App\Application\Repository;
 
 use App\Application\Exception\AlreadyExistingFleetForUserException;
+use App\Application\Exception\ConflictVersionException;
 use App\Domain\UserId;
 use App\Entity\Fleet;
 
@@ -12,6 +13,7 @@ interface FleetRepositoryInterface
 
     /**
      * @throws AlreadyExistingFleetForUserException
+     * @throws ConflictVersionException
      */
     public function save(Fleet $fleet): void;
 }

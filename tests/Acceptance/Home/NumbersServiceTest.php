@@ -9,7 +9,6 @@ use App\Domain\UserId;
 use App\Entity\User;
 use App\Infrastructure\Repository\User\InMemoryUserRepository;
 use App\Tests\Acceptance\KernelTestCase;
-use Symfony\Component\Uid\Ulid;
 
 class NumbersServiceTest extends KernelTestCase
 {
@@ -21,9 +20,9 @@ class NumbersServiceTest extends KernelTestCase
         /** @var InMemoryUserRepository $userRepository */
         $userRepository = static::$container->get(UserRepositoryInterface::class);
         $userRepository->setUsers([
-            new User(new UserId(Ulid::fromString('00000000000000000000000000')), 'Ioni', new \DateTimeImmutable()),
-            new User(new UserId(Ulid::fromString('00000000000000000000000001')), 'Ashuvidz', new \DateTimeImmutable()),
-            new User(new UserId(Ulid::fromString('00000000000000000000000002')), 'Lunia', new \DateTimeImmutable()),
+            new User(UserId::fromString('00000000-0000-0000-0000-000000000001'), 'Ioni', new \DateTimeImmutable()),
+            new User(UserId::fromString('00000000-0000-0000-0000-000000000002'), 'Ashuvidz', new \DateTimeImmutable()),
+            new User(UserId::fromString('00000000-0000-0000-0000-000000000003'), 'Lunia', new \DateTimeImmutable()),
         ]);
 
         /** @var NumbersService $service */

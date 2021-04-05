@@ -28,7 +28,7 @@ class Ship
     private Fleet $fleet;
 
     /**
-     * @ORM\Column(name="name", type="string", length=32, options={"collation":"en_strict"})
+     * @ORM\Column(name="name", type="string", length=32)
      */
     private string $name;
 
@@ -73,5 +73,11 @@ class Ship
     public function getQuantity(): int
     {
         return $this->quantity;
+    }
+
+    public function incrementQuantity(int $step): void
+    {
+        $this->quantity += $step;
+        $this->quantity = max(1, min(1_000_000_000, $this->quantity));
     }
 }

@@ -1,0 +1,21 @@
+App\Entity\Fleet:
+    fleet_ioni:
+        __construct:
+            - '<(\App\Domain\UserId::fromString("01F17XPBYW95G5AT8NHFXA28Q0"))>'
+            - '<(new \DateTimeImmutable("2019-04-03 11:22:33"))>'
+
+App\Entity\Ship:
+    fleet_ioni_avenger:
+        __construct:
+            - '<(\App\Domain\ShipId::fromString("01F2H16P0V2BJNBHK0K7B8AX3S"))>'
+            - '@fleet_ioni'
+            - 'Avenger Titan'
+            - 'https://media.robertsspaceindustries.com/fmhdkmvhi8ify/store_small.jpg'
+            - 2
+    fleet_ioni_mercury:
+        __construct:
+            - '<(\App\Domain\ShipId::fromString("01F2H1DX1XHVEEB1JH97FWZQ45"))>'
+            - '@fleet_ioni'
+            - 'Cutlass Black'
+            - 'https://media.robertsspaceindustries.com/wj92rqzvhnecb/store_small.jpg'
+            - 1
