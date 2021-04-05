@@ -2,7 +2,7 @@
 
 namespace App\Tests\Acceptance\MyFleet;
 
-use App\Application\Exception\NotFoundFleetByUserException;
+use App\Domain\Exception\NotFoundFleetByUserException;
 use App\Application\MyFleet\MyFleetService;
 use App\Application\MyFleet\Output\MyFleetOutput;
 use App\Application\MyFleet\Output\MyFleetShipOutput;

@@ -2,10 +2,7 @@
 
 namespace App\Infrastructure\Controller\MyFleet;
 
-use App\Application\Exception\ConflictVersionException;
-use App\Application\Exception\NotFoundFleetByUserException;
 use App\Application\MyFleet\IncrementQuantityShipService;
-use App\Domain\Exception\NotFoundShipException;
 use App\Domain\ShipId;
 use App\Entity\User;
 use App\Infrastructure\Controller\MyFleet\Input\IncrementQuantityShipInput;
@@ -32,7 +29,11 @@ class IncrementQuantityShipController implements LoggerAwareInterface
     ) {
     }
 
-    #[Route('/api/increment-quantity-ship/{shipId<[a-zA-Z0-9]{26}>}', name: 'increment_quantity_ship', methods: ['POST'])]
+    #[Route('/api/increment-quantity-ship/{shipId}',
+        name: 'increment_quantity_ship',
+        requirements: ['shipId' => ShipId::PATTERN],
+        methods: ['POST'],
+    )]
     public function __invoke(
         Request $request,
         string $shipId
@@ -56,28 +57,7 @@ class IncrementQuantityShipController implements LoggerAwareInterface
         /** @var User $user */
         $user = $this->security->getUser();
 
-        try {
-            $output = $this->incrementQuantityShipService->handle($user->getId(), ShipId::fromString($shipId), $input->step ?? 1);
-        } catch (NotFoundFleetByUserException $e) {
-            return new JsonResponse($this->serializer->serialize([
-                'error' => 'not_found_fleet',
-                'errorMessage' => 'This user has no fleet. Please try to create a ship.',
-                'context' => ['userId' => $e->userId],
-            ], 'json'), 404, [], true);
-        } catch (NotFoundShipException $e) {
-            return new JsonResponse($this->serializer->serialize([
-                'error' => 'not_found_ship',
-                'errorMessage' => 'This ship does not exist for this user.',
-                'context' => ['shipId' => $e->shipId],
-            ], 'json'), 404, [], true);
-        } catch (ConflictVersionException $e) {
-            $this->logger->warning('ConflictVersion on IncrementQuantityShip.', ['exception' => $e]);
-
-            return new JsonResponse($this->serializer->serialize([
-                'error' => 'conflict_version',
-                'errorMessage' => 'Unable to update your fleet. Please, try again.',
-            ], 'json'), 400, [], true);
-        }
+        $output = $this->incrementQuantityShipService->handle($user->getId(), ShipId::fromString($shipId), $input->step ?? 1);
 
         $json = $this->serializer->serialize($output, 'json');
 

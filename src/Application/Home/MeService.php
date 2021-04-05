@@ -2,7 +2,7 @@
 
 namespace App\Application\Home;
 
-use App\Application\Exception\NotFoundUserException;
+use App\Domain\Exception\NotFoundUserException;
 use App\Application\Home\Output\MeOutput;
 use App\Application\Repository\UserRepositoryInterface;
 use App\Domain\UserId;

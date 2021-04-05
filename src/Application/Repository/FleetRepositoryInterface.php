@@ -2,8 +2,8 @@
 
 namespace App\Application\Repository;
 
-use App\Application\Exception\AlreadyExistingFleetForUserException;
-use App\Application\Exception\ConflictVersionException;
+use App\Domain\Exception\AlreadyExistingFleetForUserException;
+use App\Domain\Exception\ConflictVersionException;
 use App\Domain\UserId;
 use App\Entity\Fleet;
 

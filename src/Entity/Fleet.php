@@ -29,7 +29,7 @@ class Fleet
     /**
      * @var Collection|Ship[]
      *
-     * @ORM\OneToMany(targetEntity="Ship", mappedBy="fleet", cascade="all", fetch="EAGER", indexBy="id")
+     * @ORM\OneToMany(targetEntity="Ship", mappedBy="fleet", cascade="all", fetch="EAGER", indexBy="id", orphanRemoval=true)
      */
     private Collection $ships;
 
@@ -103,5 +103,11 @@ class Fleet
     private function getShip(ShipId $shipId): ?Ship
     {
         return $this->ships[(string) $shipId] ?? null;
+    }
+
+    public function deleteShip(ShipId $shipId, Clock $clock): void
+    {
+        $this->ships->remove((string) $shipId);
+        $this->updatedAt = $clock->now();
     }
 }
