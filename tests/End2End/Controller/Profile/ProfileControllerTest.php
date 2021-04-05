@@ -34,7 +34,7 @@ class ProfileControllerTest extends WebTestCase
         static::assertSame(200, static::$client->getResponse()->getStatusCode());
         $json = json_decode(static::$client->getResponse()->getContent(), true);
         static::assertSame([
-            'id' => '00000000000000000000000001',
+            'id' => '00000000-0000-0000-0000-000000000001',
             'auth0Username' => 'Ioni',
             'nickname' => 'Ioni_nickname',
             'pictureUrl' => 'https://example.com/picture.jpg',

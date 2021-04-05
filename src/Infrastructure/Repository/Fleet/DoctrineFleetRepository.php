@@ -3,11 +3,13 @@
 namespace App\Infrastructure\Repository\Fleet;
 
 use App\Application\Exception\AlreadyExistingFleetForUserException;
+use App\Application\Exception\ConflictVersionException;
 use App\Application\Repository\FleetRepositoryInterface;
 use App\Domain\UserId;
 use App\Entity\Fleet;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\ManagerRegistry;
 
 class DoctrineFleetRepository extends ServiceEntityRepository implements FleetRepositoryInterface
@@ -20,11 +22,12 @@ class DoctrineFleetRepository extends ServiceEntityRepository implements FleetRe
     public function getFleetByUser(UserId $userId): ?Fleet
     {
         return $this->_em->createQuery(<<<DQL
-                SELECT fleet FROM App\Entity\Fleet fleet
+                SELECT fleet, ship FROM App\Entity\Fleet fleet
+                JOIN fleet.ships ship
                 WHERE fleet.userId = :userId
             DQL
         )
-            ->setParameter('userId', $userId->getId()->toRfc4122())
+            ->setParameter('userId', $userId)
             ->getOneOrNullResult();
     }
 
@@ -33,8 +36,10 @@ class DoctrineFleetRepository extends ServiceEntityRepository implements FleetRe
         $this->_em->persist($fleet);
         try {
             $this->_em->flush();
+        } catch (OptimisticLockException $e) {
+            throw new ConflictVersionException($fleet, '', 0, $e);
         } catch (UniqueConstraintViolationException $e) {
-            throw new AlreadyExistingFleetForUserException($fleet->getUserId(), null, 0, $e);
+            throw new AlreadyExistingFleetForUserException($fleet->getUserId(), '', 0, $e);
         }
     }
 }

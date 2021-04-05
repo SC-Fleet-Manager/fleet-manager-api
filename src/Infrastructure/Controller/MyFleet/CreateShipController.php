@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Controller\MyFleet;
 
+use App\Application\Exception\AlreadyExistingFleetForUserException;
 use App\Application\MyFleet\CreateShipService;
 use App\Domain\ShipId;
 use App\Entity\User;
@@ -49,7 +50,14 @@ class CreateShipController
         /** @var User $user */
         $user = $this->security->getUser();
 
-        $this->createShipService->handle($user->getId(), new ShipId(new Ulid()), $input->name, $input->pictureUrl);
+        try {
+            $this->createShipService->handle($user->getId(), new ShipId(new Ulid()), $input->name, $input->pictureUrl);
+        } catch (AlreadyExistingFleetForUserException $e) {
+            return new JsonResponse($this->serializer->serialize([
+                'error' => 'already_existing_fleet',
+                'errorMessage' => 'You have already a fleet.',
+            ], 'json'), 400, [], true);
+        }
 
         return new Response(null, 204);
     }

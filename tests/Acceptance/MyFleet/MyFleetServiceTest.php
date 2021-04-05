@@ -21,10 +21,11 @@ class MyFleetServiceTest extends KernelTestCase
      */
     public function it_should_return_the_fleet_and_ships_of_logged_user(): void
     {
-        $fleet = new Fleet(UserId::fromString('00000000000000000000000001'), new \DateTimeImmutable('2021-01-01T12:00:00+02:00'));
-        $fleet->addShip(ShipId::fromString('00000000000000000000000020'), 'Avenger', null, 2, new \DateTimeImmutable('2021-01-01T13:00:00+02:00'));
-        $fleet->addShip(ShipId::fromString('00000000000000000000000021'), 'Mercury Star Runner', 'https://example.com/mercury.jpg', 10, new \DateTimeImmutable('2021-01-01T14:00:00+02:00'));
-        $fleet->addShip(ShipId::fromString('00000000000000000000000022'), 'Javelin', 'https://example.com/javelin.jpg', 1, new \DateTimeImmutable('2021-01-01T15:00:00+02:00'));
+        $userId = UserId::fromString('00000000-0000-0000-0000-000000000001');
+        $fleet = new Fleet($userId, new \DateTimeImmutable('2021-01-01T12:00:00+02:00'));
+        $fleet->addShip(ShipId::fromString('00000000-0000-0000-0000-000000000010'), 'Avenger', null, 2, new \DateTimeImmutable('2021-01-01T13:00:00+02:00'));
+        $fleet->addShip(ShipId::fromString('00000000-0000-0000-0000-000000000011'), 'Mercury Star Runner', 'https://example.com/mercury.jpg', 10, new \DateTimeImmutable('2021-01-01T14:00:00+02:00'));
+        $fleet->addShip(ShipId::fromString('00000000-0000-0000-0000-000000000012'), 'Javelin', 'https://example.com/javelin.jpg', 1, new \DateTimeImmutable('2021-01-01T15:00:00+02:00'));
 
         /** @var InMemoryFleetRepository $fleetRepository */
         $fleetRepository = static::$container->get(FleetRepositoryInterface::class);
@@ -32,32 +33,32 @@ class MyFleetServiceTest extends KernelTestCase
 
         /** @var MyFleetService $service */
         $service = static::$container->get(MyFleetService::class);
-        $output = $service->handle(UserId::fromString('00000000000000000000000001'));
+        $output = $service->handle($userId);
 
         static::assertEquals(new MyFleetOutput(
-            ships: new MyFleetShipsCollectionOutput(
-            items: [
-            new MyFleetShipOutput(
-                id: ShipId::fromString('00000000000000000000000020'),
-                name: 'Avenger',
-                imageUrl: null,
-                quantity: 2,
+            new MyFleetShipsCollectionOutput(
+                [
+                    new MyFleetShipOutput(
+                        id: ShipId::fromString('00000000-0000-0000-0000-000000000010'),
+                        name: 'Avenger',
+                        imageUrl: null,
+                        quantity: 2,
+                    ),
+                    new MyFleetShipOutput(
+                        id: ShipId::fromString('00000000-0000-0000-0000-000000000011'),
+                        name: 'Mercury Star Runner',
+                        imageUrl: 'https://example.com/mercury.jpg',
+                        quantity: 10,
+                    ),
+                    new MyFleetShipOutput(
+                        id: ShipId::fromString('00000000-0000-0000-0000-000000000012'),
+                        name: 'Javelin',
+                        imageUrl: 'https://example.com/javelin.jpg',
+                        quantity: 1,
+                    ),
+                ],
+                count: 3,
             ),
-            new MyFleetShipOutput(
-                id: ShipId::fromString('00000000000000000000000021'),
-                name: 'Mercury Star Runner',
-                imageUrl: 'https://example.com/mercury.jpg',
-                quantity: 10,
-            ),
-            new MyFleetShipOutput(
-                id: ShipId::fromString('00000000000000000000000022'),
-                name: 'Javelin',
-                imageUrl: 'https://example.com/javelin.jpg',
-                quantity: 1,
-            ),
-        ],
-            count: 3,
-        ),
             updatedAt: new \DateTimeImmutable('2021-01-01T13:00:00Z'),
         ), $output);
     }
@@ -67,7 +68,8 @@ class MyFleetServiceTest extends KernelTestCase
      */
     public function it_should_return_a_fleet_with_no_ships(): void
     {
-        $fleet = new Fleet(UserId::fromString('00000000000000000000000001'), new \DateTimeImmutable('2021-01-01T12:00:00+02:00'));
+        $userId = UserId::fromString('00000000-0000-0000-0000-000000000001');
+        $fleet = new Fleet($userId, new \DateTimeImmutable('2021-01-01T12:00:00+02:00'));
 
         /** @var InMemoryFleetRepository $fleetRepository */
         $fleetRepository = static::$container->get(FleetRepositoryInterface::class);
@@ -75,15 +77,17 @@ class MyFleetServiceTest extends KernelTestCase
 
         /** @var MyFleetService $service */
         $service = static::$container->get(MyFleetService::class);
-        $output = $service->handle(UserId::fromString('00000000000000000000000001'));
+        $output = $service->handle($userId);
 
-        static::assertEquals(new MyFleetOutput(
-            ships: new MyFleetShipsCollectionOutput(
-            items: [],
-            count: 0,
-        ),
-            updatedAt: new \DateTimeImmutable('2021-01-01T10:00:00Z'),
-        ), $output);
+        static::assertEquals(
+            new MyFleetOutput(
+                new MyFleetShipsCollectionOutput(
+                    items: [],
+                    count: 0,
+                ),
+                updatedAt: new \DateTimeImmutable('2021-01-01T10:00:00Z'),
+            ), $output,
+        );
     }
 
     /**
@@ -96,11 +100,11 @@ class MyFleetServiceTest extends KernelTestCase
         /** @var InMemoryFleetRepository $fleetRepository */
         $fleetRepository = static::$container->get(FleetRepositoryInterface::class);
         $fleetRepository->setFleets([
-            new Fleet(UserId::fromString('00000000000000000000000002'), new \DateTimeImmutable('2021-01-01T12:00:00+02:00')), // other user
+            new Fleet(UserId::fromString('00000000-0000-0000-0000-000000000002'), new \DateTimeImmutable('2021-01-01T12:00:00+02:00')), // other user
         ]);
 
         /** @var MyFleetService $service */
         $service = static::$container->get(MyFleetService::class);
-        $service->handle(UserId::fromString('00000000000000000000000001'));
+        $service->handle(UserId::fromString('00000000-0000-0000-0000-000000000001'));
     }
 }

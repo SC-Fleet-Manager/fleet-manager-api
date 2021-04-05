@@ -19,7 +19,8 @@ class CreateShipServiceTest extends KernelTestCase
      */
     public function it_should_create_a_ship_to_the_existing_fleet_of_logged_user(): void
     {
-        $userId = UserId::fromString('00000000000000000000000001');
+        $userId = UserId::fromString('00000000-0000-0000-0000-000000000001');
+        $shipId = ShipId::fromString('00000000-0000-0000-0000-000000000010');
 
         /** @var InMemoryFleetRepository $fleetRepository */
         $fleetRepository = static::$container->get(FleetRepositoryInterface::class);
@@ -29,14 +30,14 @@ class CreateShipServiceTest extends KernelTestCase
 
         /** @var CreateShipService $service */
         $service = static::$container->get(CreateShipService::class);
-        $service->handle($userId, ShipId::fromString('00000000000000000000000020'), 'Avenger', 'https://example.com/picture.jpg');
+        $service->handle($userId, $shipId, 'Avenger', 'https://example.com/picture.jpg');
 
         $fleet = $fleetRepository->getFleetByUser($userId);
         static::assertCount(1, $fleet->getShips());
-        static::assertSame('00000000000000000000000020', (string) $fleet->getShips()[0]->getId());
-        static::assertSame('Avenger', $fleet->getShips()[0]->getName());
-        static::assertSame('https://example.com/picture.jpg', $fleet->getShips()[0]->getImageUrl());
-        static::assertSame(1, $fleet->getShips()[0]->getQuantity());
+        static::assertEquals($shipId, $fleet->getShips()[(string) $shipId]->getId());
+        static::assertSame('Avenger', $fleet->getShips()[(string) $shipId]->getName());
+        static::assertSame('https://example.com/picture.jpg', $fleet->getShips()[(string) $shipId]->getImageUrl());
+        static::assertSame(1, $fleet->getShips()[(string) $shipId]->getQuantity());
     }
 
     /**
@@ -44,7 +45,7 @@ class CreateShipServiceTest extends KernelTestCase
      */
     public function it_should_create_a_ship_to_a_new_fleet_of_logged_user(): void
     {
-        $userId = UserId::fromString('00000000000000000000000001');
+        $userId = UserId::fromString('00000000-0000-0000-0000-000000000001');
 
         /** @var InMemoryFleetRepository $fleetRepository */
         $fleetRepository = static::$container->get(FleetRepositoryInterface::class);
@@ -56,7 +57,7 @@ class CreateShipServiceTest extends KernelTestCase
 
         /** @var CreateShipService $service */
         $service = static::$container->get(CreateShipService::class);
-        $service->handle($userId, ShipId::fromString('00000000000000000000000020'), 'Avenger', 'https://example.com/picture.jpg');
+        $service->handle($userId, ShipId::fromString('00000000-0000-0000-0000-000000000010'), 'Avenger', 'https://example.com/picture.jpg');
 
         $fleet = $fleetRepository->getFleetByUser($userId);
         static::assertNotNull($fleet);

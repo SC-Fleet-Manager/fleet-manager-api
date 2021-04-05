@@ -2,9 +2,7 @@
 
 namespace App\Tests\Integration\Repository\PatchNoteRepository;
 
-use App\Application\Repository\UserRepositoryInterface;
 use App\Infrastructure\Repository\PatchNote\DoctrinePatchNoteRepository;
-use App\Infrastructure\Repository\User\DoctrineUserRepository;
 use App\Tests\Integration\KernelTestCase;
 
 class GetOneRecentPatchNoteIdTest extends KernelTestCase
@@ -25,7 +23,7 @@ class GetOneRecentPatchNoteIdTest extends KernelTestCase
         $patchNoteRepository = static::$container->get(DoctrinePatchNoteRepository::class);
         $patchNoteId = $patchNoteRepository->getOneRecentPatchNoteId(new \DateTimeImmutable('2021-01-10T10:00:00+01:00'));
 
-        static::assertSame('00000000-0000-0000-0000-000000000002', $patchNoteId->getId()->toRfc4122());
+        static::assertSame('00000000-0000-0000-0000-000000000002', (string) $patchNoteId);
     }
 
     /**
@@ -43,7 +41,7 @@ class GetOneRecentPatchNoteIdTest extends KernelTestCase
         $patchNoteRepository = static::$container->get(DoctrinePatchNoteRepository::class);
         $patchNoteId = $patchNoteRepository->getOneRecentPatchNoteId(null);
 
-        static::assertSame('00000000-0000-0000-0000-000000000001', $patchNoteId->getId()->toRfc4122());
+        static::assertSame('00000000-0000-0000-0000-000000000001', (string) $patchNoteId);
     }
 
     /**

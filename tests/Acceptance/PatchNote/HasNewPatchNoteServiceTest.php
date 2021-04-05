@@ -15,7 +15,6 @@ use App\Entity\User;
 use App\Infrastructure\Repository\PatchNote\InMemoryPatchNoteRepository;
 use App\Infrastructure\Repository\User\InMemoryUserRepository;
 use App\Tests\Acceptance\KernelTestCase;
-use Symfony\Component\Uid\Ulid;
 
 class HasNewPatchNoteServiceTest extends KernelTestCase
 {
@@ -26,17 +25,17 @@ class HasNewPatchNoteServiceTest extends KernelTestCase
     {
         /** @var InMemoryUserRepository $userRepository */
         $userRepository = static::$container->get(UserRepositoryInterface::class);
-        $user = new User(new UserId(Ulid::fromString('00000000000000000000000001')), 'Ioni', new \DateTimeImmutable('2021-03-20T17:42:00+01:00'));
+        $user = new User(UserId::fromString('00000000-0000-0000-0000-000000000001'), 'Ioni', new \DateTimeImmutable('2021-03-20T17:42:00+01:00'));
         $user->setLastPatchNoteReadAt(null);
         $userRepository->setUsers([$user]);
 
         /** @var InMemoryPatchNoteRepository $patchNoteRepository */
         $patchNoteRepository = static::$container->get(PatchNoteRepositoryInterface::class);
-        $patchNoteRepository->setPatchNotes([new PatchNote(new PatchNoteId(Ulid::fromString('00000000000000000000000010')), 'Title', 'Body', null, new \DateTimeImmutable('2021-03-19T17:42:00+01:00'))]);
+        $patchNoteRepository->setPatchNotes([new PatchNote(PatchNoteId::fromString('00000000-0000-0000-0000-000000000010'), 'Title', 'Body', null, new \DateTimeImmutable('2021-03-19T17:42:00+01:00'))]);
 
         /** @var HasNewPatchNoteService $service */
         $service = static::$container->get(HasNewPatchNoteService::class);
-        $output = $service->handle(new UserId(Ulid::fromString('00000000000000000000000001')));
+        $output = $service->handle(UserId::fromString('00000000-0000-0000-0000-000000000001'));
 
         static::assertEquals(new HasNewPatchNoteOutput(
             hasNewPatchNote: true,
@@ -50,17 +49,17 @@ class HasNewPatchNoteServiceTest extends KernelTestCase
     {
         /** @var InMemoryUserRepository $userRepository */
         $userRepository = static::$container->get(UserRepositoryInterface::class);
-        $user = new User(new UserId(Ulid::fromString('00000000000000000000000001')), 'Ioni', new \DateTimeImmutable('2021-03-17T17:42:00+01:00'));
+        $user = new User(UserId::fromString('00000000-0000-0000-0000-000000000001'), 'Ioni', new \DateTimeImmutable('2021-03-17T17:42:00+01:00'));
         $user->setLastPatchNoteReadAt(new \DateTimeImmutable('2021-03-19T16:41:00+00:00'));
         $userRepository->setUsers([$user]);
 
         /** @var InMemoryPatchNoteRepository $patchNoteRepository */
         $patchNoteRepository = static::$container->get(PatchNoteRepositoryInterface::class);
-        $patchNoteRepository->setPatchNotes([new PatchNote(new PatchNoteId(Ulid::fromString('00000000000000000000000010')), 'Title', 'Body', null, new \DateTimeImmutable('2021-03-19T17:42:00+01:00'))]);
+        $patchNoteRepository->setPatchNotes([new PatchNote(PatchNoteId::fromString('00000000-0000-0000-0000-000000000010'), 'Title', 'Body', null, new \DateTimeImmutable('2021-03-19T17:42:00+01:00'))]);
 
         /** @var HasNewPatchNoteService $service */
         $service = static::$container->get(HasNewPatchNoteService::class);
-        $output = $service->handle(new UserId(Ulid::fromString('00000000000000000000000001')));
+        $output = $service->handle(UserId::fromString('00000000-0000-0000-0000-000000000001'));
 
         static::assertEquals(new HasNewPatchNoteOutput(
             hasNewPatchNote: true,
@@ -74,17 +73,17 @@ class HasNewPatchNoteServiceTest extends KernelTestCase
     {
         /** @var InMemoryUserRepository $userRepository */
         $userRepository = static::$container->get(UserRepositoryInterface::class);
-        $user = new User(new UserId(Ulid::fromString('00000000000000000000000001')), 'Ioni', new \DateTimeImmutable('2021-03-17T17:42:00+01:00'));
+        $user = new User(UserId::fromString('00000000-0000-0000-0000-000000000001'), 'Ioni', new \DateTimeImmutable('2021-03-17T17:42:00+01:00'));
         $user->setLastPatchNoteReadAt(new \DateTimeImmutable('2021-03-20T16:41:00+00:00'));
         $userRepository->setUsers([$user]);
 
         /** @var InMemoryPatchNoteRepository $patchNoteRepository */
         $patchNoteRepository = static::$container->get(PatchNoteRepositoryInterface::class);
-        $patchNoteRepository->setPatchNotes([new PatchNote(new PatchNoteId(Ulid::fromString('00000000000000000000000010')), 'Title', 'Body', null, new \DateTimeImmutable('2021-03-19T17:42:00+01:00'))]);
+        $patchNoteRepository->setPatchNotes([new PatchNote(PatchNoteId::fromString('00000000-0000-0000-0000-000000000010'), 'Title', 'Body', null, new \DateTimeImmutable('2021-03-19T17:42:00+01:00'))]);
 
         /** @var HasNewPatchNoteService $service */
         $service = static::$container->get(HasNewPatchNoteService::class);
-        $output = $service->handle(new UserId(Ulid::fromString('00000000000000000000000001')));
+        $output = $service->handle(UserId::fromString('00000000-0000-0000-0000-000000000001'));
 
         static::assertEquals(new HasNewPatchNoteOutput(
             hasNewPatchNote: false,
@@ -100,6 +99,6 @@ class HasNewPatchNoteServiceTest extends KernelTestCase
 
         /** @var ProfileService $service */
         $service = static::$container->get(ProfileService::class);
-        $service->handle(new UserId(Ulid::fromString('00000000000000000000000001')));
+        $service->handle(UserId::fromString('00000000-0000-0000-0000-000000000001'));
     }
 }
