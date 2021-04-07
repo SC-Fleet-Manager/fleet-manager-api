@@ -28,7 +28,7 @@ class MeController
      * @OpenApi\Tag(name="Home")
      * @OpenApi\Response(response=200, description="Returns summary infos about user.", @Model(type=MeOutput::class))
      */
-    #[Route('/api/me', name: 'me', methods: ['GET'])]
+    #[Route('/api/me', name: 'home_me', methods: ['GET'])]
     public function __invoke(
         Request $request
     ): Response {

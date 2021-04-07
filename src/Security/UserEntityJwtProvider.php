@@ -46,7 +46,7 @@ class UserEntityJwtProvider extends JwtUserProvider implements LoggerAwareInterf
     {
         $user = $this->userRepository->findByAuth0Username($username);
         if ($user === null) {
-            $user = new User(new UserId(new Ulid()), $username, new \DateTimeImmutable('now'));
+            $user = new User(new UserId(new Ulid()), $username, null, new \DateTimeImmutable('now'));
 
             $this->userRepository->save($user);
             $user = $this->userRepository->findByAuth0Username($username); // refresh

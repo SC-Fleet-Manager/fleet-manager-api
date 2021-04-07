@@ -20,9 +20,9 @@ class NumbersServiceTest extends KernelTestCase
         /** @var InMemoryUserRepository $userRepository */
         $userRepository = static::$container->get(UserRepositoryInterface::class);
         $userRepository->setUsers([
-            new User(UserId::fromString('00000000-0000-0000-0000-000000000001'), 'Ioni', new \DateTimeImmutable()),
-            new User(UserId::fromString('00000000-0000-0000-0000-000000000002'), 'Ashuvidz', new \DateTimeImmutable()),
-            new User(UserId::fromString('00000000-0000-0000-0000-000000000003'), 'Lunia', new \DateTimeImmutable()),
+            new User(UserId::fromString('00000000-0000-0000-0000-000000000001'), 'Ioni', null, new \DateTimeImmutable()),
+            new User(UserId::fromString('00000000-0000-0000-0000-000000000002'), 'Ashuvidz', null, new \DateTimeImmutable()),
+            new User(UserId::fromString('00000000-0000-0000-0000-000000000003'), 'Lunia', null, new \DateTimeImmutable()),
         ]);
 
         /** @var NumbersService $service */
