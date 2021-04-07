@@ -31,4 +31,9 @@ class InMemoryFleetRepository implements FleetRepositoryInterface
     {
         $this->fleets[(string) $fleet->getUserId()] = $fleet;
     }
+
+    public function delete(Fleet $fleet): void
+    {
+        unset($this->fleets[(string) $fleet->getUserId()]);
+    }
 }

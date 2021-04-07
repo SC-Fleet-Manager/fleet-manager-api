@@ -52,8 +52,8 @@ class PaymentControllerTest extends WebTestCase
         static::assertSame(400, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         static::assertSame('invalid_form', $json['error']);
-        static::assertSame('amount', $json['formErrors']['violations'][0]['propertyPath']);
-        static::assertSame('Sorry, but the minimum is $1.', $json['formErrors']['violations'][0]['title']);
+        static::assertSame('amount', $json['violations']['violations'][0]['propertyPath']);
+        static::assertSame('Sorry, but the minimum is $1.', $json['violations']['violations'][0]['title']);
     }
 
     /**
@@ -72,8 +72,8 @@ class PaymentControllerTest extends WebTestCase
         static::assertSame(400, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         static::assertSame('invalid_form', $json['error']);
-        static::assertSame('amount', $json['formErrors']['violations'][0]['propertyPath']);
-        static::assertSame('Could you donate a little less please? The maximum available is $9,999,999.99.', $json['formErrors']['violations'][0]['title']);
+        static::assertSame('amount', $json['violations']['violations'][0]['propertyPath']);
+        static::assertSame('Could you donate a little less please? The maximum available is $9,999,999.99.', $json['violations']['violations'][0]['title']);
     }
 
     /**
@@ -90,8 +90,8 @@ class PaymentControllerTest extends WebTestCase
         static::assertSame(400, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         static::assertSame('invalid_form', $json['error']);
-        static::assertSame('amount', $json['formErrors']['violations'][0]['propertyPath']);
-        static::assertSame('Please provide an amount.', $json['formErrors']['violations'][0]['title']);
+        static::assertSame('amount', $json['violations']['violations'][0]['propertyPath']);
+        static::assertSame('Please provide an amount.', $json['violations']['violations'][0]['title']);
     }
 
     /**

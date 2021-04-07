@@ -45,15 +45,7 @@ class SavePreferencesController
 
         /** @var SavePreferencesInput $input */
         $input = $this->serializer->deserialize($request->getContent(), SavePreferencesInput::class, $request->getContentType());
-        $errors = $this->validator->validate($input);
-        if ($errors->count() > 0) {
-            $json = $this->serializer->serialize([
-                'error' => 'invalid_form',
-                'formErrors' => $errors,
-            ], 'json');
-
-            return new JsonResponse($json, 400, [], true);
-        }
+        $this->validator->validate($input);
 
         /** @var User $user */
         $user = $this->security->getUser();

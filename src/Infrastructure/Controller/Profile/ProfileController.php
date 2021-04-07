@@ -4,11 +4,9 @@ namespace App\Infrastructure\Controller\Profile;
 
 use App\Application\Profile\Output\ProfileOutput;
 use App\Application\Profile\ProfileService;
-use App\Application\Repository\UserRepositoryInterface;
 use App\Entity\User;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OpenApi;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,12 +15,11 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Serializer\SerializerInterface;
 
-class ProfileController extends AbstractController
+class ProfileController
 {
     public function __construct(
         private ProfileService $profileService,
         private Security $security,
-        private UserRepositoryInterface $userRepository,
         private SerializerInterface $serializer,
     ) {
     }

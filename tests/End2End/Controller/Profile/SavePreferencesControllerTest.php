@@ -52,8 +52,8 @@ class SavePreferencesControllerTest extends WebTestCase
         static::assertSame(400, static::$client->getResponse()->getStatusCode());
         $json = \json_decode(static::$client->getResponse()->getContent(), true);
         static::assertSame('invalid_form', $json['error']);
-        static::assertCount(1, $json['formErrors']['violations']);
-        static::assertSame('supporterVisible', $json['formErrors']['violations'][0]['propertyPath']);
-        static::assertSame('You must choose a supporter visibility.', $json['formErrors']['violations'][0]['title']);
+        static::assertCount(1, $json['violations']['violations']);
+        static::assertSame('supporterVisible', $json['violations']['violations'][0]['propertyPath']);
+        static::assertSame('You must choose a supporter visibility.', $json['violations']['violations'][0]['title']);
     }
 }

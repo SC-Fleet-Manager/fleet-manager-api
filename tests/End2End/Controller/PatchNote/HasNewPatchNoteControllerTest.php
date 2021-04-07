@@ -19,7 +19,7 @@ class HasNewPatchNoteControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('GET', '/api/has-new-patch-note', [], [], [
+        static::$client->xmlHttpRequest('GET', '/api/patch-note/has-new-patch-note', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ]);

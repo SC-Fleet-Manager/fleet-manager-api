@@ -38,8 +38,16 @@ class DoctrineUserRepository extends ServiceEntityRepository implements UserRepo
         $this->_em->persist($user);
         try {
             $this->_em->flush();
+            $this->_em->clear();
         } catch (UniqueConstraintViolationException $e) {
             // alright, it's already persisted
         }
+    }
+
+    public function delete(User $user): void
+    {
+        $this->_em->remove($user);
+        $this->_em->flush();
+        $this->_em->clear();
     }
 }

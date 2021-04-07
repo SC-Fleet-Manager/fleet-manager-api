@@ -28,7 +28,7 @@ class HasNewPatchNoteController
      * @OpenApi\Get(description="Returns if the logged user has a new patch note to read or not.")
      * @OpenApi\Response(response=200, description="Ok.", @Model(type=HasNewPatchNoteOutput::class))
      */
-    #[Route('/api/has-new-patch-note', name: 'has_new_patch_note', methods: ['GET'])]
+    #[Route('/api/patch-note/has-new-patch-note', name: 'has_new_patch_note', methods: ['GET'])]
     public function __invoke(): Response
     {
         if (!$this->security->isGranted('ROLE_USER')) {

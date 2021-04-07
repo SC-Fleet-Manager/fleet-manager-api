@@ -7,3 +7,4 @@ framework:
         routing:
              'App\Message\Funding\SendOrderCaptureSummaryMail': sync
              'App\Message\Funding\SendOrderRefundMail': sync
+             'App\Domain\Event\DeletedUser': sync

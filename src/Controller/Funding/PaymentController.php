@@ -30,7 +30,7 @@ class PaymentController extends AbstractController
     ) {
     }
 
-    #[Route("/api/funding/payment", name: "funding_payment", methods: ["POST"])]
+    #[Route('/api/funding/payment', name: 'funding_payment', methods: ['POST'])]
     public function __invoke(
         Request $request
     ): Response {
@@ -38,14 +38,7 @@ class PaymentController extends AbstractController
 
         /** @var FundingPayment $fundingPayment */
         $fundingPayment = $this->serializer->deserialize($request->getContent(), FundingPayment::class, $request->getContentType());
-        $errors = $this->validator->validate($fundingPayment);
-
-        if ($errors->count() > 0) {
-            return $this->json([
-                'error' => 'invalid_form',
-                'formErrors' => $errors,
-            ], 400);
-        }
+        $this->validator->validate($fundingPayment);
 
         /** @var User $user */
         $user = $this->security->getUser();

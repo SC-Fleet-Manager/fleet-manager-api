@@ -21,11 +21,11 @@ class FormatExceptionListener
             return;
         }
 
-        $response = new JsonResponse($this->serializer->serialize([
+        $data = array_merge([
             'error' => $e->error,
             'errorMessage' => $e->userMessage,
-            'context' => $e->context,
-        ], 'json'), $e::$notFound ? 404 : 400, [], true);
+        ], $e->context);
+        $response = new JsonResponse($this->serializer->serialize($data, 'json'), $e::$notFound ? 404 : 400, [], true);
 
         $event->setResponse($response);
     }
