@@ -29,10 +29,10 @@ services:
             - '../src/Validator/Constraints/UniqueField.php'
     App\Controller\:
         resource: '../src/Controller/**/*Controller.php'
-        tags: ['controller.service_arguments']
+        tags: [ 'controller.service_arguments' ]
     App\Infrastructure\Controller\:
         resource: '../src/Infrastructure/Controller/**/*Controller.php'
-        tags: ['controller.service_arguments']
+        tags: [ 'controller.service_arguments' ]
 
     App\Infrastructure\Listener\:
         resource: '../src/Infrastructure/Listener'
@@ -64,15 +64,33 @@ services:
         arguments:
             $currency: '%currency%'
             $paypalClientId: '%env(PAYPAL_CHECKOUT_CLIENT_ID)%'
-        tags: ['controller.service_arguments']
+        tags: [ 'controller.service_arguments' ]
 
     PayPalCheckoutSdk\Core\PayPalHttpClient:
-        factory: ['@App\Service\Funding\PayPalHttpClientFactory', 'createPayPalHttpClient']
+        factory: [ '@App\Service\Funding\PayPalHttpClientFactory', 'createPayPalHttpClient' ]
     PayPal\Rest\ApiContext:
-        factory: ['@App\Service\Funding\PayPalHttpClientFactory', 'createApiContext']
+        factory: [ '@App\Service\Funding\PayPalHttpClientFactory', 'createApiContext' ]
 
     App\Application\Repository\UserRepositoryInterface: '@App\Infrastructure\Repository\User\DoctrineUserRepository'
+    App\Application\Repository\Auth0RepositoryInterface: '@App\Infrastructure\Repository\User\Auth0Repository'
     App\Application\Repository\PatchNoteRepositoryInterface: '@App\Infrastructure\Repository\PatchNote\DoctrinePatchNoteRepository'
     App\Application\Repository\FleetRepositoryInterface: '@App\Infrastructure\Repository\Fleet\DoctrineFleetRepository'
 
     App\Application\Common\Clock: '@App\Infrastructure\Common\SystemClock'
+
+    App\Infrastructure\Validator\ApiValidator:
+        decorates: 'validator'
+
+    Auth0\SDK\API\Authentication:
+        arguments:
+            $domain: '%env(AUTH0_DOMAIN)%'
+            $client_id: '%env(AUTH0_CLIENT_ID_API)%'
+            $client_secret: '%env(AUTH0_CLIENT_SECRET_API)%'
+    App\Infrastructure\Auth0\ManagementFactory:
+        arguments:
+            $domain: '%env(AUTH0_DOMAIN)%'
+            $grantType: 'client_credentials'
+            $scope: 'read:users delete:users'
+            $audience: 'https://%env(AUTH0_DOMAIN)%/api/v2/'
+    Auth0\SDK\API\Management:
+        factory: [ '@App\Infrastructure\Auth0\ManagementFactory', 'create' ]

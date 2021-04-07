@@ -39,7 +39,7 @@ class DeleteShipController implements LoggerAwareInterface
      * )
      * @OpenApi\Response(response=204, description="Deletes a ship of the logged user.")
      */
-    #[Route('/api/delete-ship/{shipId}',
+    #[Route('/api/my-fleet/delete-ship/{shipId}',
         name: 'delete_ship',
         requirements: ['shipId' => ShipId::PATTERN],
         methods: ['POST'],

@@ -2,9 +2,9 @@
 
 namespace App\Infrastructure\Repository\Fleet;
 
+use App\Application\Repository\FleetRepositoryInterface;
 use App\Domain\Exception\AlreadyExistingFleetForUserException;
 use App\Domain\Exception\ConflictVersionException;
-use App\Application\Repository\FleetRepositoryInterface;
 use App\Domain\UserId;
 use App\Entity\Fleet;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -40,11 +40,19 @@ class DoctrineFleetRepository extends ServiceEntityRepository implements FleetRe
         $this->_em->persist($fleet);
         try {
             $this->_em->flush();
+            $this->_em->clear();
         } catch (OptimisticLockException $e) {
             $this->logger->warning('conflict version on save ship.', ['exception' => $e]);
             throw new ConflictVersionException($fleet, 'Unable to save your fleet. Please, try again.', context: ['userId' => $fleet->getUserId()], previous: $e);
         } catch (UniqueConstraintViolationException $e) {
             throw new AlreadyExistingFleetForUserException($fleet->getUserId(), previous: $e);
         }
+    }
+
+    public function delete(Fleet $fleet): void
+    {
+        $this->_em->remove($fleet);
+        $this->_em->flush();
+        $this->_em->clear();
     }
 }

@@ -31,10 +31,10 @@ class WebTestCase extends BaseWebTestCase
 
     protected function tearDown(): void
     {
-        parent::tearDown();
         if (static::$connection->isTransactionActive()) {
             static::$connection->rollBack();
         }
+        parent::tearDown();
     }
 
     protected static function generateToken(string $username): string

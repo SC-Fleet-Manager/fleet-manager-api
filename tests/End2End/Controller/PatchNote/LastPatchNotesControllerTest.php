@@ -24,7 +24,7 @@ class LastPatchNotesControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('GET', '/api/last-patch-notes', [], [], [
+        static::$client->xmlHttpRequest('GET', '/api/patch-note/last-patch-notes', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ]);

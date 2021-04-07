@@ -48,7 +48,7 @@ class IncrementQuantityShipController implements LoggerAwareInterface
      * @OpenApi\Response(response=200, description="Quantity updated.", @Model(type=IncrementQuantityShipOutput::class))
      * @OpenApi\Response(response=400, description="Invalid payload.")
      */
-    #[Route('/api/increment-quantity-ship/{shipId}',
+    #[Route('/api/my-fleet/increment-quantity-ship/{shipId}',
         name: 'increment_quantity_ship',
         requirements: ['shipId' => ShipId::PATTERN],
         methods: ['POST'],
@@ -63,15 +63,7 @@ class IncrementQuantityShipController implements LoggerAwareInterface
 
         /** @var IncrementQuantityShipInput $input */
         $input = $this->serializer->deserialize($request->getContent(), IncrementQuantityShipInput::class, $request->getContentType());
-        $errors = $this->validator->validate($input);
-        if ($errors->count() > 0) {
-            $json = $this->serializer->serialize([
-                'error' => 'invalid_form',
-                'formErrors' => $errors,
-            ], 'json');
-
-            return new JsonResponse($json, 400, [], true);
-        }
+        $this->validator->validate($input);
 
         /** @var User $user */
         $user = $this->security->getUser();

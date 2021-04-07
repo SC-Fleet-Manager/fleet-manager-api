@@ -22,7 +22,7 @@ class IncrementQuantityShipControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('POST', '/api/increment-quantity-ship/00000000-0000-0000-0000-000000000020', [], [], [
+        static::$client->xmlHttpRequest('POST', '/api/my-fleet/increment-quantity-ship/00000000-0000-0000-0000-000000000020', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ], json_encode([
@@ -55,7 +55,7 @@ class IncrementQuantityShipControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('POST', '/api/increment-quantity-ship/00000000-0000-0000-0000-000000000020', [], [], [
+        static::$client->xmlHttpRequest('POST', '/api/my-fleet/increment-quantity-ship/00000000-0000-0000-0000-000000000020', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ], json_encode([
@@ -72,7 +72,7 @@ class IncrementQuantityShipControllerTest extends WebTestCase
      */
     public function it_should_return_error_if_not_logged(): void
     {
-        static::$client->xmlHttpRequest('POST', '/api/create-ship', [], [], [
+        static::$client->xmlHttpRequest('POST', '/api/my-fleet/create-ship', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
 

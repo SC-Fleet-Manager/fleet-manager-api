@@ -21,7 +21,7 @@ class DeleteShipControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('POST', '/api/delete-ship/00000000-0000-0000-0000-000000000011', [], [], [
+        static::$client->xmlHttpRequest('POST', '/api/my-fleet/delete-ship/00000000-0000-0000-0000-000000000011', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ]);
@@ -46,7 +46,7 @@ class DeleteShipControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('POST', '/api/delete-ship/00000000-0000-0000-0000-000000000011', [], [], [
+        static::$client->xmlHttpRequest('POST', '/api/my-fleet/delete-ship/00000000-0000-0000-0000-000000000011', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ]);
@@ -57,7 +57,7 @@ class DeleteShipControllerTest extends WebTestCase
         static::assertSame([
             'error' => 'not_found_fleet',
             'errorMessage' => 'This user has no fleet. Please try to create a ship.',
-            'context' => ['userId' => '00000000-0000-0000-0000-000000000001'],
+            'userId' => '00000000-0000-0000-0000-000000000001',
         ], $json);
     }
 
@@ -66,7 +66,7 @@ class DeleteShipControllerTest extends WebTestCase
      */
     public function it_should_return_error_if_not_logged(): void
     {
-        static::$client->xmlHttpRequest('POST', '/api/create-ship', [], [], [
+        static::$client->xmlHttpRequest('POST', '/api/my-fleet/create-ship', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
 
