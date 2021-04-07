@@ -28,6 +28,7 @@ class MyFleetController
      * @OpenApi\Tag(name="MyFleet")
      * @OpenApi\Get(description="Retrieve the logged user's fleet with all its ships.")
      * @OpenApi\Response(response=200, description="Ok.", @Model(type=MyFleetOutput::class))
+     * @OpenApi\Response(response=404, description="The user has no fleet.")
      */
     #[Route('/api/my-fleet', name: 'my_fleet', methods: ['GET'])]
     public function __invoke(

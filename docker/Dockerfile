@@ -29,7 +29,7 @@ FROM runtime_php as composer_deps
 
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 
-# prod|dev
+# prod|beta|dev
 ARG ENV=prod
 
 COPY .env* composer.json composer.lock symfony.lock ./
@@ -38,14 +38,14 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV COMPOSER_MEMORY_LIMIT -1
 ENV COMPOSER_HOME /.composer
 ENV APP_ENV $ENV
-RUN if [ $ENV = 'prod' ]; then \
+RUN if [ $ENV = 'prod' ] || [ $ENV = 'beta' ]; then \
         composer install --no-scripts --no-suggest --no-autoloader --prefer-dist --no-progress --no-interaction --no-dev --ignore-platform-reqs; \
     else \
         composer install --no-scripts --no-suggest --no-autoloader --prefer-dist --no-progress --no-interaction; \
     fi;
 
 COPY src src
-RUN if [ $ENV = 'prod' ]; then \
+RUN if [ $ENV = 'prod' ] || [ $ENV = 'beta' ]; then \
         composer dump-autoload --optimize --classmap-authoritative --no-dev; \
     else \
         composer dump-autoload --optimize --classmap-authoritative; \

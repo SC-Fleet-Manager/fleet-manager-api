@@ -13,7 +13,7 @@ return [
     Hautelook\AliceBundle\HautelookAliceBundle::class => ['dev' => true],
     Symfony\Bundle\SecurityBundle\SecurityBundle::class => ['all' => true],
     Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle::class => ['all' => true],
-    Sentry\SentryBundle\SentryBundle::class => ['prod' => true],
+    Sentry\SentryBundle\SentryBundle::class => ['prod' => true, 'beta' => true],
     Twig\Extra\TwigExtraBundle\TwigExtraBundle::class => ['all' => true],
     Http\HttplugBundle\HttplugBundle::class => ['all' => true],
     Auth0\JWTAuthBundle\JWTAuthBundle::class => ['all' => true],

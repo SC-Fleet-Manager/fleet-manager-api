@@ -47,6 +47,7 @@ class IncrementQuantityShipController implements LoggerAwareInterface
      * )
      * @OpenApi\Response(response=200, description="Quantity updated.", @Model(type=IncrementQuantityShipOutput::class))
      * @OpenApi\Response(response=400, description="Invalid payload.")
+     * @OpenApi\Response(response=404, description="The user has no fleet.")
      */
     #[Route('/api/my-fleet/increment-quantity-ship/{shipId}',
         name: 'my_fleet_increment_quantity_ship',
