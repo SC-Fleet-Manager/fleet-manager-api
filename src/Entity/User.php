@@ -95,7 +95,7 @@ class User implements UserInterface
 
     public function getNickname(): ?string
     {
-        return $this->nickname;
+        return $this->nickname ?? $this->profile->getNickname();
     }
 
     public function changeNickname(?string $nickname): void
