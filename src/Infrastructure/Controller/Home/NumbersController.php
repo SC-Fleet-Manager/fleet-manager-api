@@ -24,7 +24,7 @@ class NumbersController
      * @OpenApi\Tag(name="Home")
      * @OpenApi\Response(response=200, description="Returns some stats.", @Model(type=NumbersOutput::class))
      */
-    #[Route('/api/numbers', name: 'spa_numbers', methods: ['GET'])]
+    #[Route('/api/numbers', name: 'home_numbers', methods: ['GET'])]
     public function __invoke(
         Request $request
     ): Response {

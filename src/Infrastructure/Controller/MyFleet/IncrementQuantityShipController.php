@@ -49,7 +49,7 @@ class IncrementQuantityShipController implements LoggerAwareInterface
      * @OpenApi\Response(response=400, description="Invalid payload.")
      */
     #[Route('/api/my-fleet/increment-quantity-ship/{shipId}',
-        name: 'increment_quantity_ship',
+        name: 'my_fleet_increment_quantity_ship',
         requirements: ['shipId' => ShipId::PATTERN],
         methods: ['POST'],
     )]

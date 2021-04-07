@@ -23,7 +23,7 @@ class MeServiceTest extends KernelTestCase
         /** @var InMemoryUserRepository $userRepository */
         $userRepository = static::$container->get(UserRepositoryInterface::class);
         $userRepository->setUsers([
-            new User($userId, 'Ioni', new \DateTimeImmutable('2021-03-20T17:42:00Z')),
+            new User($userId, 'Ioni', null, new \DateTimeImmutable('2021-03-20T17:42:00Z')),
         ]);
 
         /** @var MeService $service */

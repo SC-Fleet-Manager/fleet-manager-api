@@ -33,6 +33,11 @@ class User implements UserInterface
     private string $auth0Username;
 
     /**
+     * @ORM\Column(name="nickname", type="string", length=31, nullable=true)
+     */
+    private ?string $nickname;
+
+    /**
      * @ORM\Column(name="supporter_visible", type="boolean", options={"default":true})
      */
     private bool $supporterVisible = true;
@@ -54,11 +59,12 @@ class User implements UserInterface
 
     private UserProfile $profile;
 
-    public function __construct(UserId $id, string $auth0Username, \DateTimeInterface $createdAt)
+    public function __construct(UserId $id, string $auth0Username, ?string $nickname, \DateTimeInterface $createdAt)
     {
         $this->id = $id->getId();
         $this->profile = new UserProfile();
         $this->auth0Username = $auth0Username;
+        $this->nickname = $nickname;
         $this->createdAt = \DateTimeImmutable::createFromInterface($createdAt);
     }
 
@@ -85,6 +91,16 @@ class User implements UserInterface
     public function getAuth0Username(): string
     {
         return $this->auth0Username;
+    }
+
+    public function getNickname(): ?string
+    {
+        return $this->nickname;
+    }
+
+    public function changeNickname(?string $nickname): void
+    {
+        $this->nickname = $nickname;
     }
 
     public function isSupporterVisible(): bool

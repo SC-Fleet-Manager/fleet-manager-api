@@ -24,7 +24,7 @@ class DeleteAccountController
      * @OpenApi\Get(description="Deletes the logged user's account and all its data.")
      * @OpenApi\Response(response=204, description="Ok.")
      */
-    #[Route('/api/profile/delete-account', name: 'delete_account', methods: ['POST'])]
+    #[Route('/api/profile/delete-account', name: 'profile_delete_account', methods: ['POST'])]
     public function __invoke(
         Request $request
     ): Response {

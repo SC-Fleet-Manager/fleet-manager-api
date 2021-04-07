@@ -1,41 +1,41 @@
 <?php
 
-namespace App\Infrastructure\Controller\MyFleet;
+namespace App\Infrastructure\Controller\Profile;
 
-use App\Application\MyFleet\CreateShipService;
-use App\Domain\ShipId;
+use App\Application\Profile\ChangeNicknameService;
 use App\Entity\User;
-use App\Infrastructure\Controller\MyFleet\Input\CreateShipInput;
+use App\Infrastructure\Controller\Profile\Input\ChangeNicknameInput;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OpenApi;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class CreateShipController
+class ChangeNicknameController
 {
     public function __construct(
-        private CreateShipService $createShipService,
+        private ChangeNicknameService $changeNicknameService,
         private Security $security,
-        private ValidatorInterface $validator,
         private SerializerInterface $serializer,
+        private ValidatorInterface $validator
     ) {
     }
 
     /**
-     * @OpenApi\Tag(name="MyFleet")
+     * @OpenApi\Tag(name="Profile")
+     * @OpenApi\Post(description="Changes or reset the nickname of the logged user.")
      * @OpenApi\RequestBody(
-     *     @Model(type=CreateShipInput::class)
+     *     @Model(type=ChangeNicknameInput::class)
      * )
-     * @OpenApi\Response(response=204, description="Creates a new ship for the logged user's fleet.")
+     * @OpenApi\Response(response=204, description="Ok.")
      * @OpenApi\Response(response=400, description="Invalid payload.")
      */
-    #[Route('/api/my-fleet/create-ship', name: 'my_fleet_create_ship', methods: ['POST'])]
+    #[Route('/api/profile/change-nickname', name: 'profile_change_nickname', methods: ['POST'])]
     public function __invoke(
         Request $request
     ): Response {
@@ -43,15 +43,15 @@ class CreateShipController
             throw new AccessDeniedException();
         }
 
-        /** @var CreateShipInput $input */
-        $input = $this->serializer->deserialize($request->getContent(), CreateShipInput::class, $request->getContentType());
+        /** @var ChangeNicknameInput $input */
+        $input = $this->serializer->deserialize($request->getContent(), ChangeNicknameInput::class, $request->getContentType());
         $this->validator->validate($input);
 
         /** @var User $user */
         $user = $this->security->getUser();
 
-        $this->createShipService->handle($user->getId(), new ShipId(new Ulid()), $input->name, $input->pictureUrl);
+        $this->changeNicknameService->handle($user->getId(), $input->nickname);
 
-        return new Response(null, 204);
+        return new JsonResponse(null, 204);
     }
 }

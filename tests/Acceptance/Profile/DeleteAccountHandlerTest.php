@@ -23,7 +23,7 @@ class DeleteAccountHandlerTest extends KernelTestCase
 
         /** @var InMemoryUserRepository $userRepository */
         $userRepository = static::$container->get(UserRepositoryInterface::class);
-        $user = new User($userId, 'Ioni', new \DateTimeImmutable('2021-03-20T17:42:00+01:00'));
+        $user = new User($userId, 'Ioni', null, new \DateTimeImmutable('2021-03-20T17:42:00+01:00'));
         $userRepository->setUsers([$user]);
 
         static::$container->get(DeleteAccountHandler::class)(new DeletedUser($userId, 'Ioni'));
