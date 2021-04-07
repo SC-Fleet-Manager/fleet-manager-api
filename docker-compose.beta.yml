@@ -40,21 +40,21 @@ services:
 #            - "traefik.http.routers.dashboard.service=api@internal"
 #            - "traefik.http.services.dashboard.loadbalancer.server.port=8080"
     php:
-        image: 186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-api-php:${APP_VERSION:-prod-latest}
+        image: 186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-api-php:${APP_VERSION:-beta-latest}
         hostname: php
         restart: unless-stopped
         env_file: php.env
         depends_on:
             - redis
         environment:
-            APP_ENV: prod
+            APP_ENV: beta
             FUNDING_ORDER_CAPTURE_ADDRESSES: 'fleet-manager@protonmail.com'
             PAYPAL_CHECKOUT_WEBHOOK_ID: '72Y11928S1077440L'
             PAYPAL_CHECKOUT_MODE: 'sandbox'
-            DEFAULT_URI: 'https://fleet-manager.space'
+            DEFAULT_URI: 'https://beta.fleet-manager.space'
             AUTH0_DOMAIN: 'fleet-manager.eu.auth0.com'
     apache:
-        image: 186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-api-apache:${APP_VERSION:-prod-latest}
+        image: 186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-api-apache:${APP_VERSION:-beta-latest}
         hostname: apache
         restart: unless-stopped
         depends_on:
@@ -68,10 +68,10 @@ services:
             - 127.0.0.1:8080:80
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.fleet-manager_api.rule=Host(`api.fleet-manager.space`)"
+            - "traefik.http.routers.fleet-manager_api.rule=Host(`api.beta.fleet-manager.space`)"
             - "traefik.http.routers.fleet-manager_api.tls=true"
             - "traefik.http.routers.fleet-manager_api.tls.certresolver=route53"
-            - "traefik.http.routers.fleet-manager_api.tls.domains[0].main=*.fleet-manager.space"
+            - "traefik.http.routers.fleet-manager_api.tls.domains[0].main=*.beta.fleet-manager.space"
             - "traefik.http.routers.fleet-manager_api.entrypoints=web-secure"
             - "traefik.http.services.fleet-manager_api.loadbalancer.server.port=80"
     redis:
