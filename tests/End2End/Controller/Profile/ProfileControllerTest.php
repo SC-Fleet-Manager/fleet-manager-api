@@ -14,8 +14,8 @@ class ProfileControllerTest extends WebTestCase
     public function it_should_return_infos_of_logged_user(): void
     {
         static::$connection->executeStatement(<<<SQL
-                INSERT INTO users(id, roles, auth0_username, supporter_visible, coins, created_at, last_patch_note_read_at)
-                VALUES ('00000000-0000-0000-0000-000000000001', '["ROLE_USER"]', 'Ioni', false, 5, '2021-03-20T15:50:00+01:00', '2021-03-21T15:50:00+01:00');
+                INSERT INTO users(id, roles, auth0_username, nickname, supporter_visible, coins, created_at, last_patch_note_read_at)
+                VALUES ('00000000-0000-0000-0000-000000000001', '["ROLE_USER"]', 'Ioni', 'Ioni_custom_nickname', false, 5, '2021-03-20T15:50:00+01:00', '2021-03-21T15:50:00+01:00');
             SQL
         );
 
@@ -36,7 +36,7 @@ class ProfileControllerTest extends WebTestCase
         static::assertSame([
             'id' => '00000000-0000-0000-0000-000000000001',
             'auth0Username' => 'Ioni',
-            'nickname' => 'Ioni_nickname',
+            'nickname' => 'Ioni_custom_nickname',
             'pictureUrl' => 'https://example.com/picture.jpg',
             'supporterVisible' => false,
             'coins' => 5,
