@@ -8,11 +8,13 @@ use App\Entity\User;
 use Auth0\JWTAuthBundle\Security\Auth0Service;
 use Auth0\JWTAuthBundle\Security\User\JwtUserProvider;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Cache\CacheItemInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Ulid;
+use Symfony\Contracts\Cache\CacheInterface;
 use Webmozart\Assert\Assert;
 
 class UserEntityJwtProvider extends JwtUserProvider implements LoggerAwareInterface
@@ -22,7 +24,8 @@ class UserEntityJwtProvider extends JwtUserProvider implements LoggerAwareInterf
     public function __construct(
         private UserRepositoryInterface $userRepository,
         private EntityManagerInterface $entityManager,
-        private Auth0Service $auth0Service
+        private Auth0Service $auth0Service,
+        private CacheInterface $cache,
     ) {
     }
 
@@ -31,13 +34,23 @@ class UserEntityJwtProvider extends JwtUserProvider implements LoggerAwareInterf
         /** @var User $user */
         $user = $this->loadUserByUsername($jwt->sub);
 
-        try {
-            $profile = $this->auth0Service->getUserProfileByA0UID($jwt->token);
-            Assert::notNull($profile, 'UserProfile from Auth0 should not be null.');
-            $this->injectProfile($user, $profile);
-        } catch (\Throwable $e) {
-            $this->logger->warning('Unable to retrieve Auth0 profile : '.$e->getMessage(), ['exception' => $e, 'username' => $user->getUsername()]);
-        }
+        $profile = $this->cache->get('app.security.user_provider.profile.'.$user->getId(), function (CacheItemInterface $item) use ($user, $jwt) {
+            try {
+                $profile = $this->auth0Service->getUserProfileByA0UID($jwt->token);
+                Assert::notNull($profile, 'UserProfile from Auth0 should not be null.');
+            } catch (\Throwable $e) {
+                $this->logger->warning('Unable to retrieve Auth0 profile : '.$e->getMessage(), ['exception' => $e, 'username' => $user->getUsername()]);
+                $item->expiresAfter(30);
+
+                return null;
+            }
+
+            $item->expiresAfter(86400);
+
+            return $profile;
+        }, 0 /* no early expiration */);
+
+        $this->injectProfile($user, $profile);
 
         return $user;
     }

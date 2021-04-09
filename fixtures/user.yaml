@@ -3,6 +3,7 @@ App\Entity\User:
         __construct:
             - '<(new \App\Domain\UserId(\Symfony\Component\Uid\Ulid::fromString("01F17XPBYW95G5AT8NHFXA28Q0")))>'
             - 'Ioni'
+            - 'Ioni'
             - '<(new \DateTimeImmutable("2019-04-02 11:22:33"))>'
         coins: 5133
         roles: ['ROLE_USER', 'ROLE_ADMIN']
@@ -10,6 +11,7 @@ App\Entity\User:
     user_ashuvidz:
         __construct:
             - '<(new \App\Domain\UserId(\Symfony\Component\Uid\Ulid::fromString("01F17XSXB9KDCJ6SAR1320RH9Q")))>'
+            - 'Ashuvidz'
             - 'Ashuvidz'
             - '<(new \DateTimeImmutable("2019-04-03 11:22:33"))>'
         coins: 700
@@ -19,6 +21,7 @@ App\Entity\User:
         __construct:
             - '<(new \App\Domain\UserId(\Symfony\Component\Uid\Ulid::fromString("01F17XT5MRZ31J1MMXMJQT5VE2")))>'
             - 'Gardien1'
+            - 'Gardien1'
             - '<(new \DateTimeImmutable("2019-04-05 11:22:33"))>'
         coins: 90
         lastPatchNoteReadAt: null
@@ -26,11 +29,13 @@ App\Entity\User:
         __construct:
             - '<(new \App\Domain\UserId(\Symfony\Component\Uid\Ulid::fromString("01F17XT9KTD7AY8FE3T2TE87GV")))>'
             - 'fundings-1'
+            - null
             - '<(new \DateTimeImmutable("2019-04-22 11:21:01"))>'
         supporterVisible: false
     user_fundings_{10..30}:
         __construct:
             - '<(new \App\Domain\UserId(\Symfony\Component\Uid\Ulid::fromString("01F17XTC6VN0V18PW6PHVWZW".$current)))>'
             - '<current()>_fundings'
+            - null
             - '<(new \DateTimeImmutable("2019-04-22 11:22:".$current))>'
         coins: 100

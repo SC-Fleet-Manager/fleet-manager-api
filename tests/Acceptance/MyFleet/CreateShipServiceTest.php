@@ -64,4 +64,28 @@ class CreateShipServiceTest extends KernelTestCase
         static::assertEquals(new \DateTimeImmutable('2021-01-01T10:00:00Z'), $fleet->getUpdatedAt());
         static::assertCount(1, $fleet->getShips());
     }
+
+    /**
+     * @test
+     */
+    public function it_should_create_a_ship_with_a_quantity(): void
+    {
+        $userId = UserId::fromString('00000000-0000-0000-0000-000000000001');
+        $shipId = ShipId::fromString('00000000-0000-0000-0000-000000000010');
+
+        /** @var InMemoryFleetRepository $fleetRepository */
+        $fleetRepository = static::$container->get(FleetRepositoryInterface::class);
+        $fleetRepository->setFleets([
+            new Fleet($userId, new \DateTimeImmutable('2021-01-01T12:00:00+02:00')),
+        ]);
+
+        /** @var CreateShipService $service */
+        $service = static::$container->get(CreateShipService::class);
+        $service->handle($userId, $shipId, 'Avenger', null, 3);
+
+        $fleet = $fleetRepository->getFleetByUser($userId);
+        static::assertCount(1, $fleet->getShips());
+        static::assertEquals($shipId, $fleet->getShips()[(string) $shipId]->getId());
+        static::assertSame(3, $fleet->getShips()[(string) $shipId]->getQuantity());
+    }
 }

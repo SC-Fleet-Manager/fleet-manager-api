@@ -61,7 +61,7 @@ class Fleet
     public function addShip(ShipId $id, string $name, ?string $imageUrl, int $quantity, \DateTimeInterface $updatedAt): void
     {
         Assert::null($this->getShipByName($name), sprintf('Cannot add ship with same name "%s".', $name));
-        $this->ships[(string) $id] = new Ship($id, $this, $name, $imageUrl, $quantity);
+        $this->ships[(string) $id] = new Ship($id, $this, $name, $imageUrl, max(1, $quantity));
         $this->updatedAt = \DateTimeImmutable::createFromInterface($updatedAt);
     }
 

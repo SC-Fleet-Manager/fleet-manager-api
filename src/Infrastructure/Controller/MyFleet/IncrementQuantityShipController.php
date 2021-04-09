@@ -38,7 +38,7 @@ class IncrementQuantityShipController implements LoggerAwareInterface
      * @OpenApi\Parameter(
      *     name="shipId",
      *     in="path",
-     *     description="The ship to delete.",
+     *     description="The ship that the quantity will be incremented.",
      *     schema=@OpenApi\Property(type="string", format="uid"),
      *     example="00000000-0000-0000-0000-000000000001"
      * )

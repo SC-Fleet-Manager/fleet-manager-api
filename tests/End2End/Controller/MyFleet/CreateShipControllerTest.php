@@ -23,6 +23,7 @@ class CreateShipControllerTest extends WebTestCase
         ], json_encode([
             'name' => 'Avenger',
             'pictureUrl' => 'https://starcitizen.tools/avenger.jpg',
+            'quantity' => 3,
         ]));
 
         static::assertSame(204, static::$client->getResponse()->getStatusCode());
@@ -40,7 +41,7 @@ class CreateShipControllerTest extends WebTestCase
         static::assertArraySubset([
             'name' => 'Avenger',
             'image_url' => 'https://starcitizen.tools/avenger.jpg',
-            'quantity' => 1,
+            'quantity' => 3,
         ], $result);
     }
 
@@ -130,6 +131,37 @@ class CreateShipControllerTest extends WebTestCase
 
         static::assertSame('invalid_form', $json['error']);
         static::assertSame('You have reached the limit of 300 ships.', $json['violations']['violations'][0]['title']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_set_quantity_1_minimum(): void
+    {
+        static::$connection->executeStatement(<<<SQL
+                INSERT INTO users(id, roles, auth0_username, created_at)
+                VALUES ('00000000-0000-0000-0000-000000000001', '["ROLE_USER"]', 'Ioni', '2021-01-01T10:00:00Z');
+                INSERT INTO fleets(user_id, updated_at)
+                VALUES ('00000000-0000-0000-0000-000000000001', '2021-01-02T10:00:00Z');
+            SQL
+        );
+
+        static::$client->xmlHttpRequest('POST', '/api/my-fleet/create-ship', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
+        ], json_encode([
+            'name' => 'Mercury',
+            'quantity' => -5,
+        ]));
+
+        static::assertSame(204, static::$client->getResponse()->getStatusCode());
+
+        $result = static::$connection->executeQuery(<<<SQL
+                SELECT quantity FROM ships WHERE fleet_id = '00000000-0000-0000-0000-000000000001';
+            SQL
+        )->fetchAssociative();
+        static::assertNotFalse($result, 'The ship should be created.');
+        static::assertEquals(1, $result['quantity']);
     }
 
     /**
