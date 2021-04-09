@@ -61,7 +61,7 @@ class Fleet
     public function addShip(ShipId $id, string $name, ?string $imageUrl, int $quantity, \DateTimeInterface $updatedAt): void
     {
         Assert::null($this->getShipByName($name), sprintf('Cannot add ship with same name "%s".', $name));
-        $this->ships[(string) $id] = new Ship($id, $this, $name, $imageUrl, max(1, $quantity));
+        $this->ships[(string) $id] = new Ship($id, $this, $name, $imageUrl, $quantity);
         $this->updatedAt = \DateTimeImmutable::createFromInterface($updatedAt);
     }
 
@@ -84,22 +84,6 @@ class Fleet
         return null;
     }
 
-    /**
-     * @return int the new quantity of the ship
-     */
-    public function incrementShipQuantity(ShipId $shipId, int $step, Clock $clock): int
-    {
-        $ship = $this->getShip($shipId);
-        if ($ship === null) {
-            throw new NotFoundShipException($this->getUserId(), $shipId);
-        }
-
-        $ship->incrementQuantity($step);
-        $this->updatedAt = $clock->now();
-
-        return $ship->getQuantity();
-    }
-
     private function getShip(ShipId $shipId): ?Ship
     {
         return $this->ships[(string) $shipId] ?? null;
@@ -108,6 +92,18 @@ class Fleet
     public function deleteShip(ShipId $shipId, Clock $clock): void
     {
         $this->ships->remove((string) $shipId);
+        $this->updatedAt = $clock->now();
+    }
+
+    public function updateShip(ShipId $shipId, string $name, ?string $imageUrl, int $quantity, Clock $clock): void
+    {
+        $ship = $this->getShip($shipId);
+        if ($ship === null) {
+            throw new NotFoundShipException($this->getUserId(), $shipId);
+        }
+
+        $ship->update($name, $imageUrl, $quantity);
+
         $this->updatedAt = $clock->now();
     }
 }

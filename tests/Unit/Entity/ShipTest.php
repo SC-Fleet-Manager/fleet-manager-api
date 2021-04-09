@@ -46,11 +46,10 @@ class ShipTest extends TestCase
     /**
      * @test
      */
-    public function it_should_not_create_with_zero_quantity(): void
+    public function it_should_set_quantity_to_1_minimum(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-
-        new Ship(ShipId::fromString('00000000-0000-0000-0000-000000000001'), static::createFleet(), 'Avenger', null, 0);
+        $ship = new Ship(ShipId::fromString('00000000-0000-0000-0000-000000000001'), static::createFleet(), 'Avenger', null, -5);
+        static::assertSame(1, $ship->getQuantity());
     }
 
     /**

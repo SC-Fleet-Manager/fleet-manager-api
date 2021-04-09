@@ -19,6 +19,7 @@ class UniqueShipNameByUserValidator extends ConstraintValidator
 
     public function validate($value, Constraint $constraint): void
     {
+        /** @var UniqueShipNameByUser $constraint */
         Assert::isInstanceOf($constraint, UniqueShipNameByUser::class);
         if ($value === null) {
             return;
@@ -36,8 +37,13 @@ class UniqueShipNameByUserValidator extends ConstraintValidator
         }
 
         $ship = $fleet->getShipByName($value);
-        if ($ship !== null) {
-            $this->context->buildViolation($constraint->message)->addViolation();
+        if ($ship === null) {
+            return;
         }
+        if ($constraint->excludeShipId !== null && $ship->getId()->equals($constraint->excludeShipId)) {
+            // ignore if it's the excluded shipId
+            return;
+        }
+        $this->context->buildViolation($constraint->message)->addViolation();
     }
 }
