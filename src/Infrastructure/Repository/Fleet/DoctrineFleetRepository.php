@@ -27,7 +27,7 @@ class DoctrineFleetRepository extends ServiceEntityRepository implements FleetRe
     {
         return $this->_em->createQuery(<<<DQL
                 SELECT fleet, ship FROM App\Entity\Fleet fleet
-                JOIN fleet.ships ship
+                LEFT JOIN fleet.ships ship
                 WHERE fleet.userId = :userId
             DQL
         )
@@ -45,6 +45,7 @@ class DoctrineFleetRepository extends ServiceEntityRepository implements FleetRe
             $this->logger->warning('conflict version on save ship.', ['exception' => $e]);
             throw new ConflictVersionException($fleet, 'Unable to save your fleet. Please, try again.', context: ['userId' => $fleet->getUserId()], previous: $e);
         } catch (UniqueConstraintViolationException $e) {
+            $this->logger->warning('already existing fleet.', ['fleetId' => $fleet->getUserId(), 'exception' => $e]);
             throw new AlreadyExistingFleetForUserException($fleet->getUserId(), previous: $e);
         }
     }
