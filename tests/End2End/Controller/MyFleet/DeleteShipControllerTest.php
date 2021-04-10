@@ -66,7 +66,7 @@ class DeleteShipControllerTest extends WebTestCase
      */
     public function it_should_return_error_if_not_logged(): void
     {
-        static::$client->xmlHttpRequest('POST', '/api/my-fleet/create-ship', [], [], [
+        static::$client->xmlHttpRequest('POST', '/api/my-fleet/delete-ship/00000000-0000-0000-0000-000000000011', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
 

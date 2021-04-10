@@ -44,7 +44,6 @@ class Ship
 
     public function __construct(ShipId $id, Fleet $fleet, string $name, ?string $imageUrl = null, int $quantity = 1)
     {
-        Assert::greaterThanEq($quantity, 1);
         Assert::startsWith($imageUrl ?? 'http', 'http');
         Assert::lengthBetween($name, 2, 32);
         Assert::maxLength($imageUrl, 1023);
@@ -52,7 +51,7 @@ class Ship
         $this->fleet = $fleet;
         $this->name = $name;
         $this->imageUrl = $imageUrl;
-        $this->quantity = $quantity;
+        $this->quantity = max(1, $quantity);
     }
 
     public function getId(): ShipId
@@ -75,9 +74,10 @@ class Ship
         return $this->quantity;
     }
 
-    public function incrementQuantity(int $step): void
+    public function update(string $name, ?string $imageUrl, int $quantity): void
     {
-        $this->quantity += $step;
-        $this->quantity = max(1, min(1_000_000_000, $this->quantity));
+        $this->name = $name;
+        $this->imageUrl = $imageUrl;
+        $this->quantity = $quantity;
     }
 }
