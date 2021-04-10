@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Psr\Cache\CacheItemInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Ulid;
@@ -26,13 +27,20 @@ class UserEntityJwtProvider extends JwtUserProvider implements LoggerAwareInterf
         private EntityManagerInterface $entityManager,
         private Auth0Service $auth0Service,
         private CacheInterface $cache,
+        private string $env,
+        private string $supportersFilepath,
     ) {
     }
 
     public function loadUserByJWT(\stdClass $jwt): UserInterface
     {
-        /** @var User $user */
-        $user = $this->loadUserByUsername($jwt->sub);
+        /** @var User|null $user */
+        $user = $this->tryToCreateSupporter($jwt);
+
+        if ($user === null) {
+            /** @var User $user */
+            $user = $this->loadUserByUsername($jwt->sub);
+        }
 
         $profile = $this->cache->get('app.security.user_provider.profile.'.$user->getId(), function (CacheItemInterface $item) use ($user, $jwt) {
             try {
@@ -51,6 +59,59 @@ class UserEntityJwtProvider extends JwtUserProvider implements LoggerAwareInterf
         }, 0 /* no early expiration */);
 
         $this->injectProfile($user, $profile);
+
+        return $user;
+    }
+
+    private function tryToCreateSupporter(\stdClass $jwt): ?User
+    {
+        if (!in_array($this->env, ['beta'], true)) { // only supported on some envs
+            return null;
+        }
+
+        $username = $jwt->sub;
+        $user = $this->userRepository->findByAuth0Username($username);
+        if ($user !== null) {
+            // if already registered : pass
+            return null;
+        }
+
+        $this->logger->info('Try to create supporter {username}', ['username' => $username]);
+
+        $profile = $this->auth0Service->getUserProfileByA0UID($jwt->token);
+
+        if (!file_exists($this->supportersFilepath) || !is_readable($this->supportersFilepath)) {
+            throw new AccessDeniedException(sprintf('Supporters file %s does not exist or is not readable.', $this->supportersFilepath));
+        }
+        $supportersData = json_decode(file_get_contents($this->supportersFilepath), true);
+
+        $totalAmount = 0;
+        $nickname = null;
+        $discordId = ltrim($username, 'oauth2|discord|');
+        foreach ($supportersData as $supporterData) {
+            if ($supporterData['discord_id'] === $discordId) {
+                $totalAmount += $supporterData['amount'];
+                $nickname = $supporterData['nickname'] ?? null;
+                continue;
+            }
+            if ($profile['email_verified'] && $supporterData['email'] === $profile['email']) {
+                $totalAmount += $supporterData['amount'];
+                $nickname = $supporterData['nickname'] ?? null;
+                continue;
+            }
+        }
+        if ($totalAmount === 0) {
+            $this->logger->error('The user {username} was not a supporters and cannot access to beta.', ['username' => $username, 'email' => $profile['email']]);
+            throw new AccessDeniedException(sprintf('The user %s was not a supporters and cannot access to beta.', $username));
+        }
+
+        $user = new User(new UserId(new Ulid()), $username, $nickname, new \DateTimeImmutable($supporterData['created_at'] ?? 'now'));
+        $user->setCoins($totalAmount);
+
+        $this->logger->info('Supporter {username} created.', ['username' => $username]);
+
+        $this->userRepository->save($user);
+        $user = $this->userRepository->findByAuth0Username($username); // refresh
 
         return $user;
     }

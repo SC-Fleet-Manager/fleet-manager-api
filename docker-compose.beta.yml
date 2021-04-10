@@ -44,6 +44,8 @@ services:
         hostname: php
         restart: unless-stopped
         env_file: php.env
+        volumes:
+            - ./supporters.json:/app/var/supporters.json:ro
         depends_on:
             - redis
         environment:

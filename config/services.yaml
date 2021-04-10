@@ -94,3 +94,8 @@ services:
             $audience: 'https://%env(AUTH0_DOMAIN)%/api/v2/'
     Auth0\SDK\API\Management:
         factory: [ '@App\Infrastructure\Auth0\ManagementFactory', 'create' ]
+
+    App\Security\UserEntityJwtProvider:
+        arguments:
+            $env: '%kernel.environment%'
+            $supportersFilepath: '%kernel.project_dir%/var/supporters.json'
