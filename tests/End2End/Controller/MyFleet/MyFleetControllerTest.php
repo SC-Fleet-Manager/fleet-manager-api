@@ -16,7 +16,7 @@ class MyFleetControllerTest extends WebTestCase
                 VALUES ('00000000-0000-0000-0000-000000000001', '["ROLE_USER"]', 'Ioni', '2021-01-01T10:00:00Z');
                 INSERT INTO fleets(user_id, updated_at)
                 VALUES ('00000000-0000-0000-0000-000000000001', '2021-01-02T10:00:00Z');
-                INSERT INTO ships(id, fleet_id, name, image_url, quantity)
+                INSERT INTO ships(id, fleet_id, model, image_url, quantity)
                 VALUES ('00000000-0000-0000-0000-000000000020', '00000000-0000-0000-0000-000000000001', 'Avenger', null, 2),
                        ('00000000-0000-0000-0000-000000000021', '00000000-0000-0000-0000-000000000001', 'Mercury Star Runner', 'https://example.com/mercury.jpg', 10),
                        ('00000000-0000-0000-0000-000000000022', '00000000-0000-0000-0000-000000000001', 'Javelin', 'https://example.com/javelin.jpg', 1);
@@ -39,19 +39,19 @@ class MyFleetControllerTest extends WebTestCase
                 'items' => [
                     [
                         'id' => '00000000-0000-0000-0000-000000000020',
-                        'name' => 'Avenger',
+                        'model' => 'Avenger',
                         'imageUrl' => null,
                         'quantity' => 2,
                     ],
                     [
                         'id' => '00000000-0000-0000-0000-000000000021',
-                        'name' => 'Mercury Star Runner',
+                        'model' => 'Mercury Star Runner',
                         'imageUrl' => 'https://example.com/mercury.jpg',
                         'quantity' => 10,
                     ],
                     [
                         'id' => '00000000-0000-0000-0000-000000000022',
-                        'name' => 'Javelin',
+                        'model' => 'Javelin',
                         'imageUrl' => 'https://example.com/javelin.jpg',
                         'quantity' => 1,
                     ],

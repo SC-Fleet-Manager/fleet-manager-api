@@ -15,3 +15,4 @@ services:
                     - 'Symfony\Component\Security\Core\Exception\AccessDeniedException'
                     - 'Symfony\Component\Security\Core\Exception\AuthenticationException'
                     - 'Symfony\Component\HttpKernel\Exception\NotFoundHttpException'
+                    - 'App\Domain\Exception\DomainException'

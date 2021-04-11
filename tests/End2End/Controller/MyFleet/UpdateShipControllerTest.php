@@ -16,7 +16,7 @@ class UpdateShipControllerTest extends WebTestCase
                 VALUES ('00000000-0000-0000-0000-000000000001', '["ROLE_USER"]', 'Ioni', '2021-01-01T10:00:00Z');
                 INSERT INTO fleets(user_id, updated_at)
                 VALUES ('00000000-0000-0000-0000-000000000001', '2021-01-02T10:00:00Z');
-                INSERT INTO ships(id, fleet_id, name, quantity)
+                INSERT INTO ships(id, fleet_id, model, quantity)
                 VALUES ('00000000-0000-0000-0000-000000000011', '00000000-0000-0000-0000-000000000001', 'Avenger', 2);
             SQL
         );
@@ -25,7 +25,7 @@ class UpdateShipControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ], json_encode([
-            'name' => 'Avenger 2',
+            'model' => 'Avenger 2',
             'pictureUrl' => 'https://starcitizen.tools/avenger.jpg',
             'quantity' => 5,
         ]));
@@ -37,7 +37,7 @@ class UpdateShipControllerTest extends WebTestCase
             SQL
         )->fetchAssociative();
         static::assertArraySubset([
-            'name' => 'Avenger 2',
+            'model' => 'Avenger 2',
             'image_url' => 'https://starcitizen.tools/avenger.jpg',
             'quantity' => 5,
         ], $result);
@@ -46,14 +46,14 @@ class UpdateShipControllerTest extends WebTestCase
     /**
      * @test
      */
-    public function it_should_update_a_ship_without_changing_name(): void
+    public function it_should_update_a_ship_without_changing_model(): void
     {
         static::$connection->executeStatement(<<<SQL
                 INSERT INTO users(id, roles, auth0_username, created_at)
                 VALUES ('00000000-0000-0000-0000-000000000001', '["ROLE_USER"]', 'Ioni', '2021-01-01T10:00:00Z');
                 INSERT INTO fleets(user_id, updated_at)
                 VALUES ('00000000-0000-0000-0000-000000000001', '2021-01-02T10:00:00Z');
-                INSERT INTO ships(id, fleet_id, name, quantity)
+                INSERT INTO ships(id, fleet_id, model, quantity)
                 VALUES ('00000000-0000-0000-0000-000000000011', '00000000-0000-0000-0000-000000000001', 'Avenger', 2);
             SQL
         );
@@ -62,7 +62,7 @@ class UpdateShipControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ], json_encode([
-            'name' => 'Avenger',
+            'model' => 'Avenger',
             'quantity' => 3,
         ]));
 
@@ -73,7 +73,7 @@ class UpdateShipControllerTest extends WebTestCase
             SQL
         )->fetchAssociative();
         static::assertArraySubset([
-            'name' => 'Avenger',
+            'model' => 'Avenger',
             'quantity' => 3,
         ], $result);
     }

@@ -9,9 +9,7 @@ use Webmozart\Assert\Assert;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="ships", uniqueConstraints={
- *     @ORM\UniqueConstraint(name="fleetid_name_idx", columns={"fleet_id", "name"})
- * })
+ * @ORM\Table(name="ships")
  */
 class Ship
 {
@@ -28,9 +26,9 @@ class Ship
     private Fleet $fleet;
 
     /**
-     * @ORM\Column(name="name", type="string", length=32)
+     * @ORM\Column(name="model", type="string", length=32)
      */
-    private string $name;
+    private string $model;
 
     /**
      * @ORM\Column(name="image_url", type="string", length=1023, nullable=true)
@@ -42,14 +40,14 @@ class Ship
      */
     private int $quantity;
 
-    public function __construct(ShipId $id, Fleet $fleet, string $name, ?string $imageUrl = null, int $quantity = 1)
+    public function __construct(ShipId $id, Fleet $fleet, string $model, ?string $imageUrl = null, int $quantity = 1)
     {
         Assert::startsWith($imageUrl ?? 'http', 'http');
-        Assert::lengthBetween($name, 2, 32);
+        Assert::lengthBetween($model, 2, 32);
         Assert::maxLength($imageUrl, 1023);
         $this->id = $id->getId();
         $this->fleet = $fleet;
-        $this->name = $name;
+        $this->model = $model;
         $this->imageUrl = $imageUrl;
         $this->quantity = max(1, $quantity);
     }
@@ -59,9 +57,9 @@ class Ship
         return new ShipId($this->id);
     }
 
-    public function getName(): string
+    public function getModel(): string
     {
-        return $this->name;
+        return $this->model;
     }
 
     public function getImageUrl(): ?string
@@ -74,9 +72,9 @@ class Ship
         return $this->quantity;
     }
 
-    public function update(string $name, ?string $imageUrl, int $quantity): void
+    public function update(string $model, ?string $imageUrl, int $quantity): void
     {
-        $this->name = $name;
+        $this->model = $model;
         $this->imageUrl = $imageUrl;
         $this->quantity = $quantity;
     }

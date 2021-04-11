@@ -51,7 +51,7 @@ class CaptureTransactionController extends AbstractController
             return $this->json([
                 'error' => 'order_not_exist',
                 'errorMessage' => 'Sorry, we cannot find the transaction. Please try again.',
-            ], 404);
+            ], 400);
         }
 
         if (!in_array($funding->getPaypalStatus(), ['CREATED', 'PENDING'], true)) {

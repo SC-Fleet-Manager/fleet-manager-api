@@ -35,7 +35,7 @@ class ManagementFactory implements LoggerAwareInterface
             } catch (\Throwable $e) {
                 $this->logger->error('Unable to request an access token on Auth0 : '.$e->getMessage(), ['exception' => $e]);
 
-                return null;
+                throw $e;
             }
             $item->expiresAfter($response['expires_in']);
 

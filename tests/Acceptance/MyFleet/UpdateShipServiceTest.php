@@ -37,7 +37,7 @@ class UpdateShipServiceTest extends KernelTestCase
         $fleet = $fleetRepository->getFleetByUser($userId);
         static::assertCount(1, $fleet->getShips());
         static::assertEquals($shipId, $fleet->getShips()[(string) $shipId]->getId());
-        static::assertSame('Avenger 2', $fleet->getShips()[(string) $shipId]->getName());
+        static::assertSame('Avenger 2', $fleet->getShips()[(string) $shipId]->getModel());
         static::assertSame('https://example.com/picture.jpg', $fleet->getShips()[(string) $shipId]->getImageUrl());
         static::assertSame(4, $fleet->getShips()[(string) $shipId]->getQuantity());
     }

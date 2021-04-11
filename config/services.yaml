@@ -90,7 +90,7 @@ services:
         arguments:
             $domain: '%env(AUTH0_DOMAIN)%'
             $grantType: 'client_credentials'
-            $scope: 'read:users delete:users'
+            $scope: 'delete:users'
             $audience: 'https://%env(AUTH0_DOMAIN)%/api/v2/'
     Auth0\SDK\API\Management:
         factory: [ '@App\Infrastructure\Auth0\ManagementFactory', 'create' ]
@@ -99,3 +99,9 @@ services:
         arguments:
             $env: '%kernel.environment%'
             $supportersFilepath: '%kernel.project_dir%/var/supporters.json'
+
+    serializer.normalizer.custom:
+        class: Symfony\Component\Serializer\Normalizer\CustomNormalizer
+        tags:
+            - { name: 'serializer.normalizer', priority: -800 }
+    Symfony\Component\Serializer\Normalizer\CustomNormalizer: '@serializer.normalizer.custom'

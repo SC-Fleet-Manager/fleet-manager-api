@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Webmozart\Assert\Assert;
 
-class UniqueShipNameByUserValidator extends ConstraintValidator
+class UniqueShipModelByUserValidator extends ConstraintValidator
 {
     public function __construct(
         private FleetRepositoryInterface $fleetRepository,
@@ -19,8 +19,8 @@ class UniqueShipNameByUserValidator extends ConstraintValidator
 
     public function validate($value, Constraint $constraint): void
     {
-        /** @var UniqueShipNameByUser $constraint */
-        Assert::isInstanceOf($constraint, UniqueShipNameByUser::class);
+        /** @var UniqueShipModelByUser $constraint */
+        Assert::isInstanceOf($constraint, UniqueShipModelByUser::class);
         if ($value === null) {
             return;
         }
@@ -36,7 +36,7 @@ class UniqueShipNameByUserValidator extends ConstraintValidator
             return;
         }
 
-        $ship = $fleet->getShipByName($value);
+        $ship = $fleet->getShipByModel($value);
         if ($ship === null) {
             return;
         }

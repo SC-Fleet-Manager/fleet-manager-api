@@ -18,7 +18,7 @@ class DeleteAccountControllerTest extends WebTestCase
                 VALUES ('00000000-0000-0000-0000-000000000001', '["ROLE_USER"]', 'Ioni', false, 5, '2021-03-20T15:50:00+01:00', '2021-03-21T15:50:00+01:00');
                 INSERT INTO fleets(user_id, updated_at)
                 VALUES ('00000000-0000-0000-0000-000000000001', '2021-01-02T10:00:00Z');
-                INSERT INTO ships(id, fleet_id, name, quantity)
+                INSERT INTO ships(id, fleet_id, model, quantity)
                 VALUES ('00000000-0000-0000-0000-000000000011', '00000000-0000-0000-0000-000000000001', 'Avenger', 2);
             SQL
         );

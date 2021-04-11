@@ -95,7 +95,7 @@ class CaptureTransactionControllerTest extends WebTestCase
         ], json_encode([
             'orderID' => '34da4bd8', // order to another user
         ]));
-        static::assertSame(404, $this->client->getResponse()->getStatusCode());
+        static::assertSame(400, $this->client->getResponse()->getStatusCode());
         $json = \json_decode($this->client->getResponse()->getContent(), true);
         static::assertSame('order_not_exist', $json['error']);
         static::assertSame('Sorry, we cannot find the transaction. Please try again.', $json['errorMessage']);
@@ -106,7 +106,7 @@ class CaptureTransactionControllerTest extends WebTestCase
         ], json_encode([
             'orderID' => 'not_exist',
         ]));
-        static::assertSame(404, $this->client->getResponse()->getStatusCode());
+        static::assertSame(400, $this->client->getResponse()->getStatusCode());
     }
 
     /**

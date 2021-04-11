@@ -40,19 +40,19 @@ class MyFleetServiceTest extends KernelTestCase
                 [
                     new MyFleetShipOutput(
                         id: ShipId::fromString('00000000-0000-0000-0000-000000000010'),
-                        name: 'Avenger',
+                        model: 'Avenger',
                         imageUrl: null,
                         quantity: 2,
                     ),
                     new MyFleetShipOutput(
                         id: ShipId::fromString('00000000-0000-0000-0000-000000000011'),
-                        name: 'Mercury Star Runner',
+                        model: 'Mercury Star Runner',
                         imageUrl: 'https://example.com/mercury.jpg',
                         quantity: 10,
                     ),
                     new MyFleetShipOutput(
                         id: ShipId::fromString('00000000-0000-0000-0000-000000000012'),
-                        name: 'Javelin',
+                        model: 'Javelin',
                         imageUrl: 'https://example.com/javelin.jpg',
                         quantity: 1,
                     ),
