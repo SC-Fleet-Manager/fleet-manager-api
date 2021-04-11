@@ -58,10 +58,10 @@ class Fleet
         return $this->ships->toArray();
     }
 
-    public function addShip(ShipId $id, string $name, ?string $imageUrl, int $quantity, \DateTimeInterface $updatedAt): void
+    public function addShip(ShipId $id, string $model, ?string $imageUrl, int $quantity, \DateTimeInterface $updatedAt): void
     {
-        Assert::null($this->getShipByName($name), sprintf('Cannot add ship with same name "%s".', $name));
-        $this->ships[(string) $id] = new Ship($id, $this, $name, $imageUrl, $quantity);
+        Assert::null($this->getShipByModel($model), sprintf('Cannot add ship with same model "%s".', $model));
+        $this->ships[(string) $id] = new Ship($id, $this, $model, $imageUrl, $quantity);
         $this->updatedAt = \DateTimeImmutable::createFromInterface($updatedAt);
     }
 
@@ -70,13 +70,13 @@ class Fleet
         return $this->updatedAt;
     }
 
-    public function getShipByName(string $name): ?Ship
+    public function getShipByModel(string $model): ?Ship
     {
         $collator = new \Collator('en');
         $collator->setStrength(\Collator::PRIMARY); // â == A
         $collator->setAttribute(\Collator::ALTERNATE_HANDLING, \Collator::SHIFTED); // ignore punctuations
         foreach ($this->ships as $ship) {
-            if ($collator->compare($ship->getName(), $name) === 0) {
+            if ($collator->compare($ship->getModel(), $model) === 0) {
                 return $ship;
             }
         }
@@ -95,14 +95,14 @@ class Fleet
         $this->updatedAt = $clock->now();
     }
 
-    public function updateShip(ShipId $shipId, string $name, ?string $imageUrl, int $quantity, Clock $clock): void
+    public function updateShip(ShipId $shipId, string $model, ?string $imageUrl, int $quantity, Clock $clock): void
     {
         $ship = $this->getShip($shipId);
         if ($ship === null) {
             throw new NotFoundShipException($this->getUserId(), $shipId);
         }
 
-        $ship->update($name, $imageUrl, $quantity);
+        $ship->update($model, $imageUrl, $quantity);
 
         $this->updatedAt = $clock->now();
     }

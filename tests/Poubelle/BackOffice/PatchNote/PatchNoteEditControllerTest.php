@@ -57,6 +57,6 @@ class PatchNoteEditControllerTest extends WebTestCase
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ]);
 
-        static::assertSame(404, $this->client->getResponse()->getStatusCode());
+        static::assertSame(400, $this->client->getResponse()->getStatusCode());
     }
 }

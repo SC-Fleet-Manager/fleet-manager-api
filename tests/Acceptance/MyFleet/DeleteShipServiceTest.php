@@ -33,7 +33,7 @@ class DeleteShipServiceTest extends KernelTestCase
 
         $fleet = $fleetRepository->getFleetByUser($userId);
         static::assertCount(1, $fleet->getShips());
-        static::assertSame('Mercury', $fleet->getShips()['00000000-0000-0000-0000-000000000012']->getName());
+        static::assertSame('Mercury', $fleet->getShips()['00000000-0000-0000-0000-000000000012']->getModel());
     }
 
     /**

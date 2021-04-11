@@ -35,7 +35,7 @@ class CreateShipServiceTest extends KernelTestCase
         $fleet = $fleetRepository->getFleetByUser($userId);
         static::assertCount(1, $fleet->getShips());
         static::assertEquals($shipId, $fleet->getShips()[(string) $shipId]->getId());
-        static::assertSame('Avenger', $fleet->getShips()[(string) $shipId]->getName());
+        static::assertSame('Avenger', $fleet->getShips()[(string) $shipId]->getModel());
         static::assertSame('https://example.com/picture.jpg', $fleet->getShips()[(string) $shipId]->getImageUrl());
         static::assertSame(1, $fleet->getShips()[(string) $shipId]->getQuantity());
     }

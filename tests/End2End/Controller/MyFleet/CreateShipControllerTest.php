@@ -21,7 +21,7 @@ class CreateShipControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ], json_encode([
-            'name' => 'Avenger',
+            'model' => 'Avenger',
             'pictureUrl' => 'https://starcitizen.tools/avenger.jpg',
             'quantity' => 3,
         ]));
@@ -39,7 +39,7 @@ class CreateShipControllerTest extends WebTestCase
         )->fetchAssociative();
         static::assertNotFalse($result, 'The ship should be created.');
         static::assertArraySubset([
-            'name' => 'Avenger',
+            'model' => 'Avenger',
             'image_url' => 'https://starcitizen.tools/avenger.jpg',
             'quantity' => 3,
         ], $result);
@@ -48,7 +48,7 @@ class CreateShipControllerTest extends WebTestCase
     /**
      * @test
      */
-    public function it_should_error_with_no_names(): void
+    public function it_should_error_with_no_models(): void
     {
         static::$connection->executeStatement(<<<SQL
                 INSERT INTO users(id, roles, auth0_username, created_at)
@@ -65,21 +65,21 @@ class CreateShipControllerTest extends WebTestCase
         $json = json_decode(static::$client->getResponse()->getContent(), true);
 
         static::assertSame('invalid_form', $json['error']);
-        static::assertSame('name', $json['violations']['violations'][0]['propertyPath']);
+        static::assertSame('model', $json['violations']['violations'][0]['propertyPath']);
         static::assertSame('This value should not be blank.', $json['violations']['violations'][0]['title']);
     }
 
     /**
      * @test
      */
-    public function it_should_error_if_ship_name_already_exist_for_the_logged_user(): void
+    public function it_should_error_if_ship_model_already_exist_for_the_logged_user(): void
     {
         static::$connection->executeStatement(<<<SQL
                 INSERT INTO users(id, roles, auth0_username, created_at)
                 VALUES ('00000000-0000-0000-0000-000000000001', '["ROLE_USER"]', 'Ioni', '2021-01-01T10:00:00Z');
                 INSERT INTO fleets(user_id, updated_at)
                 VALUES ('00000000-0000-0000-0000-000000000001', '2021-01-02T10:00:00Z');
-                INSERT INTO ships(id, fleet_id, name, image_url, quantity)
+                INSERT INTO ships(id, fleet_id, model, image_url, quantity)
                 VALUES ('00000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000001', 'Avenger', null, 2);
             SQL
         );
@@ -88,15 +88,15 @@ class CreateShipControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ], json_encode([
-            'name' => ' -Âvënger,',
+            'model' => ' -Âvënger,',
         ]));
 
         static::assertSame(400, static::$client->getResponse()->getStatusCode());
         $json = json_decode(static::$client->getResponse()->getContent(), true);
 
         static::assertSame('invalid_form', $json['error']);
-        static::assertSame('name', $json['violations']['violations'][0]['propertyPath']);
-        static::assertSame('You have already a ship with this name.', $json['violations']['violations'][0]['title']);
+        static::assertSame('model', $json['violations']['violations'][0]['propertyPath']);
+        static::assertSame('You have already a ship with this model.', $json['violations']['violations'][0]['title']);
     }
 
     /**
@@ -114,7 +114,7 @@ class CreateShipControllerTest extends WebTestCase
                 VALUES ('00000000-0000-0000-0000-000000000001', '["ROLE_USER"]', 'Ioni', '2021-01-01T10:00:00Z');
                 INSERT INTO fleets(user_id, updated_at)
                 VALUES ('00000000-0000-0000-0000-000000000001', '2021-01-02T10:00:00Z');
-                INSERT INTO ships(id, fleet_id, name)
+                INSERT INTO ships(id, fleet_id, model)
                 VALUES $shipsSql;
             SQL
         );
@@ -123,7 +123,7 @@ class CreateShipControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ], json_encode([
-            'name' => 'Mercury',
+            'model' => 'Mercury',
         ]));
 
         static::assertSame(400, static::$client->getResponse()->getStatusCode());
@@ -150,7 +150,7 @@ class CreateShipControllerTest extends WebTestCase
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ], json_encode([
-            'name' => 'Mercury',
+            'model' => 'Mercury',
             'quantity' => -5,
         ]));
 

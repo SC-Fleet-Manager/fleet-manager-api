@@ -18,7 +18,7 @@ class ShipTest extends TestCase
     {
         $ship = new Ship(ShipId::fromString('00000000-0000-0000-0000-000000000001'), static::createFleet(), 'Avenger', null, 1);
         static::assertSame('00000000-0000-0000-0000-000000000001', (string) $ship->getId());
-        static::assertSame('Avenger', $ship->getName());
+        static::assertSame('Avenger', $ship->getModel());
         static::assertNull($ship->getImageUrl());
         static::assertSame(1, $ship->getQuantity());
     }

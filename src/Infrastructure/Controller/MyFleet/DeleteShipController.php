@@ -38,7 +38,7 @@ class DeleteShipController implements LoggerAwareInterface
      *     example="00000000-0000-0000-0000-000000000001"
      * )
      * @OpenApi\Response(response=204, description="Deletes a ship of the logged user.")
-     * @OpenApi\Response(response=404, description="The user has no fleet.")
+     * @OpenApi\Response(response=400, description="The user has no fleet.")
      */
     #[Route('/api/my-fleet/delete-ship/{shipId}',
         name: 'my_fleet_delete_ship',

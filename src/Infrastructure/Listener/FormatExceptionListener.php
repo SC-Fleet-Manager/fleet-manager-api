@@ -25,8 +25,9 @@ class FormatExceptionListener
             'error' => $e->error,
             'errorMessage' => $e->userMessage,
         ], $e->context);
-        $response = new JsonResponse($this->serializer->serialize($data, 'json'), $e::$notFound ? 404 : 400, [], true);
 
-        $event->setResponse($response);
+        $event->setResponse(
+            new JsonResponse($this->serializer->serialize($data, 'json'), 400, [], true)
+        );
     }
 }

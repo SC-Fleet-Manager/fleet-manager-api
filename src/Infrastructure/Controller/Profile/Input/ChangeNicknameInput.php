@@ -16,5 +16,5 @@ class ChangeNicknameInput
         minMessage: 'The nickname must have 2 characters or more.',
         maxMessage: 'The nickname must have 31 characters or less.')
     ]
-    public ?string $nickname;
+    public ?string $nickname = null;
 }

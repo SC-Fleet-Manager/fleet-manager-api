@@ -50,7 +50,7 @@ class CreateShipController
         /** @var User $user */
         $user = $this->security->getUser();
 
-        $this->createShipService->handle($user->getId(), new ShipId(new Ulid()), $input->name, $input->pictureUrl, $input->quantity);
+        $this->createShipService->handle($user->getId(), new ShipId(new Ulid()), $input->model, $input->pictureUrl, $input->quantity);
 
         return new Response(null, 204);
     }

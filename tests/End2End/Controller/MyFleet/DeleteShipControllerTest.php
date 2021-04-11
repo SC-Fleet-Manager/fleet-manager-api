@@ -16,7 +16,7 @@ class DeleteShipControllerTest extends WebTestCase
                 VALUES ('00000000-0000-0000-0000-000000000001', '["ROLE_USER"]', 'Ioni', '2021-01-01T10:00:00Z');
                 INSERT INTO fleets(user_id, updated_at)
                 VALUES ('00000000-0000-0000-0000-000000000001', '2021-01-02T10:00:00Z');
-                INSERT INTO ships(id, fleet_id, name, quantity)
+                INSERT INTO ships(id, fleet_id, model, quantity)
                 VALUES ('00000000-0000-0000-0000-000000000011', '00000000-0000-0000-0000-000000000001', 'Avenger', 2);
             SQL
         );
@@ -51,7 +51,7 @@ class DeleteShipControllerTest extends WebTestCase
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ]);
 
-        static::assertSame(404, static::$client->getResponse()->getStatusCode());
+        static::assertSame(400, static::$client->getResponse()->getStatusCode());
         $json = json_decode(static::$client->getResponse()->getContent(), true);
 
         static::assertSame([

@@ -6,7 +6,7 @@ use App\Domain\ShipId;
 use Symfony\Component\Validator\Constraint;
 
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
-class UniqueShipNameByUser extends Constraint
+class UniqueShipModelByUser extends Constraint
 {
     /**
      * The ship that should be ignored.
@@ -18,6 +18,6 @@ class UniqueShipNameByUser extends Constraint
     {
         parent::__construct($options, $groups, $payload);
         $this->excludeShipId = $excludeShipId;
-        $this->message = $message ?? 'You have already a ship with this name.';
+        $this->message = $message ?? 'You have already a ship with this model.';
     }
 }

@@ -15,7 +15,7 @@ class MyFleetShipOutput
         /**
          * @OpenApi\Property(type="string", example="Avenger Titan")
          */
-        public string $name,
+        public string $model,
         /**
          * @OpenApi\Property(type="string", format="url", nullable=true, example="https://media.robertsspaceindustries.com/fmhdkmvhi8ify/store_small.jpg")
          */
