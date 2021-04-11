@@ -181,13 +181,14 @@ class User implements UserInterface
         return $this->profile;
     }
 
-    public function provideProfile(?string $nickname, ?string $pictureUrl, ?string $locale, ?string $email): void
+    public function provideProfile(?string $nickname = null, ?string $pictureUrl = null, ?string $locale = null, ?string $email = null, ?string $discordId = null): void
     {
         $this->profile = new UserProfile(
-            nickname: $nickname,
-            pictureUrl: $pictureUrl,
-            locale: $locale,
-            email: $email,
+            $nickname,
+            $pictureUrl,
+            $locale,
+            $email,
+            $discordId,
         );
     }
 }

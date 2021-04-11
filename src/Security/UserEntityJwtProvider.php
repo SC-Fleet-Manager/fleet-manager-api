@@ -14,6 +14,7 @@ use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\UserInterface;
+use function Symfony\Component\String\u;
 use Symfony\Component\Uid\Ulid;
 use Symfony\Contracts\Cache\CacheInterface;
 use Webmozart\Assert\Assert;
@@ -150,11 +151,15 @@ class UserEntityJwtProvider extends JwtUserProvider implements LoggerAwareInterf
         if ($nickname !== null && ($profile['email'] ?? null) === $nickname) {
             $nickname = explode('@', $nickname)[0];
         }
+        $discordId = isset($profile['sub']) ? u($profile['sub']) : u();
+        $discordId = !$discordId->startsWith('oauth2|discord|') ? null : $discordId->trimStart('oauth2|discord|');
+
         $user->provideProfile(
             nickname: $nickname,
             pictureUrl: $profile['picture'] ?? null,
             locale: $profile['locale'] ?? null,
             email: $profile['email'] ?? null,
+            discordId: $discordId,
         );
     }
 }

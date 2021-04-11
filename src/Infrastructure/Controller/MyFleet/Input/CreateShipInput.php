@@ -10,6 +10,7 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Regex;
+use function Symfony\Component\String\u;
 
 #[CountShipsLessThan(max: 300)]
 class CreateShipInput implements DenormalizableInterface
@@ -41,7 +42,7 @@ class CreateShipInput implements DenormalizableInterface
     {
         $this->model = $data['model'] ?? null;
         if ($this->model !== null) {
-            $this->model = trim($this->model);
+            $this->model = u($this->model)->trim();
         }
         $this->pictureUrl = $data['pictureUrl'] ?? null;
         $this->quantity = $data['quantity'] ?? null;
