@@ -23,7 +23,7 @@ class ProfileServiceTest extends KernelTestCase
         $user = new User(UserId::fromString('00000000-0000-0000-0000-000000000001'), 'Ioni', null, new \DateTimeImmutable('2021-03-20T17:42:00+01:00'));
         $user->setCoins(5);
         $user->setSupporterVisible(false);
-        $user->provideProfile('Ioni_nickname', 'https://example.org/picture.jpg', null, null);
+        $user->provideProfile('Ioni_nickname', 'https://example.org/picture.jpg');
         $userRepository->setUsers([$user]);
 
         /** @var ProfileService $service */
@@ -51,7 +51,7 @@ class ProfileServiceTest extends KernelTestCase
         $user = new User(UserId::fromString('00000000-0000-0000-0000-000000000001'), 'Ioni', 'custom_nickname', new \DateTimeImmutable('2021-03-20T17:42:00+01:00'));
         $user->setCoins(5);
         $user->setSupporterVisible(false);
-        $user->provideProfile('Ioni_nickname', 'https://example.org/picture.jpg', null, null);
+        $user->provideProfile('Ioni_nickname', 'https://example.org/picture.jpg');
         $userRepository->setUsers([$user]);
 
         /** @var ProfileService $service */

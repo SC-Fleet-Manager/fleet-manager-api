@@ -9,6 +9,7 @@ class UserProfile
         private ?string $pictureUrl = null,
         private ?string $locale = null,
         private ?string $email = null,
+        private ?string $discordId = null,
     ) {
     }
 
@@ -30,5 +31,10 @@ class UserProfile
     public function getEmail(): ?string
     {
         return $this->email;
+    }
+
+    public function getDiscordId(): ?string
+    {
+        return $this->discordId;
     }
 }
