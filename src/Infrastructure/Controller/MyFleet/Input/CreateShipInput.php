@@ -28,8 +28,8 @@ class CreateShipInput implements DenormalizableInterface
      */
     #[NotBlank(allowNull: true)]
     #[Regex(
-        pattern: '~^https://((media.)?robertsspaceindustries.com|(www.)?starcitizen.tools)~',
-        message: 'The picture URL must be from robertsspaceindustries.com or starcitizen.tools.'
+        pattern: '~^https://((media.)?robertsspaceindustries.com|(www.)?starcitizen.tools)/~',
+        message: 'The picture URL must come from robertsspaceindustries.com or starcitizen.tools.'
     )]
     public ?string $pictureUrl = null;
 
