@@ -37,10 +37,12 @@ class WebTestCase extends BaseWebTestCase
         parent::tearDown();
     }
 
-    protected static function generateToken(string $username): string
+    protected static function generateToken(string $username, ?string $nickname = null, ?string $email = null): string
     {
         return (new Builder())
             ->withClaim('iss', 'https://test_domain/')
+            ->withClaim('https://api.fleet-manager.space/nickname', $nickname)
+            ->withClaim('https://api.fleet-manager.space/email', $email)
             ->withClaim('sub', $username)
             ->withClaim('aud', ['test_audience'])
             ->withClaim('exp', time())

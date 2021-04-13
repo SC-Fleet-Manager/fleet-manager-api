@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Repository\Organization;
 
 use App\Application\Repository\OrganizationRepositoryInterface;
+use App\Domain\MemberId;
 use App\Domain\OrgaId;
 use App\Domain\UserId;
 use App\Entity\Organization;
@@ -24,7 +25,7 @@ class InMemoryOrganizationRepository implements OrganizationRepositoryInterface
         return $this->organizationsBySid[$sid] ?? null;
     }
 
-    public function getOrganizationsOfFounder(UserId $founderId): array
+    public function getOrganizationsOfFounder(MemberId $founderId): array
     {
         return array_filter($this->organizations, static function (Organization $orga) use ($founderId): bool {
             return $orga->getFounderId()->equals($founderId);
@@ -35,5 +36,12 @@ class InMemoryOrganizationRepository implements OrganizationRepositoryInterface
     {
         $this->organizations[(string) $orga->getId()] = $orga;
         $this->organizationsBySid[$orga->getSid()] = $orga;
+    }
+
+    public function getOrganizationWithoutMembersByMember(MemberId $memberId): array
+    {
+        return array_values(array_filter($this->organizations, static function (Organization $orga) use ($memberId): bool {
+            return $orga->isMemberOf($memberId);
+        }));
     }
 }

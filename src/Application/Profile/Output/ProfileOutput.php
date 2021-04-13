@@ -21,10 +21,6 @@ class ProfileOutput
          */
         public ?string $nickname,
         /**
-         * @OpenApi\Property(type="string", format="url", nullable=true, description="The user's picture given by Auth0.", example="https://s.gravatar.com/avatar/example.jpg")
-         */
-        public ?string $pictureUrl,
-        /**
          * @OpenApi\Property(type="boolean", description="true if the user wants to appear in the supporters list.")
          */
         public bool $supporterVisible,

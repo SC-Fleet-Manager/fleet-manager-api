@@ -3,8 +3,8 @@
 namespace App\Application\Repository;
 
 use App\Domain\Exception\ConflictVersionException;
+use App\Domain\MemberId;
 use App\Domain\OrgaId;
-use App\Domain\UserId;
 use App\Entity\Organization;
 
 interface OrganizationRepositoryInterface
@@ -21,5 +21,10 @@ interface OrganizationRepositoryInterface
     /**
      * @return Organization[]
      */
-    public function getOrganizationsOfFounder(UserId $founderId): array;
+    public function getOrganizationsOfFounder(MemberId $founderId): array;
+
+    /**
+     * @return Organization[]
+     */
+    public function getOrganizationWithoutMembersByMember(MemberId $memberId): array;
 }

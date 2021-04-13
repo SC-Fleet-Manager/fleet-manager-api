@@ -2,9 +2,7 @@
 
 namespace App\Tests\End2End\Controller\Profile;
 
-use App\Infrastructure\Security\FakeAuth0Service;
 use App\Tests\End2End\WebTestCase;
-use Auth0\JWTAuthBundle\Security\Auth0Service;
 
 class DeleteAccountControllerTest extends WebTestCase
 {
@@ -25,7 +23,7 @@ class DeleteAccountControllerTest extends WebTestCase
 
         static::$client->xmlHttpRequest('POST', '/api/profile/delete-account', [], [], [
             'CONTENT_TYPE' => 'application/json',
-            'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
+            'HTTP_AUTHORIZATION' => 'Bearer ' . static::generateToken('Ioni'),
         ]);
 
         static::assertSame(204, static::$client->getResponse()->getStatusCode());

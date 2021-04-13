@@ -8,7 +8,6 @@ use App\Entity\User;
 use Auth0\JWTAuthBundle\Security\Auth0Service;
 use Auth0\JWTAuthBundle\Security\User\JwtUserProvider;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Cache\CacheItemInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
@@ -17,11 +16,12 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use function Symfony\Component\String\u;
 use Symfony\Component\Uid\Ulid;
 use Symfony\Contracts\Cache\CacheInterface;
-use Webmozart\Assert\Assert;
 
 class UserEntityJwtProvider extends JwtUserProvider implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
+
+    private const RULE_DOMAIN = 'https://api.fleet-manager.space';
 
     public function __construct(
         private UserRepositoryInterface $userRepository,
@@ -43,23 +43,7 @@ class UserEntityJwtProvider extends JwtUserProvider implements LoggerAwareInterf
             $user = $this->loadUserByUsername($jwt->sub);
         }
 
-        $profile = $this->cache->get('app.security.user_provider.profile.'.$user->getId(), function (CacheItemInterface $item) use ($user, $jwt) {
-            try {
-                $profile = $this->auth0Service->getUserProfileByA0UID($jwt->token);
-                Assert::notNull($profile, 'UserProfile from Auth0 should not be null.');
-            } catch (\Throwable $e) {
-                $this->logger->warning('Unable to retrieve Auth0 profile : '.$e->getMessage(), ['exception' => $e, 'username' => $user->getUsername()]);
-                $item->expiresAfter(30);
-
-                return null;
-            }
-
-            $item->expiresAfter(86400);
-
-            return $profile;
-        }, 0 /* no early expiration */);
-
-        $this->injectProfile($user, $profile);
+        $this->injectProfile($user, $jwt);
 
         return $user;
     }
@@ -79,7 +63,8 @@ class UserEntityJwtProvider extends JwtUserProvider implements LoggerAwareInterf
 
         $this->logger->info('Try to create supporter {username}', ['username' => $username]);
 
-        $profile = $this->auth0Service->getUserProfileByA0UID($jwt->token);
+        $email = $jwt->{self::RULE_DOMAIN.'/email'} ?? null;
+        $emailVerified = $jwt->{self::RULE_DOMAIN.'/email_verified'} ?? false;
 
         if (!file_exists($this->supportersFilepath) || !is_readable($this->supportersFilepath)) {
             throw new AccessDeniedException(sprintf('Supporters file %s does not exist or is not readable.', $this->supportersFilepath));
@@ -95,14 +80,14 @@ class UserEntityJwtProvider extends JwtUserProvider implements LoggerAwareInterf
                 $nickname = $supporterData['nickname'] ?? null;
                 continue;
             }
-            if ($profile['email_verified'] && $supporterData['email'] === $profile['email']) {
+            if ($emailVerified && $supporterData['email'] === $email) {
                 $totalAmount += $supporterData['amount'];
                 $nickname = $supporterData['nickname'] ?? null;
                 continue;
             }
         }
         if ($totalAmount === 0) {
-            $this->logger->error('The user {username} was not a supporters and cannot access to beta.', ['username' => $username, 'email' => $profile['email']]);
+            $this->logger->error('The user {username} was not a supporters and cannot access to beta.', ['username' => $username, 'email' => $email]);
             throw new AccessDeniedException(sprintf('The user %s was not a supporters and cannot access to beta.', $username));
         }
 
@@ -112,9 +97,8 @@ class UserEntityJwtProvider extends JwtUserProvider implements LoggerAwareInterf
         $this->logger->info('Supporter {username} created.', ['username' => $username]);
 
         $this->userRepository->save($user);
-        $user = $this->userRepository->findByAuth0Username($username); // refresh
 
-        return $user;
+        return $this->userRepository->findByAuth0Username($username); // refresh
     }
 
     public function loadUserByUsername($username): UserInterface
@@ -145,20 +129,21 @@ class UserEntityJwtProvider extends JwtUserProvider implements LoggerAwareInterf
         return User::class === $class;
     }
 
-    private function injectProfile(User $user, array $profile): void
+    private function injectProfile(User $user, \stdClass $jwt): void
     {
-        $nickname = $profile['name'] ?? $profile['nickname'] ?? null;
-        if ($nickname !== null && ($profile['email'] ?? null) === $nickname) {
+        $email = $jwt->{self::RULE_DOMAIN.'/email'} ?? null;
+        $nickname = $jwt->{self::RULE_DOMAIN.'/nickname'} ?? null;
+        $name = $jwt->{self::RULE_DOMAIN.'/name'} ?? null;
+
+        $nickname = $name ?? $nickname ?? null;
+        if ($nickname !== null && $email === $nickname) {
             $nickname = explode('@', $nickname)[0];
         }
-        $discordId = isset($profile['sub']) ? u($profile['sub']) : u();
-        $discordId = !$discordId->startsWith('oauth2|discord|') ? null : $discordId->trimStart('oauth2|discord|');
+        $discordId = !u($jwt->sub)->startsWith('oauth2|discord|') ? null : u($jwt->sub)->trimStart('oauth2|discord|');
 
         $user->provideProfile(
             nickname: $nickname,
-            pictureUrl: $profile['picture'] ?? null,
-            locale: $profile['locale'] ?? null,
-            email: $profile['email'] ?? null,
+            email: $email,
             discordId: $discordId,
         );
     }

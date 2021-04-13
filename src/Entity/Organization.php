@@ -2,15 +2,18 @@
 
 namespace App\Entity;
 
+use App\Domain\MemberId;
 use App\Domain\OrgaId;
 use App\Domain\UserId;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Ulid;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="organizations", indexes={
-*    @ORM\Index(name="founder_idx", columns={"founder_id"})
+ *    @ORM\Index(name="founder_idx", columns={"founder_id"})
  * })
  */
 class Organization
@@ -48,7 +51,14 @@ class Organization
      */
     private \DateTimeInterface $updatedAt;
 
-    public function __construct(OrgaId $id, UserId $founderId, string $name, string $sid, ?string $logoUrl, \DateTimeInterface $updatedAt)
+    /**
+     * @var Collection|Membership[]
+     *
+     * @ORM\OneToMany(targetEntity="Membership", mappedBy="organization", cascade="all", fetch="EAGER", orphanRemoval=true)
+     */
+    private Collection $memberships;
+
+    public function __construct(OrgaId $id, MemberId $founderId, string $name, string $sid, ?string $logoUrl, \DateTimeInterface $updatedAt)
     {
         $this->id = $id->getId();
         $this->founderId = $founderId->getId();
@@ -56,6 +66,8 @@ class Organization
         $this->sid = $sid;
         $this->logoUrl = $logoUrl;
         $this->updatedAt = $updatedAt;
+        $this->memberships = new ArrayCollection();
+        $this->addMember($founderId, true, $updatedAt);
     }
 
     public function getId(): OrgaId
@@ -68,8 +80,46 @@ class Organization
         return $this->sid;
     }
 
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getLogoUrl(): ?string
+    {
+        return $this->logoUrl;
+    }
+
     public function getFounderId(): UserId
     {
         return new UserId($this->founderId);
+    }
+
+    public function addMember(MemberId $memberId, bool $joined, \DateTimeInterface $updatedAt): void
+    {
+        $this->memberships->add(new Membership($this, $memberId, $joined));
+        $this->updatedAt = $updatedAt;
+    }
+
+    public function isMemberOf(MemberId $memberId): bool
+    {
+        foreach ($this->memberships as $membership) {
+            if ($membership->getMemberId()->equals($memberId)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function hasJoined(MemberId $memberId): bool
+    {
+        foreach ($this->memberships as $membership) {
+            if ($membership->getMemberId()->equals($memberId)) {
+                return $membership->hasJoined();
+            }
+        }
+
+        return false;
     }
 }
