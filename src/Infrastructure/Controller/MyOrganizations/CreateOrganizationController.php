@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Controller\MyOrganizations;
 
 use App\Application\MyOrganizations\CreateOrganizationService;
+use App\Domain\MemberId;
 use App\Domain\OrgaId;
 use App\Entity\User;
 use App\Infrastructure\Controller\MyOrganizations\Input\CreateOrganizationInput;
@@ -50,7 +51,13 @@ class CreateOrganizationController
         /** @var User $user */
         $user = $this->security->getUser();
 
-        $this->createOrganizationService->handle(new OrgaId(new Ulid()), $user->getId(), $input->name, $input->sid, $input->logoUrl);
+        $this->createOrganizationService->handle(
+            new OrgaId(new Ulid()),
+            MemberId::fromString((string) $user->getId()),
+            $input->name,
+            $input->sid,
+            $input->logoUrl,
+        );
 
         return new Response(null, 204);
     }

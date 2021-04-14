@@ -4,8 +4,8 @@ namespace App\Infrastructure\Repository\Organization;
 
 use App\Application\Repository\OrganizationRepositoryInterface;
 use App\Domain\Exception\ConflictVersionException;
+use App\Domain\MemberId;
 use App\Domain\OrgaId;
-use App\Domain\UserId;
 use App\Entity\Organization;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
@@ -44,8 +44,21 @@ class DoctrineOrganizationRepository extends ServiceEntityRepository implements 
         return $this->findOneBy(['sid' => $sid]);
     }
 
-    public function getOrganizationsOfFounder(UserId $founderId): array
+    public function getOrganizationsOfFounder(MemberId $founderId): array
     {
         return $this->findBy(['founderId' => (string) $founderId]);
+    }
+
+    public function getOrganizationWithoutMembersByMember(MemberId $memberId): array
+    {
+        return $this->_em
+            ->createQuery(<<<DQL
+                SELECT organization, membership FROM App\Entity\Organization organization
+                JOIN organization.memberships membership
+                WHERE membership.memberId = :memberId
+                DQL
+            )
+            ->setParameter('memberId', $memberId)
+            ->getResult();
     }
 }

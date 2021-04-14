@@ -1,2 +1,12 @@
 imports:
     - { resource: '../prod/monolog.*' }
+
+monolog:
+    channels: [ deprecation ]
+    handlers:
+        main:
+            type: stream
+            path: "php://stderr"
+            level: debug
+            formatter: monolog.formatter.json
+            channels: ["!event"]

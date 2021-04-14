@@ -2,9 +2,7 @@
 
 namespace App\Tests\End2End\Controller\Support;
 
-use App\Infrastructure\Security\FakeAuth0Service;
 use App\Tests\End2End\WebTestCase;
-use Auth0\JWTAuthBundle\Security\Auth0Service;
 use Symfony\Component\Notifier\EventListener\NotificationLoggerListener;
 
 class GiveFeedbackControllerTest extends WebTestCase
@@ -20,17 +18,9 @@ class GiveFeedbackControllerTest extends WebTestCase
             SQL
         );
 
-        /** @var FakeAuth0Service $auth0Service */
-        $auth0Service = static::$container->get(Auth0Service::class);
-        $auth0Service->setUserProfile([
-            'sub' => 'oauth2|discord|1234567890',
-            'name' => 'Ioni_nickname',
-            'email' => 'ioni@example.com',
-        ]);
-
         static::$client->xmlHttpRequest('POST', '/api/support/give-feedback', [], [], [
             'CONTENT_TYPE' => 'application/json',
-            'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('oauth2|discord|1234567890'),
+            'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('oauth2|discord|1234567890', nickname: 'Ioni_nickname', email: 'ioni@example.com'),
         ], json_encode([
             'description' => <<<EOT
                 Here my description

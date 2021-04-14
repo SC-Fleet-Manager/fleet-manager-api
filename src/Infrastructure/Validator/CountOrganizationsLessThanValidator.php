@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Validator;
 
 use App\Application\Repository\OrganizationRepositoryInterface;
+use App\Domain\MemberId;
 use App\Entity\User;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Validator\Constraint;
@@ -29,7 +30,7 @@ class CountOrganizationsLessThanValidator extends ConstraintValidator
         $user = $this->security->getUser();
         Assert::notNull($user);
 
-        $orgas = $this->organizationRepository->getOrganizationsOfFounder($user->getId());
+        $orgas = $this->organizationRepository->getOrganizationsOfFounder(MemberId::fromString((string) $user->getId()));
         if (count($orgas) >= $constraint->max) {
             $this->context->buildViolation($constraint->message)->addViolation();
         }
