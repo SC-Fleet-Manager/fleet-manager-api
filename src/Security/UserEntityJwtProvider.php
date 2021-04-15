@@ -87,8 +87,8 @@ class UserEntityJwtProvider extends JwtUserProvider implements LoggerAwareInterf
             }
         }
         if ($totalAmount === 0) {
-            $this->logger->error('The user {username} was not a supporters and cannot access to beta.', ['username' => $username, 'email' => $email]);
-            throw new AccessDeniedException(sprintf('The user %s was not a supporters and cannot access to beta.', $username));
+            $this->logger->notice('The user {username} was not a supporter and cannot access to beta.', ['username' => $username, 'email' => $email]);
+            throw new AccessDeniedException(sprintf('The user %s was not a supporter and cannot access to beta.', $username));
         }
 
         $user = new User(new UserId(new Ulid()), $username, $nickname, new \DateTimeImmutable($supporterData['created_at'] ?? 'now'));

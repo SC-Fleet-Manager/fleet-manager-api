@@ -5,7 +5,6 @@ namespace App\Infrastructure\Repository\Organization;
 use App\Application\Repository\OrganizationRepositoryInterface;
 use App\Domain\MemberId;
 use App\Domain\OrgaId;
-use App\Domain\UserId;
 use App\Entity\Organization;
 
 class InMemoryOrganizationRepository implements OrganizationRepositoryInterface
@@ -38,10 +37,27 @@ class InMemoryOrganizationRepository implements OrganizationRepositoryInterface
         $this->organizationsBySid[$orga->getSid()] = $orga;
     }
 
-    public function getOrganizationWithoutMembersByMember(MemberId $memberId): array
+    public function getOrganizationByMember(MemberId $memberId): array
     {
         return array_values(array_filter($this->organizations, static function (Organization $orga) use ($memberId): bool {
             return $orga->isMemberOf($memberId);
         }));
+    }
+
+    public function getOrganizations(int $itemsPerPage, ?OrgaId $sinceOrgaId = null): array
+    {
+        $counter = 0;
+        $result = [];
+        foreach ($this->organizations as $organization) {
+            if ($counter >= $itemsPerPage) {
+                break;
+            }
+            if ($sinceOrgaId === null || (string) $organization->getId() > (string) $sinceOrgaId) {
+                $result[] = $organization;
+                ++$counter;
+            }
+        }
+
+        return $result;
     }
 }

@@ -25,6 +25,7 @@ monolog:
             handler: mailer
         mailer:
             type: symfony_mailer
+            level: info
             from_email: 'noreply@fleet-manager.space'
             to_email:
                 - '%env(MONOLOG_MAILER_TO_0)%'

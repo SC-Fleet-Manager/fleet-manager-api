@@ -15,15 +15,12 @@ class MyOrganizationsControllerTest extends WebTestCase
                 INSERT INTO users(id, roles, auth0_username, created_at)
                 VALUES ('00000000-0000-0000-0000-000000000001', '["ROLE_USER"]', 'Ioni', '2021-01-01T10:00:00Z');
                 INSERT INTO organizations(id, founder_id, name, sid, logo_url, updated_at)
-                VALUES ('00000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000001', 'An orga 1', 'fcu1', 'https://example.org/logo.png', '2021-01-01T10:00:00Z');
-                INSERT INTO organizations(id, founder_id, name, sid, updated_at)
-                VALUES ('00000000-0000-0000-0000-000000000011', '00000000-0000-0000-0000-000000000002', 'An orga 2', 'fcu2', '2021-01-02T10:00:00Z');
-                INSERT INTO organizations(id, founder_id, name, sid, updated_at)
-                VALUES ('00000000-0000-0000-0000-000000000012', '00000000-0000-0000-0000-000000000003', 'An orga 3', 'fcu3', '2021-01-03T10:00:00Z');
+                VALUES ('00000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000001', 'An orga 1', 'fcu1', 'https://example.org/logo.png', '2021-01-01T10:00:00Z'),
+                       ('00000000-0000-0000-0000-000000000011', '00000000-0000-0000-0000-000000000002', 'An orga 2', 'fcu2', null, '2021-01-02T10:00:00Z'),
+                       ('00000000-0000-0000-0000-000000000012', '00000000-0000-0000-0000-000000000003', 'An orga 3', 'fcu3', null, '2021-01-03T10:00:00Z');
                 INSERT INTO memberships(member_id, organization_id, joined)
-                VALUES ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000010', true);
-                INSERT INTO memberships(member_id, organization_id, joined)
-                VALUES ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000011', false);
+                VALUES ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000010', true),
+                       ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000011', false);
             SQL
         );
 

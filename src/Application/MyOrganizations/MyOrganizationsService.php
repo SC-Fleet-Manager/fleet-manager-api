@@ -17,7 +17,7 @@ class MyOrganizationsService
 
     public function handle(MemberId $memberId): MyOrganizationsOutput
     {
-        $orgas = $this->organizationRepository->getOrganizationWithoutMembersByMember($memberId);
+        $organizations = $this->organizationRepository->getOrganizationByMember($memberId);
 
         return new MyOrganizationsOutput(
             array_map(static function (Organization $organization) use ($memberId): MyOrganizationsItemOutput {
@@ -28,7 +28,7 @@ class MyOrganizationsService
                     $organization->getLogoUrl(),
                     $organization->hasJoined($memberId),
                 );
-            }, $orgas),
+            }, $organizations),
         );
     }
 }

@@ -26,5 +26,10 @@ interface OrganizationRepositoryInterface
     /**
      * @return Organization[]
      */
-    public function getOrganizationWithoutMembersByMember(MemberId $memberId): array;
+    public function getOrganizationByMember(MemberId $memberId): array;
+
+    /**
+     * @return Organization[]
+     */
+    public function getOrganizations(int $itemsPerPage, ?OrgaId $sinceOrgaId = null): array;
 }
