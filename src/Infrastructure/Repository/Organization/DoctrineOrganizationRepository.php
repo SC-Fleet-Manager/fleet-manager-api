@@ -49,7 +49,7 @@ class DoctrineOrganizationRepository extends ServiceEntityRepository implements 
         return $this->findBy(['founderId' => (string) $founderId]);
     }
 
-    public function getOrganizationWithoutMembersByMember(MemberId $memberId): array
+    public function getOrganizationByMember(MemberId $memberId): array
     {
         return $this->_em
             ->createQuery(<<<DQL
@@ -60,5 +60,18 @@ class DoctrineOrganizationRepository extends ServiceEntityRepository implements 
             )
             ->setParameter('memberId', $memberId)
             ->getResult();
+    }
+
+    public function getOrganizations(int $itemsPerPage, ?OrgaId $sinceOrgaId = null): array
+    {
+        $qb = $this->createQueryBuilder('organization')
+            ->addSelect('membership')
+            ->leftJoin('organization.memberships', 'membership');
+        if ($sinceOrgaId !== null) {
+            $qb->andWhere('organization.id > :sinceId')->setParameter('sinceId', (string) $sinceOrgaId);
+        }
+        $qb->setMaxResults($itemsPerPage);
+
+        return $qb->getQuery()->getResult();
     }
 }
