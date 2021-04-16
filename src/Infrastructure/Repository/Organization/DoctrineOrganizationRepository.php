@@ -12,6 +12,7 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
+use function Symfony\Component\String\u;
 
 class DoctrineOrganizationRepository extends ServiceEntityRepository implements OrganizationRepositoryInterface, LoggerAwareInterface
 {
@@ -62,13 +63,24 @@ class DoctrineOrganizationRepository extends ServiceEntityRepository implements 
             ->getResult();
     }
 
-    public function getOrganizations(int $itemsPerPage, ?OrgaId $sinceOrgaId = null): array
+    public function getOrganizations(int $itemsPerPage, ?OrgaId $sinceOrgaId = null, ?string $searchQuery = null): array
     {
-        $qb = $this->createQueryBuilder('organization')
-            ->addSelect('membership')
-            ->leftJoin('organization.memberships', 'membership');
+        $qb = $this->createQueryBuilder('organization');
         if ($sinceOrgaId !== null) {
             $qb->andWhere('organization.id > :sinceId')->setParameter('sinceId', (string) $sinceOrgaId);
+        }
+        if ($searchQuery !== null) {
+            $collator = new \Collator('en');
+            $collator->setStrength(\Collator::PRIMARY); // â == A
+            $collator->setAttribute(\Collator::ALTERNATE_HANDLING, \Collator::SHIFTED); // ignore punctuations
+
+            $qb->andWhere($qb->expr()
+                ->orX(
+                    $qb->expr()->like('organization.normalizedName', ':searchName'),
+                    $qb->expr()->like('organization.sid', ':searchSid'),
+                ))
+                ->setParameter('searchName', '%'.$collator->getSortKey($searchQuery).'%')
+                ->setParameter('searchSid', '%'.u($searchQuery)->upper().'%');
         }
         $qb->setMaxResults($itemsPerPage);
 

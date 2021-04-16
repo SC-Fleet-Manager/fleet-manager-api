@@ -26,7 +26,7 @@ class CreateOrganizationInput implements DenormalizableInterface
      * @OpenApi\Property(type="string", nullable=false, minLength=3, maxLength=15, example="fcu")
      */
     #[NotBlank]
-    #[Length(min: 3, max: 15)]
+    #[Regex(pattern: '~^[a-zA-Z0-9]{3,15}$~', message: 'The SID must contain only 3 to 15 letters (A-Z) and/or digits.')]
     #[UniqueOrganizationSid]
     public ?string $sid = null;
 
@@ -48,7 +48,7 @@ class CreateOrganizationInput implements DenormalizableInterface
         }
         $this->sid = $data['sid'] ?? null;
         if ($this->sid !== null) {
-            $this->sid = u($this->sid)->trim()->lower();
+            $this->sid = u($this->sid)->trim()->upper();
         }
         $this->logoUrl = $data['logoUrl'] ?? null;
     }

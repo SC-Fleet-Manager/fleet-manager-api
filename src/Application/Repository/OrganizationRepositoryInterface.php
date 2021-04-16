@@ -31,5 +31,5 @@ interface OrganizationRepositoryInterface
     /**
      * @return Organization[]
      */
-    public function getOrganizations(int $itemsPerPage, ?OrgaId $sinceOrgaId = null): array;
+    public function getOrganizations(int $itemsPerPage, ?OrgaId $sinceOrgaId = null, ?string $searchQuery = null): array;
 }

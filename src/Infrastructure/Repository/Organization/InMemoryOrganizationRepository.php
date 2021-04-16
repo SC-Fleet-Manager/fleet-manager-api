@@ -6,6 +6,7 @@ use App\Application\Repository\OrganizationRepositoryInterface;
 use App\Domain\MemberId;
 use App\Domain\OrgaId;
 use App\Entity\Organization;
+use function Symfony\Component\String\u;
 
 class InMemoryOrganizationRepository implements OrganizationRepositoryInterface
 {
@@ -44,13 +45,26 @@ class InMemoryOrganizationRepository implements OrganizationRepositoryInterface
         }));
     }
 
-    public function getOrganizations(int $itemsPerPage, ?OrgaId $sinceOrgaId = null): array
+    public function getOrganizations(int $itemsPerPage, ?OrgaId $sinceOrgaId = null, ?string $searchQuery = null): array
     {
+        $collator = new \Collator('en');
+        $collator->setStrength(\Collator::PRIMARY); // â == A
+        $collator->setAttribute(\Collator::ALTERNATE_HANDLING, \Collator::SHIFTED); // ignore punctuations
+
+        $collatorSearchQuery = $searchQuery !== null ? $collator->getSortKey($searchQuery) : null;
+
         $counter = 0;
         $result = [];
         foreach ($this->organizations as $organization) {
             if ($counter >= $itemsPerPage) {
                 break;
+            }
+            if ($collatorSearchQuery !== null) {
+                $collatorOrgaName = $collator->getSortKey($organization->getName());
+                $collatorOrgaSid = $collator->getSortKey($organization->getSid());
+                if (!u($collatorOrgaName)->containsAny($collatorSearchQuery) && !u($collatorOrgaSid)->containsAny($collatorSearchQuery)) {
+                    continue;
+                }
             }
             if ($sinceOrgaId === null || (string) $organization->getId() > (string) $sinceOrgaId) {
                 $result[] = $organization;
