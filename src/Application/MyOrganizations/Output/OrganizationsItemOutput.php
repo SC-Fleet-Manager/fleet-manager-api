@@ -24,10 +24,6 @@ class OrganizationsItemOutput
          * @OpenApi\Property(type="string", format="url", nullable=true, example="https://robertsspaceindustries.com/media/p7en31fqpos97r/logo/FCU-Logo.png")
          */
         public ?string $logoUrl,
-        /**
-         * @OpenApi\Property(type="boolean", nullable=false, description="false if is joigning the orga.")
-         */
-        public bool $joined,
     ) {
     }
 }

@@ -4,9 +4,7 @@ namespace App\Infrastructure\Controller\MyOrganizations;
 
 use App\Application\MyOrganizations\OrganizationsService;
 use App\Application\MyOrganizations\Output\OrganizationsCollectionOutput;
-use App\Domain\MemberId;
 use App\Domain\OrgaId;
-use App\Entity\User;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OpenApi;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -49,9 +47,6 @@ class OrganizationsController
             throw new AccessDeniedException();
         }
 
-        /** @var User $user */
-        $user = $this->security->getUser();
-
         $sinceId = null;
         if ($request->query->has('sinceId')) {
             try {
@@ -62,14 +57,19 @@ class OrganizationsController
         }
 
         $output = $this->organizationsService->handle(
-            MemberId::fromString((string) $user->getId()),
             $this->urlGenerator->generate('organizations', [], UrlGeneratorInterface::ABSOLUTE_URL),
             self::ITEMS_PER_PAGE,
-            $sinceId,
+            sinceOrgaId: $sinceId,
+            searchQuery: $request->query->get('search'),
         );
 
         $json = $this->serializer->serialize($output, 'json');
 
-        return new JsonResponse($json, 200, [], true);
+        $response = (new JsonResponse($json, 200, [], true))->setPublic();
+        if ($sinceId === null) {
+            return $response->setMaxAge(30);
+        }
+
+        return $response->setMaxAge(60);
     }
 }

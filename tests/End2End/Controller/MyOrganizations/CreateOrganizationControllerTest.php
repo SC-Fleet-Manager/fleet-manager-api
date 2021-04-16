@@ -23,7 +23,7 @@ class CreateOrganizationControllerTest extends WebTestCase
         static::assertSame(204, static::$client->getResponse()->getStatusCode());
 
         $result = static::$connection->executeQuery(<<<SQL
-                SELECT * FROM organizations WHERE sid = 'fcu';
+                SELECT * FROM organizations WHERE sid = 'FCU';
             SQL
         )->fetchAssociative();
         static::assertNotFalse($result, 'The orga should be created.');
@@ -41,8 +41,8 @@ class CreateOrganizationControllerTest extends WebTestCase
         static::$connection->executeStatement(<<<SQL
                 INSERT INTO users(id, roles, auth0_username, created_at)
                 VALUES ('00000000-0000-0000-0000-000000000001', '["ROLE_USER"]', 'Some user', '2021-01-01T10:00:00Z');
-                INSERT INTO organizations(id, founder_id, name, sid, updated_at)
-                VALUES ('00000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000001', 'An orga', 'fcu', '2021-01-02T10:00:00Z');
+                INSERT INTO organizations(id, founder_id, name, normalized_name, sid, updated_at)
+                VALUES ('00000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000001', 'An orga', 'An orga', 'FCU', '2021-01-02T10:00:00Z');
             SQL
         );
 
@@ -51,7 +51,7 @@ class CreateOrganizationControllerTest extends WebTestCase
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ], json_encode([
             'name' => 'Force Coloniale Unifiée',
-            'sid' => 'fcu',
+            'sid' => 'FCU',
         ]));
 
         static::assertSame(400, static::$client->getResponse()->getStatusCode());
@@ -70,17 +70,17 @@ class CreateOrganizationControllerTest extends WebTestCase
         static::$connection->executeStatement(<<<SQL
                 INSERT INTO users(id, roles, auth0_username, created_at)
                 VALUES ('00000000-0000-0000-0000-000000000001', '["ROLE_USER"]', 'Ioni', '2021-01-01T10:00:00Z');
-                INSERT INTO organizations(id, founder_id, name, sid, updated_at)
-                VALUES ('00000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000001', 'An orga', 'fcu1', '2021-01-02T10:00:00Z'),
-                       ('00000000-0000-0000-0000-000000000011', '00000000-0000-0000-0000-000000000001', 'An orga', 'fcu2', '2021-01-02T10:00:00Z'),
-                       ('00000000-0000-0000-0000-000000000012', '00000000-0000-0000-0000-000000000001', 'An orga', 'fcu3', '2021-01-02T10:00:00Z'),
-                       ('00000000-0000-0000-0000-000000000013', '00000000-0000-0000-0000-000000000001', 'An orga', 'fcu4', '2021-01-02T10:00:00Z'),
-                       ('00000000-0000-0000-0000-000000000014', '00000000-0000-0000-0000-000000000001', 'An orga', 'fcu5', '2021-01-02T10:00:00Z'),
-                       ('00000000-0000-0000-0000-000000000015', '00000000-0000-0000-0000-000000000001', 'An orga', 'fcu6', '2021-01-02T10:00:00Z'),
-                       ('00000000-0000-0000-0000-000000000016', '00000000-0000-0000-0000-000000000001', 'An orga', 'fcu7', '2021-01-02T10:00:00Z'),
-                       ('00000000-0000-0000-0000-000000000017', '00000000-0000-0000-0000-000000000001', 'An orga', 'fcu8', '2021-01-02T10:00:00Z'),
-                       ('00000000-0000-0000-0000-000000000018', '00000000-0000-0000-0000-000000000001', 'An orga', 'fcu9', '2021-01-02T10:00:00Z'),
-                       ('00000000-0000-0000-0000-000000000019', '00000000-0000-0000-0000-000000000001', 'An orga', 'fcu10', '2021-01-02T10:00:00Z');
+                INSERT INTO organizations(id, founder_id, name, normalized_name, sid, updated_at)
+                VALUES ('00000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000001', 'An orga', 'An orga', 'FCU1', '2021-01-02T10:00:00Z'),
+                       ('00000000-0000-0000-0000-000000000011', '00000000-0000-0000-0000-000000000001', 'An orga', 'An orga', 'FCU2', '2021-01-02T10:00:00Z'),
+                       ('00000000-0000-0000-0000-000000000012', '00000000-0000-0000-0000-000000000001', 'An orga', 'An orga', 'FCU3', '2021-01-02T10:00:00Z'),
+                       ('00000000-0000-0000-0000-000000000013', '00000000-0000-0000-0000-000000000001', 'An orga', 'An orga', 'FCU4', '2021-01-02T10:00:00Z'),
+                       ('00000000-0000-0000-0000-000000000014', '00000000-0000-0000-0000-000000000001', 'An orga', 'An orga', 'FCU5', '2021-01-02T10:00:00Z'),
+                       ('00000000-0000-0000-0000-000000000015', '00000000-0000-0000-0000-000000000001', 'An orga', 'An orga', 'FCU6', '2021-01-02T10:00:00Z'),
+                       ('00000000-0000-0000-0000-000000000016', '00000000-0000-0000-0000-000000000001', 'An orga', 'An orga', 'FCU7', '2021-01-02T10:00:00Z'),
+                       ('00000000-0000-0000-0000-000000000017', '00000000-0000-0000-0000-000000000001', 'An orga', 'An orga', 'FCU8', '2021-01-02T10:00:00Z'),
+                       ('00000000-0000-0000-0000-000000000018', '00000000-0000-0000-0000-000000000001', 'An orga', 'An orga', 'FCU9', '2021-01-02T10:00:00Z'),
+                       ('00000000-0000-0000-0000-000000000019', '00000000-0000-0000-0000-000000000001', 'An orga', 'An orga', 'FCU10', '2021-01-02T10:00:00Z');
             SQL
         );
 
