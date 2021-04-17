@@ -1,0 +1,17 @@
+App\Entity\Organization:
+    orga_fallkrom:
+        __construct:
+            - '<(\App\Domain\OrgaId::fromString("01F3GFMCKRNS8N517E0ZQCETER"))>'
+            - '<(\App\Domain\MemberId::fromString("01F17XPBYW95G5AT8NHFXA28Q0"))>' # ioni
+            - 'Fallkrom'
+            - 'FLK'
+            - 'https://robertsspaceindustries.com/media/o0snhh0rt8ncgr/logo/FLK-Logo.png'
+            - '<(new \DateTimeImmutable("2021-03-01 11:22:33"))>'
+    orga_{10..55}:
+        __construct:
+            - '<(\App\Domain\OrgaId::fromString("01F3GG2FP02EWQVQ37J7W9H4".$current))>'
+            - '<(\App\Domain\MemberId::fromString("01F17XT5MRZ31J1MMXMJQT5VE2"))>' # gardiens
+            - 'An orga <current()>'
+            - 'ORGA<current()>'
+            - 'https://dummyimage.com/400x400/79a3a3/dddff0.png&text=Orga+<current()>'
+            - '<(new \DateTimeImmutable("2021-03-01 11:22:".$current))>'

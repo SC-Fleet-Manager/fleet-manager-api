@@ -37,11 +37,6 @@ class Organization
     private string $name;
 
     /**
-     * @ORM\Column(name="normalized_name", type="string", length=255)
-     */
-    private string $normalizedName;
-
-    /**
      * @ORM\Column(name="sid", type="string", length=15, unique=true)
      */
     private string $sid;
@@ -68,7 +63,6 @@ class Organization
         $this->id = $id->getId();
         $this->founderId = $founderId->getId();
         $this->name = $name;
-        $this->normalizedName = static::normalizeName($name);
         $this->sid = $sid;
         $this->logoUrl = $logoUrl;
         $this->updatedAt = $updatedAt;
@@ -127,14 +121,5 @@ class Organization
         }
 
         return false;
-    }
-
-    private static function normalizeName(string $name): string
-    {
-        $collator = new \Collator('en');
-        $collator->setStrength(\Collator::PRIMARY); // â == A
-        $collator->setAttribute(\Collator::ALTERNATE_HANDLING, \Collator::SHIFTED); // ignore punctuations
-
-        return $collator->getSortKey($name);
     }
 }
