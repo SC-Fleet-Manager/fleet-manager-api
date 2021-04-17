@@ -1,7 +1,7 @@
 App\Entity\User:
     user_ioni:
         __construct:
-            - '<(new \App\Domain\UserId(\Symfony\Component\Uid\Ulid::fromString("01F17XPBYW95G5AT8NHFXA28Q0")))>'
+            - '<(\App\Domain\UserId::fromString("01F17XPBYW95G5AT8NHFXA28Q0"))>'
             - 'Ioni'
             - 'Ioni'
             - '<(new \DateTimeImmutable("2019-04-02 11:22:33"))>'
@@ -10,7 +10,7 @@ App\Entity\User:
         lastPatchNoteReadAt: '<(new \DateTimeImmutable("2019-04-04 11:22:33"))>'
     user_ashuvidz:
         __construct:
-            - '<(new \App\Domain\UserId(\Symfony\Component\Uid\Ulid::fromString("01F17XSXB9KDCJ6SAR1320RH9Q")))>'
+            - '<(\App\Domain\UserId::fromString("01F17XSXB9KDCJ6SAR1320RH9Q"))>'
             - 'Ashuvidz'
             - 'Ashuvidz'
             - '<(new \DateTimeImmutable("2019-04-03 11:22:33"))>'
@@ -19,7 +19,7 @@ App\Entity\User:
         lastPatchNoteReadAt: '<(new \DateTimeImmutable("2019-04-01 11:22:33"))>'
     user_gardiens1:
         __construct:
-            - '<(new \App\Domain\UserId(\Symfony\Component\Uid\Ulid::fromString("01F17XT5MRZ31J1MMXMJQT5VE2")))>'
+            - '<(\App\Domain\UserId::fromString("01F17XT5MRZ31J1MMXMJQT5VE2"))>'
             - 'Gardien1'
             - 'Gardien1'
             - '<(new \DateTimeImmutable("2019-04-05 11:22:33"))>'
@@ -27,14 +27,14 @@ App\Entity\User:
         lastPatchNoteReadAt: null
     user_fundings_1:
         __construct:
-            - '<(new \App\Domain\UserId(\Symfony\Component\Uid\Ulid::fromString("01F17XT9KTD7AY8FE3T2TE87GV")))>'
+            - '<(\App\Domain\UserId::fromString("01F17XT9KTD7AY8FE3T2TE87GV"))>'
             - 'fundings-1'
             - null
             - '<(new \DateTimeImmutable("2019-04-22 11:21:01"))>'
         supporterVisible: false
     user_fundings_{10..30}:
         __construct:
-            - '<(new \App\Domain\UserId(\Symfony\Component\Uid\Ulid::fromString("01F17XTC6VN0V18PW6PHVWZW".$current)))>'
+            - '<(\App\Domain\UserId::fromString("01F17XTC6VN0V18PW6PHVWZW".$current))>'
             - '<current()>_fundings'
             - null
             - '<(new \DateTimeImmutable("2019-04-22 11:22:".$current))>'

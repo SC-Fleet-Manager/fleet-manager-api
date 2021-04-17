@@ -8,6 +8,7 @@ use App\Domain\MemberId;
 use App\Domain\OrgaId;
 use App\Entity\Organization;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Log\LoggerAwareInterface;
@@ -65,25 +66,67 @@ class DoctrineOrganizationRepository extends ServiceEntityRepository implements 
 
     public function getOrganizations(int $itemsPerPage, ?OrgaId $sinceOrgaId = null, ?string $searchQuery = null): array
     {
-        $qb = $this->createQueryBuilder('organization');
-        if ($sinceOrgaId !== null) {
-            $qb->andWhere('organization.id > :sinceId')->setParameter('sinceId', (string) $sinceOrgaId);
-        }
-        if ($searchQuery !== null) {
-            $collator = new \Collator('en');
-            $collator->setStrength(\Collator::PRIMARY); // â == A
-            $collator->setAttribute(\Collator::ALTERNATE_HANDLING, \Collator::SHIFTED); // ignore punctuations
+        if ($searchQuery === null) {
+            $qb = $this->createQueryBuilder('organization')
+                ->orderBy('organization.id', 'ASC')
+                ->setMaxResults($itemsPerPage);
+            if ($sinceOrgaId !== null) {
+                $qb->andWhere('organization.id > :sinceId')->setParameter('sinceId', (string) $sinceOrgaId);
+            }
 
-            $qb->andWhere($qb->expr()
-                ->orX(
-                    $qb->expr()->like('organization.normalizedName', ':searchName'),
-                    $qb->expr()->like('organization.sid', ':searchSid'),
-                ))
-                ->setParameter('searchName', '%'.$collator->getSortKey($searchQuery).'%')
-                ->setParameter('searchSid', '%'.u($searchQuery)->upper().'%');
+            return $qb->getQuery()->getResult();
         }
-        $qb->setMaxResults($itemsPerPage);
 
-        return $qb->getQuery()->getResult();
+        $collator = new \Collator('en');
+        $collator->setStrength(\Collator::PRIMARY); // â == A
+        $collator->setAttribute(\Collator::ALTERNATE_HANDLING, \Collator::SHIFTED); // ignore punctuations
+
+        $search = u($searchQuery);
+
+        $lastOrgaId = $sinceOrgaId;
+        $result = [];
+        $countItems = 0;
+        do {
+            $this->_em->clear();
+
+            $qb = $this->createQueryBuilder('organization')
+                ->orderBy('organization.id', 'ASC')
+                ->setMaxResults(200);
+            if ($lastOrgaId !== null) {
+                $qb->andWhere('organization.id > :sinceId')->setParameter('sinceId', (string) $lastOrgaId);
+            }
+            /** @var Organization[] $orgas */
+            $orgas = $qb
+                ->getQuery()
+                ->getResult(AbstractQuery::HYDRATE_SIMPLEOBJECT);
+            $countOrgas = count($orgas);
+
+            foreach ($orgas as $orga) {
+                if ($countItems >= $itemsPerPage) {
+                    break;
+                }
+                $lastOrgaId = $orga->getId();
+                if (u($orga->getSid())->containsAny($search->upper())) {
+                    $result[] = $orga;
+                    ++$countItems;
+                    continue;
+                }
+                $name = u($orga->getName());
+                $nameLen = $name->length();
+                $searchQueryLen = $search->length();
+
+                for ($i = 0; $i <= $nameLen - $searchQueryLen; ++$i) {
+                    $partName = $name->slice($i, $searchQueryLen);
+                    if ($collator->compare($partName->toString(), $search->toString()) === 0) {
+                        $result[] = $orga;
+                        ++$countItems;
+                        break;
+                    }
+                }
+            }
+            unset($orgas);
+        } while ($countItems < $itemsPerPage && $countOrgas === 200);
+
+        return $result;
     }
 }

@@ -13,13 +13,13 @@ class OrganizationsControllerTest extends WebTestCase
     {
         $orgaValues = '';
         for ($i = 0 + 10; $i < 21 + 10; ++$i) { // more than 20
-            $orgaValues .= "('00000000-0000-0000-0000-0000000000$i', '00000000-0000-0000-0000-000000000002', 'An orga $i', 'An orga $i', 'fcu$i', '2021-01-${i}T10:00:00Z'),";
+            $orgaValues .= "('00000000-0000-0000-0000-0000000000$i', '00000000-0000-0000-0000-000000000002', 'An orga $i', 'fcu$i', '2021-01-${i}T10:00:00Z'),";
         }
         $orgaValues = rtrim($orgaValues, ',');
         static::$connection->executeStatement(<<<SQL
                 INSERT INTO users(id, roles, auth0_username, created_at)
                 VALUES ('00000000-0000-0000-0000-000000000001', '["ROLE_USER"]', 'Ioni', '2021-01-01T10:00:00Z');
-                INSERT INTO organizations(id, founder_id, name, normalized_name, sid, updated_at)
+                INSERT INTO organizations(id, founder_id, name, sid, updated_at)
                 VALUES $orgaValues;
                 INSERT INTO memberships(member_id, organization_id, joined)
                 VALUES ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000010', true),
@@ -58,13 +58,13 @@ class OrganizationsControllerTest extends WebTestCase
     {
         $orgaValues = '';
         for ($i = 0 + 10; $i < 21 + 10; ++$i) { // more than 20
-            $orgaValues .= "('00000000-0000-0000-0000-0000000000$i', '00000000-0000-0000-0000-000000000002', 'An orga $i', 'An orga $i', 'fcu$i', '2021-01-${i}T10:00:00Z'),";
+            $orgaValues .= "('00000000-0000-0000-0000-0000000000$i', '00000000-0000-0000-0000-000000000002', 'An orga $i', 'fcu$i', '2021-01-${i}T10:00:00Z'),";
         }
         $orgaValues = rtrim($orgaValues, ',');
         static::$connection->executeStatement(<<<SQL
                 INSERT INTO users(id, roles, auth0_username, created_at)
                 VALUES ('00000000-0000-0000-0000-000000000001', '["ROLE_USER"]', 'Ioni', '2021-01-01T10:00:00Z');
-                INSERT INTO organizations(id, founder_id, name, normalized_name, sid, updated_at)
+                INSERT INTO organizations(id, founder_id, name, sid, updated_at)
                 VALUES $orgaValues;
                 INSERT INTO memberships(member_id, organization_id, joined)
                 VALUES ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000010', true),
@@ -95,25 +95,17 @@ class OrganizationsControllerTest extends WebTestCase
      */
     public function it_should_return_a_filtered_list_of_orgas_with_search_query(): void
     {
-        $collator = new \Collator('en');
-        $collator->setStrength(\Collator::PRIMARY); // â == A
-        $collator->setAttribute(\Collator::ALTERNATE_HANDLING, \Collator::SHIFTED); // ignore punctuations
-
-        $normName1 = $collator->getSortKey('Les bons gÄrdîEns');
-        $normName2 = $collator->getSortKey('Les videurs');
-        $normName3 = $collator->getSortKey('Les douteux');
-
         static::$connection->executeStatement(<<<SQL
                 INSERT INTO users(id, roles, auth0_username, created_at)
                 VALUES ('00000000-0000-0000-0000-000000000001', '["ROLE_USER"]', 'Ioni', '2021-01-01T10:00:00Z');
-                INSERT INTO organizations(id, founder_id, name, normalized_name, sid, updated_at)
-                VALUES ('00000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000002', 'Les bons gÄrdîEns', '$normName1', 'LESBONS', '2021-01-01T10:00:00Z'),
-                       ('00000000-0000-0000-0000-000000000011', '00000000-0000-0000-0000-000000000003', 'Les videurs', '$normName2', 'VIDEURS', '2021-01-02T10:00:00Z'),
-                       ('00000000-0000-0000-0000-000000000012', '00000000-0000-0000-0000-000000000004', 'Les douteux', '$normName3', 'GARDIENSDOUTEU', '2021-01-03T10:00:00Z');
+                INSERT INTO organizations(id, founder_id, name, sid, updated_at)
+                VALUES ('00000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000002', 'Les bons gÄrdîEnß!', 'LESBONS', '2021-01-01T10:00:00Z'),
+                       ('00000000-0000-0000-0000-000000000011', '00000000-0000-0000-0000-000000000003', 'Les videurs', 'VIDEURS', '2021-01-02T10:00:00Z'),
+                       ('00000000-0000-0000-0000-000000000012', '00000000-0000-0000-0000-000000000004', 'Les douteux', 'GARDIENSSDOUTE', '2021-01-03T10:00:00Z');
             SQL
         );
 
-        static::$client->xmlHttpRequest('GET', '/api/organizations?search=Gardiens', [], [], [
+        static::$client->xmlHttpRequest('GET', '/api/organizations?search=Gardienss', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ]);
@@ -126,14 +118,14 @@ class OrganizationsControllerTest extends WebTestCase
             'organizations' => [
                 [
                     'id' => '00000000-0000-0000-0000-000000000010',
-                    'name' => 'Les bons gÄrdîEns',
+                    'name' => 'Les bons gÄrdîEnß!',
                     'sid' => 'LESBONS',
                     'logoUrl' => null,
                 ],
                 [
                     'id' => '00000000-0000-0000-0000-000000000012',
                     'name' => 'Les douteux',
-                    'sid' => 'GARDIENSDOUTEU',
+                    'sid' => 'GARDIENSSDOUTE',
                     'logoUrl' => null,
                 ],
             ],

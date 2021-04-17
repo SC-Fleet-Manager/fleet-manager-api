@@ -37,6 +37,12 @@ class OrganizationsController
      *     schema=@OpenApi\Property(type="string", format="uid"),
      *     example="00000000-0000-0000-0000-000000000001"
      * )
+     * @OpenApi\Parameter(
+     *     in="path",
+     *     name="search",
+     *     schema=@OpenApi\Property(type="string"),
+     *     example="Some orga name"
+     * )
      * @OpenApi\Response(response=200, description="Ok.", @Model(type=OrganizationsCollectionOutput::class))
      */
     #[Route('/api/organizations', name: 'organizations', methods: ['GET'])]

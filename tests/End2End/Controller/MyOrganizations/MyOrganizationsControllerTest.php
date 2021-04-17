@@ -14,10 +14,10 @@ class MyOrganizationsControllerTest extends WebTestCase
         static::$connection->executeStatement(<<<SQL
                 INSERT INTO users(id, roles, auth0_username, created_at)
                 VALUES ('00000000-0000-0000-0000-000000000001', '["ROLE_USER"]', 'Ioni', '2021-01-01T10:00:00Z');
-                INSERT INTO organizations(id, founder_id, name, normalized_name, sid, logo_url, updated_at)
-                VALUES ('00000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000001', 'An orga 1', 'An orga 1', 'FCU1', 'https://example.org/logo.png', '2021-01-01T10:00:00Z'),
-                       ('00000000-0000-0000-0000-000000000011', '00000000-0000-0000-0000-000000000002', 'An orga 2', 'An orga 2', 'FCU2', null, '2021-01-02T10:00:00Z'),
-                       ('00000000-0000-0000-0000-000000000012', '00000000-0000-0000-0000-000000000003', 'An orga 3', 'An orga 3', 'FCU3', null, '2021-01-03T10:00:00Z');
+                INSERT INTO organizations(id, founder_id, name, sid, logo_url, updated_at)
+                VALUES ('00000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000001', 'An orga 1', 'FCU1', 'https://example.org/logo.png', '2021-01-01T10:00:00Z'),
+                       ('00000000-0000-0000-0000-000000000011', '00000000-0000-0000-0000-000000000002', 'An orga 2', 'FCU2', null, '2021-01-02T10:00:00Z'),
+                       ('00000000-0000-0000-0000-000000000012', '00000000-0000-0000-0000-000000000003', 'An orga 3', 'FCU3', null, '2021-01-03T10:00:00Z');
                 INSERT INTO memberships(member_id, organization_id, joined)
                 VALUES ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000010', true),
                        ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000011', false);
