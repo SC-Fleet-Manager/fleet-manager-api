@@ -101,6 +101,17 @@ class Organization
         $this->updatedAt = $updatedAt;
     }
 
+    public function unjoinMember(MemberId $memberId, \DateTimeInterface $updatedAt): void
+    {
+        foreach ($this->memberships as $key => $membership) {
+            if ($membership->getMemberId()->equals($memberId)) {
+                $this->memberships->remove($key);
+                break;
+            }
+        }
+        $this->updatedAt = $updatedAt;
+    }
+
     public function isMemberOf(MemberId $memberId): bool
     {
         foreach ($this->memberships as $membership) {

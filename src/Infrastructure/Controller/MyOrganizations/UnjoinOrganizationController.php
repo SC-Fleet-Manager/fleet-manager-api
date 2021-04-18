@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Controller\MyOrganizations;
 
-use App\Application\MyOrganizations\JoinOrganizationService;
+use App\Application\MyOrganizations\UnjoinOrganizationService;
 use App\Domain\MemberId;
 use App\Domain\OrgaId;
 use App\Entity\User;
@@ -13,22 +13,23 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Security;
 
-class JoinOrganizationController
+class UnjoinOrganizationController
 {
     public function __construct(
-        private JoinOrganizationService $joinOrganizationService,
+        private UnjoinOrganizationService $unjoinOrganizationService,
         private Security $security,
     ) {
     }
 
     /**
      * @OpenApi\Tag(name="MyOrganizations")
-     * @OpenApi\Response(response=204, description="Apply the logged user to an organization.")
+     * @OpenApi\Response(response=204, description="Remove the apply of logged user from an organization.")
      * @OpenApi\Response(response=400, description="The organization does not exist.")
-     * @OpenApi\Response(response=400, description="Already member of this orga.")
+     * @OpenApi\Response(response=400, description="Not member of the organization.")
+     * @OpenApi\Response(response=400, description="Has fully joined the organization.")
      */
-    #[Route('/api/organizations/{orgaId}/join',
-        name: 'organizations_join',
+    #[Route('/api/organizations/{orgaId}/unjoin',
+        name: 'organizations_unjoin',
         requirements: ['orgaId' => OrgaId::PATTERN],
         methods: ['POST'],
     )]
@@ -43,7 +44,7 @@ class JoinOrganizationController
         /** @var User $user */
         $user = $this->security->getUser();
 
-        $this->joinOrganizationService->handle(
+        $this->unjoinOrganizationService->handle(
             OrgaId::fromString($orgaId),
             MemberId::fromString((string) $user->getId()),
         );
