@@ -4,6 +4,7 @@ namespace App\Tests\Acceptance\MyFleet;
 
 use App\Application\MyFleet\UpdateShipService;
 use App\Application\Repository\FleetRepositoryInterface;
+use App\Domain\Event\DeletedFleetShipEvent;
 use App\Domain\Event\UpdatedFleetShipEvent;
 use App\Domain\ShipId;
 use App\Domain\UserId;
@@ -43,9 +44,18 @@ class UpdateShipServiceTest extends KernelTestCase
 
         /** @var InMemoryTransport $transport */
         $transport = static::$container->get('messenger.transport.organizations_sub');
-        static::assertCount(1, $transport->getSent());
-        /** @var UpdatedFleetShipEvent $message */
+        static::assertCount(2, $transport->getSent());
+
+        /** @var DeletedFleetShipEvent $message */
         $message = $transport->getSent()[0]->getMessage();
+        static::assertInstanceOf(DeletedFleetShipEvent::class, $message);
+        static::assertEquals(new DeletedFleetShipEvent(
+            $userId,
+            'Avenger',
+        ), $message);
+
+        /** @var UpdatedFleetShipEvent $message */
+        $message = $transport->getSent()[1]->getMessage();
         static::assertInstanceOf(UpdatedFleetShipEvent::class, $message);
         static::assertEquals(new UpdatedFleetShipEvent(
             $userId,

@@ -47,9 +47,7 @@ services:
         volumes:
             - ./supporters.json:/app/var/supporters.json:ro
         depends_on:
-            redis: ~
-            postgres:
-                condition: service_healthy
+            - redis
         environment:
             APP_ENV: beta
             FUNDING_ORDER_CAPTURE_ADDRESSES: 'fleet-manager@protonmail.com'
@@ -63,9 +61,7 @@ services:
         restart: unless-stopped
         env_file: php.env
         depends_on:
-            redis: ~
-            postgres:
-                condition: service_healthy
+            - redis
         environment:
             APP_ENV: beta
             FUNDING_ORDER_CAPTURE_ADDRESSES: 'fleet-manager@protonmail.com'

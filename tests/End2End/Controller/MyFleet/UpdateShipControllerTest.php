@@ -2,6 +2,7 @@
 
 namespace App\Tests\End2End\Controller\MyFleet;
 
+use App\Domain\Event\DeletedFleetShipEvent;
 use App\Domain\Event\UpdatedFleetShipEvent;
 use App\Tests\End2End\WebTestCase;
 use Symfony\Component\Messenger\Stamp\BusNameStamp;
@@ -49,6 +50,15 @@ class UpdateShipControllerTest extends WebTestCase
             SQL
         )->fetchAll();
         static::assertArraySubset([
+            [
+                'queue_name' => 'organizations_events',
+                'body' => '{"ownerId":"00000000-0000-0000-0000-000000000001","model":"Avenger"}',
+                'headers' => json_encode([
+                    'type' => DeletedFleetShipEvent::class,
+                    'X-Message-Stamp-'.BusNameStamp::class => '[{"busName":"event.bus"}]',
+                    'Content-Type' => 'application/json',
+                ]),
+            ],
             [
                 'queue_name' => 'organizations_events',
                 'body' => '{"ownerId":"00000000-0000-0000-0000-000000000001","model":"Avenger 2","logoUrl":"https:\/\/starcitizen.tools\/avenger.jpg","quantity":5}',
