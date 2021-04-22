@@ -32,6 +32,20 @@ jobs:
                         type=inline
                     tags: 186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-api-php:test-latest
                     load: true # for "docker images"
+            -   name: Build and Push image Supervisor test
+                uses: docker/build-push-action@v2
+                with:
+                    file: docker/Dockerfile
+                    target: build_supervisor_dev
+                    build-args: |
+                        DUMP_ENV=1
+                        ENV=test
+                    cache-from: |
+                        type=registry,ref=186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-api-supervisor:test-latest
+                    cache-to: |
+                        type=inline
+                    tags: 186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-api-supervisor:test-latest
+                    load: true # for "docker images"
             -   name: Build and Push image Apache test
                 uses: docker/build-push-action@v2
                 with:
@@ -47,11 +61,14 @@ jobs:
                 if: ${{ github.ref == 'refs/heads/master' }}
                 run: |
                     docker push 186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-api-php:test-latest
+                    docker push 186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-api-supervisor:test-latest
                     docker push 186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-api-apache:test-latest
             -   name: Launch tests
                 run: |
                     docker-compose -f docker-compose.ci.yml up -d
+                    docker-compose -f docker-compose.ci.yml stop supervisor
                     USER_ID=0 make db-reset-tests
+                    docker-compose -f docker-compose.ci.yml start supervisor
                     USER_ID=0 make -j2 tests
     build_deploy_beta:
         if: ${{ github.ref == 'refs/heads/master' }}
@@ -82,6 +99,20 @@ jobs:
                     cache-to: |
                         type=inline
                     tags: 186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-api-php:beta-latest
+                    push: true
+            -   name: Build and Push image Supervisor beta
+                uses: docker/build-push-action@v2
+                with:
+                    file: docker/Dockerfile
+                    target: build_supervisor
+                    build-args: |
+                        DUMP_ENV=0
+                        ENV=beta
+                    cache-from: |
+                        type=registry,ref=186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-api-supervisor:beta-latest
+                    cache-to: |
+                        type=inline
+                    tags: 186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-api-supervisor:beta-latest
                     push: true
             -   name: Build and Push image Apache beta
                 uses: docker/build-push-action@v2
@@ -136,6 +167,20 @@ jobs:
                     cache-to: |
                         type=inline
                     tags: 186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-api-php:prod-latest,186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-api-php:${{ steps.get_version.outputs.VERSION }}
+                    push: true
+            -   name: Build and Push image Supervisor prod
+                uses: docker/build-push-action@v2
+                with:
+                    file: docker/Dockerfile
+                    target: build_supervisor
+                    build-args: |
+                        DUMP_ENV=0
+                        ENV=prod
+                    cache-from: |
+                        type=registry,ref=186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-api-supervisor:prod-latest
+                    cache-to: |
+                        type=inline
+                    tags: 186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-api-supervisor:prod-latest,186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-api-supervisor:${{ steps.get_version.outputs.VERSION }}
                     push: true
             -   name: Build and Push image Apache prod
                 uses: docker/build-push-action@v2

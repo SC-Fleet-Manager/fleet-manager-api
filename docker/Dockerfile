@@ -90,6 +90,18 @@ USER www-data
 ENTRYPOINT ["docker-app-entrypoint"]
 CMD ["php-fpm"]
 
+###############################
+FROM build_php as build_supervisor
+
+USER root
+RUN apt-get update && apt-get install -y supervisor \
+    && rm -rf /var/lib/apt/lists/* /tmp/*
+COPY docker/supervisor/app.prod.conf /etc/supervisor/conf.d/app.conf
+COPY docker/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
+
+ENTRYPOINT ["docker-app-entrypoint"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
+
 ##############################
 FROM httpd:2.4 as build_apache
 
@@ -139,3 +151,15 @@ RUN composer dump-autoload --optimize --classmap-authoritative; \
     bin/phpunit --version;
 
 USER www-data
+
+###############################
+FROM build_php_dev as build_supervisor_dev
+
+USER root
+RUN apt-get update && apt-get install -y supervisor \
+    && rm -rf /var/lib/apt/lists/* /tmp/*
+COPY docker/supervisor/app.conf /etc/supervisor/conf.d/app.conf
+COPY docker/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
+
+ENTRYPOINT ["docker-app-entrypoint"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]

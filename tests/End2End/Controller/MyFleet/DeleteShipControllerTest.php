@@ -2,7 +2,9 @@
 
 namespace App\Tests\End2End\Controller\MyFleet;
 
+use App\Domain\Event\DeletedFleetShipEvent;
 use App\Tests\End2End\WebTestCase;
+use Symfony\Component\Messenger\Stamp\BusNameStamp;
 
 class DeleteShipControllerTest extends WebTestCase
 {
@@ -33,6 +35,22 @@ class DeleteShipControllerTest extends WebTestCase
             SQL
         )->fetchAssociative();
         static::assertFalse($result, 'The ship should be deleted.');
+
+        $result = static::$connection->executeQuery(<<<SQL
+                SELECT * FROM messenger_messages;
+            SQL
+        )->fetchAll();
+        static::assertArraySubset([
+            [
+                'queue_name' => 'organizations_events',
+                'body' => '{"ownerId":"00000000-0000-0000-0000-000000000001","model":"Avenger"}',
+                'headers' => json_encode([
+                    'type' => DeletedFleetShipEvent::class,
+                    'X-Message-Stamp-'.BusNameStamp::class => '[{"busName":"event.bus"}]',
+                    'Content-Type' => 'application/json',
+                ]),
+            ],
+        ], $result);
     }
 
     /**

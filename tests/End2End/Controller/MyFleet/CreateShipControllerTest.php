@@ -2,7 +2,9 @@
 
 namespace App\Tests\End2End\Controller\MyFleet;
 
+use App\Domain\Event\UpdatedFleetShipEvent;
 use App\Tests\End2End\WebTestCase;
+use Symfony\Component\Messenger\Stamp\BusNameStamp;
 
 class CreateShipControllerTest extends WebTestCase
 {
@@ -42,6 +44,23 @@ class CreateShipControllerTest extends WebTestCase
             'model' => 'Avenger',
             'image_url' => 'https://starcitizen.tools/avenger.jpg',
             'quantity' => 3,
+        ], $result);
+        static::assertNotFalse($result, 'The fleet should be created.');
+
+        $result = static::$connection->executeQuery(<<<SQL
+                SELECT * FROM messenger_messages;
+            SQL
+        )->fetchAll();
+        static::assertArraySubset([
+            [
+                'queue_name' => 'organizations_events',
+                'body' => '{"ownerId":"00000000-0000-0000-0000-000000000001","model":"Avenger","logoUrl":"https:\/\/starcitizen.tools\/avenger.jpg","quantity":3}',
+                'headers' => json_encode([
+                    'type' => UpdatedFleetShipEvent::class,
+                    'X-Message-Stamp-'.BusNameStamp::class => '[{"busName":"event.bus"}]',
+                    'Content-Type' => 'application/json',
+                ]),
+            ],
         ], $result);
     }
 

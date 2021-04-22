@@ -24,8 +24,7 @@ class JoinOrganizationController
     /**
      * @OpenApi\Tag(name="MyOrganizations")
      * @OpenApi\Response(response=204, description="Apply the logged user to an organization.")
-     * @OpenApi\Response(response=400, description="The organization does not exist.")
-     * @OpenApi\Response(response=400, description="Already member of this orga.")
+     * @OpenApi\Response(response=400, description="The organization does not exist. Already member of this orga.")
      */
     #[Route('/api/organizations/{orgaId}/join',
         name: 'organizations_join',

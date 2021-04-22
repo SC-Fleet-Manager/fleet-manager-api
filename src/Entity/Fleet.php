@@ -2,7 +2,8 @@
 
 namespace App\Entity;
 
-use App\Application\Common\Clock;
+use App\Domain\Event\DeletedFleetShipEvent;
+use App\Domain\Event\UpdatedFleetShipEvent;
 use App\Domain\Exception\NotFoundShipException;
 use App\Domain\ShipId;
 use App\Domain\UserId;
@@ -38,11 +39,21 @@ class Fleet
      */
     private \DateTimeImmutable $updatedAt;
 
+    private array $events = [];
+
     public function __construct(UserId $userId, \DateTimeInterface $updatedAt)
     {
         $this->userId = $userId->getId();
         $this->ships = new ArrayCollection();
         $this->updatedAt = \DateTimeImmutable::createFromInterface($updatedAt);
+    }
+
+    public function getAndClearEvents(): array
+    {
+        $events = $this->events;
+        $this->events = [];
+
+        return $events;
     }
 
     public function getUserId(): UserId
@@ -61,8 +72,10 @@ class Fleet
     public function addShip(ShipId $id, string $model, ?string $imageUrl, int $quantity, \DateTimeInterface $updatedAt): void
     {
         Assert::null($this->getShipByModel($model), sprintf('Cannot add ship with same model "%s".', $model));
-        $this->ships[(string) $id] = new Ship($id, $this, $model, $imageUrl, $quantity);
+        $ship = new Ship($id, $this, $model, $imageUrl, $quantity);
+        $this->ships[(string) $id] = $ship;
         $this->updatedAt = \DateTimeImmutable::createFromInterface($updatedAt);
+        $this->events[] = UpdatedFleetShipEvent::createFromShip($this->getUserId(), $ship);
     }
 
     public function getUpdatedAt(): \DateTimeInterface
@@ -84,18 +97,18 @@ class Fleet
         return null;
     }
 
-    private function getShip(ShipId $shipId): ?Ship
+    public function deleteShip(ShipId $shipId, \DateTimeInterface $updatedAt): void
     {
-        return $this->ships[(string) $shipId] ?? null;
-    }
-
-    public function deleteShip(ShipId $shipId, Clock $clock): void
-    {
+        $ship = $this->getShip($shipId);
+        if ($ship === null) {
+            return;
+        }
         $this->ships->remove((string) $shipId);
-        $this->updatedAt = $clock->now();
+        $this->events[] = DeletedFleetShipEvent::createFromShip($this->getUserId(), $ship);
+        $this->updatedAt = $updatedAt;
     }
 
-    public function updateShip(ShipId $shipId, string $model, ?string $imageUrl, int $quantity, Clock $clock): void
+    public function updateShip(ShipId $shipId, string $model, ?string $imageUrl, int $quantity, \DateTimeInterface $updatedAt): void
     {
         $ship = $this->getShip($shipId);
         if ($ship === null) {
@@ -104,6 +117,12 @@ class Fleet
 
         $ship->update($model, $imageUrl, $quantity);
 
-        $this->updatedAt = $clock->now();
+        $this->events[] = UpdatedFleetShipEvent::createFromShip($this->getUserId(), $ship);
+        $this->updatedAt = $updatedAt;
+    }
+
+    private function getShip(ShipId $shipId): ?Ship
+    {
+        return $this->ships[(string) $shipId] ?? null;
     }
 }

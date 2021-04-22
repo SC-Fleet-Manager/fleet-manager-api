@@ -38,7 +38,7 @@ class InMemoryOrganizationRepository implements OrganizationRepositoryInterface
         $this->organizationsBySid[$orga->getSid()] = $orga;
     }
 
-    public function getOrganizationByMember(MemberId $memberId): array
+    public function getOrganizationsByMember(MemberId $memberId): array
     {
         return array_values(array_filter($this->organizations, static function (Organization $orga) use ($memberId): bool {
             return $orga->isMemberOf($memberId);

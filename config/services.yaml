@@ -76,6 +76,9 @@ services:
     App\Application\Repository\PatchNoteRepositoryInterface: '@App\Infrastructure\Repository\PatchNote\DoctrinePatchNoteRepository'
     App\Application\Repository\FleetRepositoryInterface: '@App\Infrastructure\Repository\Fleet\DoctrineFleetRepository'
     App\Application\Repository\OrganizationRepositoryInterface: '@App\Infrastructure\Repository\Organization\DoctrineOrganizationRepository'
+    App\Application\Repository\OrganizationFleetRepositoryInterface: '@App\Infrastructure\Repository\Organization\DoctrineOrganizationFleetRepository'
+
+    App\Application\Provider\UserFleetProviderInterface: '@App\Infrastructure\Provider\Organizations\DirectCallUserFleetProvider'
 
     App\Application\Common\Clock: '@App\Infrastructure\Common\SystemClock'
 

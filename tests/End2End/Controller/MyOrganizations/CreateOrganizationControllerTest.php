@@ -11,6 +11,17 @@ class CreateOrganizationControllerTest extends WebTestCase
      */
     public function it_should_create_an_orga_for_logged_user(): void
     {
+        static::$connection->executeStatement(<<<SQL
+                INSERT INTO users(id, roles, auth0_username, created_at)
+                VALUES ('00000000-0000-0000-0000-000000000001', '["ROLE_USER"]', 'Ioni', '2021-01-01T10:00:00Z');
+                INSERT INTO fleets(user_id, updated_at)
+                VALUES ('00000000-0000-0000-0000-000000000001', '2021-01-02T10:00:00Z');
+                INSERT INTO ships(id, fleet_id, model, image_url, quantity)
+                VALUES ('00000000-0000-0000-0000-000000000020', '00000000-0000-0000-0000-000000000001', 'Avenger', null, 2),
+                       ('00000000-0000-0000-0000-000000000021', '00000000-0000-0000-0000-000000000001', 'Mercury Star Runner', 'https://example.com/mercury.jpg', 10);
+            SQL
+        );
+
         static::$client->xmlHttpRequest('POST', '/api/organizations/create', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
@@ -31,6 +42,14 @@ class CreateOrganizationControllerTest extends WebTestCase
             'name' => 'Force Coloniale Unifiée',
             'logo_url' => 'https://robertsspaceindustries.com/avenger.jpg',
         ], $result);
+
+        $result = static::$connection->executeQuery(<<<SQL
+                SELECT os.*, osm.quantity as member_quantity FROM organization_ships os LEFT JOIN organization_ship_members osm ON osm.organization_ship_id = os.id
+                WHERE model = 'Avenger' and member_id = '00000000-0000-0000-0000-000000000001';
+            SQL
+        )->fetchAssociative();
+        static::assertSame(2, $result['quantity']);
+        static::assertSame(2, $result['member_quantity']);
     }
 
     /**

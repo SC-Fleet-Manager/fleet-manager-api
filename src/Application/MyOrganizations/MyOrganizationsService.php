@@ -17,7 +17,7 @@ class MyOrganizationsService
 
     public function handle(MemberId $memberId): MyOrganizationsOutput
     {
-        $organizations = $this->organizationRepository->getOrganizationByMember($memberId);
+        $organizations = $this->organizationRepository->getOrganizationsByMember($memberId);
 
         return new MyOrganizationsOutput(
             array_map(static function (Organization $organization) use ($memberId): MyOrganizationsItemOutput {

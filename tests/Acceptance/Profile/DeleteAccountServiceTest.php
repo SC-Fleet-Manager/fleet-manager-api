@@ -33,7 +33,7 @@ class DeleteAccountServiceTest extends KernelTestCase
         static::assertNull($user, 'The user should be deleted.');
 
         /** @var InMemoryTransport $transport */
-        $transport = static::$container->get('messenger.transport.sync');
+        $transport = static::$container->get('messenger.transport.my_fleet_internal');
         static::assertCount(1, $transport->getSent());
         /** @var DeletedUser $message */
         $message = $transport->getSent()[0]->getMessage();

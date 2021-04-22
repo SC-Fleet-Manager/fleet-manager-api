@@ -3,23 +3,49 @@
 namespace App\Application\MyOrganizations;
 
 use App\Application\Common\Clock;
+use App\Application\Provider\UserFleetProviderInterface;
+use App\Application\Repository\OrganizationFleetRepositoryInterface;
 use App\Application\Repository\OrganizationRepositoryInterface;
 use App\Domain\MemberId;
 use App\Domain\OrgaId;
+use App\Domain\OrganizationShipId;
 use App\Entity\Organization;
+use App\Entity\OrganizationFleet;
+use Symfony\Component\Uid\Ulid;
 
 class CreateOrganizationService
 {
     public function __construct(
         private OrganizationRepositoryInterface $organizationRepository,
+        private OrganizationFleetRepositoryInterface $organizationFleetRepository,
+        private UserFleetProviderInterface $userFleetProvider,
         private Clock $clock,
     ) {
     }
 
     public function handle(OrgaId $orgaId, MemberId $memberId, string $name, string $sid, ?string $logoUrl = null): void
     {
-        $orga = new Organization($orgaId, $memberId, $name, $sid, $logoUrl, $this->clock->now());
+        $orga = $this->organizationRepository->getOrganization($orgaId);
+        if ($orga === null) {
+            $orga = new Organization($orgaId, $memberId, $name, $sid, $logoUrl, $this->clock->now());
+            $this->organizationRepository->save($orga);
+        }
 
-        $this->organizationRepository->save($orga);
+        $memberFleet = $this->userFleetProvider->getUserFleet($memberId);
+
+        $orgaFleet = new OrganizationFleet($orga->getId(), $this->clock->now());
+        foreach ($memberFleet->getShips() as $userShip) {
+            $orgaFleet->createOrUpdateShip(
+                // TODO : use service to generate Ulid
+                new OrganizationShipId(new Ulid()),
+                $memberId,
+                $userShip->getModel(),
+                $userShip->getImageUrl(),
+                $userShip->getQuantity(),
+                $this->clock->now(),
+            );
+        }
+
+        $this->organizationFleetRepository->saveAll([$orgaFleet]);
     }
 }

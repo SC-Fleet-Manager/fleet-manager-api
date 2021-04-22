@@ -2,3 +2,7 @@ framework:
     messenger:
         transports:
             sync: 'in-memory://'
+            async: 'in-memory://'
+            failed: 'in-memory://'
+            organizations_sub: 'in-memory://'
+            my_fleet_internal: 'in-memory://'

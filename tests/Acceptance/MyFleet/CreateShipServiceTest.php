@@ -5,12 +5,14 @@ namespace App\Tests\Acceptance\MyFleet;
 use App\Application\Common\Clock;
 use App\Application\MyFleet\CreateShipService;
 use App\Application\Repository\FleetRepositoryInterface;
+use App\Domain\Event\UpdatedFleetShipEvent;
 use App\Domain\ShipId;
 use App\Domain\UserId;
 use App\Entity\Fleet;
 use App\Infrastructure\Common\FakeClock;
 use App\Infrastructure\Repository\Fleet\InMemoryFleetRepository;
 use App\Tests\Acceptance\KernelTestCase;
+use Symfony\Component\Messenger\Transport\InMemoryTransport;
 
 class CreateShipServiceTest extends KernelTestCase
 {
@@ -38,6 +40,19 @@ class CreateShipServiceTest extends KernelTestCase
         static::assertSame('Avenger', $fleet->getShips()[(string) $shipId]->getModel());
         static::assertSame('https://example.com/picture.jpg', $fleet->getShips()[(string) $shipId]->getImageUrl());
         static::assertSame(1, $fleet->getShips()[(string) $shipId]->getQuantity());
+
+        /** @var InMemoryTransport $transport */
+        $transport = static::$container->get('messenger.transport.organizations_sub');
+        static::assertCount(1, $transport->getSent());
+        /** @var UpdatedFleetShipEvent $message */
+        $message = $transport->getSent()[0]->getMessage();
+        static::assertInstanceOf(UpdatedFleetShipEvent::class, $message);
+        static::assertEquals(new UpdatedFleetShipEvent(
+            $userId,
+            'Avenger',
+            'https://example.com/picture.jpg',
+            1,
+        ), $message);
     }
 
     /**

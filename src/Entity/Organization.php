@@ -133,4 +133,23 @@ class Organization
 
         return false;
     }
+
+    public function isFounder(MemberId $memberId): bool
+    {
+        return $this->founderId->equals($memberId);
+    }
+
+    /**
+     * @return MemberId[]
+     */
+    public function getJoinedMemberIds(): array
+    {
+        $joinedMembers = array_filter($this->memberships->toArray(), static function (Membership $membership): bool {
+            return $membership->hasJoined();
+        });
+
+        return array_map(static function (Membership $membership): MemberId {
+            return $membership->getMemberId();
+        }, $joinedMembers);
+    }
 }

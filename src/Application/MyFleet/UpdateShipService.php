@@ -30,7 +30,7 @@ class UpdateShipService
             throw new NotFoundFleetByUserException($userId);
         }
 
-        $fleet->updateShip($shipId, $name, $imageUrl, $quantity, $this->clock);
+        $fleet->updateShip($shipId, $name, $imageUrl, $quantity, $this->clock->now());
 
         $this->fleetRepository->save($fleet);
     }
