@@ -69,10 +69,12 @@ db-reset:									## recreate the database without data
 	-$(EXEC_CONSOLE_NOTTY) doctrine:database:drop --if-exists --force
 	$(EXEC_CONSOLE_NOTTY) doctrine:database:create
 	$(MAKE) db-migrate
+	$(EXEC_CONSOLE_NOTTY) messenger:setup-transports
 db-reset-tests:									## recreate the database without data for testing
 	-$(EXEC_CONSOLE_NOTTY) --env=test doctrine:database:drop --if-exists --force
 	$(EXEC_CONSOLE_NOTTY) --env=test doctrine:database:create
 	$(EXEC_CONSOLE_NOTTY) --env=test doctrine:migrations:migrate -n
+	$(EXEC_CONSOLE_NOTTY) --env=test messenger:setup-transports
 fixtures:									## executes all fixtures
 	$(EXEC_CONSOLE_NOTTY) hautelook:fixtures:load -n
 

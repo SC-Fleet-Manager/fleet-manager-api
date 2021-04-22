@@ -1,0 +1,11 @@
+POST {{base_url}}/api/my-fleet/create-ship
+Content-Type: application/json
+Authorization: Bearer {{bearer}}
+
+{
+"model": "Avenger Titan",
+"pictureUrl": "https://media.robertsspaceindustries.com/fmhdkmvhi8ify/store_small.jpg",
+"quantity": 1
+}
+
+###

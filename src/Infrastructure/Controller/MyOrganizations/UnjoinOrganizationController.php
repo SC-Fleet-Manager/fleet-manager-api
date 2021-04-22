@@ -24,9 +24,7 @@ class UnjoinOrganizationController
     /**
      * @OpenApi\Tag(name="MyOrganizations")
      * @OpenApi\Response(response=204, description="Remove the apply of logged user from an organization.")
-     * @OpenApi\Response(response=400, description="The organization does not exist.")
-     * @OpenApi\Response(response=400, description="Not member of the organization.")
-     * @OpenApi\Response(response=400, description="Has fully joined the organization.")
+     * @OpenApi\Response(response=400, description="The organization does not exist. Not member of the organization. Has fully joined the organization.")
      */
     #[Route('/api/organizations/{orgaId}/unjoin',
         name: 'organizations_unjoin',

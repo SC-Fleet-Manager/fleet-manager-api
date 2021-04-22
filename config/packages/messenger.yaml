@@ -1,10 +1,29 @@
 framework:
     messenger:
+        serializer:
+            default_serializer: messenger.transport.symfony_serializer
+            symfony_serializer:
+                format: json
+                context: { }
+        default_bus: event.bus
+        buses:
+            event.bus: ~
+        failure_transport: failed
         transports:
-#             async: '%env(MESSENGER_TRANSPORT_DSN)%'
-             sync: 'sync://'
+            failed: '%env(MESSENGER_TRANSPORT_FAILED_DSN)%'
+            organizations_sub:
+                dsn: '%env(MESSENGER_TRANSPORT_ORGANIZATIONS_SUB_DSN)%'
+                retry_strategy:
+                    max_retries: 3
+                    delay: 1000
+                    multiplier: 2
+                    max_delay: 0
+            my_fleet_internal: 'sync://'
+            sync: 'sync://'
 
         routing:
-             'App\Message\Funding\SendOrderCaptureSummaryMail': sync
-             'App\Message\Funding\SendOrderRefundMail': sync
-             'App\Domain\Event\DeletedUser': sync
+            'App\Message\Funding\SendOrderCaptureSummaryMail': sync
+            'App\Message\Funding\SendOrderRefundMail': sync
+            'App\Domain\Event\DeletedUser': my_fleet_internal
+            'App\Domain\Event\UpdatedFleetShipEvent': [ organizations_sub ]
+            'App\Domain\Event\DeletedFleetShipEvent': [ organizations_sub ]

@@ -47,7 +47,25 @@ services:
         volumes:
             - ./supporters.json:/app/var/supporters.json:ro
         depends_on:
-            - redis
+            redis: ~
+            postgres:
+                condition: service_healthy
+        environment:
+            APP_ENV: beta
+            FUNDING_ORDER_CAPTURE_ADDRESSES: 'fleet-manager@protonmail.com'
+            PAYPAL_CHECKOUT_WEBHOOK_ID: '72Y11928S1077440L'
+            PAYPAL_CHECKOUT_MODE: 'sandbox'
+            DEFAULT_URI: 'https://beta.fleet-manager.space'
+            AUTH0_DOMAIN: 'fleet-manager.eu.auth0.com'
+    supervisor:
+        image: 186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-api-supervisor:${APP_VERSION:-beta-latest}
+        hostname: supervisor
+        restart: unless-stopped
+        env_file: php.env
+        depends_on:
+            redis: ~
+            postgres:
+                condition: service_healthy
         environment:
             APP_ENV: beta
             FUNDING_ORDER_CAPTURE_ADDRESSES: 'fleet-manager@protonmail.com'

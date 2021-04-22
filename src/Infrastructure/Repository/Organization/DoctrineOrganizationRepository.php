@@ -51,7 +51,7 @@ class DoctrineOrganizationRepository extends ServiceEntityRepository implements 
         return $this->findBy(['founderId' => (string) $founderId]);
     }
 
-    public function getOrganizationByMember(MemberId $memberId): array
+    public function getOrganizationsByMember(MemberId $memberId): array
     {
         return $this->_em
             ->createQuery(<<<DQL

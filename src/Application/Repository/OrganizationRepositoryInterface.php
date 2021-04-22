@@ -26,7 +26,7 @@ interface OrganizationRepositoryInterface
     /**
      * @return Organization[]
      */
-    public function getOrganizationByMember(MemberId $memberId): array;
+    public function getOrganizationsByMember(MemberId $memberId): array;
 
     /**
      * @return Organization[]

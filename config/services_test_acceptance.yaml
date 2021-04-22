@@ -11,6 +11,9 @@ services:
     App\Application\Repository\PatchNoteRepositoryInterface: '@App\Infrastructure\Repository\PatchNote\InMemoryPatchNoteRepository'
     App\Application\Repository\FleetRepositoryInterface: '@App\Infrastructure\Repository\Fleet\InMemoryFleetRepository'
     App\Application\Repository\OrganizationRepositoryInterface: '@App\Infrastructure\Repository\Organization\InMemoryOrganizationRepository'
+    App\Application\Repository\OrganizationFleetRepositoryInterface: '@App\Infrastructure\Repository\Organization\InMemoryOrganizationFleetRepository'
+
+    App\Application\Provider\UserFleetProviderInterface: '@App\Infrastructure\Provider\Organizations\InMemoryUserFleetProvider'
 
     App\Application\Common\Clock: '@App\Infrastructure\Common\FakeClock'
 
