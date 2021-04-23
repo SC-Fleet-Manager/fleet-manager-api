@@ -115,6 +115,11 @@ class Fleet
             throw new NotFoundShipException($this->getUserId(), $shipId);
         }
 
+        $oldModel = $ship->getModel();
+        if ($oldModel !== $model) {
+            $this->events[] = DeletedFleetShipEvent::createFromShip($this->getUserId(), $ship);
+        }
+
         $ship->update($model, $imageUrl, $quantity);
 
         $this->events[] = UpdatedFleetShipEvent::createFromShip($this->getUserId(), $ship);
