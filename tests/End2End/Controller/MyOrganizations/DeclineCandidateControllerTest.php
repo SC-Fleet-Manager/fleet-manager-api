@@ -25,9 +25,7 @@ class DeclineCandidateControllerTest extends WebTestCase
         static::$client->xmlHttpRequest('POST', '/api/organizations/manage/00000000-0000-0000-0000-000000000010/decline-candidate/00000000-0000-0000-0000-000000000001', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
-        ], json_encode([
-            'candidateId' => '00000000-0000-0000-0000-000000000001',
-        ]));
+        ]);
 
         static::assertSame(204, static::$client->getResponse()->getStatusCode());
 

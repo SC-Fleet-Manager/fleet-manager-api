@@ -119,7 +119,7 @@ class Organization
     public function addMember(MemberId $memberId, bool $joined, \DateTimeInterface $updatedAt): void
     {
         $this->memberships->add(new Membership($this, $memberId, $joined));
-        $this->updatedAt = $updatedAt;
+        $this->updatedAt = \DateTimeImmutable::createFromInterface($updatedAt);
     }
 
     public function unjoinMember(MemberId $memberId, \DateTimeInterface $updatedAt): void
@@ -127,35 +127,29 @@ class Organization
         if ($this->isFounder($memberId)) {
             $this->promoteNewFounder();
         }
+
         foreach ($this->memberships as $key => $membership) {
             if ($membership->getMemberId()->equals($memberId)) {
                 $this->memberships->remove($key);
                 break;
             }
         }
-        $this->updatedAt = $updatedAt;
+        $this->updatedAt = \DateTimeImmutable::createFromInterface($updatedAt);
     }
 
     public function isMemberOf(MemberId $memberId): bool
     {
-        foreach ($this->memberships as $membership) {
-            if ($membership->getMemberId()->equals($memberId)) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->getMembership($memberId) !== null;
     }
 
     public function hasJoined(MemberId $memberId): bool
     {
-        foreach ($this->memberships as $membership) {
-            if ($membership->getMemberId()->equals($memberId)) {
-                return $membership->hasJoined();
-            }
+        $membership = $this->getMembership($memberId);
+        if ($membership === null) {
+            return false;
         }
 
-        return false;
+        return $membership->hasJoined();
     }
 
     public function isFounder(MemberId $memberId): bool
@@ -172,5 +166,26 @@ class Organization
                 break;
             }
         }
+    }
+
+    public function acceptCandidate(MemberId $candidateId, \DateTimeInterface $updatedAt): void
+    {
+        $membership = $this->getMembership($candidateId);
+        if ($membership === null) {
+            return;
+        }
+        $membership->accept();
+        $this->updatedAt = \DateTimeImmutable::createFromInterface($updatedAt);
+    }
+
+    private function getMembership(MemberId $memberId): ?Membership
+    {
+        foreach ($this->memberships as $membership) {
+            if ($membership->getMemberId()->equals($memberId)) {
+                return $membership;
+            }
+        }
+
+        return null;
     }
 }
