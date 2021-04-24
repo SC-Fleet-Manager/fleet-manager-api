@@ -2,44 +2,39 @@
 
 namespace App\Infrastructure\Controller\MyOrganizations;
 
-use App\Application\MyOrganizations\OrganizationCandidatesService;
-use App\Application\MyOrganizations\Output\OrganizationCandidatesOutput;
+use App\Application\MyOrganizations\DeclineCandidateService;
 use App\Domain\MemberId;
 use App\Domain\OrgaId;
 use App\Entity\User;
-use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OpenApi;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Security;
-use Symfony\Component\Serializer\SerializerInterface;
 
-class OrganizationsCandidatesController
+class DeclineCandidateController
 {
     public function __construct(
-        private OrganizationCandidatesService $organizationCandidatesService,
+        private DeclineCandidateService $declineCandidateService,
         private Security $security,
-        private SerializerInterface $serializer,
     ) {
     }
 
     /**
      * @OpenApi\Tag(name="MyOrganizations")
-     * @OpenApi\Get(description="Returns candidates (who applied) of the given organization.")
-     * @OpenApi\Response(response=200, description="Ok.", @Model(type=OrganizationCandidatesOutput::class))
+     * @OpenApi\Response(response=204, description="Decline the apply of given candidate from the given organization.")
      * @OpenApi\Response(response=400, description="The organization does not exist. Logged user is not the founder of the organization.")
      */
-    #[Route('/api/organizations/manage/{orgaId}/candidates',
-        name: 'organizations_manage_candidates',
-        requirements: ['orgaId' => OrgaId::PATTERN],
-        methods: ['GET']
+    #[Route('/api/organizations/manage/{orgaId}/decline-candidate/{candidateId}',
+        name: 'organizations_manage_decline_candidate',
+        requirements: ['orgaId' => OrgaId::PATTERN, 'candidateId' => MemberId::PATTERN],
+        methods: ['POST'],
     )]
     public function __invoke(
         Request $request,
         string $orgaId,
+        string $candidateId,
     ): Response {
         if (!$this->security->isGranted('ROLE_USER')) {
             throw new AccessDeniedException();
@@ -48,13 +43,12 @@ class OrganizationsCandidatesController
         /** @var User $user */
         $user = $this->security->getUser();
 
-        $output = $this->organizationCandidatesService->handle(
+        $this->declineCandidateService->handle(
             OrgaId::fromString($orgaId),
             MemberId::fromString((string) $user->getId()),
+            MemberId::fromString($candidateId),
         );
 
-        $json = $this->serializer->serialize($output, 'json');
-
-        return new JsonResponse($json, 200, [], true);
+        return new Response(null, 204);
     }
 }
