@@ -21,7 +21,7 @@ class Membership
     /**
      * @ORM\Id()
      * @ORM\ManyToOne(targetEntity="Organization", inversedBy="memberships")
-     * @ORM\JoinColumn(name="organization_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="organization_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private Organization $organization;
 

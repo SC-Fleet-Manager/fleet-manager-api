@@ -109,3 +109,11 @@ services:
         tags:
             - { name: 'serializer.normalizer', priority: -800 }
     Symfony\Component\Serializer\Normalizer\CustomNormalizer: '@serializer.normalizer.custom'
+
+    App\Application\MyOrganizations\DeleteAccountHandler:
+        autoconfigure: false
+        tags:
+            - { name: messenger.message_handler, from_transport: organizations_sub }
+    App\Application\MyFleet\DeleteAccountHandler:
+        autoconfigure: false
+        tags: [{ name: messenger.message_handler, from_transport: my_fleet_internal }]

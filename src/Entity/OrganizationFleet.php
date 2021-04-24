@@ -105,10 +105,21 @@ class OrganizationFleet
         $this->updatedAt = \DateTimeImmutable::createFromInterface($updatedAt);
     }
 
+    public function deleteShipsOfMember(MemberId $memberId, \DateTimeInterface $updatedAt): void
+    {
+        foreach ($this->ships as $ship) {
+            $ship->deleteOwner($memberId);
+            if ($ship->hasNoQuantity()) {
+                $this->ships->remove((string) $ship->getId());
+            }
+        }
+        $this->updatedAt = \DateTimeImmutable::createFromInterface($updatedAt);
+    }
+
     private function addShip(OrganizationShipId $id, MemberId $ownerId, string $model, ?string $imageUrl, int $quantity, \DateTimeInterface $updatedAt): void
     {
         Assert::null($this->getShipByModel($model), sprintf('Cannot add ship with same model "%s".', $model));
-        $ship = new OrganizationShip($id, $this, $model, $imageUrl);
+        $ship = new OrganizationShip($id, $this, $model);
         $ship->updateOwner($ownerId, $imageUrl, $quantity);
         $this->ships[(string) $id] = $ship;
         $this->updatedAt = \DateTimeImmutable::createFromInterface($updatedAt);

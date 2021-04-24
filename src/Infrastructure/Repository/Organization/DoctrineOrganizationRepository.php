@@ -13,6 +13,7 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
+use Webmozart\Assert\Assert;
 use function Symfony\Component\String\u;
 
 class DoctrineOrganizationRepository extends ServiceEntityRepository implements OrganizationRepositoryInterface, LoggerAwareInterface
@@ -26,7 +27,7 @@ class DoctrineOrganizationRepository extends ServiceEntityRepository implements 
 
     public function getOrganization(OrgaId $orgaId): ?Organization
     {
-        return $this->findOneBy(['id' => (string) $orgaId]);
+        return $this->findOneBy(['id' => (string)$orgaId]);
     }
 
     public function save(Organization $orga): void
@@ -41,6 +42,40 @@ class DoctrineOrganizationRepository extends ServiceEntityRepository implements 
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public function saveAll(array $organizations): void
+    {
+        foreach ($organizations as $organization) {
+            $this->_em->persist($organization);
+        }
+        try {
+            $this->_em->flush();
+            $this->_em->clear();
+        } catch (OptimisticLockException $e) {
+            $this->logger->warning('conflict version on save organization.', ['exception' => $e]);
+            throw new ConflictVersionException($e->getEntity(), 'Unable to save your organizations. Please, try again.', previous: $e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function deleteAll(array $organizationIds): void
+    {
+        if (empty($organizationIds)) {
+            return;
+        }
+        Assert::allIsInstanceOf($organizationIds, OrgaId::class);
+        $this->_em->createQueryBuilder()
+            ->delete(Organization::class, 'orga')
+            ->where('orga.id IN (:orgaIds)')
+            ->setParameter('orgaIds', $organizationIds)
+            ->getQuery()
+            ->execute();
+    }
+
     public function getOrganizationBySid(string $sid): ?Organization
     {
         return $this->findOneBy(['sid' => $sid]);
@@ -48,7 +83,7 @@ class DoctrineOrganizationRepository extends ServiceEntityRepository implements 
 
     public function getOrganizationsOfFounder(MemberId $founderId): array
     {
-        return $this->findBy(['founderId' => (string) $founderId]);
+        return $this->findBy(['founderId' => (string)$founderId]);
     }
 
     public function getOrganizationsByMember(MemberId $memberId): array
@@ -71,7 +106,7 @@ class DoctrineOrganizationRepository extends ServiceEntityRepository implements 
                 ->orderBy('organization.id', 'ASC')
                 ->setMaxResults($itemsPerPage);
             if ($sinceOrgaId !== null) {
-                $qb->andWhere('organization.id > :sinceId')->setParameter('sinceId', (string) $sinceOrgaId);
+                $qb->andWhere('organization.id > :sinceId')->setParameter('sinceId', (string)$sinceOrgaId);
             }
 
             return $qb->getQuery()->getResult();
@@ -93,7 +128,7 @@ class DoctrineOrganizationRepository extends ServiceEntityRepository implements 
                 ->orderBy('organization.id', 'ASC')
                 ->setMaxResults(200);
             if ($lastOrgaId !== null) {
-                $qb->andWhere('organization.id > :sinceId')->setParameter('sinceId', (string) $lastOrgaId);
+                $qb->andWhere('organization.id > :sinceId')->setParameter('sinceId', (string)$lastOrgaId);
             }
             /** @var Organization[] $orgas */
             $orgas = $qb

@@ -30,16 +30,10 @@ Customize the ports according to your needs, configure your dev reverse-proxy, e
 **Launch the stack (build & up containers)**
 
 ```
-make up
-```
-
-**Prepare the database (create db & apply migrations & add fixtures)**
-```
-make db-reset fixtures
+make install
 ```
 
 **Launch all tests**
 ```
-make db-reset-tests
-make tests
+make -j8 tests
 ```

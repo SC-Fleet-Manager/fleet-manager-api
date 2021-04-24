@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use App\Domain\MemberId;
 use App\Domain\OrgaId;
-use App\Domain\UserId;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -90,9 +89,14 @@ class Organization
         return $this->logoUrl;
     }
 
-    public function getFounderId(): UserId
+    public function getFounderId(): MemberId
     {
-        return new UserId($this->founderId);
+        return new MemberId($this->founderId);
+    }
+
+    public function hasNoMembers(): bool
+    {
+        return $this->memberships->isEmpty();
     }
 
     public function addMember(MemberId $memberId, bool $joined, \DateTimeInterface $updatedAt): void
@@ -103,6 +107,9 @@ class Organization
 
     public function unjoinMember(MemberId $memberId, \DateTimeInterface $updatedAt): void
     {
+        if ($this->isFounder($memberId)) {
+            $this->promoteNewFounder();
+        }
         foreach ($this->memberships as $key => $membership) {
             if ($membership->getMemberId()->equals($memberId)) {
                 $this->memberships->remove($key);
@@ -136,20 +143,17 @@ class Organization
 
     public function isFounder(MemberId $memberId): bool
     {
-        return $this->founderId->equals($memberId);
+        return $this->founderId->equals($memberId->getId());
     }
 
-    /**
-     * @return MemberId[]
-     */
-    public function getJoinedMemberIds(): array
+    private function promoteNewFounder(): void
     {
-        $joinedMembers = array_filter($this->memberships->toArray(), static function (Membership $membership): bool {
-            return $membership->hasJoined();
-        });
-
-        return array_map(static function (Membership $membership): MemberId {
-            return $membership->getMemberId();
-        }, $joinedMembers);
+        $oldFounder = $this->getFounderId();
+        foreach ($this->memberships as $membership) {
+            if (!$this->isFounder($membership->getMemberId()) && !$oldFounder->equals($membership->getMemberId())) {
+                $this->founderId = clone $membership->getMemberId()->getId();
+                break;
+            }
+        }
     }
 }

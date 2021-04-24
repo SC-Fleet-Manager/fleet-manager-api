@@ -4,7 +4,8 @@ namespace App\Tests\Acceptance\Profile;
 
 use App\Application\Profile\DeleteAccountService;
 use App\Application\Repository\UserRepositoryInterface;
-use App\Domain\Event\DeletedUser;
+use App\Domain\Event\DeletedUserEvent;
+use App\Domain\Event\UpdatedFleetShipEvent;
 use App\Domain\UserId;
 use App\Entity\User;
 use App\Infrastructure\Repository\User\InMemoryUserRepository;
@@ -35,9 +36,17 @@ class DeleteAccountServiceTest extends KernelTestCase
         /** @var InMemoryTransport $transport */
         $transport = static::$container->get('messenger.transport.my_fleet_internal');
         static::assertCount(1, $transport->getSent());
-        /** @var DeletedUser $message */
+        /** @var DeletedUserEvent $message */
         $message = $transport->getSent()[0]->getMessage();
-        static::assertInstanceOf(DeletedUser::class, $message);
+        static::assertInstanceOf(DeletedUserEvent::class, $message);
+        static::assertSame('00000000-0000-0000-0000-000000000001', (string) $message->getUserId());
+
+        /** @var InMemoryTransport $transport */
+        $transport = static::$container->get('messenger.transport.organizations_sub');
+        static::assertCount(1, $transport->getSent());
+        /** @var DeletedUserEvent $message */
+        $message = $transport->getSent()[0]->getMessage();
+        static::assertInstanceOf(DeletedUserEvent::class, $message);
         static::assertSame('00000000-0000-0000-0000-000000000001', (string) $message->getUserId());
     }
 }

@@ -10,6 +10,8 @@ interface OrganizationFleetRepositoryInterface
     public function getOrganizationFleet(OrgaId $orgaId): ?OrganizationFleet;
 
     /**
+     * @param OrgaId[] $orgaIds
+     *
      * @return OrganizationFleet[]
      */
     public function getOrganizationFleets(array $orgaIds): array;
@@ -18,4 +20,9 @@ interface OrganizationFleetRepositoryInterface
      * @param OrganizationFleet[] $organizationFleets
      */
     public function saveAll(array $organizationFleets): void;
+
+    /**
+     * @param OrgaId[] $orgaIds
+     */
+    public function deleteAll(array $orgaIds): void;
 }

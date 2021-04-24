@@ -6,6 +6,7 @@ use App\Application\Repository\OrganizationRepositoryInterface;
 use App\Domain\MemberId;
 use App\Domain\OrgaId;
 use App\Entity\Organization;
+use Webmozart\Assert\Assert;
 use function Symfony\Component\String\u;
 
 class InMemoryOrganizationRepository implements OrganizationRepositoryInterface
@@ -73,5 +74,33 @@ class InMemoryOrganizationRepository implements OrganizationRepositoryInterface
         }
 
         return $result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function saveAll(array $organizations): void
+    {
+        foreach ($organizations as $organization) {
+            $this->save($organization);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function deleteAll(array $organizationIds): void
+    {
+        Assert::allIsInstanceOf($organizationIds, OrgaId::class);
+        foreach ($organizationIds as $orgaId) {
+            unset($this->organizations[(string) $orgaId]);
+        }
+        foreach ($this->organizationsBySid as $orgaBySid) {
+            foreach ($organizationIds as $orgaId) {
+                if ($orgaBySid->getId()->equals($orgaId)) {
+                    unset($this->organizationsBySid[$orgaBySid->getSid()]);
+                }
+            }
+        }
     }
 }

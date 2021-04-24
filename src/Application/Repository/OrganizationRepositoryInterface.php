@@ -16,6 +16,16 @@ interface OrganizationRepositoryInterface
      */
     public function save(Organization $orga): void;
 
+    /**
+     * @param Organization[] $organizations
+     */
+    public function saveAll(array $organizations): void;
+
+    /**
+     * @param OrgaId[] $organizationIds
+     */
+    public function deleteAll(array $organizationIds): void;
+
     public function getOrganizationBySid(string $sid): ?Organization;
 
     /**
