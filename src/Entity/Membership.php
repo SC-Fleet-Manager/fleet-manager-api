@@ -46,4 +46,9 @@ class Membership
     {
         return $this->joined;
     }
+
+    public function accept(): void
+    {
+        $this->joined = true;
+    }
 }

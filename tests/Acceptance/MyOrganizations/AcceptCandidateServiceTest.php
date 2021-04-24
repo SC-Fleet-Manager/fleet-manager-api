@@ -2,21 +2,29 @@
 
 namespace App\Tests\Acceptance\MyOrganizations;
 
-use App\Application\MyOrganizations\DeclineCandidateService;
+use App\Application\MyOrganizations\AcceptCandidateService;
+use App\Application\Provider\UserFleetProviderInterface;
+use App\Application\Repository\OrganizationFleetRepositoryInterface;
 use App\Application\Repository\OrganizationRepositoryInterface;
 use App\Domain\Exception\NotFounderOfOrganizationException;
 use App\Domain\MemberId;
 use App\Domain\OrgaId;
+use App\Domain\ShipId;
+use App\Domain\UserFleet;
+use App\Domain\UserId;
+use App\Domain\UserShip;
 use App\Entity\Organization;
+use App\Infrastructure\Provider\Organizations\InMemoryUserFleetProvider;
+use App\Infrastructure\Repository\Organization\InMemoryOrganizationFleetRepository;
 use App\Infrastructure\Repository\Organization\InMemoryOrganizationRepository;
 use App\Tests\Acceptance\KernelTestCase;
 
-class DeclineCandidateServiceTest extends KernelTestCase
+class AcceptCandidateServiceTest extends KernelTestCase
 {
     /**
      * @test
      */
-    public function it_should_decline_candidate_of_an_organization(): void
+    public function it_should_accept_candidate_of_an_organization(): void
     {
         $founderId = MemberId::fromString('00000000-0000-0000-0000-000000000001');
         $memberId = MemberId::fromString('00000000-0000-0000-0000-000000000002');
@@ -34,12 +42,38 @@ class DeclineCandidateServiceTest extends KernelTestCase
         ));
         $orga->addMember($memberId, false, new \DateTimeImmutable('2021-01-02T10:00:00Z'));
 
-        /** @var DeclineCandidateService $service */
-        $service = static::$container->get(DeclineCandidateService::class);
+        /** @var InMemoryUserFleetProvider $userFleetProvider */
+        $userFleetProvider = static::$container->get(UserFleetProviderInterface::class);
+        $userFleetProvider->setUserFleet(new UserFleet(
+            UserId::fromString((string) $memberId),
+            [
+                new UserShip(
+                    ShipId::fromString('00000000-0000-0000-0000-000000000020'),
+                    'Avenger Titan',
+                    'https://example.org/avenger.jpg',
+                    3,
+                ),
+                new UserShip(
+                    ShipId::fromString('00000000-0000-0000-0000-000000000021'),
+                    'Mercury Star Runner',
+                    null,
+                    1,
+                ),
+            ],
+        ));
+
+        /** @var AcceptCandidateService $service */
+        $service = static::$container->get(AcceptCandidateService::class);
         $service->handle($orgaId, $founderId, $memberId);
 
         $orga = $orgaRepository->getOrganization($orgaId);
-        static::assertFalse($orga->isMemberOf($memberId), 'Candidate should not be member of organization anymore.');
+        static::assertTrue($orga->hasJoined($memberId), 'Candidate should have joined the organization.');
+
+        /** @var InMemoryOrganizationFleetRepository $organizationFleetRepository */
+        $organizationFleetRepository = static::$container->get(OrganizationFleetRepositoryInterface::class);
+        $orgaFleet = $organizationFleetRepository->getOrganizationFleet($orgaId);
+        static::assertSame(3, $orgaFleet->getShipByModel('Avenger Titan')->getQuantity());
+        static::assertSame(1, $orgaFleet->getShipByModel('Mercury Star Runner')->getQuantity());
     }
 
     /**
@@ -66,8 +100,8 @@ class DeclineCandidateServiceTest extends KernelTestCase
 
         $this->expectException(NotFounderOfOrganizationException::class);
 
-        /** @var DeclineCandidateService $service */
-        $service = static::$container->get(DeclineCandidateService::class);
+        /** @var AcceptCandidateService $service */
+        $service = static::$container->get(AcceptCandidateService::class);
         $service->handle($orgaId, $memberId, $memberId);
     }
 }
