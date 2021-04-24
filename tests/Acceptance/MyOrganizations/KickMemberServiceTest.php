@@ -2,12 +2,11 @@
 
 namespace App\Tests\Acceptance\MyOrganizations;
 
-use App\Application\MyOrganizations\LeaveOrganizationService;
+use App\Application\MyOrganizations\KickMemberService;
 use App\Application\Repository\OrganizationFleetRepositoryInterface;
 use App\Application\Repository\OrganizationRepositoryInterface;
-use App\Domain\Exception\FounderOfOrganizationException;
+use App\Domain\Exception\NotFounderOfOrganizationException;
 use App\Domain\Exception\NotJoinedOrganizationMemberException;
-use App\Domain\Exception\NotMemberOfOrganizationException;
 use App\Domain\MemberId;
 use App\Domain\OrgaId;
 use App\Domain\OrganizationShipId;
@@ -17,13 +16,14 @@ use App\Infrastructure\Repository\Organization\InMemoryOrganizationFleetReposito
 use App\Infrastructure\Repository\Organization\InMemoryOrganizationRepository;
 use App\Tests\Acceptance\KernelTestCase;
 
-class LeaveOrganizationServiceTest extends KernelTestCase
+class KickMemberServiceTest extends KernelTestCase
 {
     /**
      * @test
      */
-    public function it_should_leave_the_organization_and_delete_the_member_fleet_and_ships_off_the_orga(): void
+    public function it_should_kick_member_off_the_organization_and_delete_its_ships_from_orga(): void
     {
+        $founderId = MemberId::fromString('00000000-0000-0000-0000-000000000002');
         $memberId = MemberId::fromString('00000000-0000-0000-0000-000000000001');
         $orgaId = OrgaId::fromString('00000000-0000-0000-0000-000000000010');
 
@@ -47,9 +47,9 @@ class LeaveOrganizationServiceTest extends KernelTestCase
         $orgaFleet->createOrUpdateShip(OrganizationShipId::fromString('00000000-0000-0000-0000-000000000020'), $memberId, 'Avenger', 'https://example.org/avenger_1.jpg', 3, new \DateTimeImmutable('2021-01-02T10:00:00Z'));
         $orgaFleet->createOrUpdateShip(OrganizationShipId::fromString('00000000-0000-0000-0000-000000000020'), MemberId::fromString('00000000-0000-0000-0000-000000000002'), 'Avenger', null, 2, new \DateTimeImmutable('2021-01-03T10:00:00Z'));
 
-        /** @var LeaveOrganizationService $service */
-        $service = static::$container->get(LeaveOrganizationService::class);
-        $service->handle($orgaId, $memberId);
+        /** @var KickMemberService $service */
+        $service = static::$container->get(KickMemberService::class);
+        $service->handle($orgaId, $founderId, $memberId);
 
         static::assertFalse($orgaRepository->getOrganization($orgaId)->isMemberOf($memberId), 'User should not member anymore.');
 
@@ -62,6 +62,7 @@ class LeaveOrganizationServiceTest extends KernelTestCase
      */
     public function it_should_error_if_member_is_not_fully_joined(): void
     {
+        $founderId = MemberId::fromString('00000000-0000-0000-0000-000000000002');
         $notMemberId = MemberId::fromString('00000000-0000-0000-0000-000000000001');
         $orgaId = OrgaId::fromString('00000000-0000-0000-0000-000000000010');
 
@@ -69,7 +70,7 @@ class LeaveOrganizationServiceTest extends KernelTestCase
         $orgaRepository = static::$container->get(OrganizationRepositoryInterface::class);
         $orgaRepository->save(new Organization(
             $orgaId,
-            MemberId::fromString('00000000-0000-0000-0000-000000000002'),
+            $founderId,
             'My orga',
             'ORG',
             null,
@@ -78,15 +79,15 @@ class LeaveOrganizationServiceTest extends KernelTestCase
 
         $this->expectException(NotJoinedOrganizationMemberException::class);
 
-        /** @var LeaveOrganizationService $service */
-        $service = static::$container->get(LeaveOrganizationService::class);
-        $service->handle($orgaId, $notMemberId);
+        /** @var KickMemberService $service */
+        $service = static::$container->get(KickMemberService::class);
+        $service->handle($orgaId, $founderId, $notMemberId);
     }
 
     /**
      * @test
      */
-    public function it_should_error_if_member_is_founder(): void
+    public function it_should_error_if_logged_user_is_not_founder(): void
     {
         $memberId = MemberId::fromString('00000000-0000-0000-0000-000000000001');
         $orgaId = OrgaId::fromString('00000000-0000-0000-0000-000000000010');
@@ -95,7 +96,7 @@ class LeaveOrganizationServiceTest extends KernelTestCase
         $orgaRepository = static::$container->get(OrganizationRepositoryInterface::class);
         $orgaRepository->save($orga = new Organization(
             $orgaId,
-            $memberId,
+            MemberId::fromString('00000000-0000-0000-0000-000000000002'),
             'My orga',
             'ORG',
             null,
@@ -103,10 +104,10 @@ class LeaveOrganizationServiceTest extends KernelTestCase
         ));
         $orga->addMember($memberId, true, new \DateTimeImmutable('2021-01-02T10:00:00Z'));
 
-        $this->expectException(FounderOfOrganizationException::class);
+        $this->expectException(NotFounderOfOrganizationException::class);
 
-        /** @var LeaveOrganizationService $service */
-        $service = static::$container->get(LeaveOrganizationService::class);
-        $service->handle($orgaId, $memberId);
+        /** @var KickMemberService $service */
+        $service = static::$container->get(KickMemberService::class);
+        $service->handle($orgaId, $memberId, $memberId);
     }
 }
