@@ -116,6 +116,21 @@ class Organization
         return $memberProfileProvider->getProfiles($candidateIds);
     }
 
+    /**
+     * @return MemberProfile[]
+     */
+    public function getJoinedMembers(MemberProfileProviderInterface $memberProfileProvider): array
+    {
+        $candidateIds = [];
+        foreach ($this->memberships as $membership) {
+            if ($membership->hasJoined()) {
+                $candidateIds[] = $membership->getMemberId();
+            }
+        }
+
+        return $memberProfileProvider->getProfiles($candidateIds);
+    }
+
     public function addMember(MemberId $memberId, bool $joined, \DateTimeInterface $updatedAt): void
     {
         $this->memberships->add(new Membership($this, $memberId, $joined));
