@@ -42,10 +42,28 @@ class DoctrineOrganizationFleetRepository extends ServiceEntityRepository implem
      */
     public function saveAll(array $organizationFleets): void
     {
+        Assert::allIsInstanceOf($organizationFleets, OrganizationFleet::class);
         foreach ($organizationFleets as $organizationFleet) {
             $this->_em->persist($organizationFleet);
         }
         $this->_em->flush();
         $this->_em->clear();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function deleteAll(array $orgaIds): void
+    {
+        if (empty($orgaIds)) {
+            return;
+        }
+        Assert::allIsInstanceOf($orgaIds, OrgaId::class);
+        $this->_em->createQueryBuilder()
+            ->delete(OrganizationFleet::class, 'orgaFleet')
+            ->where('orgaFleet.orgaId IN (:orgaIds)')
+            ->setParameter('orgaIds', $orgaIds)
+            ->getQuery()
+            ->execute();
     }
 }

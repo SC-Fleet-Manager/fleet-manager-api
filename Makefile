@@ -38,12 +38,18 @@ server-dump:							## launch the dump server for test env
 ##
 ##Setups
 ##---------------------------------------------------------------------------
-.PHONY: install start stop up down tty tty-root clear clean
-install: up clean						## launch containers and install dependencies
+.PHONY: start stop up down tty tty-root clear
+install:									## run the stack + init fixtures
+	$(MAKE) up
+	$(MAKE) stop c=supervisor
+	$(MAKE) -j2 db-reset db-reset-tests
+	$(MAKE) fixtures
+	$(MAKE) start c=supervisor
+	$(MAKE) ci
 start:										## start stopped containers
-	$(DOCKER_COMPOSE) start
+	$(DOCKER_COMPOSE) start $(c)
 stop:										## stop
-	$(DOCKER_COMPOSE) stop
+	$(DOCKER_COMPOSE) stop $(c)
 up: 										## launch all containers
 	$(DOCKER_COMPOSE) up -d
 down: 										## destroy all containers (without volumes)
@@ -52,12 +58,8 @@ tty: 										## get a shell
 	$(EXEC_PHP) bash
 tty-root:									## get a root shell
 	$(EXEC_PHP_ROOT) bash
-
-clear:										## remove all the cache, the logs, the sessions and the built assets
-	-$(EXEC_PHP_ROOT) rm -rf var/cache/* var/sessions/* var/log/*
-	-$(EXEC_PHP_ROOT) rm -rf .php_cs.cache npm-debug.log yarn-error.log
-clean: clear								## clear and remove dependencies
-	-$(EXEC_PHP_ROOT) rm -rf vendor
+clear:										## remove all the cache and the logs
+	-$(EXEC_PHP_ROOT) rm -rf var/cache/* var/log/* .php_cs.cache
 
 ##
 ##Databases

@@ -5,7 +5,7 @@ namespace App\Tests\Acceptance\Profile;
 use App\Application\Profile\DeleteAccountHandler;
 use App\Application\Repository\Auth0RepositoryInterface;
 use App\Application\Repository\UserRepositoryInterface;
-use App\Domain\Event\DeletedUser;
+use App\Domain\Event\DeletedUserEvent;
 use App\Domain\UserId;
 use App\Entity\User;
 use App\Infrastructure\Repository\User\FakeAuth0Repository;
@@ -26,7 +26,7 @@ class DeleteAccountHandlerTest extends KernelTestCase
         $user = new User($userId, 'Ioni', null, new \DateTimeImmutable('2021-03-20T17:42:00+01:00'));
         $userRepository->setUsers([$user]);
 
-        static::$container->get(DeleteAccountHandler::class)(new DeletedUser($userId, 'Ioni'));
+        static::$container->get(DeleteAccountHandler::class)(new DeletedUserEvent($userId, 'Ioni'));
 
         /** @var FakeAuth0Repository $auth0Repository */
         $auth0Repository = static::$container->get(Auth0RepositoryInterface::class);

@@ -4,7 +4,7 @@ namespace App\Tests\Acceptance\MyFleet;
 
 use App\Application\MyFleet\DeleteAccountHandler;
 use App\Application\Repository\FleetRepositoryInterface;
-use App\Domain\Event\DeletedUser;
+use App\Domain\Event\DeletedUserEvent;
 use App\Domain\ShipId;
 use App\Domain\UserId;
 use App\Entity\Fleet;
@@ -28,7 +28,7 @@ class DeleteAccountHandlerTest extends KernelTestCase
         $fleetRepository = static::$container->get(FleetRepositoryInterface::class);
         $fleetRepository->setFleets([$fleet]);
 
-        static::$container->get(DeleteAccountHandler::class)(new DeletedUser($userId, 'Ioni'));
+        static::$container->get(DeleteAccountHandler::class)(new DeletedUserEvent($userId, 'Ioni'));
 
         $fleet = $fleetRepository->getFleetByUser($userId);
         static::assertNull($fleet, 'The fleet should be deleted.');

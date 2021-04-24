@@ -4,7 +4,7 @@ namespace App\Domain\Event;
 
 use App\Domain\UserId;
 
-class DeletedUser
+class DeletedUserEvent
 {
     public function __construct(
         private UserId $userId,

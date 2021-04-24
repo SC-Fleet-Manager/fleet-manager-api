@@ -24,7 +24,7 @@ class OrganizationShip
 
     /**
      * @ORM\ManyToOne(targetEntity="OrganizationFleet", inversedBy="ships")
-     * @ORM\JoinColumn(name="organization_fleet_id", referencedColumnName="orga_id")
+     * @ORM\JoinColumn(name="organization_fleet_id", referencedColumnName="orga_id", onDelete="CASCADE")
      */
     private OrganizationFleet $fleet;
 

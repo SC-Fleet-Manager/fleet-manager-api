@@ -39,7 +39,7 @@ class OrganizationsItemControllerTest extends WebTestCase
             'name' => 'An orga 1',
             'sid' => 'FCU1',
             'logoUrl' => 'https://example.org/logo.png',
-            'founder' => false,
+            'founder' => true,
             'fleet' => [
                 'ships' => [
                     [

@@ -33,8 +33,8 @@ class InMemoryOrganizationFleetRepository implements OrganizationFleetRepository
     {
         $result = [];
         foreach ($orgaIds as $orgaId) {
-            if (isset($this->organizationFleets[$orgaId])) {
-                $result[] = $this->organizationFleets[$orgaId];
+            if (isset($this->organizationFleets[(string) $orgaId])) {
+                $result[] = $this->organizationFleets[(string) $orgaId];
             }
         }
 
@@ -47,5 +47,15 @@ class InMemoryOrganizationFleetRepository implements OrganizationFleetRepository
     public function saveAll(array $organizationFleets): void
     {
         $this->setOrganizationFleets($organizationFleets);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function deleteAll(array $orgaIds): void
+    {
+        foreach ($orgaIds as $orgaId) {
+            unset($this->organizationFleets[(string) $orgaId]);
+        }
     }
 }

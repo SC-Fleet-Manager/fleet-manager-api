@@ -3,7 +3,7 @@
 namespace App\Application\MyFleet;
 
 use App\Application\Repository\FleetRepositoryInterface;
-use App\Domain\Event\DeletedUser;
+use App\Domain\Event\DeletedUserEvent;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
 class DeleteAccountHandler implements MessageHandlerInterface
@@ -13,7 +13,7 @@ class DeleteAccountHandler implements MessageHandlerInterface
     ) {
     }
 
-    public function __invoke(DeletedUser $event): void
+    public function __invoke(DeletedUserEvent $event): void
     {
         $userId = $event->getUserId();
 
