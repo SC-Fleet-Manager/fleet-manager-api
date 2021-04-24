@@ -2,7 +2,9 @@
 
 namespace App\Entity;
 
+use App\Application\Provider\MemberProfileProviderInterface;
 use App\Domain\MemberId;
+use App\Domain\MemberProfile;
 use App\Domain\OrgaId;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -97,6 +99,21 @@ class Organization
     public function hasNoMembers(): bool
     {
         return $this->memberships->isEmpty();
+    }
+
+    /**
+     * @return MemberProfile[]
+     */
+    public function getCandidates(MemberProfileProviderInterface $memberProfileProvider): array
+    {
+        $candidateIds = [];
+        foreach ($this->memberships as $membership) {
+            if (!$membership->hasJoined()) {
+                $candidateIds[] = $membership->getMemberId();
+            }
+        }
+
+        return $memberProfileProvider->getProfiles($candidateIds);
     }
 
     public function addMember(MemberId $memberId, bool $joined, \DateTimeInterface $updatedAt): void

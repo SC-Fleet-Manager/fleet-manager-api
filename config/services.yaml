@@ -79,6 +79,7 @@ services:
     App\Application\Repository\OrganizationFleetRepositoryInterface: '@App\Infrastructure\Repository\Organization\DoctrineOrganizationFleetRepository'
 
     App\Application\Provider\UserFleetProviderInterface: '@App\Infrastructure\Provider\Organizations\DirectCallUserFleetProvider'
+    App\Application\Provider\MemberProfileProviderInterface: '@App\Infrastructure\Provider\Organizations\DirectCallMemberProfileProvider'
 
     App\Application\Common\Clock: '@App\Infrastructure\Common\SystemClock'
 

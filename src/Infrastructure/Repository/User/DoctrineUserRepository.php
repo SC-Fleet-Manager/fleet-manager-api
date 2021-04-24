@@ -33,6 +33,14 @@ class DoctrineUserRepository extends ServiceEntityRepository implements UserRepo
         return $this->find($userId->getId());
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public function getByIds(array $userIds): array
+    {
+        return $this->findBy(['id' => $userIds]);
+    }
+
     public function save(User $user): void
     {
         $this->_em->persist($user);

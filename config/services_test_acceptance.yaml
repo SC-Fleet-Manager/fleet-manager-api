@@ -14,6 +14,7 @@ services:
     App\Application\Repository\OrganizationFleetRepositoryInterface: '@App\Infrastructure\Repository\Organization\InMemoryOrganizationFleetRepository'
 
     App\Application\Provider\UserFleetProviderInterface: '@App\Infrastructure\Provider\Organizations\InMemoryUserFleetProvider'
+    App\Application\Provider\MemberProfileProviderInterface: '@App\Infrastructure\Provider\Organizations\InMemoryMemberProfileProvider'
 
     App\Application\Common\Clock: '@App\Infrastructure\Common\FakeClock'
 
