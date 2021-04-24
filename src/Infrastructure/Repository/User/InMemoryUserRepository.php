@@ -40,6 +40,21 @@ class InMemoryUserRepository implements UserRepositoryInterface
         return $this->usersById[(string) $userId] ?? null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public function getByIds(array $userIds): array
+    {
+        $result = [];
+        foreach ($userIds as $userId) {
+            if (isset($this->usersById[(string) $userId])) {
+                $result[] = $this->usersById[(string) $userId];
+            }
+        }
+
+        return $result;
+    }
+
     public function save(User $user): void
     {
         $this->usersById[(string) $user->getId()] = $user;

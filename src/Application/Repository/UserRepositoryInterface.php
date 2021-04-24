@@ -13,6 +13,13 @@ interface UserRepositoryInterface
 
     public function getById(UserId $userId): ?User;
 
+    /**
+     * @param UserId[] $userIds
+     *
+     * @return User[]
+     */
+    public function getByIds(array $userIds): array;
+
     public function save(User $user): void;
 
     public function delete(User $user): void;
