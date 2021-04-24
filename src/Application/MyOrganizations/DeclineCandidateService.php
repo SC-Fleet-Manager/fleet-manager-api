@@ -4,6 +4,7 @@ namespace App\Application\MyOrganizations;
 
 use App\Application\Common\Clock;
 use App\Application\Repository\OrganizationRepositoryInterface;
+use App\Domain\Exception\FullyJoinedMemberOfOrganizationException;
 use App\Domain\Exception\NotFounderOfOrganizationException;
 use App\Domain\Exception\NotFoundOrganizationException;
 use App\Domain\MemberId;
@@ -23,9 +24,11 @@ class DeclineCandidateService
         if ($organization === null) {
             throw new NotFoundOrganizationException($orgaId);
         }
-
         if (!$organization->isFounder($founderId)) {
             throw new NotFounderOfOrganizationException($orgaId, $founderId);
+        }
+        if ($organization->hasJoined($candidateId)) {
+            throw new FullyJoinedMemberOfOrganizationException($orgaId, $candidateId);
         }
 
         $organization->unjoinMember($candidateId, $this->clock->now());

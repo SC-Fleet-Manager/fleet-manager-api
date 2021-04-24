@@ -22,7 +22,7 @@ class DeclineCandidateControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('POST', '/api/organizations/manage/00000000-0000-0000-0000-000000000010/decline-candidate/00000000-0000-0000-0000-000000000001', [], [], [
+        static::$client->xmlHttpRequest('POST', '/api/organizations/manage/00000000-0000-0000-0000-000000000010/decline-candidate/00000000-0000-0000-0000-000000000002', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ]);
@@ -30,7 +30,7 @@ class DeclineCandidateControllerTest extends WebTestCase
         static::assertSame(204, static::$client->getResponse()->getStatusCode());
 
         $result = static::$connection->executeQuery(<<<SQL
-                SELECT * FROM memberships WHERE organization_id = '00000000-0000-0000-0000-000000000010' AND member_id = '00000000-0000-0000-0000-000000000001';
+                SELECT * FROM memberships WHERE organization_id = '00000000-0000-0000-0000-000000000010' AND member_id = '00000000-0000-0000-0000-000000000002';
             SQL
         )->fetchAssociative();
         static::assertFalse($result, 'Member should be unjoined of the orga.');
