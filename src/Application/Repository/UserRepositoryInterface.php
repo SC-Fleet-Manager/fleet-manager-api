@@ -23,4 +23,6 @@ interface UserRepositoryInterface
     public function save(User $user): void;
 
     public function delete(User $user): void;
+
+    public function getByHandle(string $handle): ?User;
 }

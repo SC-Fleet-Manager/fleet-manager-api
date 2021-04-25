@@ -64,4 +64,15 @@ class InMemoryUserRepository implements UserRepositoryInterface
     {
         unset($this->usersById[(string) $user->getId()]);
     }
+
+    public function getByHandle(string $handle): ?User
+    {
+        foreach ($this->usersById as $user) {
+            if ($user->getHandle() === $handle) {
+                return $user;
+            }
+        }
+
+        return null;
+    }
 }
