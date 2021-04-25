@@ -24,6 +24,9 @@ class UniqueUserHandleValidator extends ConstraintValidator
         Assert::object($value);
 
         $handle = $value->{$constraint->fieldHandle};
+        if ($handle === null) {
+            return;
+        }
 
         $user = $this->userRepository->getByHandle($handle);
         if ($user === null) {
