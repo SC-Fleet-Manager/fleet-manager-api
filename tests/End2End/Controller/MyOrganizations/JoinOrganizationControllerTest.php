@@ -12,8 +12,8 @@ class JoinOrganizationControllerTest extends WebTestCase
     public function it_should_join_an_orga_for_logged_user(): void
     {
         static::$connection->executeStatement(<<<SQL
-                INSERT INTO users(id, roles, auth0_username, created_at)
-                VALUES ('00000000-0000-0000-0000-000000000001', '["ROLE_USER"]', 'Ioni', '2021-01-01T10:00:00Z');
+                INSERT INTO users(id, roles, auth0_username, handle, created_at)
+                VALUES ('00000000-0000-0000-0000-000000000001', '["ROLE_USER"]', 'Ioni', 'ioni', '2021-01-01T10:00:00Z');
                 INSERT INTO organizations(id, founder_id, name, sid, updated_at)
                 VALUES ('00000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000002', 'An orga', 'org', '2021-01-01T10:00:00Z');
                 INSERT INTO memberships(member_id, organization_id, joined)

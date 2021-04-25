@@ -3,8 +3,10 @@
 namespace App\Application\MyOrganizations;
 
 use App\Application\Common\Clock;
+use App\Application\Provider\MemberProfileProviderInterface;
 use App\Application\Repository\OrganizationRepositoryInterface;
 use App\Domain\Exception\AlreadyMemberOfOrganizationException;
+use App\Domain\Exception\NoMemberHandleException;
 use App\Domain\Exception\NotFoundOrganizationException;
 use App\Domain\MemberId;
 use App\Domain\OrgaId;
@@ -13,6 +15,7 @@ class JoinOrganizationService
 {
     public function __construct(
         private OrganizationRepositoryInterface $organizationRepository,
+        private MemberProfileProviderInterface $memberProfileProvider,
         private Clock $clock,
     ) {
     }
@@ -22,6 +25,11 @@ class JoinOrganizationService
         $organization = $this->organizationRepository->getOrganization($orgaId);
         if ($organization === null) {
             throw new NotFoundOrganizationException($orgaId);
+        }
+
+        $memberProfile = $this->memberProfileProvider->getProfiles([$memberId])[0] ?? null;
+        if ($memberProfile === null || $memberProfile->getHandle() === null) {
+            throw new NoMemberHandleException($memberId);
         }
 
         if ($organization->isMemberOf($memberId)) {
