@@ -38,6 +38,11 @@ class User implements UserInterface
     private ?string $nickname;
 
     /**
+     * @ORM\Column(name="handle", type="string", length=31, nullable=true)
+     */
+    private ?string $handle = null;
+
+    /**
      * @ORM\Column(name="supporter_visible", type="boolean", options={"default":true})
      */
     private bool $supporterVisible = true;
@@ -101,6 +106,16 @@ class User implements UserInterface
     public function changeNickname(?string $nickname): void
     {
         $this->nickname = $nickname;
+    }
+
+    public function getHandle(): ?string
+    {
+        return $this->handle;
+    }
+
+    public function changeHandle(string $handle): void
+    {
+        $this->handle = $handle;
     }
 
     public function isSupporterVisible(): bool

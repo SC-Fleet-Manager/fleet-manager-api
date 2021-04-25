@@ -33,6 +33,11 @@ class DoctrineUserRepository extends ServiceEntityRepository implements UserRepo
         return $this->find($userId->getId());
     }
 
+    public function getByHandle(string $handle): ?User
+    {
+        return $this->findOneBy(['handle' => $handle]);
+    }
+
     /**
      * {@inheritDoc}
      */
