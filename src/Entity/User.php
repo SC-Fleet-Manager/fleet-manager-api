@@ -95,7 +95,7 @@ class User implements UserInterface
 
     public function getNickname(): ?string
     {
-        return $this->nickname ?? $this->profile->getNickname();
+        return $this->nickname ?? $this->getProfile()->getNickname();
     }
 
     public function changeNickname(?string $nickname): void
@@ -178,7 +178,7 @@ class User implements UserInterface
 
     public function getProfile(): UserProfile
     {
-        return $this->profile;
+        return $this->profile ?? new UserProfile();
     }
 
     public function provideProfile(?string $nickname = null, ?string $email = null, ?string $discordId = null): void

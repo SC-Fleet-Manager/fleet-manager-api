@@ -1,0 +1,253 @@
+App\Entity\OrganizationFleet:
+    fleet_fallkrom:
+        __construct:
+            - '<(\App\Domain\OrgaId::fromString("01F3GFMCKRNS8N517E0ZQCETER"))>'
+            - '<(new \DateTimeImmutable("2021-04-01 11:22:33"))>'
+    fleet_palifen:
+        __construct:
+            - '<(\App\Domain\OrgaId::fromString("01790890-91a4-f9ae-9eca-467b1457167b"))>'
+            - '<(new \DateTimeImmutable("2021-04-02 11:22:33"))>'
+
+App\Entity\OrganizationShip:
+    orga_ship_fallkrom_avenger:
+        __construct:
+            - '<(\App\Domain\OrganizationShipId::fromString("017908b7-ba64-a396-9d74-649d8adb7478"))>'
+            - '@fleet_fallkrom'
+            - 'Avenger Titan'
+        __calls:
+            - updateOwner:
+                - '<(\App\Domain\MemberId::fromString("01F17XPBYW95G5AT8NHFXA28Q0"))>'
+                - 'https://media.robertsspaceindustries.com/fmhdkmvhi8ify/store_small.jpg'
+                - 2
+            - updateOwner: ['<(\App\Domain\MemberId::fromString("01790893-72da-5f6e-bb34-484f8f963c10"))>', null, 1]
+            - updateOwner: ['<(\App\Domain\MemberId::fromString("01790893-72da-5f6e-bb34-484f8f963c11"))>', null, 1]
+            - updateOwner: ['<(\App\Domain\MemberId::fromString("01790893-72da-5f6e-bb34-484f8f963c12"))>', null, 1]
+            - updateOwner: ['<(\App\Domain\MemberId::fromString("01790893-72da-5f6e-bb34-484f8f963c13"))>', null, 1]
+            - updateOwner: ['<(\App\Domain\MemberId::fromString("01790893-72da-5f6e-bb34-484f8f963c14"))>', null, 1]
+            - updateOwner: ['<(\App\Domain\MemberId::fromString("01790893-72da-5f6e-bb34-484f8f963c15"))>', null, 1]
+            - updateOwner: ['<(\App\Domain\MemberId::fromString("01790893-72da-5f6e-bb34-484f8f963c16"))>', null, 1]
+            - updateOwner: ['<(\App\Domain\MemberId::fromString("01790893-72da-5f6e-bb34-484f8f963c17"))>', null, 1]
+            - updateOwner: ['<(\App\Domain\MemberId::fromString("01790893-72da-5f6e-bb34-484f8f963c18"))>', null, 1]
+            - updateOwner: ['<(\App\Domain\MemberId::fromString("01790893-72da-5f6e-bb34-484f8f963c19"))>', null, 1]
+            - updateOwner: ['<(\App\Domain\MemberId::fromString("01790893-72da-5f6e-bb34-484f8f963c20"))>', null, 1]
+    orga_ship_fallkrom_cutlass:
+        __construct:
+            - '<(\App\Domain\OrganizationShipId::fromString("017908b7-ba66-8229-3429-63a6a76c9146"))>'
+            - '@fleet_fallkrom'
+            - 'Cutlass Black'
+        __calls:
+            - updateOwner:
+                - '<(\App\Domain\MemberId::fromString("01F17XPBYW95G5AT8NHFXA28Q0"))>'
+                - 'https://media.robertsspaceindustries.com/wj92rqzvhnecb/store_small.jpg'
+                - 1
+    orga_ship_fallkrom_arrow:
+        __construct:
+            - '<(\App\Domain\OrganizationShipId::fromString("017908b7-ba67-a3e4-e552-8f7717f4f23a"))>'
+            - '@fleet_fallkrom'
+            - 'Arrow'
+        __calls:
+            - updateOwner:
+                - '<(\App\Domain\MemberId::fromString("01F17XPBYW95G5AT8NHFXA28Q0"))>'
+                - 'https://starcitizen.tools/images/thumb/4/47/Arrow_over_Celiin_3.9.1.png/400px-Arrow_over_Celiin_3.9.1.png'
+                - 1
+    orga_ship_fallkrom_p52:
+        __construct:
+            - '<(\App\Domain\OrganizationShipId::fromString("017908b7-ba69-cbb8-c7dd-545504aa0ffb"))>'
+            - '@fleet_fallkrom'
+            - 'P-52 Merlin'
+        __calls:
+            - updateOwner:
+                - '<(\App\Domain\MemberId::fromString("01F17XPBYW95G5AT8NHFXA28Q0"))>'
+                - 'https://starcitizen.tools/images/thumb/e/e7/Merlin_in_Selfland_-_3.6.0_-_Isometric.jpg/1920px-Merlin_in_Selfland_-_3.6.0_-_Isometric.jpg'
+                - 1
+    orga_ship_fallkrom_talon:
+        __construct:
+            - '<(\App\Domain\OrganizationShipId::fromString("017908b7-ba6a-ee2b-ad0d-65a584c3548a"))>'
+            - '@fleet_fallkrom'
+            - 'Talon Shrike'
+        __calls:
+            - updateOwner:
+                - '<(\App\Domain\MemberId::fromString("01F17XPBYW95G5AT8NHFXA28Q0"))>'
+                - 'https://starcitizen.tools/images/c/c1/Talon_Shrike_-_Diving_blurred_background.jpg'
+                - 1
+    orga_ship_fallkrom_325a:
+        __construct:
+            - '<(\App\Domain\OrganizationShipId::fromString("017908b7-ba6b-59ed-3e3b-afc989d56a21"))>'
+            - '@fleet_fallkrom'
+            - '325a'
+        __calls:
+            - updateOwner:
+                - '<(\App\Domain\MemberId::fromString("01F17XPBYW95G5AT8NHFXA28Q0"))>'
+                - 'https://starcitizen.tools/images/thumb/7/73/325a_in_space_-_Isometric.jpg/1920px-325a_in_space_-_Isometric.jpg'
+                - 1
+    orga_ship_fallkrom_prospector:
+        __construct:
+            - '<(\App\Domain\OrganizationShipId::fromString("017908b7-ba6c-31db-04cf-4f8eb85fe436"))>'
+            - '@fleet_fallkrom'
+            - 'Prospector'
+        __calls:
+            - updateOwner:
+                - '<(\App\Domain\MemberId::fromString("01F17XPBYW95G5AT8NHFXA28Q0"))>'
+                - 'https://starcitizen.tools/images/thumb/e/e5/Prospector_-_Landed_mining_on_Yela_-_Front_Port.jpg/1920px-Prospector_-_Landed_mining_on_Yela_-_Front_Port.jpg'
+                - 1
+    orga_ship_fallkrom_ranger:
+        __construct:
+            - '<(\App\Domain\OrganizationShipId::fromString("017908b7-ba6d-dd57-da6f-3ebde78cb428"))>'
+            - '@fleet_fallkrom'
+            - 'Ranger CV'
+        __calls:
+            - updateOwner:
+                - '<(\App\Domain\MemberId::fromString("01F17XPBYW95G5AT8NHFXA28Q0"))>'
+                - 'https://starcitizen.tools/images/thumb/c/c7/Ranger-cv-brochure.png/1920px-Ranger-cv-brochure.png'
+                - 1
+    orga_ship_fallkrom_freelancer:
+        __construct:
+            - '<(\App\Domain\OrganizationShipId::fromString("017908b7-ba6e-96d1-7ca0-4419cda5e8f6"))>'
+            - '@fleet_fallkrom'
+            - 'Freelancer MAX'
+        __calls:
+            - updateOwner:
+                - '<(\App\Domain\MemberId::fromString("01F17XPBYW95G5AT8NHFXA28Q0"))>'
+                - 'https://starcitizen.tools/images/thumb/6/6f/MISC-freelancer-max-side-3.4.1.jpg/1920px-MISC-freelancer-max-side-3.4.1.jpg'
+                - 1
+    orga_ship_fallkrom_85x:
+        __construct:
+            - '<(\App\Domain\OrganizationShipId::fromString("017908b7-ba6f-011d-1ee8-b60a669e070f"))>'
+            - '@fleet_fallkrom'
+            - '85X'
+        __calls:
+            - updateOwner:
+                - '<(\App\Domain\MemberId::fromString("01F17XPBYW95G5AT8NHFXA28Q0"))>'
+                - 'https://starcitizen.tools/images/thumb/c/cf/85x_in_SelfLand_-_Isometric.jpg/1920px-85x_in_SelfLand_-_Isometric.jpg'
+                - 1
+    orga_ship_fallkrom_roc:
+        __construct:
+            - '<(\App\Domain\OrganizationShipId::fromString("017908b7-ba70-315f-7d0a-7fdd526df8e9"))>'
+            - '@fleet_fallkrom'
+            - 'ROC'
+        __calls:
+            - updateOwner:
+                - '<(\App\Domain\MemberId::fromString("01F17XPBYW95G5AT8NHFXA28Q0"))>'
+                - 'https://media.robertsspaceindustries.com/5453o6m5s73je/store_slideshow_large.jpg'
+                - 1
+    orga_ship_palifen_cutlass:
+        __construct:
+            - '<(\App\Domain\OrganizationShipId::fromString("017908b8-2de8-4a10-a9be-ba3a40c19d92"))>'
+            - '@fleet_palifen'
+            - 'Cutlass black BiS 2950 edition'
+        __calls:
+            - updateOwner:
+                - '<(\App\Domain\MemberId::fromString("01790883-29ec-d715-dafc-8eaa3e04cd3b"))>'
+                - 'https://starcitizen.tools/images/thumb/c/ca/Cutlass_Black_-_Best_in_Show_2950_Skin.jpg/1920px-Cutlass_Black_-_Best_in_Show_2950_Skin.jpg'
+                - 1
+            - updateOwner: ['<(\App\Domain\MemberId::fromString("017908a5-db0c-6bb5-a408-994916f79010"))>', null, 1]
+            - updateOwner: ['<(\App\Domain\MemberId::fromString("017908a5-db0c-6bb5-a408-994916f79011"))>', null, 1]
+            - updateOwner: ['<(\App\Domain\MemberId::fromString("017908a5-db0c-6bb5-a408-994916f79012"))>', null, 1]
+            - updateOwner: ['<(\App\Domain\MemberId::fromString("017908a5-db0c-6bb5-a408-994916f79013"))>', null, 1]
+            - updateOwner: ['<(\App\Domain\MemberId::fromString("017908a5-db0c-6bb5-a408-994916f79014"))>', null, 1]
+            - updateOwner: ['<(\App\Domain\MemberId::fromString("017908a5-db0c-6bb5-a408-994916f79015"))>', null, 1]
+            - updateOwner: ['<(\App\Domain\MemberId::fromString("017908a5-db0c-6bb5-a408-994916f79016"))>', null, 1]
+            - updateOwner: ['<(\App\Domain\MemberId::fromString("017908a5-db0c-6bb5-a408-994916f79017"))>', null, 1]
+            - updateOwner: ['<(\App\Domain\MemberId::fromString("017908a5-db0c-6bb5-a408-994916f79018"))>', null, 1]
+            - updateOwner: ['<(\App\Domain\MemberId::fromString("017908a5-db0c-6bb5-a408-994916f79019"))>', null, 1]
+            - updateOwner: ['<(\App\Domain\MemberId::fromString("017908a5-db0c-6bb5-a408-994916f79020"))>', null, 1]
+    orga_ship_palifen_arrow:
+        __construct:
+            - '<(\App\Domain\OrganizationShipId::fromString("017908b8-2dea-d1bb-ceba-a68358fc6df5"))>'
+            - '@fleet_palifen'
+            - 'Arrow'
+        __calls:
+            - updateOwner:
+                - '<(\App\Domain\MemberId::fromString("01790883-29ec-d715-dafc-8eaa3e04cd3b"))>'
+                - 'https://starcitizen.tools/images/thumb/4/47/Arrow_over_Celiin_3.9.1.png/400px-Arrow_over_Celiin_3.9.1.png'
+                - 1
+    orga_ship_palifen_p52:
+        __construct:
+            - '<(\App\Domain\OrganizationShipId::fromString("017908b8-2dec-31f9-a17e-efadad7ad495"))>'
+            - '@fleet_palifen'
+            - 'P-52 Merlin'
+        __calls:
+            - updateOwner:
+                - '<(\App\Domain\MemberId::fromString("01790883-29ec-d715-dafc-8eaa3e04cd3b"))>'
+                - 'https://starcitizen.tools/images/thumb/e/e7/Merlin_in_Selfland_-_3.6.0_-_Isometric.jpg/1920px-Merlin_in_Selfland_-_3.6.0_-_Isometric.jpg'
+                - 1
+    orga_ship_palifen_talon:
+        __construct:
+            - '<(\App\Domain\OrganizationShipId::fromString("017908b8-2ded-7ac5-51d5-923b97d37114"))>'
+            - '@fleet_palifen'
+            - 'Talon Shrike'
+        __calls:
+            - updateOwner:
+                - '<(\App\Domain\MemberId::fromString("01790883-29ec-d715-dafc-8eaa3e04cd3b"))>'
+                - 'https://starcitizen.tools/images/c/c1/Talon_Shrike_-_Diving_blurred_background.jpg'
+                - 1
+    orga_ship_palifen_325a:
+        __construct:
+            - '<(\App\Domain\OrganizationShipId::fromString("017908b8-2dee-cadb-8d63-709d769ddcdd"))>'
+            - '@fleet_palifen'
+            - '325a'
+        __calls:
+            - updateOwner:
+                - '<(\App\Domain\MemberId::fromString("01790883-29ec-d715-dafc-8eaa3e04cd3b"))>'
+                - 'https://starcitizen.tools/images/thumb/7/73/325a_in_space_-_Isometric.jpg/1920px-325a_in_space_-_Isometric.jpg'
+                - 1
+    orga_ship_palifen_prospector:
+        __construct:
+            - '<(\App\Domain\OrganizationShipId::fromString("017908b8-2def-5ed2-5e3b-4f3a6048b0b7"))>'
+            - '@fleet_palifen'
+            - 'Prospector'
+        __calls:
+            - updateOwner:
+                - '<(\App\Domain\MemberId::fromString("01790883-29ec-d715-dafc-8eaa3e04cd3b"))>'
+                - 'https://starcitizen.tools/images/thumb/e/e5/Prospector_-_Landed_mining_on_Yela_-_Front_Port.jpg/1920px-Prospector_-_Landed_mining_on_Yela_-_Front_Port.jpg'
+                - 1
+    orga_ship_palifen_ranger:
+        __construct:
+            - '<(\App\Domain\OrganizationShipId::fromString("017908b8-2df0-d3ca-7cd5-81bd60f6b78c"))>'
+            - '@fleet_palifen'
+            - 'Ranger CV'
+        __calls:
+            - updateOwner:
+                - '<(\App\Domain\MemberId::fromString("01790883-29ec-d715-dafc-8eaa3e04cd3b"))>'
+                - 'https://starcitizen.tools/images/thumb/c/c7/Ranger-cv-brochure.png/1920px-Ranger-cv-brochure.png'
+                - 1
+    orga_ship_palifen_freelancer:
+        __construct:
+            - '<(\App\Domain\OrganizationShipId::fromString("017908b8-2df1-966e-ef07-2b7a5b345efe"))>'
+            - '@fleet_palifen'
+            - 'Freelancer MAX'
+        __calls:
+            - updateOwner:
+                - '<(\App\Domain\MemberId::fromString("01790883-29ec-d715-dafc-8eaa3e04cd3b"))>'
+                - 'https://starcitizen.tools/images/thumb/6/6f/MISC-freelancer-max-side-3.4.1.jpg/1920px-MISC-freelancer-max-side-3.4.1.jpg'
+                - 1
+    orga_ship_palifen_85x:
+        __construct:
+            - '<(\App\Domain\OrganizationShipId::fromString("017908b8-2df3-d5c7-a5e8-a2b3cd655dd7"))>'
+            - '@fleet_palifen'
+            - '85X'
+        __calls:
+            - updateOwner:
+                - '<(\App\Domain\MemberId::fromString("01790883-29ec-d715-dafc-8eaa3e04cd3b"))>'
+                - 'https://starcitizen.tools/images/thumb/c/cf/85x_in_SelfLand_-_Isometric.jpg/1920px-85x_in_SelfLand_-_Isometric.jpg'
+                - 1
+    orga_ship_palifen_roc:
+        __construct:
+            - '<(\App\Domain\OrganizationShipId::fromString("017908b8-2df4-b59a-494c-06e0f4322bea"))>'
+            - '@fleet_palifen'
+            - 'ROC'
+        __calls:
+            - updateOwner:
+                - '<(\App\Domain\MemberId::fromString("01790883-29ec-d715-dafc-8eaa3e04cd3b"))>'
+                - 'https://media.robertsspaceindustries.com/5453o6m5s73je/store_slideshow_large.jpg'
+                - 1
+    orga_ship_palifen_avenger:
+        __construct:
+            - '<(\App\Domain\OrganizationShipId::fromString("017908b8-2de4-2df8-f9e9-384ba6ad7e5e"))>'
+            - '@fleet_palifen'
+            - 'Avenger titan'
+        __calls:
+            - updateOwner:
+                - '<(\App\Domain\MemberId::fromString("01790883-29ec-d715-dafc-8eaa3e04cd3b"))>'
+                - 'https://media.robertsspaceindustries.com/7zbk19qeqy9fp/store_small.jpg'
+                - 1

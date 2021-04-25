@@ -3,6 +3,10 @@ App\Entity\Fleet:
         __construct:
             - '<(\App\Domain\UserId::fromString("01F17XPBYW95G5AT8NHFXA28Q0"))>'
             - '<(new \DateTimeImmutable("2019-04-03 11:22:33"))>'
+    fleet_lunia:
+        __construct:
+            - '<(\App\Domain\UserId::fromString("01790883-29ec-d715-dafc-8eaa3e04cd3b"))>'
+            - '<(new \DateTimeImmutable("2019-04-04 11:22:33"))>'
 
 App\Entity\Ship:
     fleet_ioni_avenger:
@@ -12,10 +16,150 @@ App\Entity\Ship:
             - 'Avenger Titan'
             - 'https://media.robertsspaceindustries.com/fmhdkmvhi8ify/store_small.jpg'
             - 2
-    fleet_ioni_mercury:
+    fleet_ioni_cutlass:
         __construct:
             - '<(\App\Domain\ShipId::fromString("01F2H1DX1XHVEEB1JH97FWZQ45"))>'
             - '@fleet_ioni'
             - 'Cutlass Black'
             - 'https://media.robertsspaceindustries.com/wj92rqzvhnecb/store_small.jpg'
+            - 1
+    fleet_ioni_arrow:
+        __construct:
+            - '<(\App\Domain\ShipId::fromString("017908b0-a913-befb-1245-130d9904bd5d"))>'
+            - '@fleet_ioni'
+            - 'Arrow'
+            - 'https://starcitizen.tools/images/thumb/4/47/Arrow_over_Celiin_3.9.1.png/400px-Arrow_over_Celiin_3.9.1.png'
+            - 1
+    fleet_ioni_p52:
+        __construct:
+            - '<(\App\Domain\ShipId::fromString("017908b0-a915-1d37-5e8a-3abd04836004"))>'
+            - '@fleet_ioni'
+            - 'P-52 Merlin'
+            - 'https://starcitizen.tools/images/thumb/e/e7/Merlin_in_Selfland_-_3.6.0_-_Isometric.jpg/1920px-Merlin_in_Selfland_-_3.6.0_-_Isometric.jpg'
+            - 1
+    fleet_ioni_talon:
+        __construct:
+            - '<(\App\Domain\ShipId::fromString("017908b0-a917-edbc-7282-8effd095d321"))>'
+            - '@fleet_ioni'
+            - 'Talon Shrike'
+            - 'https://starcitizen.tools/images/c/c1/Talon_Shrike_-_Diving_blurred_background.jpg'
+            - 1
+    fleet_ioni_325a:
+        __construct:
+            - '<(\App\Domain\ShipId::fromString("017908b0-a919-a9e9-6875-218e3e93ed7f"))>'
+            - '@fleet_ioni'
+            - '325a'
+            - 'https://starcitizen.tools/images/thumb/7/73/325a_in_space_-_Isometric.jpg/1920px-325a_in_space_-_Isometric.jpg'
+            - 1
+    fleet_ioni_prospector:
+        __construct:
+            - '<(\App\Domain\ShipId::fromString("017908b0-a91a-7299-4519-6f5057b6af1f"))>'
+            - '@fleet_ioni'
+            - 'Prospector'
+            - 'https://starcitizen.tools/images/thumb/e/e5/Prospector_-_Landed_mining_on_Yela_-_Front_Port.jpg/1920px-Prospector_-_Landed_mining_on_Yela_-_Front_Port.jpg'
+            - 1
+    fleet_ioni_ranger:
+        __construct:
+            - '<(\App\Domain\ShipId::fromString("017908b0-a91b-ceba-4f67-333a3dc3dd79"))>'
+            - '@fleet_ioni'
+            - 'Ranger CV'
+            - 'https://starcitizen.tools/images/thumb/c/c7/Ranger-cv-brochure.png/1920px-Ranger-cv-brochure.png'
+            - 1
+    fleet_ioni_freelancer:
+        __construct:
+            - '<(\App\Domain\ShipId::fromString("017908b0-a91d-2c07-f376-b2badf30a5b8"))>'
+            - '@fleet_ioni'
+            - 'Freelancer MAX'
+            - 'https://starcitizen.tools/images/thumb/6/6f/MISC-freelancer-max-side-3.4.1.jpg/1920px-MISC-freelancer-max-side-3.4.1.jpg'
+            - 1
+    fleet_ioni_85x:
+        __construct:
+            - '<(\App\Domain\ShipId::fromString("017908b0-a91e-4a93-8b89-905bf6656cac"))>'
+            - '@fleet_ioni'
+            - '85X'
+            - 'https://starcitizen.tools/images/thumb/c/cf/85x_in_SelfLand_-_Isometric.jpg/1920px-85x_in_SelfLand_-_Isometric.jpg'
+            - 1
+    fleet_ioni_roc:
+        __construct:
+            - '<(\App\Domain\ShipId::fromString("017908b0-a91f-4a8e-459a-0720ee7d77e9"))>'
+            - '@fleet_ioni'
+            - 'ROC'
+            - 'https://media.robertsspaceindustries.com/5453o6m5s73je/store_slideshow_large.jpg'
+            - 1
+    fleet_lunia_cutlass:
+        __construct:
+            - '<(\App\Domain\ShipId::fromString("017908ab-5c0f-24fa-9a07-f01610bc8cba"))>'
+            - '@fleet_lunia'
+            - 'Cutlass black BiS 2950 edition'
+            - 'https://starcitizen.tools/images/thumb/c/ca/Cutlass_Black_-_Best_in_Show_2950_Skin.jpg/1920px-Cutlass_Black_-_Best_in_Show_2950_Skin.jpg'
+            - 1
+    fleet_lunia_arrow:
+        __construct:
+            - '<(\App\Domain\ShipId::fromString("017908ac-6759-1852-ac6b-62a15b939ab5"))>'
+            - '@fleet_lunia'
+            - 'Arrow'
+            - 'https://starcitizen.tools/images/thumb/4/47/Arrow_over_Celiin_3.9.1.png/400px-Arrow_over_Celiin_3.9.1.png'
+            - 1
+    fleet_lunia_p52:
+        __construct:
+            - '<(\App\Domain\ShipId::fromString("017908ac-bf73-25f5-7309-74913fe94f5d"))>'
+            - '@fleet_lunia'
+            - 'P-52 Merlin'
+            - 'https://starcitizen.tools/images/thumb/e/e7/Merlin_in_Selfland_-_3.6.0_-_Isometric.jpg/1920px-Merlin_in_Selfland_-_3.6.0_-_Isometric.jpg'
+            - 1
+    fleet_lunia_talon:
+        __construct:
+            - '<(\App\Domain\ShipId::fromString("017908ad-0afc-c9a9-8266-6abe23030abe"))>'
+            - '@fleet_lunia'
+            - 'Talon Shrike'
+            - 'https://starcitizen.tools/images/c/c1/Talon_Shrike_-_Diving_blurred_background.jpg'
+            - 1
+    fleet_lunia_325a:
+        __construct:
+            - '<(\App\Domain\ShipId::fromString("017908ad-4c7d-76ec-646b-931eda5fb401"))>'
+            - '@fleet_lunia'
+            - '325a'
+            - 'https://starcitizen.tools/images/thumb/7/73/325a_in_space_-_Isometric.jpg/1920px-325a_in_space_-_Isometric.jpg'
+            - 1
+    fleet_lunia_prospector:
+        __construct:
+            - '<(\App\Domain\ShipId::fromString("017908ad-ab6a-04f8-a6cb-67bba7be4cfd"))>'
+            - '@fleet_lunia'
+            - 'Prospector'
+            - 'https://starcitizen.tools/images/thumb/e/e5/Prospector_-_Landed_mining_on_Yela_-_Front_Port.jpg/1920px-Prospector_-_Landed_mining_on_Yela_-_Front_Port.jpg'
+            - 1
+    fleet_lunia_ranger:
+        __construct:
+            - '<(\App\Domain\ShipId::fromString("017908ae-1e82-25a5-bb59-2d77691c27e2"))>'
+            - '@fleet_lunia'
+            - 'Ranger CV'
+            - 'https://starcitizen.tools/images/thumb/c/c7/Ranger-cv-brochure.png/1920px-Ranger-cv-brochure.png'
+            - 1
+    fleet_lunia_freelancer:
+        __construct:
+            - '<(\App\Domain\ShipId::fromString("017908ae-60ff-0e02-ed96-5fa6a8a6a954"))>'
+            - '@fleet_lunia'
+            - 'Freelancer MAX'
+            - 'https://starcitizen.tools/images/thumb/6/6f/MISC-freelancer-max-side-3.4.1.jpg/1920px-MISC-freelancer-max-side-3.4.1.jpg'
+            - 1
+    fleet_lunia_85x:
+        __construct:
+            - '<(\App\Domain\ShipId::fromString("017908ae-e406-1020-e3b3-c37b054bff2e"))>'
+            - '@fleet_lunia'
+            - '85X'
+            - 'https://starcitizen.tools/images/thumb/c/cf/85x_in_SelfLand_-_Isometric.jpg/1920px-85x_in_SelfLand_-_Isometric.jpg'
+            - 1
+    fleet_lunia_roc:
+        __construct:
+            - '<(\App\Domain\ShipId::fromString("017908af-3d42-9922-142d-8f2f1b194351"))>'
+            - '@fleet_lunia'
+            - 'ROC'
+            - 'https://media.robertsspaceindustries.com/5453o6m5s73je/store_slideshow_large.jpg'
+            - 1
+    fleet_lunia_avenger:
+        __construct:
+            - '<(\App\Domain\ShipId::fromString("017908af-818f-44f5-21f8-509ce825d2bb"))>'
+            - '@fleet_lunia'
+            - 'Avanger titan'
+            - 'https://media.robertsspaceindustries.com/7zbk19qeqy9fp/store_small.jpg'
             - 1

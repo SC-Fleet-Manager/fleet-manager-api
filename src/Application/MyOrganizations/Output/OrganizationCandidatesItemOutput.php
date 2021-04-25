@@ -15,7 +15,7 @@ class OrganizationCandidatesItemOutput
         /**
          * @OpenApi\Property(type="string", example="Ioni")
          */
-        public string $nickname,
+        public ?string $nickname,
     ) {
     }
 }
