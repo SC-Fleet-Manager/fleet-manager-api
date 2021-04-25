@@ -21,6 +21,10 @@ class ProfileOutput
          */
         public ?string $nickname,
         /**
+         * @OpenApi\Property(type="string", nullable=true, example="ioni14")
+         */
+        public ?string $handle,
+        /**
          * @OpenApi\Property(type="boolean", description="true if the user wants to appear in the supporters list.")
          */
         public bool $supporterVisible,

@@ -26,6 +26,7 @@ class DirectCallMemberProfileProvider implements MemberProfileProviderInterface
             $result[] = new MemberProfile(
                 MemberId::fromString((string) $profile->id),
                 $profile->nickname,
+                $profile->handle,
             );
         }
 

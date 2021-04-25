@@ -12,10 +12,10 @@ class OrganizationsCandidatesControllerTest extends WebTestCase
     public function it_should_return_list_of_candidates_of_an_orga_for_logged_founder(): void
     {
         static::$connection->executeStatement(<<<SQL
-                INSERT INTO users(id, roles, auth0_username, nickname, created_at)
-                VALUES ('00000000-0000-0000-0000-000000000001', '["ROLE_USER"]', 'Ioni', 'Ioni', '2021-01-01T10:00:00Z'),
-                       ('00000000-0000-0000-0000-000000000002', '["ROLE_USER"]', 'User 1', 'User 1', '2021-01-02T10:00:00Z'),
-                       ('00000000-0000-0000-0000-000000000003', '["ROLE_USER"]', 'User 2', 'User 2', '2021-01-03T10:00:00Z');
+                INSERT INTO users(id, roles, auth0_username, nickname, handle, created_at)
+                VALUES ('00000000-0000-0000-0000-000000000001', '["ROLE_USER"]', 'Ioni', 'Ioni', 'ioni', '2021-01-01T10:00:00Z'),
+                       ('00000000-0000-0000-0000-000000000002', '["ROLE_USER"]', 'User 1', null, 'user_1', '2021-01-02T10:00:00Z'),
+                       ('00000000-0000-0000-0000-000000000003', '["ROLE_USER"]', 'User 2', 'User 2', null, '2021-01-03T10:00:00Z');
                 INSERT INTO organizations(id, founder_id, name, sid, logo_url, updated_at)
                 VALUES ('00000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000001', 'An orga 1', 'FCU1', 'https://example.org/logo.png', '2021-01-01T10:00:00Z');
                 INSERT INTO memberships(member_id, organization_id, joined)
@@ -36,11 +36,13 @@ class OrganizationsCandidatesControllerTest extends WebTestCase
             'candidates' => [
                 [
                     'id' => '00000000-0000-0000-0000-000000000002',
-                    'nickname' => 'User 1',
+                    'nickname' => null,
+                    'handle' => 'user_1',
                 ],
                 [
                     'id' => '00000000-0000-0000-0000-000000000003',
                     'nickname' => 'User 2',
+                    'handle' => null,
                 ],
             ],
         ], $json);

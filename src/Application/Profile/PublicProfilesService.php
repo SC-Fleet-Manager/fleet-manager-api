@@ -2,7 +2,6 @@
 
 namespace App\Application\Profile;
 
-use App\Application\Profile\Output\ProfileOutput;
 use App\Application\Profile\Output\PublicProfileOutput;
 use App\Application\Repository\UserRepositoryInterface;
 use App\Domain\UserId;
@@ -17,7 +16,7 @@ class PublicProfilesService
     /**
      * @param UserId[] $userIds
      *
-     * @return ProfileOutput[]
+     * @return PublicProfileOutput[]
      */
     public function handle(array $userIds): array
     {
@@ -28,6 +27,7 @@ class PublicProfilesService
             $result[] = new PublicProfileOutput(
                 $user->getId(),
                 $user->getNickname(),
+                $user->getHandle(),
             );
         }
 

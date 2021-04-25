@@ -16,6 +16,10 @@ class OrganizationMembersItemOutput
          * @OpenApi\Property(type="string", example="Ioni")
          */
         public ?string $nickname,
+        /**
+         * @OpenApi\Property(type="string", example="ioni14")
+         */
+        public ?string $handle,
     ) {
     }
 }
