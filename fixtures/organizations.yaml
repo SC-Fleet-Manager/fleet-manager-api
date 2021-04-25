@@ -7,6 +7,22 @@ App\Entity\Organization:
             - 'FLK'
             - 'https://robertsspaceindustries.com/media/o0snhh0rt8ncgr/logo/FLK-Logo.png'
             - '<(new \DateTimeImmutable("2021-03-01 11:22:33"))>'
+    orga_palifen:
+        __construct:
+            - '<(\App\Domain\OrgaId::fromString("01790890-91a4-f9ae-9eca-467b1457167b"))>'
+            - '<(\App\Domain\MemberId::fromString("01790883-29ec-d715-dafc-8eaa3e04cd3b"))>' # Lunia
+            - 'Palifen'
+            - 'PALIFEN'
+            - 'https://robertsspaceindustries.com/media/znse1p5vijr3qr/logo/PALIFEN-Logo.png'
+            - '<(new \DateTimeImmutable("2021-03-02 11:22:33"))>'
+    orga_force_coloniale_unifiee:
+        __construct:
+            - '<(\App\Domain\OrgaId::fromString("017908f5-732f-cf92-1158-c094eb9c5035"))>'
+            - '<(\App\Domain\MemberId::fromString("01F17XSXB9KDCJ6SAR1320RH9Q"))>' # Ashuvidz
+            - 'Force Coloniale Unifiée'
+            - 'FCU'
+            - 'https://robertsspaceindustries.com/media/p7en31fqpos97r/logo/FCU-Logo.png'
+            - '<(new \DateTimeImmutable("2021-03-03 11:22:33"))>'
     orga_{10..55}:
         __construct:
             - '<(\App\Domain\OrgaId::fromString("01F3GG2FP02EWQVQ37J7W9H4".$current))>'
@@ -15,3 +31,35 @@ App\Entity\Organization:
             - 'ORGA<current()>'
             - 'https://dummyimage.com/400x400/79a3a3/dddff0.png&text=Orga+<current()>'
             - '<(new \DateTimeImmutable("2021-03-01 11:22:".$current))>'
+
+App\Entity\Membership:
+    orga_fallkrom_joined_{10..30}:
+        __construct:
+            - '@orga_fallkrom'
+            - '<(\App\Domain\MemberId::fromString("01790893-72da-5f6e-bb34-484f8f963c".$current))>'
+            - true
+    orga_fallkrom_not_joined_{31..50}:
+        __construct:
+            - '@orga_fallkrom'
+            - '<(\App\Domain\MemberId::fromString("01790893-72da-5f6e-bb34-484f8f963c".$current))>'
+            - false
+    orga_palifen_joined_{10..30}:
+        __construct:
+            - '@orga_palifen'
+            - '<(\App\Domain\MemberId::fromString("017908a5-db0c-6bb5-a408-994916f790".$current))>'
+            - true
+    orga_palifen_not_joined_{31..50}:
+        __construct:
+            - '@orga_palifen'
+            - '<(\App\Domain\MemberId::fromString("017908a5-db0c-6bb5-a408-994916f790".$current))>'
+            - false
+    orga_fcu_ioni:
+        __construct:
+            - '@orga_force_coloniale_unifiee'
+            - '<(\App\Domain\MemberId::fromString("01F17XPBYW95G5AT8NHFXA28Q0"))>'
+            - true
+    orga_fcu_lunia:
+        __construct:
+            - '@orga_force_coloniale_unifiee'
+            - '<(\App\Domain\MemberId::fromString("01790883-29ec-d715-dafc-8eaa3e04cd3b"))>'
+            - true

@@ -93,6 +93,7 @@ class DoctrineOrganizationRepository extends ServiceEntityRepository implements 
                 SELECT organization, membership FROM App\Entity\Organization organization
                 JOIN organization.memberships membership
                 WHERE membership.memberId = :memberId
+                ORDER BY organization.id ASC
                 DQL
             )
             ->setParameter('memberId', $memberId)
