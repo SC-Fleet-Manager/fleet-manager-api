@@ -17,9 +17,9 @@ class DirectCallMemberProfileProvider implements MemberProfileProviderInterface
     /**
      * {@inheritdoc}
      */
-    public function getProfiles(array $candidateIds): array
+    public function getProfiles(array $memberIds): array
     {
-        $profiles = $this->profilesService->handle($candidateIds);
+        $profiles = $this->profilesService->handle($memberIds);
 
         $result = [];
         foreach ($profiles as $profile) {

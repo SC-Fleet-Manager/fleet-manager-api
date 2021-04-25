@@ -12,8 +12,8 @@ class CreateOrganizationControllerTest extends WebTestCase
     public function it_should_create_an_orga_for_logged_user(): void
     {
         static::$connection->executeStatement(<<<SQL
-                INSERT INTO users(id, roles, auth0_username, created_at)
-                VALUES ('00000000-0000-0000-0000-000000000001', '["ROLE_USER"]', 'Ioni', '2021-01-01T10:00:00Z');
+                INSERT INTO users(id, roles, auth0_username, handle, created_at)
+                VALUES ('00000000-0000-0000-0000-000000000001', '["ROLE_USER"]', 'Ioni', 'ioni', '2021-01-01T10:00:00Z');
                 INSERT INTO fleets(user_id, updated_at)
                 VALUES ('00000000-0000-0000-0000-000000000001', '2021-01-02T10:00:00Z');
                 INSERT INTO ships(id, fleet_id, model, image_url, quantity)

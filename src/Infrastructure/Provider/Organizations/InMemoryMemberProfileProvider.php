@@ -18,7 +18,7 @@ class InMemoryMemberProfileProvider implements MemberProfileProviderInterface
     /**
      * {@inheritDoc}
      */
-    public function getProfiles(array $candidateIds): array
+    public function getProfiles(array $memberIds): array
     {
         return $this->memberProfiles;
     }

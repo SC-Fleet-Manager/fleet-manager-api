@@ -8,9 +8,9 @@ use App\Domain\MemberProfile;
 interface MemberProfileProviderInterface
 {
     /**
-     * @param MemberId[] $candidateIds
+     * @param MemberId[] $memberIds
      *
      * @return MemberProfile[]
      */
-    public function getProfiles(array $candidateIds): array;
+    public function getProfiles(array $memberIds): array;
 }
