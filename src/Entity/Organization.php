@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Ulid;
+use Webmozart\Assert\Assert;
 
 /**
  * @ORM\Entity
@@ -61,6 +62,8 @@ class Organization
 
     public function __construct(OrgaId $id, MemberId $founderId, string $name, string $sid, ?string $logoUrl, \DateTimeInterface $updatedAt)
     {
+        Assert::lengthBetween($name, 3, 32);
+        Assert::lengthBetween($sid, 3, 15);
         $this->id = $id->getId();
         $this->founderId = $founderId->getId();
         $this->name = $name;
@@ -101,6 +104,14 @@ class Organization
         return $this->memberships->isEmpty();
     }
 
+    public function update(string $name, ?string $logoUrl, \DateTimeInterface $updatedAt): void
+    {
+        Assert::lengthBetween($name, 3, 32);
+        $this->name = $name;
+        $this->logoUrl = $logoUrl;
+        $this->updatedAt = \DateTimeImmutable::createFromInterface($updatedAt);
+    }
+
     /**
      * @return MemberProfile[]
      */
@@ -131,6 +142,26 @@ class Organization
         return $memberProfileProvider->getProfiles($candidateIds);
     }
 
+    public function isMemberOf(MemberId $memberId): bool
+    {
+        return $this->getMembership($memberId) !== null;
+    }
+
+    public function isFounder(MemberId $memberId): bool
+    {
+        return $this->founderId->equals($memberId->getId());
+    }
+
+    public function hasJoined(MemberId $memberId): bool
+    {
+        $membership = $this->getMembership($memberId);
+        if ($membership === null) {
+            return false;
+        }
+
+        return $membership->hasJoined();
+    }
+
     public function addMember(MemberId $memberId, bool $joined, \DateTimeInterface $updatedAt): void
     {
         $this->memberships->add(new Membership($this, $memberId, $joined));
@@ -152,24 +183,14 @@ class Organization
         $this->updatedAt = \DateTimeImmutable::createFromInterface($updatedAt);
     }
 
-    public function isMemberOf(MemberId $memberId): bool
+    public function acceptCandidate(MemberId $candidateId, \DateTimeInterface $updatedAt): void
     {
-        return $this->getMembership($memberId) !== null;
-    }
-
-    public function hasJoined(MemberId $memberId): bool
-    {
-        $membership = $this->getMembership($memberId);
+        $membership = $this->getMembership($candidateId);
         if ($membership === null) {
-            return false;
+            return;
         }
-
-        return $membership->hasJoined();
-    }
-
-    public function isFounder(MemberId $memberId): bool
-    {
-        return $this->founderId->equals($memberId->getId());
+        $membership->accept();
+        $this->updatedAt = \DateTimeImmutable::createFromInterface($updatedAt);
     }
 
     private function promoteNewFounder(): void
@@ -181,16 +202,6 @@ class Organization
                 break;
             }
         }
-    }
-
-    public function acceptCandidate(MemberId $candidateId, \DateTimeInterface $updatedAt): void
-    {
-        $membership = $this->getMembership($candidateId);
-        if ($membership === null) {
-            return;
-        }
-        $membership->accept();
-        $this->updatedAt = \DateTimeImmutable::createFromInterface($updatedAt);
     }
 
     private function getMembership(MemberId $memberId): ?Membership

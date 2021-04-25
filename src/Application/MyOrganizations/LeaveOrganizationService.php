@@ -39,7 +39,7 @@ class LeaveOrganizationService
 
         $fleet = $this->organizationFleetRepository->getOrganizationFleet($orgaId);
         if ($fleet === null) {
-            throw new NotFoundOrganizationFleetException($orgaId);
+            return;
         }
         $fleet->deleteShipsOfMember($memberId, $this->clock->now());
         $this->organizationFleetRepository->saveAll([$fleet]);

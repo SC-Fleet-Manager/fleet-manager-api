@@ -129,7 +129,7 @@ class OrganizationsServiceTest extends KernelTestCase
             OrgaId::fromString('00000000-0000-0000-0000-000000000011'),
             MemberId::fromString('00000000-0000-0000-0000-000000000002'),
             'Les douteux',
-            'gÂrDiens_douteux',
+            'gÂrDiens_douteu',
             null,
             new \DateTimeImmutable('2021-01-02T10:00:00Z')
         ));
@@ -165,7 +165,7 @@ class OrganizationsServiceTest extends KernelTestCase
                 new OrganizationsItemOutput(
                     OrgaId::fromString('00000000-0000-0000-0000-000000000011'),
                     'Les douteux',
-                    'gÂrDiens_douteux',
+                    'gÂrDiens_douteu',
                     null,
                 ),
             ],
