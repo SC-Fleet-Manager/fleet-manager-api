@@ -41,7 +41,7 @@ class OrganizationCandidatesServiceTest extends KernelTestCase
         /** @var InMemoryMemberProfileProvider $memberProfileProvider */
         $memberProfileProvider = static::$container->get(MemberProfileProviderInterface::class);
         $memberProfileProvider->setProfiles([
-            new MemberProfile($memberId, 'Ioni'),
+            new MemberProfile($memberId, 'Ioni', 'ioni14'),
         ]);
 
         /** @var OrganizationCandidatesService $service */
@@ -50,6 +50,7 @@ class OrganizationCandidatesServiceTest extends KernelTestCase
 
         static::assertCount(1, $output->candidates);
         static::assertSame('Ioni', $output->candidates[0]->nickname);
+        static::assertSame('ioni14', $output->candidates[0]->handle);
     }
 
     /**

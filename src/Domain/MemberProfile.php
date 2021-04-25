@@ -7,6 +7,7 @@ class MemberProfile
     public function __construct(
         private MemberId $id,
         private ?string $nickname,
+        private ?string $handle,
     ) {
     }
 
@@ -18,5 +19,10 @@ class MemberProfile
     public function getNickname(): ?string
     {
         return $this->nickname;
+    }
+
+    public function getHandle(): ?string
+    {
+        return $this->handle;
     }
 }

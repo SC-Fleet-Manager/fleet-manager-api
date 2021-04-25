@@ -38,6 +38,7 @@ class OrganizationMembersService
                 return new OrganizationMembersItemOutput(
                     $memberProfile->getId(),
                     $memberProfile->getNickname(),
+                    $memberProfile->getHandle(),
                 );
             }, $joinedMembers),
         );

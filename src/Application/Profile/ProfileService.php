@@ -25,6 +25,7 @@ class ProfileService
             $userId,
             $user->getAuth0Username(),
             $user->getNickname(),
+            $user->getHandle(),
             $user->isSupporterVisible(),
             $user->getCoins(),
             $user->getCreatedAt(),
