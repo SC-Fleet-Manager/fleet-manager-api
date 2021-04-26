@@ -23,7 +23,7 @@ class LastPatchNotesController
 
     /**
      * @OpenApi\Tag(name="PatchNote")
-     * @OpenApi\Get(description="Retrieve the last 5 patch notes. If a user is logged, its last patch note date will be updated (cf. /api/patch-note/has-new-patch-note).")
+     * @OpenApi\Get(description="Retrieve the last 10 patch notes. If a user is logged, its last patch note date will be updated (cf. /api/patch-note/has-new-patch-note).")
      * @OpenApi\Response(response=200, description="Ok.", @Model(type=LastPatchNotesOutput::class))
      */
     #[Route('/api/patch-note/last-patch-notes', name: 'patch_note_last_patch_notes', methods: ['GET'])]

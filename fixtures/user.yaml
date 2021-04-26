@@ -8,6 +8,8 @@ App\Entity\User:
         coins: 5133
         roles: ['ROLE_USER', 'ROLE_ADMIN']
         lastPatchNoteReadAt: '<(new \DateTimeImmutable("2019-04-04 11:22:33"))>'
+        __calls:
+            - changeHandle: ['ioni']
     user_ashuvidz:
         __construct:
             - '<(\App\Domain\UserId::fromString("01F17XSXB9KDCJ6SAR1320RH9Q"))>'
@@ -17,6 +19,8 @@ App\Entity\User:
         coins: 700
         roles: ['ROLE_USER', 'ROLE_ADMIN']
         lastPatchNoteReadAt: '<(new \DateTimeImmutable("2019-04-01 11:22:33"))>'
+        __calls:
+            - changeHandle: ['ashuvidz']
     user_lunia:
         __construct:
             - '<(\App\Domain\UserId::fromString("01790883-29ec-d715-dafc-8eaa3e04cd3b"))>'
@@ -26,6 +30,8 @@ App\Entity\User:
         coins: 700
         roles: ['ROLE_USER', 'ROLE_ADMIN']
         lastPatchNoteReadAt: '<(new \DateTimeImmutable("2019-04-01 11:22:33"))>'
+        __calls:
+            - changeHandle: ['lunia']
     user_gardiens1:
         __construct:
             - '<(\App\Domain\UserId::fromString("01F17XT5MRZ31J1MMXMJQT5VE2"))>'
@@ -52,11 +58,15 @@ App\Entity\User:
         __construct:
             - '<(\App\Domain\UserId::fromString("01790893-72da-5f6e-bb34-484f8f963c".$current))>'
             - 'fallkrom_members_<current()>'
-            - '50%? "Member <current()>"'
+            - '50%? Member <current()>'
             - '<(new \DateTimeImmutable("2019-04-23 11:22:".$current))>'
+        __calls:
+            - changeHandle: ['fallkrom_member_<current()>']
     user_palifen_members_{10..50}:
         __construct:
             - '<(\App\Domain\UserId::fromString("017908a5-db0c-6bb5-a408-994916f790".$current))>'
             - 'palifen_members_<current()>'
-            - '50%? "Member <current()>"'
+            - '50%? Member <current()>'
             - '<(new \DateTimeImmutable("2019-04-24 11:22:".$current))>'
+        __calls:
+            - changeHandle: ['palifen_member_<current()>']

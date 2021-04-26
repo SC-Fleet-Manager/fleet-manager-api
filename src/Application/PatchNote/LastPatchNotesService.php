@@ -11,7 +11,7 @@ use App\Entity\PatchNote;
 
 class LastPatchNotesService
 {
-    private const COUNT_PATCH_NOTES = 5;
+    private const COUNT_PATCH_NOTES = 10;
 
     public function __construct(
         private UserRepositoryInterface $userRepository,
