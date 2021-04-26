@@ -30,7 +30,6 @@ class LastPatchNotesServiceTest extends KernelTestCase
             new PatchNote(PatchNoteId::fromString('00000000-0000-0000-0000-000000000012'), 'Title 2', 'Body 2', 'http://example.com/2', new \DateTimeImmutable('2021-01-03T10:00:00+00:00')),
             new PatchNote(PatchNoteId::fromString('00000000-0000-0000-0000-000000000013'), 'Title 3', 'Body 3', 'http://example.com/3', new \DateTimeImmutable('2021-01-04T10:00:00+00:00')),
             new PatchNote(PatchNoteId::fromString('00000000-0000-0000-0000-000000000014'), 'Title 4', 'Body 4', null, new \DateTimeImmutable('2021-01-05T10:00:00+00:00')),
-            new PatchNote(PatchNoteId::fromString('00000000-0000-0000-0000-000000000015'), 'Title 5', 'Body 5', null, new \DateTimeImmutable('2021-01-06T10:00:00+00:00')),
         ]);
 
         /** @var LastPatchNotesService $service */
@@ -38,11 +37,11 @@ class LastPatchNotesServiceTest extends KernelTestCase
         $output = $service->handle();
 
         static::assertEquals(new LastPatchNotesOutput(patchNotes: [
-            new LastPatchNoteOutput(id: PatchNoteId::fromString('00000000-0000-0000-0000-000000000015'), title: 'Title 5', body: 'Body 5', link: null, createdAt: new \DateTimeImmutable('2021-01-06T10:00:00+00:00')),
             new LastPatchNoteOutput(id: PatchNoteId::fromString('00000000-0000-0000-0000-000000000014'), title: 'Title 4', body: 'Body 4', link: null, createdAt: new \DateTimeImmutable('2021-01-05T10:00:00+00:00')),
             new LastPatchNoteOutput(id: PatchNoteId::fromString('00000000-0000-0000-0000-000000000013'), title: 'Title 3', body: 'Body 3', link: 'http://example.com/3', createdAt: new \DateTimeImmutable('2021-01-04T10:00:00+00:00')),
             new LastPatchNoteOutput(id: PatchNoteId::fromString('00000000-0000-0000-0000-000000000012'), title: 'Title 2', body: 'Body 2', link: 'http://example.com/2', createdAt: new \DateTimeImmutable('2021-01-03T10:00:00+00:00')),
             new LastPatchNoteOutput(id: PatchNoteId::fromString('00000000-0000-0000-0000-000000000011'), title: 'Title 1', body: 'Body 1', link: null, createdAt: new \DateTimeImmutable('2021-01-02T10:00:00+00:00')),
+            new LastPatchNoteOutput(id: PatchNoteId::fromString('00000000-0000-0000-0000-000000000010'), title: 'Title 0', body: 'Body 0', link: null, createdAt: new \DateTimeImmutable('2021-01-01T10:00:00+00:00')),
         ]), $output);
     }
 

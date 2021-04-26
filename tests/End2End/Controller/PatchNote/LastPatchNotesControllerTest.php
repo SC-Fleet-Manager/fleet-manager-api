@@ -17,10 +17,7 @@ class LastPatchNotesControllerTest extends WebTestCase
                 INSERT INTO patch_note(id, title, body, created_at)
                 VALUES ('00000000-0000-0000-0000-000000000010', 'Title 0', 'Body 0', '2021-03-20T10:00:00+01:00'),
                        ('00000000-0000-0000-0000-000000000011', 'Title 1', 'Body 1', '2021-03-21T10:00:00+01:00'),
-                       ('00000000-0000-0000-0000-000000000012', 'Title 2', 'Body 2', '2021-03-22T10:00:00+01:00'),
-                       ('00000000-0000-0000-0000-000000000013', 'Title 3', 'Body 3', '2021-03-23T10:00:00+01:00'),
-                       ('00000000-0000-0000-0000-000000000014', 'Title 4', 'Body 4', '2021-03-24T10:00:00+01:00'),
-                       ('00000000-0000-0000-0000-000000000015', 'Title 5', 'Body 5', '2021-03-25T10:00:00+01:00');
+                       ('00000000-0000-0000-0000-000000000012', 'Title 2', 'Body 2', '2021-03-22T10:00:00+01:00');
             SQL
         );
 
@@ -33,27 +30,6 @@ class LastPatchNotesControllerTest extends WebTestCase
         $json = json_decode(static::$client->getResponse()->getContent(), true);
         static::assertSame([
             'patchNotes' => [
-                [
-                    'id' => '00000000-0000-0000-0000-000000000015',
-                    'title' => 'Title 5',
-                    'body' => 'Body 5',
-                    'link' => null,
-                    'createdAt' => '2021-03-25T09:00:00+00:00',
-                ],
-                [
-                    'id' => '00000000-0000-0000-0000-000000000014',
-                    'title' => 'Title 4',
-                    'body' => 'Body 4',
-                    'link' => null,
-                    'createdAt' => '2021-03-24T09:00:00+00:00',
-                ],
-                [
-                    'id' => '00000000-0000-0000-0000-000000000013',
-                    'title' => 'Title 3',
-                    'body' => 'Body 3',
-                    'link' => null,
-                    'createdAt' => '2021-03-23T09:00:00+00:00',
-                ],
                 [
                     'id' => '00000000-0000-0000-0000-000000000012',
                     'title' => 'Title 2',
@@ -68,6 +44,13 @@ class LastPatchNotesControllerTest extends WebTestCase
                     'link' => null,
                     'createdAt' => '2021-03-21T09:00:00+00:00',
                 ],
+                [
+                    'id' => '00000000-0000-0000-0000-000000000010',
+                    'title' => 'Title 0',
+                    'body' => 'Body 0',
+                    'link' => null,
+                    'createdAt' => '2021-03-20T09:00:00+00:00',
+                ],
             ],
         ], $json);
 
@@ -75,6 +58,6 @@ class LastPatchNotesControllerTest extends WebTestCase
                 SELECT last_patch_note_read_at FROM users WHERE id = '00000000-0000-0000-0000-000000000001';
             SQL
         )->fetchAssociative();
-        static::assertSame('2021-03-25 09:00:00+00', $result['last_patch_note_read_at']);
+        static::assertSame('2021-03-22 09:00:00+00', $result['last_patch_note_read_at']);
     }
 }
