@@ -5,6 +5,7 @@ namespace App\Tests\Acceptance\MyOrganizations;
 use App\Application\MyOrganizations\KickMemberService;
 use App\Application\Repository\OrganizationFleetRepositoryInterface;
 use App\Application\Repository\OrganizationRepositoryInterface;
+use App\Domain\Exception\FounderOfOrganizationException;
 use App\Domain\Exception\NotFounderOfOrganizationException;
 use App\Domain\Exception\NotJoinedOrganizationMemberException;
 use App\Domain\MemberId;
@@ -109,5 +110,33 @@ class KickMemberServiceTest extends KernelTestCase
         /** @var KickMemberService $service */
         $service = static::$container->get(KickMemberService::class);
         $service->handle($orgaId, $memberId, $memberId);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_error_if_kicking_member_is_the_founder(): void
+    {
+        $founderId = MemberId::fromString('00000000-0000-0000-0000-000000000001');
+        $memberId = MemberId::fromString('00000000-0000-0000-0000-000000000002');
+        $orgaId = OrgaId::fromString('00000000-0000-0000-0000-000000000010');
+
+        /** @var InMemoryOrganizationRepository $orgaRepository */
+        $orgaRepository = static::$container->get(OrganizationRepositoryInterface::class);
+        $orgaRepository->save($orga = new Organization(
+            $orgaId,
+            $founderId,
+            'My orga',
+            'ORG',
+            null,
+            new \DateTimeImmutable('2021-01-01T10:00:00Z'),
+        ));
+        $orga->addMember($memberId, true, new \DateTimeImmutable('2021-01-02T10:00:00Z'));
+
+        $this->expectException(FounderOfOrganizationException::class);
+
+        /** @var KickMemberService $service */
+        $service = static::$container->get(KickMemberService::class);
+        $service->handle($orgaId, $founderId, $founderId);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Application\MyOrganizations;
 use App\Application\Common\Clock;
 use App\Application\Repository\OrganizationFleetRepositoryInterface;
 use App\Application\Repository\OrganizationRepositoryInterface;
+use App\Domain\Exception\FounderOfOrganizationException;
 use App\Domain\Exception\NotFounderOfOrganizationException;
 use App\Domain\Exception\NotFoundOrganizationException;
 use App\Domain\Exception\NotFoundOrganizationFleetException;
@@ -29,6 +30,9 @@ class KickMemberService
         }
         if (!$organization->isFounder($founderId)) {
             throw new NotFounderOfOrganizationException($orgaId, $founderId);
+        }
+        if ($organization->isFounder($memberId)) {
+            throw new FounderOfOrganizationException($orgaId, $memberId, userMessage: 'You cannot kick yourself out of your organization but you can disband it.');
         }
         if (!$organization->hasJoined($memberId)) {
             throw new NotJoinedOrganizationMemberException($orgaId, $memberId);
