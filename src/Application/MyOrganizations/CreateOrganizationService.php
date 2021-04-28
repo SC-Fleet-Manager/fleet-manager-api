@@ -28,7 +28,7 @@ class CreateOrganizationService
 
     public function handle(OrgaId $orgaId, MemberId $memberId, string $name, string $sid, ?string $logoUrl = null): void
     {
-        $memberProfile = $this->memberProfileProvider->getProfiles([$memberId])[0] ?? null;
+        $memberProfile = $this->memberProfileProvider->getProfiles([$memberId])[(string) $memberId] ?? null;
         if ($memberProfile === null || $memberProfile->getHandle() === null) {
             throw new NoMemberHandleException($memberId);
         }

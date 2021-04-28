@@ -34,13 +34,13 @@ class OrganizationCandidatesService
         $candidates = $organization->getCandidates($this->memberProfileProvider);
 
         return new OrganizationCandidatesOutput(
-            array_map(static function (MemberProfile $memberProfile): OrganizationCandidatesItemOutput {
+            array_values(array_map(static function (MemberProfile $memberProfile): OrganizationCandidatesItemOutput {
                 return new OrganizationCandidatesItemOutput(
                     $memberProfile->getId(),
                     $memberProfile->getNickname(),
                     $memberProfile->getHandle(),
                 );
-            }, $candidates),
+            }, $candidates)),
         );
     }
 }
