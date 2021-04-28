@@ -10,9 +10,15 @@ class InMemoryMemberProfileProvider implements MemberProfileProviderInterface
     /** @var MemberProfile[] */
     private array $memberProfiles = [];
 
+    /**
+     * @param MemberProfile[] $memberProfiles
+     */
     public function setProfiles(array $memberProfiles): void
     {
-        $this->memberProfiles = $memberProfiles;
+        $this->memberProfiles = [];
+        foreach ($memberProfiles as $memberProfile) {
+            $this->memberProfiles[(string) $memberProfile->getId()] = $memberProfile;
+        }
     }
 
     /**

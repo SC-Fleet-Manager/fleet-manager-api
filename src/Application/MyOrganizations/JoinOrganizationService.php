@@ -27,7 +27,7 @@ class JoinOrganizationService
             throw new NotFoundOrganizationException($orgaId);
         }
 
-        $memberProfile = $this->memberProfileProvider->getProfiles([$memberId])[0] ?? null;
+        $memberProfile = $this->memberProfileProvider->getProfiles([$memberId])[(string) $memberId] ?? null;
         if ($memberProfile === null || $memberProfile->getHandle() === null) {
             throw new NoMemberHandleException($memberId);
         }

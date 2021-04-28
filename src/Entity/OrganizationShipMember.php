@@ -38,6 +38,11 @@ class OrganizationShipMember
         $this->updateQuantity($quantity);
     }
 
+    public function getMemberId(): MemberId
+    {
+        return new MemberId($this->memberId);
+    }
+
     public function getQuantity(): int
     {
         return $this->quantity;

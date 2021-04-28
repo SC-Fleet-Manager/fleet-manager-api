@@ -23,7 +23,7 @@ class DirectCallMemberProfileProvider implements MemberProfileProviderInterface
 
         $result = [];
         foreach ($profiles as $profile) {
-            $result[] = new MemberProfile(
+            $result[(string) $profile->id] = new MemberProfile(
                 MemberId::fromString((string) $profile->id),
                 $profile->nickname,
                 $profile->handle,

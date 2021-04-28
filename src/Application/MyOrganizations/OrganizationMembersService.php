@@ -34,13 +34,13 @@ class OrganizationMembersService
         $joinedMembers = $organization->getJoinedMembers($this->memberProfileProvider);
 
         return new OrganizationMembersOutput(
-            array_map(static function (MemberProfile $memberProfile): OrganizationMembersItemOutput {
+            array_values(array_map(static function (MemberProfile $memberProfile): OrganizationMembersItemOutput {
                 return new OrganizationMembersItemOutput(
                     $memberProfile->getId(),
                     $memberProfile->getNickname(),
                     $memberProfile->getHandle(),
                 );
-            }, $joinedMembers),
+            }, $joinedMembers)),
         );
     }
 }

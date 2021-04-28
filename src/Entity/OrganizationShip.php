@@ -82,6 +82,14 @@ class OrganizationShip
         return $this->quantity;
     }
 
+    /**
+     * @return OrganizationShipMember[]
+     */
+    public function getOwners(): array
+    {
+        return $this->owners->toArray();
+    }
+
     public function updateOwner(MemberId $ownerId, ?string $imageUrl, int $quantity): void
     {
         Assert::startsWith($imageUrl ?? 'http', 'http');
