@@ -53,6 +53,20 @@ services:
             PAYPAL_CHECKOUT_MODE: 'sandbox'
             DEFAULT_URI: 'https://fleet-manager.space'
             AUTH0_DOMAIN: 'fleet-manager.eu.auth0.com'
+    supervisor:
+        image: 186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-api-supervisor:${APP_VERSION:-prod-latest}
+        hostname: supervisor
+        restart: unless-stopped
+        env_file: php.env
+        depends_on:
+            - redis
+        environment:
+            APP_ENV: prod
+            FUNDING_ORDER_CAPTURE_ADDRESSES: 'fleet-manager@protonmail.com'
+            PAYPAL_CHECKOUT_WEBHOOK_ID: '72Y11928S1077440L'
+            PAYPAL_CHECKOUT_MODE: 'sandbox'
+            DEFAULT_URI: 'https://fleet-manager.space'
+            AUTH0_DOMAIN: 'fleet-manager.eu.auth0.com'
     apache:
         image: 186694923554.dkr.ecr.eu-west-1.amazonaws.com/fleet-manager-api-apache:${APP_VERSION:-prod-latest}
         hostname: apache
