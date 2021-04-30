@@ -1,4 +1,4 @@
-FROM php:8.0-fpm-buster as runtime_php
+FROM php:8.0.5-fpm-buster as runtime_php
 
 RUN apt-get update && apt-get install -y \
     unzip \
