@@ -42,10 +42,10 @@ server-dump:							## launch the dump server for test env
 install:									## run the stack + init fixtures
 	$(MAKE) up
 	$(MAKE) stop c=supervisor
+	$(MAKE) ci
 	$(MAKE) -j2 db-reset db-reset-tests
 	$(MAKE) fixtures
 	$(MAKE) start c=supervisor
-	$(MAKE) ci
 start:										## start stopped containers
 	$(DOCKER_COMPOSE) start $(c)
 stop:										## stop

@@ -13,13 +13,23 @@ services:
                 DUMP_ENV: 1
         volumes:
             - .:/app
-        environment:
-            # Docker for mac : try remote_host=host.docker.internal instead of remote_connect_back
+#        environment:
+#            # Docker for mac : try remote_host=host.docker.internal instead of remote_connect_back
 #            XDEBUG_CONFIG: >-
 #                remote_enable=1
 #                remote_connect_back=1
 #                remote_port=9001
 #                idekey=PHPSTORM
+    supervisor:
+        build:
+            context: .
+            target: build_supervisor_dev
+            dockerfile: ./docker/Dockerfile
+            args:
+                ENV: 'dev'
+                DUMP_ENV: 1
+        volumes:
+            - .:/app
     apache:
         build:
             context: .
