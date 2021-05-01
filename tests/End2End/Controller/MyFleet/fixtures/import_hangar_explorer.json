@@ -1,0 +1,30 @@
+[
+  {
+    "name": "Cutlass 2949 Best In Show",
+    "manufacturer_code": "DRAK",
+    "manufacturer_name": "Drake Interplanetary",
+    "ship_code": "DRAK_Cutlass_2949_Best_In_Show",
+    "ship_name": "Cutlass 2949 Best In Show",
+    "ship_serial": null,
+    "pledge_id": "15109407",
+    "pledge_name": "Package - Origin 100i Starter Game Package Warbond",
+    "pledge_date": "2018-04-26",
+    "pledge_cost": "$110.00 USD",
+    "lti": true,
+    "warbond": true
+  },
+  {
+    "name": "Cyclone",
+    "manufacturer_code": "TMBL",
+    "manufacturer_name": "Tumbril Land Systems",
+    "ship_code": "TMBL_Cyclone",
+    "ship_name": "Cyclone",
+    "ship_serial": null,
+    "pledge_id": "15186605",
+    "pledge_name": "Standalone Ship - Tumbril Cyclone ",
+    "pledge_date": "2018-05-14",
+    "pledge_cost": "$55.00 USD",
+    "lti": false,
+    "warbond": false
+  }
+]
