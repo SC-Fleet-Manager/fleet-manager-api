@@ -3,6 +3,7 @@
 namespace App\Security;
 
 use App\Application\Repository\UserRepositoryInterface;
+use App\Domain\EntityId;
 use App\Domain\UserId;
 use App\Entity\User;
 use Auth0\JWTAuthBundle\Security\Auth0Service;
@@ -39,6 +40,11 @@ class UserEntityJwtProvider extends JwtUserProvider implements LoggerAwareInterf
         $user = $this->tryToCreateSupporter($jwt);
 
         if ($user === null) {
+            $user = $this->userRepository->findByAuth0Username($jwt->sub);
+            if ($user === null) {
+                $user = new User(new UserId(new Ulid()), $jwt->sub, $this->tryToExtractNickname($jwt), new \DateTimeImmutable('now'));
+                $this->userRepository->save($user);
+            }
             /** @var User $user */
             $user = $this->loadUserByUsername($jwt->sub);
         }
@@ -103,15 +109,17 @@ class UserEntityJwtProvider extends JwtUserProvider implements LoggerAwareInterf
 
     public function loadUserByUsername($username): UserInterface
     {
-        $user = $this->userRepository->findByAuth0Username($username);
-        if ($user === null) {
-            $user = new User(new UserId(new Ulid()), $username, null, new \DateTimeImmutable('now'));
+        return $this->userRepository->findByAuth0Username($username);
+    }
 
-            $this->userRepository->save($user);
-            $user = $this->userRepository->findByAuth0Username($username); // refresh
+    private function tryToExtractNickname($jwt): ?string
+    {
+        if (!u($jwt->sub)->startsWith('oauth2|discord|')) {
+            // must be Discord auth
+            return null;
         }
 
-        return $user;
+        return $jwt->{self::RULE_DOMAIN.'/nickname'} ?? null;
     }
 
     public function refreshUser(UserInterface $user): UserInterface
