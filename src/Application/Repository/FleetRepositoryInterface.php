@@ -18,4 +18,6 @@ interface FleetRepositoryInterface
     public function save(Fleet $fleet): void;
 
     public function delete(Fleet $fleet): void;
+
+    public function countShips(): int;
 }

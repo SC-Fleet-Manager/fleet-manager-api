@@ -12,9 +12,9 @@ use function Symfony\Component\String\u;
 class InMemoryOrganizationRepository implements OrganizationRepositoryInterface
 {
     /** @var Organization[] */
-    private array $organizations;
+    private array $organizations = [];
     /** @var Organization[] */
-    private array $organizationsBySid;
+    private array $organizationsBySid = [];
 
     public function getOrganization(OrgaId $orgaId): ?Organization
     {
