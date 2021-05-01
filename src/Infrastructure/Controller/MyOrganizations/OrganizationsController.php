@@ -63,7 +63,7 @@ class OrganizationsController
         }
 
         $output = $this->organizationsService->handle(
-            $this->urlGenerator->generate('organizations', [], UrlGeneratorInterface::ABSOLUTE_URL),
+            $this->urlGenerator->generate('organizations', [], UrlGeneratorInterface::ABSOLUTE_PATH),
             self::ITEMS_PER_PAGE,
             sinceOrgaId: $sinceId,
             searchQuery: $request->query->get('search'),

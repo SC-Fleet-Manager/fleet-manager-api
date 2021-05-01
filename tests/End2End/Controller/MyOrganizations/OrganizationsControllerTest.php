@@ -36,7 +36,7 @@ class OrganizationsControllerTest extends WebTestCase
         $json = json_decode(static::$client->getResponse()->getContent(), true);
 
         static::assertCount(20, $json['organizations']);
-        static::assertSame('http://localhost/api/organizations?sinceId=00000000-0000-0000-0000-000000000029', $json['nextUrl']);
+        static::assertSame('/api/organizations?sinceId=00000000-0000-0000-0000-000000000029', $json['nextUrl']);
         static::assertSame([
             'id' => '00000000-0000-0000-0000-000000000010',
             'name' => 'An orga 10',
