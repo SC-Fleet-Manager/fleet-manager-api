@@ -16,6 +16,7 @@ services:
     App\:
         resource: '../src'
         exclude:
+            - '../src/Application/**/*/Input'
             - '../src/Application/**/*/Output'
             - '../src/Application/Exception'
             - '../src/Infrastructure/**/*/Input'
