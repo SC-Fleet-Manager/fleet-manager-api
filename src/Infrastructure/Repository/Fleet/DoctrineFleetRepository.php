@@ -7,6 +7,7 @@ use App\Domain\Exception\AlreadyExistingFleetForUserException;
 use App\Domain\Exception\ConflictVersionException;
 use App\Domain\UserId;
 use App\Entity\Fleet;
+use App\Entity\Ship;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\OptimisticLockException;
@@ -68,5 +69,15 @@ class DoctrineFleetRepository extends ServiceEntityRepository implements FleetRe
         $this->_em->remove($fleet);
         $this->_em->flush();
         $this->_em->clear();
+    }
+
+    public function countShips(): int
+    {
+        return $this->_em->createQueryBuilder()
+            ->select('SUM(ship.quantity) as countShips')
+            ->from(Ship::class, 'ship')
+            ->getQuery()
+            ->enableResultCache(120)
+            ->getSingleScalarResult();
     }
 }

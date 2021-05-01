@@ -46,4 +46,16 @@ class InMemoryFleetRepository implements FleetRepositoryInterface
     {
         unset($this->fleets[(string) $fleet->getUserId()]);
     }
+
+    public function countShips(): int
+    {
+        $result = 0;
+        foreach ($this->fleets as $fleet) {
+            foreach ($fleet->getShips() as $ship) {
+                $result += $ship->getQuantity();
+            }
+        }
+
+        return $result;
+    }
 }

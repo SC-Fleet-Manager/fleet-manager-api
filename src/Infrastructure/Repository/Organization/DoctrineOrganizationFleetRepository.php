@@ -5,6 +5,7 @@ namespace App\Infrastructure\Repository\Organization;
 use App\Application\Repository\OrganizationFleetRepositoryInterface;
 use App\Domain\OrgaId;
 use App\Entity\OrganizationFleet;
+use App\Entity\OrganizationShip;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Log\LoggerAwareTrait;
@@ -65,5 +66,23 @@ class DoctrineOrganizationFleetRepository extends ServiceEntityRepository implem
             ->setParameter('orgaIds', $orgaIds)
             ->getQuery()
             ->execute();
+    }
+
+    public function countFleets(): int
+    {
+        return $this->createQueryBuilder('orgaFleet')
+            ->select('COUNT(orgaFleet) as countFleets')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function countShips(): int
+    {
+        return $this->_em->createQueryBuilder()
+            ->select('COUNT(orgaShip) as orgaShips')
+            ->from(OrganizationShip::class, 'orgaShip')
+            ->getQuery()
+            ->enableResultCache(60)
+            ->getSingleScalarResult();
     }
 }

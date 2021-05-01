@@ -9,7 +9,7 @@ use App\Entity\OrganizationFleet;
 class InMemoryOrganizationFleetRepository implements OrganizationFleetRepositoryInterface
 {
     /** @var OrganizationFleet[] */
-    private array $organizationFleets;
+    private array $organizationFleets = [];
 
     /**
      * @param OrganizationFleet[] $organizationFleets
@@ -57,5 +57,10 @@ class InMemoryOrganizationFleetRepository implements OrganizationFleetRepository
         foreach ($orgaIds as $orgaId) {
             unset($this->organizationFleets[(string) $orgaId]);
         }
+    }
+
+    public function countFleets(): int
+    {
+        return count($this->organizationFleets);
     }
 }

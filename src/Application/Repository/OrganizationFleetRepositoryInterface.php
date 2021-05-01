@@ -25,4 +25,6 @@ interface OrganizationFleetRepositoryInterface
      * @param OrgaId[] $orgaIds
      */
     public function deleteAll(array $orgaIds): void;
+
+    public function countFleets(): int;
 }
