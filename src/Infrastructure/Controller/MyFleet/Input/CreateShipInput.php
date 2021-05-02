@@ -16,10 +16,10 @@ use function Symfony\Component\String\u;
 class CreateShipInput implements DenormalizableInterface
 {
     /**
-     * @OpenApi\Property(type="string", nullable=false, minLength=2, maxLength=32, example="Avenger Titan")
+     * @OpenApi\Property(type="string", nullable=false, minLength=2, maxLength=60, example="Avenger Titan")
      */
     #[NotBlank]
-    #[Length(min: 2, max: 32)]
+    #[Length(min: 2, max: 60)]
     #[UniqueShipModelByUser]
     public ?string $model = null;
 

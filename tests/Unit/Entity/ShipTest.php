@@ -40,7 +40,7 @@ class ShipTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
 
-        new Ship(ShipId::fromString('00000000-0000-0000-0000-000000000001'), static::createFleet(), str_repeat('A', 33), null, 1);
+        new Ship(ShipId::fromString('00000000-0000-0000-0000-000000000001'), static::createFleet(), str_repeat('A', 61), null, 1);
     }
 
     /**

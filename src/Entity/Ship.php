@@ -26,7 +26,7 @@ class Ship
     private Fleet $fleet;
 
     /**
-     * @ORM\Column(name="model", type="string", length=32)
+     * @ORM\Column(name="model", type="string", length=60)
      */
     private string $model;
 
@@ -43,7 +43,7 @@ class Ship
     public function __construct(ShipId $id, Fleet $fleet, string $model, ?string $imageUrl = null, int $quantity = 1)
     {
         Assert::startsWith($imageUrl ?? 'http', 'http');
-        Assert::lengthBetween($model, 2, 32);
+        Assert::lengthBetween($model, 2, 60);
         Assert::maxLength($imageUrl, 1023);
         $this->id = $id->getId();
         $this->fleet = $fleet;
@@ -74,6 +74,8 @@ class Ship
 
     public function update(string $model, ?string $imageUrl, int $quantity): void
     {
+        Assert::lengthBetween($model, 2, 60);
+        Assert::maxLength($imageUrl, 1023);
         $this->model = $model;
         $this->imageUrl = $imageUrl;
         $this->quantity = $quantity;
