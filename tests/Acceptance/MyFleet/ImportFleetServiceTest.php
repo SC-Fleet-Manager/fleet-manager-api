@@ -99,11 +99,12 @@ class ImportFleetServiceTest extends KernelTestCase
         $service->handle($userId, [
             new ImportFleetShip('Avenger'),
             new ImportFleetShip('Mercury Star Runner'),
+            new ImportFleetShip('Mercury Star Runner'),
         ], onlyMissing: true);
 
         $fleet = $fleetRepository->getFleetByUser($userId);
         static::assertCount(2, $fleet->getShips());
         static::assertSame(2, $fleet->getShipByModel('Avenger')->getQuantity());
-        static::assertSame(1, $fleet->getShipByModel('Mercury Star Runner')->getQuantity());
+        static::assertSame(2, $fleet->getShipByModel('Mercury Star Runner')->getQuantity());
     }
 }

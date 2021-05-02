@@ -28,16 +28,20 @@ class ImportFleetService
             $fleet = new Fleet($userId, $this->clock->now());
         }
 
+        $addedShips = [];
         foreach ($importFleetShips as $importFleetShip) {
             $ship = $fleet->getShipByModel($importFleetShip->model);
             if ($ship === null) {
                 $fleet->addShip(new ShipId(new Ulid()), $importFleetShip->model, null, 1, $this->clock->now());
+                $ship = $fleet->getShipByModel($importFleetShip->model);
+                $addedShips[(string) $ship->getId()] = $ship;
                 continue;
             }
-            if (!$onlyMissing) {
+            if (!$onlyMissing || isset($addedShips[(string) $ship->getId()])) {
                 $fleet->updateShip($ship->getId(), $importFleetShip->model, $ship->getImageUrl(), 1 + $ship->getQuantity(), $this->clock->now());
             }
         }
+        unset($addedShips);
 
         $this->fleetRepository->save($fleet);
     }

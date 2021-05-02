@@ -14,6 +14,34 @@
     "warbond": true
   },
   {
+    "name": "Arrow",
+    "manufacturer_code": "ANVL",
+    "manufacturer_name": "Anvil Aerospace",
+    "ship_code": "ANVL_Arrow",
+    "ship_name": "Arrow",
+    "ship_serial": null,
+    "pledge_id": "-",
+    "pledge_name": "Packs - Ambush Pack - Warbond",
+    "pledge_date": "2020-11-27",
+    "pledge_cost": "-",
+    "lti": true,
+    "warbond": true
+  },
+  {
+    "name": "Arrow",
+    "manufacturer_code": "ANVL",
+    "manufacturer_name": "Anvil Aerospace",
+    "ship_code": "ANVL_Arrow",
+    "ship_name": "Arrow",
+    "ship_serial": null,
+    "pledge_id": "-",
+    "pledge_name": "Packs - Ambush Pack - Warbond",
+    "pledge_date": "2020-11-27",
+    "pledge_cost": "-",
+    "lti": true,
+    "warbond": true
+  },
+  {
     "name": "Cyclone",
     "manufacturer_code": "TMBL",
     "manufacturer_name": "Tumbril Land Systems",

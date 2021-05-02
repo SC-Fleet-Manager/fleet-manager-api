@@ -43,6 +43,10 @@ class ImportFleetControllerTest extends WebTestCase
                 'model' => 'Cutlass 2949 Best In Show',
                 'quantity' => 1,
             ],
+            [
+                'model' => 'Arrow',
+                'quantity' => 2,
+            ],
         ], $result);
     }
 
