@@ -130,4 +130,13 @@ class Fleet
     {
         return $this->ships[(string) $shipId] ?? null;
     }
+
+    public function deleteAllShips(\DateTimeInterface $updatedAt): void
+    {
+        foreach ($this->ships as $ship) {
+            $this->events[] = DeletedFleetShipEvent::createFromShip($this->getUserId(), $ship);
+        }
+        $this->ships->clear();
+        $this->updatedAt = \DateTimeImmutable::createFromInterface($updatedAt);
+    }
 }

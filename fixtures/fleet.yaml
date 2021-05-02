@@ -160,6 +160,6 @@ App\Entity\Ship:
         __construct:
             - '<(\App\Domain\ShipId::fromString("017908af-818f-44f5-21f8-509ce825d2bb"))>'
             - '@fleet_lunia'
-            - 'Avanger titan'
+            - 'Avenger titan'
             - 'https://media.robertsspaceindustries.com/7zbk19qeqy9fp/store_small.jpg'
             - 1
