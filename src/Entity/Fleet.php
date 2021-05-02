@@ -105,7 +105,7 @@ class Fleet
         }
         $this->ships->remove((string) $shipId);
         $this->events[] = DeletedFleetShipEvent::createFromShip($this->getUserId(), $ship);
-        $this->updatedAt = $updatedAt;
+        $this->updatedAt = \DateTimeImmutable::createFromInterface($updatedAt);
     }
 
     public function updateShip(ShipId $shipId, string $model, ?string $imageUrl, int $quantity, \DateTimeInterface $updatedAt): void
@@ -123,7 +123,7 @@ class Fleet
         $ship->update($model, $imageUrl, $quantity);
 
         $this->events[] = UpdatedFleetShipEvent::createFromShip($this->getUserId(), $ship);
-        $this->updatedAt = $updatedAt;
+        $this->updatedAt = \DateTimeImmutable::createFromInterface($updatedAt);
     }
 
     private function getShip(ShipId $shipId): ?Ship
