@@ -96,4 +96,47 @@ class UpdatedFleetShipHandlerTest extends WebTestCase
         static::assertSame(2, $result['quantity']);
         static::assertSame('https://starcitizen.tools/new_avenger.jpg', $result['image_url']);
     }
+
+    /**
+     * @test
+     */
+    public function it_should_add_with_name_60_chars_long(): void
+    {
+        $memberId = '00000000-0000-0000-0000-000000000001';
+        $shipName = str_repeat('a', 60);
+
+        static::$connection->executeStatement(<<<SQL
+                INSERT INTO organizations(id, founder_id, name, sid, updated_at)
+                VALUES ('00000000-0000-0000-0000-000000000010', '$memberId', 'Founder', 'FOUNDER', '2021-01-01T10:00:00Z');
+                INSERT INTO memberships(member_id, organization_id, joined)
+                VALUES ('$memberId', '00000000-0000-0000-0000-000000000010', true);
+                INSERT INTO organization_fleets(orga_id, updated_at)
+                VALUES ('00000000-0000-0000-0000-000000000010', '2021-01-01T11:00:00Z');
+                INSERT INTO messenger_messages(body, headers, queue_name, created_at, available_at, delivered_at)
+                VALUES (
+                        '{"ownerId":"$memberId","model":"$shipName","logoUrl":null,"quantity":1}',
+                        '{"type":"App\\\\Domain\\\\Event\\\\UpdatedFleetShipEvent","X-Message-Stamp-Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\BusNameStamp":"[{\"busName\":\"event.bus\"}]","Content-Type":"application\/json"}',
+                        'organizations_events',
+                        '2021-01-01T10:00:00Z',
+                        '2021-01-01T11:00:00Z',
+                        null
+                        );
+            SQL
+        );
+
+        $app = new Application(static::$kernel);
+        $command = $app->find('messenger:consume');
+        $commandTester = new CommandTester($command);
+        $commandTester->execute([
+            'receivers' => ['organizations_sub'],
+            '--limit' => 1,
+            '--time-limit' => 3,
+        ]);
+
+        $result = static::$connection->executeQuery(<<<SQL
+                SELECT * FROM organization_ships WHERE organization_fleet_id = '00000000-0000-0000-0000-000000000010' and model = '$shipName';
+            SQL
+        )->fetchAssociative();
+        static::assertNotFalse($result, 'Ship should be added.');
+    }
 }

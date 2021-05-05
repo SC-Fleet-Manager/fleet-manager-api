@@ -36,7 +36,7 @@ class OrganizationShip
     private Collection $owners;
 
     /**
-     * @ORM\Column(name="model", type="string", length=32)
+     * @ORM\Column(name="model", type="string", length=60)
      */
     private string $model;
 
@@ -55,7 +55,7 @@ class OrganizationShip
         OrganizationFleet $fleet,
         string $model,
     ) {
-        Assert::lengthBetween($model, 2, 32);
+        Assert::lengthBetween($model, 2, 60);
         $this->id = $id->getId();
         $this->fleet = $fleet;
         $this->model = $model;
