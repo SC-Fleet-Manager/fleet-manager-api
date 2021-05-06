@@ -92,6 +92,12 @@ class OrganizationFleet
         $this->updatedAt = \DateTimeImmutable::createFromInterface($updatedAt);
     }
 
+    public function clearShips(\DateTimeInterface $updatedAt): void
+    {
+        $this->ships->clear();
+        $this->updatedAt = \DateTimeImmutable::createFromInterface($updatedAt);
+    }
+
     public function deleteShip(MemberId $memberId, string $model, \DateTimeInterface $updatedAt): void
     {
         $ship = $this->getShipByModel($model);
