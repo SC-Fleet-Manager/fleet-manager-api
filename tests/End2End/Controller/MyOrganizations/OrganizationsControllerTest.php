@@ -12,7 +12,7 @@ class OrganizationsControllerTest extends WebTestCase
     public function it_should_return_list_of_orgas_paginated_with_20(): void
     {
         $orgaValues = '';
-        for ($i = 0 + 10; $i < 21 + 10; ++$i) { // more than 20
+        for ($i = 0 + 10; $i <= 20 + 10; ++$i) { // more than 20
             $orgaValues .= "('00000000-0000-0000-0000-0000000000$i', '00000000-0000-0000-0000-000000000002', 'An orga $i', 'fcu$i', '2021-01-${i}T10:00:00Z'),";
         }
         $orgaValues = rtrim($orgaValues, ',');
@@ -36,17 +36,17 @@ class OrganizationsControllerTest extends WebTestCase
         $json = json_decode(static::$client->getResponse()->getContent(), true);
 
         static::assertCount(20, $json['organizations']);
-        static::assertSame('/api/organizations?sinceId=00000000-0000-0000-0000-000000000029', $json['nextUrl']);
+        static::assertSame('/api/organizations?sinceId=00000000-0000-0000-0000-000000000011', $json['nextUrl']);
         static::assertSame([
-            'id' => '00000000-0000-0000-0000-000000000010',
-            'name' => 'An orga 10',
-            'sid' => 'fcu10',
+            'id' => '00000000-0000-0000-0000-000000000030',
+            'name' => 'An orga 30',
+            'sid' => 'fcu30',
             'logoUrl' => null,
         ], $json['organizations'][0]);
         static::assertSame([
-            'id' => '00000000-0000-0000-0000-000000000011',
-            'name' => 'An orga 11',
-            'sid' => 'fcu11',
+            'id' => '00000000-0000-0000-0000-000000000029',
+            'name' => 'An orga 29',
+            'sid' => 'fcu29',
             'logoUrl' => null,
         ], $json['organizations'][1]);
     }
@@ -57,7 +57,7 @@ class OrganizationsControllerTest extends WebTestCase
     public function it_should_return_last_page_of_orgas_paginated_with_20(): void
     {
         $orgaValues = '';
-        for ($i = 0 + 10; $i < 21 + 10; ++$i) { // more than 20
+        for ($i = 0 + 10; $i <= 20 + 10; ++$i) { // more than 20
             $orgaValues .= "('00000000-0000-0000-0000-0000000000$i', '00000000-0000-0000-0000-000000000002', 'An orga $i', 'fcu$i', '2021-01-${i}T10:00:00Z'),";
         }
         $orgaValues = rtrim($orgaValues, ',');
@@ -72,7 +72,7 @@ class OrganizationsControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('GET', '/api/organizations?sinceId=00000000-0000-0000-0000-000000000029', [], [], [
+        static::$client->xmlHttpRequest('GET', '/api/organizations?sinceId=00000000-0000-0000-0000-000000000011', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ]);
@@ -83,9 +83,9 @@ class OrganizationsControllerTest extends WebTestCase
         static::assertCount(1, $json['organizations']);
         static::assertNull($json['nextUrl']);
         static::assertSame([
-            'id' => '00000000-0000-0000-0000-000000000030',
-            'name' => 'An orga 30',
-            'sid' => 'fcu30',
+            'id' => '00000000-0000-0000-0000-000000000010',
+            'name' => 'An orga 10',
+            'sid' => 'fcu10',
             'logoUrl' => null,
         ], $json['organizations'][0]);
     }
@@ -117,15 +117,15 @@ class OrganizationsControllerTest extends WebTestCase
         static::assertSame([
             'organizations' => [
                 [
-                    'id' => '00000000-0000-0000-0000-000000000010',
-                    'name' => 'Les bons gÄrdîEnß!',
-                    'sid' => 'LESBONS',
-                    'logoUrl' => null,
-                ],
-                [
                     'id' => '00000000-0000-0000-0000-000000000012',
                     'name' => 'Les douteux',
                     'sid' => 'GARDIENSSDOUTE',
+                    'logoUrl' => null,
+                ],
+                [
+                    'id' => '00000000-0000-0000-0000-000000000010',
+                    'name' => 'Les bons gÄrdîEnß!',
+                    'sid' => 'LESBONS',
                     'logoUrl' => null,
                 ],
             ],
