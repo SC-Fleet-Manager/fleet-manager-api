@@ -54,9 +54,14 @@ class InMemoryOrganizationRepository implements OrganizationRepositoryInterface
 
         $collatorSearchQuery = $searchQuery !== null ? $collator->getSortKey($searchQuery) : null;
 
+        $organizations = $this->organizations;
+        usort($organizations, static function (Organization $organization1, Organization $organization2): int {
+            return $organization2->getId() <=> $organization1->getId();
+        });
+
         $counter = 0;
         $result = [];
-        foreach ($this->organizations as $organization) {
+        foreach ($organizations as $organization) {
             if ($counter >= $itemsPerPage) {
                 break;
             }
@@ -67,7 +72,7 @@ class InMemoryOrganizationRepository implements OrganizationRepositoryInterface
                     continue;
                 }
             }
-            if ($sinceOrgaId === null || (string) $organization->getId() > (string) $sinceOrgaId) {
+            if ($sinceOrgaId === null || (string) $organization->getId() < (string) $sinceOrgaId) {
                 $result[] = $organization;
                 ++$counter;
             }

@@ -41,7 +41,7 @@ class OrganizationsServiceTest extends KernelTestCase
             null,
             new \DateTimeImmutable('2021-01-02T10:00:00Z')
         ));
-        $orga->addMember($memberId, false, new \DateTimeImmutable('2021-01-01T11:00:00Z'));
+        $orga->addMember($memberId, false, new \DateTimeImmutable('2021-01-02T11:00:00Z'));
 
         $orgaRepository->save($orga = new Organization(
             OrgaId::fromString('00000000-0000-0000-0000-000000000012'),
@@ -51,7 +51,7 @@ class OrganizationsServiceTest extends KernelTestCase
             null,
             new \DateTimeImmutable('2021-01-03T10:00:00Z')
         ));
-        $orga->addMember($memberId, true, new \DateTimeImmutable('2021-01-01T11:00:00Z'));
+        $orga->addMember($memberId, true, new \DateTimeImmutable('2021-01-03T11:00:00Z'));
 
         $orgaRepository->save(new Organization(
             OrgaId::fromString('00000000-0000-0000-0000-000000000013'),
@@ -69,42 +69,42 @@ class OrganizationsServiceTest extends KernelTestCase
         static::assertEquals(new OrganizationsCollectionOutput(
             [
                 new OrganizationsItemOutput(
-                    OrgaId::fromString('00000000-0000-0000-0000-000000000010'),
-                    'Force Coloniale Unifiée',
-                    'fcu',
-                    'https://example.com/logo.png',
-                ),
-                new OrganizationsItemOutput(
-                    OrgaId::fromString('00000000-0000-0000-0000-000000000011'),
-                    'Fallkrom',
-                    'flk',
+                    OrgaId::fromString('00000000-0000-0000-0000-000000000013'),
+                    'Some orga 1',
+                    'some_orga_1',
                     null,
                 ),
-            ],
-            'https://example.org/api/organizations?sinceId=00000000-0000-0000-0000-000000000011',
-        ), $output);
-
-        $output = $service->handle('https://example.org/api/organizations', 2, OrgaId::fromString('00000000-0000-0000-0000-000000000011'));
-
-        static::assertEquals(new OrganizationsCollectionOutput(
-            [
                 new OrganizationsItemOutput(
                     OrgaId::fromString('00000000-0000-0000-0000-000000000012'),
                     'Les Gardiens',
                     'gardiens',
                     null,
                 ),
-                new OrganizationsItemOutput(
-                    OrgaId::fromString('00000000-0000-0000-0000-000000000013'),
-                    'Some orga 1',
-                    'some_orga_1',
-                    null,
-                ),
             ],
-            'https://example.org/api/organizations?sinceId=00000000-0000-0000-0000-000000000013',
+            'https://example.org/api/organizations?sinceId=00000000-0000-0000-0000-000000000012',
         ), $output);
 
-        $output = $service->handle('https://example.org/api/organizations', 2, OrgaId::fromString('00000000-0000-0000-0000-000000000013'));
+        $output = $service->handle('https://example.org/api/organizations', 2, OrgaId::fromString('00000000-0000-0000-0000-000000000012'));
+
+        static::assertEquals(new OrganizationsCollectionOutput(
+            [
+                new OrganizationsItemOutput(
+                    OrgaId::fromString('00000000-0000-0000-0000-000000000011'),
+                    'Fallkrom',
+                    'flk',
+                    null,
+                ),
+                new OrganizationsItemOutput(
+                    OrgaId::fromString('00000000-0000-0000-0000-000000000010'),
+                    'Force Coloniale Unifiée',
+                    'fcu',
+                    'https://example.com/logo.png',
+                ),
+            ],
+            'https://example.org/api/organizations?sinceId=00000000-0000-0000-0000-000000000010',
+        ), $output);
+
+        $output = $service->handle('https://example.org/api/organizations', 2, OrgaId::fromString('00000000-0000-0000-0000-000000000010'));
 
         static::assertEmpty($output->organizations);
         static::assertNull($output->nextUrl);
@@ -157,9 +157,9 @@ class OrganizationsServiceTest extends KernelTestCase
         static::assertEquals(new OrganizationsCollectionOutput(
             [
                 new OrganizationsItemOutput(
-                    OrgaId::fromString('00000000-0000-0000-0000-000000000010'),
-                    'Les bons gÄrdîEns',
-                    'les_bons',
+                    OrgaId::fromString('00000000-0000-0000-0000-000000000013'),
+                    'Derniers gardiens',
+                    'derniers',
                     null,
                 ),
                 new OrganizationsItemOutput(
@@ -177,9 +177,9 @@ class OrganizationsServiceTest extends KernelTestCase
         static::assertEquals(new OrganizationsCollectionOutput(
             [
                 new OrganizationsItemOutput(
-                    OrgaId::fromString('00000000-0000-0000-0000-000000000013'),
-                    'Derniers gardiens',
-                    'derniers',
+                    OrgaId::fromString('00000000-0000-0000-0000-000000000010'),
+                    'Les bons gÄrdîEns',
+                    'les_bons',
                     null,
                 ),
             ],

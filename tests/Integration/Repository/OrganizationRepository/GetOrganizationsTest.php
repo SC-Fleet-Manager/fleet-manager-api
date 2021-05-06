@@ -20,10 +20,10 @@ class GetOrganizationsTest extends KernelTestCase
         $orgaValues = rtrim($orgaValues, ',');
         static::$connection->executeStatement(<<<SQL
                 INSERT INTO organizations(id, founder_id, name, sid, updated_at)
-                VALUES ('00000000-0000-0000-0000-000000000800', '00000000-0000-0000-0000-000000000003', 'Les bons gÄrdîEnß!', 'LESBONS', '2021-01-01T10:00:00Z'),
+                VALUES ('00000000-0000-0000-0000-000000000801', '00000000-0000-0000-0000-000000000003', 'Les bons gÄrdîEnß!', 'LESBONS', '2021-01-01T10:00:00Z'),
                        $orgaValues,
-                       ('00000000-0000-0000-0000-000000000801', '00000000-0000-0000-0000-000000000003', 'Les douteux', 'GARDIENSSDOUTE', '2021-01-02T10:00:00Z'),
-                       ('00000000-0000-0000-0000-000000000802', '00000000-0000-0000-0000-000000000004', 'Les gardienss basiques', 'BASIQUES', '2021-01-03T10:00:00Z');
+                       ('00000000-0000-0000-0000-000000000802', '00000000-0000-0000-0000-000000000003', 'Les douteux', 'GARDIENSSDOUTE', '2021-01-02T10:00:00Z'),
+                       ('00000000-0000-0000-0000-000000000803', '00000000-0000-0000-0000-000000000004', 'Les gardienss basiques', 'BASIQUES', '2021-01-03T10:00:00Z');
             SQL
         );
 
@@ -33,7 +33,7 @@ class GetOrganizationsTest extends KernelTestCase
         $orgas = $repository->getOrganizations(2, searchQuery: 'Gardienss');
 
         static::assertCount(2, $orgas);
-        static::assertSame('00000000-0000-0000-0000-000000000800', (string) $orgas[0]->getId());
-        static::assertSame('00000000-0000-0000-0000-000000000801', (string) $orgas[1]->getId());
+        static::assertSame('00000000-0000-0000-0000-000000000803', (string) $orgas[0]->getId());
+        static::assertSame('00000000-0000-0000-0000-000000000802', (string) $orgas[1]->getId());
     }
 }

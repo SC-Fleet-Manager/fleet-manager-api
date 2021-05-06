@@ -104,10 +104,10 @@ class DoctrineOrganizationRepository extends ServiceEntityRepository implements 
     {
         if ($searchQuery === null) {
             $qb = $this->createQueryBuilder('organization')
-                ->orderBy('organization.id', 'ASC')
+                ->orderBy('organization.id', 'DESC')
                 ->setMaxResults($itemsPerPage);
             if ($sinceOrgaId !== null) {
-                $qb->andWhere('organization.id > :sinceId')->setParameter('sinceId', (string)$sinceOrgaId);
+                $qb->andWhere('organization.id < :sinceId')->setParameter('sinceId', (string)$sinceOrgaId);
             }
 
             return $qb->getQuery()->getResult();
@@ -126,10 +126,10 @@ class DoctrineOrganizationRepository extends ServiceEntityRepository implements 
             $this->_em->clear();
 
             $qb = $this->createQueryBuilder('organization')
-                ->orderBy('organization.id', 'ASC')
+                ->orderBy('organization.id', 'DESC')
                 ->setMaxResults(200);
             if ($lastOrgaId !== null) {
-                $qb->andWhere('organization.id > :sinceId')->setParameter('sinceId', (string)$lastOrgaId);
+                $qb->andWhere('organization.id < :sinceId')->setParameter('sinceId', (string)$lastOrgaId);
             }
             /** @var Organization[] $orgas */
             $orgas = $qb
