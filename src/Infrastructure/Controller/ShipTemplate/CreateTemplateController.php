@@ -39,7 +39,7 @@ class CreateTemplateController
     /**
      * @OpenApi\Tag(name="ShipTemplate")
      * @OpenApi\RequestBody(
-     *     @Model(type=CreateTemplateInput::class)
+     *     @Model(type=HttpCreateTemplateInput::class)
      * )
      * @OpenApi\Response(response=204, description="Creates a new template for the logged user.")
      * @OpenApi\Response(response=400, description="Invalid payload.")
