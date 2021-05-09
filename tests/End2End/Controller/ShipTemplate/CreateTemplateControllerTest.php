@@ -162,7 +162,7 @@ class CreateTemplateControllerTest extends WebTestCase
         static::assertSame('role', $json['violations']['violations'][6]['propertyPath']);
         static::assertSame('This value is too long. It should have 30 characters or less.', $json['violations']['violations'][6]['title']);
         static::assertSame('crew', $json['violations']['violations'][7]['propertyPath']);
-        static::assertSame('Crew max must be greater than or equal to min.', $json['violations']['violations'][7]['title']);
+        static::assertSame('Max crew must be greater than or equal to min.', $json['violations']['violations'][7]['title']);
         static::assertSame('price.pledge', $json['violations']['violations'][8]['propertyPath']);
         static::assertSame('This value should be between 0 and 2000000000.', $json['violations']['violations'][8]['title']);
     }
