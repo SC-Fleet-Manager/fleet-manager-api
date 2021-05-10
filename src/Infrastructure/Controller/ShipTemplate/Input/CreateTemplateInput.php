@@ -61,7 +61,7 @@ class CreateTemplateInput
      * @OpenApi\Property(type="integer", nullable=true)
      */
     #[range(min: 0, max: 2_000_000_000)]
-    public mixed $cargoCapacity;
+    public mixed $cargoCapacity = null;
 
     #[Valid]
     public CreateTemplateCrewInput $crew;

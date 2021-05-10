@@ -13,11 +13,11 @@ class CreateTemplateCrewInput
      * @OpenApi\Property(type="integer", nullable=true)
      */
     #[range(min: 1, max: 500)]
-    public mixed $min;
+    public mixed $min = null;
 
     /**
      * @OpenApi\Property(type="integer", nullable=true)
      */
     #[range(min: 1, max: 500)]
-    public mixed $max;
+    public mixed $max = null;
 }

@@ -11,11 +11,11 @@ class CreateTemplatePriceInput
      * @OpenApi\Property(type="integer", nullable=true, description="In USD cents.")
      */
     #[range(min: 0, max: 2_000_000_000)]
-    public mixed $pledge;
+    public mixed $pledge = null;
 
     /**
      * @OpenApi\Property(type="integer", nullable=true, description="in UEC.")
      */
     #[range(min: 0, max: 2_000_000_000)]
-    public mixed $inGame;
+    public mixed $inGame = null;
 }
