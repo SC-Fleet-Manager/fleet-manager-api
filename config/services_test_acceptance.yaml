@@ -12,6 +12,7 @@ services:
     App\Application\Repository\FleetRepositoryInterface: '@App\Infrastructure\Repository\Fleet\InMemoryFleetRepository'
     App\Application\Repository\OrganizationRepositoryInterface: '@App\Infrastructure\Repository\Organization\InMemoryOrganizationRepository'
     App\Application\Repository\OrganizationFleetRepositoryInterface: '@App\Infrastructure\Repository\Organization\InMemoryOrganizationFleetRepository'
+    App\Application\Repository\ShipTemplateRepositoryInterface: '@App\Infrastructure\Repository\ShipTemplate\InMemoryShipTemplateRepository'
 
     App\Application\Provider\UserFleetProviderInterface: '@App\Infrastructure\Provider\Organizations\InMemoryUserFleetProvider'
     App\Application\Provider\MemberProfileProviderInterface: '@App\Infrastructure\Provider\Organizations\InMemoryMemberProfileProvider'
