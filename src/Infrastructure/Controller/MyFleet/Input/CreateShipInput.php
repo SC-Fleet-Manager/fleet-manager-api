@@ -7,10 +7,11 @@ use App\Infrastructure\Validator\UniqueShipModelByUser;
 use OpenApi\Annotations as OpenApi;
 use Symfony\Component\Serializer\Normalizer\DenormalizableInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use function Symfony\Component\String\u;
 use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\LessThan;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Regex;
-use function Symfony\Component\String\u;
 
 #[CountShipsLessThan(max: 300)]
 class CreateShipInput implements DenormalizableInterface
@@ -36,6 +37,7 @@ class CreateShipInput implements DenormalizableInterface
     /**
      * @OpenApi\Property(type="integer", nullable=true, minimum="1", default="1")
      */
+    #[LessThan(2_000_000_000)]
     public ?int $quantity = null;
 
     public function denormalize(DenormalizerInterface $denormalizer, $data, string $format = null, array $context = []): void
