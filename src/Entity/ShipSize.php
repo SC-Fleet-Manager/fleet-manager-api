@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class ShipSize
 {
-    private const SIZES = ['vehicle', 'snub', 'small', 'medium', 'large', 'capital'];
+    public const SIZES = ['vehicle', 'snub', 'small', 'medium', 'large', 'capital'];
 
     /**
      * @ORM\Column(name="size", type="string", length=10, nullable=true)

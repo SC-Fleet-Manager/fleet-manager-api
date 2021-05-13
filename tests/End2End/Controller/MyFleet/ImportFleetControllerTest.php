@@ -31,21 +31,21 @@ class ImportFleetControllerTest extends WebTestCase
         static::assertSame(204, static::$client->getResponse()->getStatusCode());
 
         $result = static::$connection->executeQuery(<<<SQL
-                SELECT * FROM ships WHERE fleet_id = '00000000-0000-0000-0000-000000000001';
+                SELECT * FROM ships WHERE fleet_id = '00000000-0000-0000-0000-000000000001' ORDER BY model;
             SQL
         )->fetchAllAssociative();
         static::assertArraySubset([
             [
-                'model' => 'Cyclone',
-                'quantity' => 3,
+                'model' => 'Arrow',
+                'quantity' => 2,
             ],
             [
                 'model' => 'Cutlass 2949 Best In Show',
                 'quantity' => 1,
             ],
             [
-                'model' => 'Arrow',
-                'quantity' => 2,
+                'model' => 'Cyclone',
+                'quantity' => 3,
             ],
         ], $result);
     }
