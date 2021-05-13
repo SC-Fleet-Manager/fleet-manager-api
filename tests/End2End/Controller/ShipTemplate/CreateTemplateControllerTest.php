@@ -39,7 +39,7 @@ class CreateTemplateControllerTest extends WebTestCase
             ],
             'price' => [
                 'pledge' => 1000,
-                'inGame' => 500000,
+                'inGame' => 2_000_000_000,
             ],
         ]));
 
@@ -61,7 +61,7 @@ class CreateTemplateControllerTest extends WebTestCase
             'crew_min' => '1',
             'crew_max' => '3',
             'price_pledge' => '1000.00',
-            'price_ingame' => '500000.00',
+            'price_ingame' => '2000000000.00',
         ], $result);
     }
 
