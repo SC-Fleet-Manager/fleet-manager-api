@@ -13,10 +13,12 @@ use App\Domain\Exception\NotJoinedOrganizationMemberException;
 use App\Domain\MemberId;
 use App\Domain\OrgaId;
 use App\Domain\OrganizationShipId;
+use App\Domain\Service\EntityIdGeneratorInterface;
 use App\Entity\Organization;
 use App\Entity\OrganizationFleet;
 use App\Infrastructure\Repository\Organization\InMemoryOrganizationFleetRepository;
 use App\Infrastructure\Repository\Organization\InMemoryOrganizationRepository;
+use App\Infrastructure\Service\InMemoryEntityIdGenerator;
 use App\Tests\Acceptance\KernelTestCase;
 
 class OrganizationsItemServiceTest extends KernelTestCase
@@ -48,8 +50,12 @@ class OrganizationsItemServiceTest extends KernelTestCase
         $organizationFleetRepository->setOrganizationFleets([
             $orgaFleet = new OrganizationFleet($orgaId, new \DateTimeImmutable('2021-01-01T10:00:00Z')),
         ]);
-        $orgaFleet->createOrUpdateShip(OrganizationShipId::fromString('00000000-0000-0000-0000-000000000020'), $memberId, 'Avenger', 'https://example.org/avenger_1.jpg', 3, new \DateTimeImmutable('2021-01-02T10:00:00Z'));
-        $orgaFleet->createOrUpdateShip(OrganizationShipId::fromString('00000000-0000-0000-0000-000000000021'), $memberId, 'Mercury Star Runner', null, 2, new \DateTimeImmutable('2021-01-03T10:00:00Z'));
+
+        /** @var InMemoryEntityIdGenerator $entityIdGenerator */
+        $entityIdGenerator = static::$container->get(EntityIdGeneratorInterface::class);
+        $entityIdGenerator->setUid('00000000-0000-0000-0000-000000000020');
+        $orgaFleet->createOrUpdateShip($memberId, 'Avenger', 'https://example.org/avenger_1.jpg', 3, new \DateTimeImmutable('2021-01-02T10:00:00Z'), $entityIdGenerator);
+        $orgaFleet->createOrUpdateShip($memberId, 'Mercury Star Runner', null, 2, new \DateTimeImmutable('2021-01-03T10:00:00Z'), $entityIdGenerator);
 
         /** @var OrganizationsItemService $service */
         $service = static::$container->get(OrganizationsItemService::class);

@@ -10,10 +10,9 @@ use App\Application\Repository\OrganizationRepositoryInterface;
 use App\Domain\Exception\NoMemberHandleException;
 use App\Domain\MemberId;
 use App\Domain\OrgaId;
-use App\Domain\OrganizationShipId;
+use App\Domain\Service\EntityIdGeneratorInterface;
 use App\Entity\Organization;
 use App\Entity\OrganizationFleet;
-use Symfony\Component\Uid\Ulid;
 
 class CreateOrganizationService
 {
@@ -22,6 +21,7 @@ class CreateOrganizationService
         private OrganizationFleetRepositoryInterface $organizationFleetRepository,
         private UserFleetProviderInterface $userFleetProvider,
         private MemberProfileProviderInterface $memberProfileProvider,
+        private EntityIdGeneratorInterface $entityIdGenerator,
         private Clock $clock,
     ) {
     }
@@ -44,13 +44,12 @@ class CreateOrganizationService
         $orgaFleet = new OrganizationFleet($orga->getId(), $this->clock->now());
         foreach ($memberFleet->getShips() as $userShip) {
             $orgaFleet->createOrUpdateShip(
-            // TODO : use service to generate Ulid
-                new OrganizationShipId(new Ulid()),
                 $memberId,
                 $userShip->getModel(),
                 $userShip->getImageUrl(),
                 $userShip->getQuantity(),
                 $this->clock->now(),
+                $this->entityIdGenerator,
             );
         }
 

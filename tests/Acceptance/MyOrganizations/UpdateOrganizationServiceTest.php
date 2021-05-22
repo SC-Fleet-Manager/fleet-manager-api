@@ -23,7 +23,7 @@ class UpdateOrganizationServiceTest extends KernelTestCase
 
         /** @var InMemoryOrganizationRepository $orgaRepository */
         $orgaRepository = static::$container->get(OrganizationRepositoryInterface::class);
-        $orgaRepository->save($orga = new Organization(
+        $orgaRepository->save(new Organization(
             $orgaId,
             $founderId,
             'My orga',

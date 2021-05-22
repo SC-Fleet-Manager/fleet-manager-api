@@ -2,8 +2,7 @@
 
 namespace App\Tests\End2End\Controller\MyFleet;
 
-use App\Domain\Event\DeletedFleetShipEvent;
-use App\Domain\Event\UpdatedFleetShipEvent;
+use App\Domain\Event\UpdatedFleetEvent;
 use App\Tests\End2End\WebTestCase;
 use Symfony\Component\Messenger\Stamp\BusNameStamp;
 
@@ -17,8 +16,8 @@ class UpdateShipControllerTest extends WebTestCase
         static::$connection->executeStatement(<<<SQL
                 INSERT INTO users(id, roles, auth0_username, created_at)
                 VALUES ('00000000-0000-0000-0000-000000000001', '["ROLE_USER"]', 'Ioni', '2021-01-01T10:00:00Z');
-                INSERT INTO fleets(user_id, updated_at)
-                VALUES ('00000000-0000-0000-0000-000000000001', '2021-01-02T10:00:00Z');
+                INSERT INTO fleets(user_id, updated_at, version)
+                VALUES ('00000000-0000-0000-0000-000000000001', '2021-01-02T10:00:00Z', 3);
                 INSERT INTO ships(id, fleet_id, model, quantity)
                 VALUES ('00000000-0000-0000-0000-000000000011', '00000000-0000-0000-0000-000000000001', 'Avenger', 2);
             SQL
@@ -48,22 +47,13 @@ class UpdateShipControllerTest extends WebTestCase
         $result = static::$connection->executeQuery(<<<SQL
                 SELECT * FROM messenger_messages;
             SQL
-        )->fetchAll();
+        )->fetchAllAssociative();
         static::assertArraySubset([
             [
                 'queue_name' => 'organizations_events',
-                'body' => '{"ownerId":"00000000-0000-0000-0000-000000000001","model":"Avenger"}',
+                'body' => '{"ownerId":"00000000-0000-0000-0000-000000000001","ships":[{"model":"Avenger 2","logoUrl":"https:\/\/starcitizen.tools\/avenger.jpg","quantity":5}],"version":3}',
                 'headers' => json_encode([
-                    'type' => DeletedFleetShipEvent::class,
-                    'X-Message-Stamp-'.BusNameStamp::class => '[{"busName":"event.bus"}]',
-                    'Content-Type' => 'application/json',
-                ]),
-            ],
-            [
-                'queue_name' => 'organizations_events',
-                'body' => '{"ownerId":"00000000-0000-0000-0000-000000000001","model":"Avenger 2","logoUrl":"https:\/\/starcitizen.tools\/avenger.jpg","quantity":5}',
-                'headers' => json_encode([
-                    'type' => UpdatedFleetShipEvent::class,
+                    'type' => UpdatedFleetEvent::class,
                     'X-Message-Stamp-'.BusNameStamp::class => '[{"busName":"event.bus"}]',
                     'Content-Type' => 'application/json',
                 ]),

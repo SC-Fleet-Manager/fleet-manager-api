@@ -5,15 +5,16 @@ namespace App\Application\MyFleet;
 use App\Application\Common\Clock;
 use App\Application\MyFleet\Input\ImportFleetShip;
 use App\Application\Repository\FleetRepositoryInterface;
-use App\Domain\ShipId;
+use App\Domain\MyFleet\FleetShipImport;
+use App\Domain\Service\EntityIdGeneratorInterface;
 use App\Domain\UserId;
 use App\Entity\Fleet;
-use Symfony\Component\Uid\Ulid;
 
 class ImportFleetService
 {
     public function __construct(
         private FleetRepositoryInterface $fleetRepository,
+        private EntityIdGeneratorInterface $entityIdGenerator,
         private Clock $clock,
     ) {
     }
@@ -28,20 +29,11 @@ class ImportFleetService
             $fleet = new Fleet($userId, $this->clock->now());
         }
 
-        $addedShips = [];
+        $fleetShipImports = [];
         foreach ($importFleetShips as $importFleetShip) {
-            $ship = $fleet->getShipByModel($importFleetShip->model);
-            if ($ship === null) {
-                $fleet->addShip(new ShipId(new Ulid()), $importFleetShip->model, null, 1, $this->clock->now());
-                $ship = $fleet->getShipByModel($importFleetShip->model);
-                $addedShips[(string) $ship->getId()] = $ship;
-                continue;
-            }
-            if (!$onlyMissing || isset($addedShips[(string) $ship->getId()])) {
-                $fleet->updateShip($ship->getId(), $importFleetShip->model, $ship->getImageUrl(), 1 + $ship->getQuantity(), $this->clock->now());
-            }
+            $fleetShipImports[] = new FleetShipImport($importFleetShip->model);
         }
-        unset($addedShips);
+        $fleet->importShips($fleetShipImports, $onlyMissing, $this->clock->now(), $this->entityIdGenerator);
 
         $this->fleetRepository->save($fleet);
     }

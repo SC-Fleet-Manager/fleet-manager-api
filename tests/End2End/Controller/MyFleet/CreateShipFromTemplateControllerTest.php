@@ -2,7 +2,7 @@
 
 namespace App\Tests\End2End\Controller\MyFleet;
 
-use App\Domain\Event\UpdatedFleetShipEvent;
+use App\Domain\Event\UpdatedFleetEvent;
 use App\Tests\End2End\WebTestCase;
 use Symfony\Component\Messenger\Stamp\BusNameStamp;
 
@@ -49,9 +49,9 @@ class CreateShipFromTemplateControllerTest extends WebTestCase
         static::assertArraySubset([
             [
                 'queue_name' => 'organizations_events',
-                'body' => '{"ownerId":"00000000-0000-0000-0000-000000000001","model":"Avenger Titan","logoUrl":"https:\/\/example.org\/avenger.jpg","quantity":3}',
+                'body' => '{"ownerId":"00000000-0000-0000-0000-000000000001","ships":[{"model":"Avenger Titan","logoUrl":"https:\/\/example.org\/avenger.jpg","quantity":3}],"version":1}',
                 'headers' => json_encode([
-                    'type' => UpdatedFleetShipEvent::class,
+                    'type' => UpdatedFleetEvent::class,
                     'X-Message-Stamp-'.BusNameStamp::class => '[{"busName":"event.bus"}]',
                     'Content-Type' => 'application/json',
                 ]),

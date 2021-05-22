@@ -2,9 +2,10 @@
 
 namespace App\Entity;
 
-use App\Domain\Event\DeletedFleetShipEvent;
-use App\Domain\Event\UpdatedFleetShipEvent;
+use App\Domain\Event\UpdatedFleetEvent;
 use App\Domain\Exception\NotFoundShipException;
+use App\Domain\MyFleet\FleetShipImport;
+use App\Domain\Service\EntityIdGeneratorInterface;
 use App\Domain\ShipId;
 use App\Domain\UserId;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -69,18 +70,17 @@ class Fleet
         return $this->ships->toArray();
     }
 
-    public function addShip(ShipId $id, string $model, ?string $imageUrl, int $quantity, \DateTimeInterface $updatedAt): void
-    {
-        Assert::null($this->getShipByModel($model), sprintf('Cannot add ship with same model "%s".', $model));
-        $ship = new Ship($id, $this, $model, $imageUrl, $quantity);
-        $this->ships[(string) $id] = $ship;
-        $this->updatedAt = \DateTimeImmutable::createFromInterface($updatedAt);
-        $this->events[] = UpdatedFleetShipEvent::createFromShip($this->getUserId(), $ship);
-    }
-
     public function getUpdatedAt(): \DateTimeInterface
     {
         return $this->updatedAt;
+    }
+
+    public function addShip(ShipId $id, string $model, ?string $imageUrl, int $quantity, \DateTimeInterface $updatedAt): void
+    {
+        $ship = new Ship($id, $this, $model, $imageUrl, $quantity);
+        $this->ships[(string) $id] = $ship;
+        $this->events[] = UpdatedFleetEvent::createFromFleet($this);
+        $this->updatedAt = \DateTimeImmutable::createFromInterface($updatedAt);
     }
 
     public function getShipByModel(string $model): ?Ship
@@ -104,7 +104,7 @@ class Fleet
             return;
         }
         $this->ships->remove((string) $shipId);
-        $this->events[] = DeletedFleetShipEvent::createFromShip($this->getUserId(), $ship);
+        $this->events[] = UpdatedFleetEvent::createFromFleet($this);
         $this->updatedAt = \DateTimeImmutable::createFromInterface($updatedAt);
     }
 
@@ -115,14 +115,33 @@ class Fleet
             throw new NotFoundShipException($this->getUserId(), $shipId);
         }
 
-        $oldModel = $ship->getModel();
-        if ($oldModel !== $model) {
-            $this->events[] = DeletedFleetShipEvent::createFromShip($this->getUserId(), $ship);
-        }
-
         $ship->update($model, $imageUrl, $quantity);
 
-        $this->events[] = UpdatedFleetShipEvent::createFromShip($this->getUserId(), $ship);
+        $this->events[] = UpdatedFleetEvent::createFromFleet($this);
+        $this->updatedAt = \DateTimeImmutable::createFromInterface($updatedAt);
+    }
+
+    /**
+     * @param FleetShipImport[] $importedShips
+     */
+    public function importShips(array $importedShips, bool $onlyMissing, \DateTimeInterface $updatedAt, EntityIdGeneratorInterface $entityIdGenerator): void
+    {
+        $addedShips = [];
+        foreach ($importedShips as $importedShip) {
+            $ship = $this->getShipByModel($importedShip->model);
+            if ($ship === null) {
+                $ship = new Ship($entityIdGenerator->generateEntityId(ShipId::class), $this, $importedShip->model, null, 1);
+                $this->ships[(string) $ship->getId()] = $ship;
+                $addedShips[(string) $ship->getId()] = $ship;
+                continue;
+            }
+            if (!$onlyMissing || isset($addedShips[(string) $ship->getId()])) {
+                $ship->update($importedShip->model, $ship->getImageUrl(), 1 + $ship->getQuantity());
+            }
+        }
+        unset($addedShips);
+
+        $this->events[] = UpdatedFleetEvent::createFromFleet($this);
         $this->updatedAt = \DateTimeImmutable::createFromInterface($updatedAt);
     }
 
@@ -133,10 +152,8 @@ class Fleet
 
     public function deleteAllShips(\DateTimeInterface $updatedAt): void
     {
-        foreach ($this->ships as $ship) {
-            $this->events[] = DeletedFleetShipEvent::createFromShip($this->getUserId(), $ship);
-        }
         $this->ships->clear();
+        $this->events[] = UpdatedFleetEvent::createFromFleet($this);
         $this->updatedAt = \DateTimeImmutable::createFromInterface($updatedAt);
     }
 }

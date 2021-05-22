@@ -5,7 +5,8 @@ namespace App\Tests\Acceptance\MyFleet;
 use App\Application\MyFleet\ImportFleetService;
 use App\Application\MyFleet\Input\ImportFleetShip;
 use App\Application\Repository\FleetRepositoryInterface;
-use App\Domain\Event\UpdatedFleetShipEvent;
+use App\Domain\Event\UpdatedFleetEvent;
+use App\Domain\Event\UpdatedShip;
 use App\Domain\ShipId;
 use App\Domain\UserId;
 use App\Entity\Fleet;
@@ -49,33 +50,18 @@ class ImportFleetServiceTest extends KernelTestCase
 
         /** @var InMemoryTransport $transport */
         $transport = static::$container->get('messenger.transport.organizations_sub');
-        static::assertCount(3, $transport->getSent());
-        /** @var UpdatedFleetShipEvent $message */
+        static::assertCount(1, $transport->getSent());
+        /** @var UpdatedFleetEvent $message */
         $message = $transport->getSent()[0]->getMessage();
-        static::assertInstanceOf(UpdatedFleetShipEvent::class, $message);
-        static::assertEquals(new UpdatedFleetShipEvent(
+        static::assertInstanceOf(UpdatedFleetEvent::class, $message);
+        static::assertEquals(new UpdatedFleetEvent(
             $userId,
-            'Avenger',
-            'https://example.com/avenger.jpg',
-            3,
-        ), $message);
-        /** @var UpdatedFleetShipEvent $message */
-        $message = $transport->getSent()[1]->getMessage();
-        static::assertInstanceOf(UpdatedFleetShipEvent::class, $message);
-        static::assertEquals(new UpdatedFleetShipEvent(
-            $userId,
-            'Mercury Star Runner',
-            null,
-            1,
-        ), $message);
-        /** @var UpdatedFleetShipEvent $message */
-        $message = $transport->getSent()[2]->getMessage();
-        static::assertInstanceOf(UpdatedFleetShipEvent::class, $message);
-        static::assertEquals(new UpdatedFleetShipEvent(
-            $userId,
-            'Mercury Star Runner',
-            null,
-            2,
+            [
+                new UpdatedShip('Avenger', 'https://example.com/avenger.jpg', 3),
+                new UpdatedShip('Javelin', null, 1),
+                new UpdatedShip('Mercury Star Runner', null, 2),
+            ],
+            1
         ), $message);
     }
 

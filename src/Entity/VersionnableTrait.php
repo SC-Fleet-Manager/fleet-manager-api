@@ -11,4 +11,9 @@ trait VersionnableTrait
      * @ORM\Column(name="version", type="integer", options={"default":1})
      */
     private int $version = 1;
+
+    public function getVersion(): int
+    {
+        return $this->version;
+    }
 }
