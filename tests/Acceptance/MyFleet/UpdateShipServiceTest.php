@@ -4,8 +4,8 @@ namespace App\Tests\Acceptance\MyFleet;
 
 use App\Application\MyFleet\UpdateShipService;
 use App\Application\Repository\FleetRepositoryInterface;
-use App\Domain\Event\DeletedFleetShipEvent;
-use App\Domain\Event\UpdatedFleetShipEvent;
+use App\Domain\Event\UpdatedFleetEvent;
+use App\Domain\Event\UpdatedShip;
 use App\Domain\ShipId;
 use App\Domain\UserId;
 use App\Entity\Fleet;
@@ -44,24 +44,16 @@ class UpdateShipServiceTest extends KernelTestCase
 
         /** @var InMemoryTransport $transport */
         $transport = static::$container->get('messenger.transport.organizations_sub');
-        static::assertCount(2, $transport->getSent());
-
-        /** @var DeletedFleetShipEvent $message */
+        static::assertCount(1, $transport->getSent());
+        /** @var UpdatedFleetEvent $message */
         $message = $transport->getSent()[0]->getMessage();
-        static::assertInstanceOf(DeletedFleetShipEvent::class, $message);
-        static::assertEquals(new DeletedFleetShipEvent(
+        static::assertInstanceOf(UpdatedFleetEvent::class, $message);
+        static::assertEquals(new UpdatedFleetEvent(
             $userId,
-            'Avenger',
-        ), $message);
-
-        /** @var UpdatedFleetShipEvent $message */
-        $message = $transport->getSent()[1]->getMessage();
-        static::assertInstanceOf(UpdatedFleetShipEvent::class, $message);
-        static::assertEquals(new UpdatedFleetShipEvent(
-            $userId,
-            'Avenger 2',
-            'https://example.com/picture.jpg',
-            4,
+            [
+                new UpdatedShip('Avenger 2', 'https://example.com/picture.jpg', 4),
+            ],
+            1,
         ), $message);
     }
 }

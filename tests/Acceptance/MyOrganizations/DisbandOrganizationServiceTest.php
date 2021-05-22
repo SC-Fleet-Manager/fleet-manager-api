@@ -8,11 +8,12 @@ use App\Application\Repository\OrganizationRepositoryInterface;
 use App\Domain\Exception\NotFounderOfOrganizationException;
 use App\Domain\MemberId;
 use App\Domain\OrgaId;
-use App\Domain\OrganizationShipId;
+use App\Domain\Service\EntityIdGeneratorInterface;
 use App\Entity\Organization;
 use App\Entity\OrganizationFleet;
 use App\Infrastructure\Repository\Organization\InMemoryOrganizationFleetRepository;
 use App\Infrastructure\Repository\Organization\InMemoryOrganizationRepository;
+use App\Infrastructure\Service\InMemoryEntityIdGenerator;
 use App\Tests\Acceptance\KernelTestCase;
 
 class DisbandOrganizationServiceTest extends KernelTestCase
@@ -43,8 +44,12 @@ class DisbandOrganizationServiceTest extends KernelTestCase
         $organizationFleetRepository->setOrganizationFleets([
             $orgaFleet = new OrganizationFleet($orgaId, new \DateTimeImmutable('2021-01-01T10:00:00Z')),
         ]);
-        $orgaFleet->createOrUpdateShip(OrganizationShipId::fromString('00000000-0000-0000-0000-000000000020'), $founderId, 'Avenger', null, 2, new \DateTimeImmutable('2021-01-02T10:00:00Z'));
-        $orgaFleet->createOrUpdateShip(OrganizationShipId::fromString('00000000-0000-0000-0000-000000000020'), $memberId, 'Avenger', 'https://example.org/avenger_1.jpg', 3, new \DateTimeImmutable('2021-01-03T10:00:00Z'));
+
+        /** @var InMemoryEntityIdGenerator $entityIdGenerator */
+        $entityIdGenerator = static::$container->get(EntityIdGeneratorInterface::class);
+        $entityIdGenerator->setUid('00000000-0000-0000-0000-000000000020');
+        $orgaFleet->createOrUpdateShip($founderId, 'Avenger', null, 2, new \DateTimeImmutable('2021-01-02T10:00:00Z'), $entityIdGenerator);
+        $orgaFleet->createOrUpdateShip($memberId, 'Avenger', 'https://example.org/avenger_1.jpg', 3, new \DateTimeImmutable('2021-01-03T10:00:00Z'), $entityIdGenerator);
 
         /** @var DisbandOrganizationService $service */
         $service = static::$container->get(DisbandOrganizationService::class);

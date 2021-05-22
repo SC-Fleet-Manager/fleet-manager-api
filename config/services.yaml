@@ -84,6 +84,8 @@ services:
     App\Application\Provider\MemberProfileProviderInterface: '@App\Infrastructure\Provider\Organizations\DirectCallMemberProfileProvider'
     App\Application\Provider\ListTemplatesProviderInterface: '@App\Infrastructure\Provider\MyFleet\DirectCallListTemplatesProvider'
 
+    App\Domain\Service\EntityIdGeneratorInterface: '@App\Infrastructure\Service\SystemEntityIdGenerator'
+
     App\Application\Common\Clock: '@App\Infrastructure\Common\SystemClock'
 
     App\Infrastructure\Validator\ApiValidator:

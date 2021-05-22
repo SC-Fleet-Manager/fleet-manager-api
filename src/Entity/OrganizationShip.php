@@ -122,6 +122,11 @@ class OrganizationShip
         return $collator->compare($this->model, $model) === 0;
     }
 
+    public function hasOwner(MemberId $ownerId): bool
+    {
+        return $this->owners->containsKey((string) $ownerId);
+    }
+
     private function recomputeQuantity(): void
     {
         $this->quantity = 0;

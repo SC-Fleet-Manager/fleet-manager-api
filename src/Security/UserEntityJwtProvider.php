@@ -3,7 +3,7 @@
 namespace App\Security;
 
 use App\Application\Repository\UserRepositoryInterface;
-use App\Domain\EntityId;
+use App\Domain\Service\EntityIdGeneratorInterface;
 use App\Domain\UserId;
 use App\Entity\User;
 use Auth0\JWTAuthBundle\Security\Auth0Service;
@@ -27,6 +27,7 @@ class UserEntityJwtProvider extends JwtUserProvider implements LoggerAwareInterf
     public function __construct(
         private UserRepositoryInterface $userRepository,
         private EntityManagerInterface $entityManager,
+        private EntityIdGeneratorInterface $entityIdGenerator,
         private Auth0Service $auth0Service,
         private CacheInterface $cache,
         private string $env,
@@ -42,7 +43,7 @@ class UserEntityJwtProvider extends JwtUserProvider implements LoggerAwareInterf
         if ($user === null) {
             $user = $this->userRepository->findByAuth0Username($jwt->sub);
             if ($user === null) {
-                $user = new User(new UserId(new Ulid()), $jwt->sub, $this->tryToExtractNickname($jwt), new \DateTimeImmutable('now'));
+                $user = new User($this->entityIdGenerator->generateEntityId(UserId::class), $jwt->sub, $this->tryToExtractNickname($jwt), new \DateTimeImmutable('now'));
                 $this->userRepository->save($user);
             }
             /** @var User $user */

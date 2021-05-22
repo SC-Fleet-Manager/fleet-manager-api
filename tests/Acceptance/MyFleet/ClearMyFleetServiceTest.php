@@ -3,10 +3,8 @@
 namespace App\Tests\Acceptance\MyFleet;
 
 use App\Application\MyFleet\ClearMyFleetService;
-use App\Application\MyFleet\DeleteShipService;
 use App\Application\Repository\FleetRepositoryInterface;
-use App\Domain\Event\DeletedFleetShipEvent;
-use App\Domain\Event\UpdatedFleetShipEvent;
+use App\Domain\Event\UpdatedFleetEvent;
 use App\Domain\ShipId;
 use App\Domain\UserId;
 use App\Entity\Fleet;
@@ -41,20 +39,14 @@ class ClearMyFleetServiceTest extends KernelTestCase
 
         /** @var InMemoryTransport $transport */
         $transport = static::$container->get('messenger.transport.organizations_sub');
-        static::assertCount(2, $transport->getSent());
-        /** @var DeletedFleetShipEvent $message */
+        static::assertCount(1, $transport->getSent());
+        /** @var UpdatedFleetEvent $message */
         $message = $transport->getSent()[0]->getMessage();
-        static::assertInstanceOf(DeletedFleetShipEvent::class, $message);
-        static::assertEquals(new DeletedFleetShipEvent(
+        static::assertInstanceOf(UpdatedFleetEvent::class, $message);
+        static::assertEquals(new UpdatedFleetEvent(
             $userId,
-            'Avenger',
-        ), $message);
-        /** @var DeletedFleetShipEvent $message */
-        $message = $transport->getSent()[1]->getMessage();
-        static::assertInstanceOf(DeletedFleetShipEvent::class, $message);
-        static::assertEquals(new DeletedFleetShipEvent(
-            $userId,
-            'Mercury',
+            [],
+            1,
         ), $message);
     }
 }

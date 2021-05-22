@@ -3,17 +3,14 @@
 namespace App\Infrastructure\Controller\MyFleet\Input;
 
 use App\Domain\ShipId;
-use App\Infrastructure\Validator\UniqueShipModelByUser;
 use OpenApi\Annotations as OpenApi;
 use Symfony\Component\Serializer\Annotation\Ignore;
 use Symfony\Component\Serializer\Normalizer\DenormalizableInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use function Symfony\Component\String\u;
-use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Regex;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class UpdateShipInput implements DenormalizableInterface
 {
@@ -42,14 +39,6 @@ class UpdateShipInput implements DenormalizableInterface
      */
     #[NotBlank]
     public ?int $quantity = null;
-
-    #[Callback]
-    public function validateUniqueShipModelByUser(
-        ExecutionContextInterface $context
-    ): void {
-        $violations = $context->getValidator()->validate($this->model, new UniqueShipModelByUser(excludeShipId: $this->shipId));
-        $context->getViolations()->addAll($violations);
-    }
 
     public function denormalize(DenormalizerInterface $denormalizer, $data, string $format = null, array $context = []): void
     {

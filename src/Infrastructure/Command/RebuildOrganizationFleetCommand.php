@@ -5,6 +5,7 @@ namespace App\Infrastructure\Command;
 use App\Application\Common\Clock;
 use App\Application\Provider\MemberProfileProviderInterface;
 use App\Domain\OrganizationShipId;
+use App\Domain\Service\EntityIdGeneratorInterface;
 use App\Domain\UserId;
 use App\Entity\Organization;
 use App\Entity\OrganizationFleet;
@@ -14,7 +15,6 @@ use App\Infrastructure\Repository\Organization\DoctrineOrganizationRepository;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Uid\Ulid;
 
 class RebuildOrganizationFleetCommand extends Command
 {
@@ -25,8 +25,8 @@ class RebuildOrganizationFleetCommand extends Command
         private DoctrineOrganizationRepository $organizationRepository,
         private DoctrineOrganizationFleetRepository $organizationFleetRepository,
         private MemberProfileProviderInterface $memberProfileProvider,
+        private EntityIdGeneratorInterface $entityIdGenerator,
         private Clock $clock,
-
     ) {
         parent::__construct();
     }
@@ -57,7 +57,14 @@ class RebuildOrganizationFleetCommand extends Command
                 }
                 foreach ($fleet->getShips() as $ship) {
                     $output->writeln('Ship '.$ship->getModel().'...');
-                    $orgaFleet->createOrUpdateShip(new OrganizationShipId(new Ulid()), $member->getId(), $ship->getModel(), $ship->getImageUrl(), $ship->getQuantity(), $this->clock->now());
+                    $orgaFleet->createOrUpdateShip(
+                        $member->getId(),
+                        $ship->getModel(),
+                        $ship->getImageUrl(),
+                        $ship->getQuantity(),
+                        $this->clock->now(),
+                        $this->entityIdGenerator,
+                    );
                 }
             }
             unset($members);

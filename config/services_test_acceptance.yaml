@@ -18,6 +18,8 @@ services:
     App\Application\Provider\MemberProfileProviderInterface: '@App\Infrastructure\Provider\Organizations\InMemoryMemberProfileProvider'
     App\Application\Provider\ListTemplatesProviderInterface: '@App\Infrastructure\Provider\MyFleet\InMemoryListTemplatesProvider'
 
+    App\Domain\Service\EntityIdGeneratorInterface: '@App\Infrastructure\Service\InMemoryEntityIdGenerator'
+
     App\Application\Common\Clock: '@App\Infrastructure\Common\FakeClock'
 
     Symfony\Component\Validator\Validator\ValidatorInterface: '@validator'

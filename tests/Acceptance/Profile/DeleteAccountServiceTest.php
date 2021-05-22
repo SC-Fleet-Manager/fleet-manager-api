@@ -5,7 +5,6 @@ namespace App\Tests\Acceptance\Profile;
 use App\Application\Profile\DeleteAccountService;
 use App\Application\Repository\UserRepositoryInterface;
 use App\Domain\Event\DeletedUserEvent;
-use App\Domain\Event\UpdatedFleetShipEvent;
 use App\Domain\UserId;
 use App\Entity\User;
 use App\Infrastructure\Repository\User\InMemoryUserRepository;

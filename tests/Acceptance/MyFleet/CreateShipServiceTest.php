@@ -5,7 +5,8 @@ namespace App\Tests\Acceptance\MyFleet;
 use App\Application\Common\Clock;
 use App\Application\MyFleet\CreateShipService;
 use App\Application\Repository\FleetRepositoryInterface;
-use App\Domain\Event\UpdatedFleetShipEvent;
+use App\Domain\Event\UpdatedFleetEvent;
+use App\Domain\Event\UpdatedShip;
 use App\Domain\ShipId;
 use App\Domain\UserId;
 use App\Entity\Fleet;
@@ -44,13 +45,14 @@ class CreateShipServiceTest extends KernelTestCase
         /** @var InMemoryTransport $transport */
         $transport = static::$container->get('messenger.transport.organizations_sub');
         static::assertCount(1, $transport->getSent());
-        /** @var UpdatedFleetShipEvent $message */
+        /** @var UpdatedFleetEvent $message */
         $message = $transport->getSent()[0]->getMessage();
-        static::assertInstanceOf(UpdatedFleetShipEvent::class, $message);
-        static::assertEquals(new UpdatedFleetShipEvent(
+        static::assertInstanceOf(UpdatedFleetEvent::class, $message);
+        static::assertEquals(new UpdatedFleetEvent(
             $userId,
-            'Avenger',
-            'https://example.com/picture.jpg',
+            [
+                new UpdatedShip('Avenger', 'https://example.com/picture.jpg', 1),
+            ],
             1,
         ), $message);
     }

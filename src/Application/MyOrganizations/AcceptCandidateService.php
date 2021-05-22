@@ -12,6 +12,7 @@ use App\Domain\Exception\NotFoundOrganizationException;
 use App\Domain\MemberId;
 use App\Domain\OrgaId;
 use App\Domain\OrganizationShipId;
+use App\Domain\Service\EntityIdGeneratorInterface;
 use App\Entity\OrganizationFleet;
 use Symfony\Component\Uid\Ulid;
 
@@ -21,6 +22,7 @@ class AcceptCandidateService
         private OrganizationRepositoryInterface $organizationRepository,
         private OrganizationFleetRepositoryInterface $organizationFleetRepository,
         private UserFleetProviderInterface $userFleetProvider,
+        private EntityIdGeneratorInterface $entityIdGenerator,
         private Clock $clock,
     ) {
     }
@@ -48,13 +50,12 @@ class AcceptCandidateService
         }
         foreach ($memberFleet->getShips() as $userShip) {
             $orgaFleet->createOrUpdateShip(
-            // TODO : use service to generate Ulid
-                new OrganizationShipId(new Ulid()),
                 $candidateId,
                 $userShip->getModel(),
                 $userShip->getImageUrl(),
                 $userShip->getQuantity(),
                 $this->clock->now(),
+                $this->entityIdGenerator,
             );
         }
 

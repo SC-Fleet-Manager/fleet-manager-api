@@ -26,5 +26,4 @@ framework:
             'App\Message\Funding\SendOrderCaptureSummaryMail': sync
             'App\Message\Funding\SendOrderRefundMail': sync
             'App\Domain\Event\DeletedUserEvent': [ my_fleet_internal, organizations_sub ]
-            'App\Domain\Event\UpdatedFleetShipEvent': [ organizations_sub ]
-            'App\Domain\Event\DeletedFleetShipEvent': [ organizations_sub ]
+            'App\Domain\Event\UpdatedFleetEvent': [ organizations_sub ]

@@ -3,7 +3,6 @@
 namespace App\Infrastructure\Controller\MyFleet\Input;
 
 use App\Infrastructure\Validator\CountShipsLessThan;
-use App\Infrastructure\Validator\UniqueShipModelByUser;
 use OpenApi\Annotations as OpenApi;
 use Symfony\Component\Serializer\Normalizer\DenormalizableInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -21,7 +20,6 @@ class CreateShipInput implements DenormalizableInterface
      */
     #[NotBlank]
     #[Length(min: 2, max: 60)]
-    #[UniqueShipModelByUser]
     public ?string $model = null;
 
     /**

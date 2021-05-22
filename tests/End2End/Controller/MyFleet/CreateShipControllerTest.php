@@ -2,7 +2,7 @@
 
 namespace App\Tests\End2End\Controller\MyFleet;
 
-use App\Domain\Event\UpdatedFleetShipEvent;
+use App\Domain\Event\UpdatedFleetEvent;
 use App\Tests\End2End\WebTestCase;
 use Symfony\Component\Messenger\Stamp\BusNameStamp;
 
@@ -53,9 +53,9 @@ class CreateShipControllerTest extends WebTestCase
         static::assertArraySubset([
             [
                 'queue_name' => 'organizations_events',
-                'body' => '{"ownerId":"00000000-0000-0000-0000-000000000001","model":"Avenger","logoUrl":"https:\/\/starcitizen.tools\/avenger.jpg","quantity":3}',
+                'body' => '{"ownerId":"00000000-0000-0000-0000-000000000001","ships":[{"model":"Avenger","logoUrl":"https:\/\/starcitizen.tools\/avenger.jpg","quantity":3}],"version":1}',
                 'headers' => json_encode([
-                    'type' => UpdatedFleetShipEvent::class,
+                    'type' => UpdatedFleetEvent::class,
                     'X-Message-Stamp-'.BusNameStamp::class => '[{"busName":"event.bus"}]',
                     'Content-Type' => 'application/json',
                 ]),
@@ -90,7 +90,7 @@ class CreateShipControllerTest extends WebTestCase
     /**
      * @test
      */
-    public function it_should_error_if_ship_model_already_exist_for_the_logged_user(): void
+    public function it_should_add_a_ship_with_a_duplicate_model(): void
     {
         static::$connection->executeStatement(<<<SQL
                 INSERT INTO users(id, roles, auth0_username, created_at)
@@ -98,7 +98,7 @@ class CreateShipControllerTest extends WebTestCase
                 INSERT INTO fleets(user_id, updated_at)
                 VALUES ('00000000-0000-0000-0000-000000000001', '2021-01-02T10:00:00Z');
                 INSERT INTO ships(id, fleet_id, model, image_url, quantity)
-                VALUES ('00000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000001', 'Avenger', null, 2);
+                VALUES ('00000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000001', 'Avenger', 'https://starcitizen.tools/avenger.jpg', 2);
             SQL
         );
 
@@ -109,12 +109,25 @@ class CreateShipControllerTest extends WebTestCase
             'model' => ' -Âvënger,',
         ]));
 
-        static::assertSame(400, static::$client->getResponse()->getStatusCode());
-        $json = json_decode(static::$client->getResponse()->getContent(), true);
+        static::assertSame(204, static::$client->getResponse()->getStatusCode());
 
-        static::assertSame('invalid_form', $json['error']);
-        static::assertSame('model', $json['violations']['violations'][0]['propertyPath']);
-        static::assertSame('You have already a ship with this model.', $json['violations']['violations'][0]['title']);
+        $result = static::$connection->executeQuery(<<<SQL
+                SELECT * FROM ships WHERE fleet_id = '00000000-0000-0000-0000-000000000001' ORDER BY quantity ASC;
+            SQL
+        )->fetchAllAssociative();
+        static::assertNotFalse($result, 'The ship should be created.');
+        static::assertArraySubset([
+            [
+                'model' => '-Âvënger,',
+                'image_url' => null,
+                'quantity' => 1,
+            ],
+            [
+                'model' => 'Avenger',
+                'image_url' => 'https://starcitizen.tools/avenger.jpg',
+                'quantity' => 2,
+            ],
+        ], $result);
     }
 
     /**

@@ -8,12 +8,13 @@ use App\Application\Repository\OrganizationRepositoryInterface;
 use App\Domain\Event\DeletedUserEvent;
 use App\Domain\MemberId;
 use App\Domain\OrgaId;
-use App\Domain\OrganizationShipId;
+use App\Domain\Service\EntityIdGeneratorInterface;
 use App\Domain\UserId;
 use App\Entity\Organization;
 use App\Entity\OrganizationFleet;
 use App\Infrastructure\Repository\Organization\InMemoryOrganizationFleetRepository;
 use App\Infrastructure\Repository\Organization\InMemoryOrganizationRepository;
+use App\Infrastructure\Service\InMemoryEntityIdGenerator;
 use App\Tests\Acceptance\KernelTestCase;
 
 class DeleteAccountHandlerTest extends KernelTestCase
@@ -43,8 +44,12 @@ class DeleteAccountHandlerTest extends KernelTestCase
         $organizationFleetRepository->setOrganizationFleets([
             $orgaFleet = new OrganizationFleet($orgaId, new \DateTimeImmutable('2021-01-01T10:00:00Z')),
         ]);
-        $orgaFleet->createOrUpdateShip(OrganizationShipId::fromString('00000000-0000-0000-0000-000000000020'), $memberId, 'Avenger', 'https://example.org/avenger_1.jpg', 3, new \DateTimeImmutable('2021-01-02T10:00:00Z'));
-        $orgaFleet->createOrUpdateShip(OrganizationShipId::fromString('00000000-0000-0000-0000-000000000020'), MemberId::fromString('00000000-0000-0000-0000-000000000002'), 'Avenger', null, 2, new \DateTimeImmutable('2021-01-03T10:00:00Z'));
+
+        /** @var InMemoryEntityIdGenerator $entityIdGenerator */
+        $entityIdGenerator = static::$container->get(EntityIdGeneratorInterface::class);
+        $entityIdGenerator->setUid('00000000-0000-0000-0000-000000000020');
+        $orgaFleet->createOrUpdateShip($memberId, 'Avenger', 'https://example.org/avenger_1.jpg', 3, new \DateTimeImmutable('2021-01-02T10:00:00Z'), $entityIdGenerator);
+        $orgaFleet->createOrUpdateShip(MemberId::fromString('00000000-0000-0000-0000-000000000002'), 'Avenger', null, 2, new \DateTimeImmutable('2021-01-03T10:00:00Z'), $entityIdGenerator);
 
         static::$container->get(DeleteAccountHandler::class)(new DeletedUserEvent(UserId::fromString((string) $memberId), 'Ioni'));
 
@@ -64,7 +69,7 @@ class DeleteAccountHandlerTest extends KernelTestCase
 
         /** @var InMemoryOrganizationRepository $orgaRepository */
         $orgaRepository = static::$container->get(OrganizationRepositoryInterface::class);
-        $orgaRepository->save($orga = new Organization(
+        $orgaRepository->save(new Organization(
             $orgaId,
             $memberId,
             'My orga',
@@ -78,7 +83,11 @@ class DeleteAccountHandlerTest extends KernelTestCase
         $organizationFleetRepository->setOrganizationFleets([
             $orgaFleet = new OrganizationFleet($orgaId, new \DateTimeImmutable('2021-01-01T10:00:00Z')),
         ]);
-        $orgaFleet->createOrUpdateShip(OrganizationShipId::fromString('00000000-0000-0000-0000-000000000020'), $memberId, 'Avenger', 'https://example.org/avenger_1.jpg', 3, new \DateTimeImmutable('2021-01-02T10:00:00Z'));
+
+        /** @var InMemoryEntityIdGenerator $entityIdGenerator */
+        $entityIdGenerator = static::$container->get(EntityIdGeneratorInterface::class);
+        $entityIdGenerator->setUid('00000000-0000-0000-0000-000000000020');
+        $orgaFleet->createOrUpdateShip($memberId, 'Avenger', 'https://example.org/avenger_1.jpg', 3, new \DateTimeImmutable('2021-01-02T10:00:00Z'), $entityIdGenerator);
 
         static::$container->get(DeleteAccountHandler::class)(new DeletedUserEvent(UserId::fromString((string) $memberId), 'Ioni'));
 
@@ -114,8 +123,12 @@ class DeleteAccountHandlerTest extends KernelTestCase
         $organizationFleetRepository->setOrganizationFleets([
             $orgaFleet = new OrganizationFleet($orgaId, new \DateTimeImmutable('2021-01-01T10:00:00Z')),
         ]);
-        $orgaFleet->createOrUpdateShip(OrganizationShipId::fromString('00000000-0000-0000-0000-000000000020'), $founderId, 'Avenger', null, 3, new \DateTimeImmutable('2021-01-02T10:00:00Z'));
-        $orgaFleet->createOrUpdateShip(OrganizationShipId::fromString('00000000-0000-0000-0000-000000000020'), $memberId, 'Avenger', null, 2, new \DateTimeImmutable('2021-01-03T10:00:00Z'));
+
+        /** @var InMemoryEntityIdGenerator $entityIdGenerator */
+        $entityIdGenerator = static::$container->get(EntityIdGeneratorInterface::class);
+        $entityIdGenerator->setUid('00000000-0000-0000-0000-000000000020');
+        $orgaFleet->createOrUpdateShip($founderId, 'Avenger', null, 3, new \DateTimeImmutable('2021-01-02T10:00:00Z'), $entityIdGenerator);
+        $orgaFleet->createOrUpdateShip($memberId, 'Avenger', null, 2, new \DateTimeImmutable('2021-01-03T10:00:00Z'), $entityIdGenerator);
 
         static::$container->get(DeleteAccountHandler::class)(new DeletedUserEvent(UserId::fromString((string) $founderId), 'Ioni'));
 
