@@ -82,6 +82,7 @@ services:
 
     App\Application\Provider\UserFleetProviderInterface: '@App\Infrastructure\Provider\Organizations\DirectCallUserFleetProvider'
     App\Application\Provider\MemberProfileProviderInterface: '@App\Infrastructure\Provider\Organizations\DirectCallMemberProfileProvider'
+    App\Application\Provider\ListTemplatesProviderInterface: '@App\Infrastructure\Provider\MyFleet\DirectCallListTemplatesProvider'
 
     App\Application\Common\Clock: '@App\Infrastructure\Common\SystemClock'
 

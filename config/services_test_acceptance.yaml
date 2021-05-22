@@ -16,6 +16,7 @@ services:
 
     App\Application\Provider\UserFleetProviderInterface: '@App\Infrastructure\Provider\Organizations\InMemoryUserFleetProvider'
     App\Application\Provider\MemberProfileProviderInterface: '@App\Infrastructure\Provider\Organizations\InMemoryMemberProfileProvider'
+    App\Application\Provider\ListTemplatesProviderInterface: '@App\Infrastructure\Provider\MyFleet\InMemoryListTemplatesProvider'
 
     App\Application\Common\Clock: '@App\Infrastructure\Common\FakeClock'
 
