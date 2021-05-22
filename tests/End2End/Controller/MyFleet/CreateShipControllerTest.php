@@ -45,12 +45,11 @@ class CreateShipControllerTest extends WebTestCase
             'image_url' => 'https://starcitizen.tools/avenger.jpg',
             'quantity' => 3,
         ], $result);
-        static::assertNotFalse($result, 'The fleet should be created.');
 
         $result = static::$connection->executeQuery(<<<SQL
                 SELECT * FROM messenger_messages;
             SQL
-        )->fetchAll();
+        )->fetchAllAssociative();
         static::assertArraySubset([
             [
                 'queue_name' => 'organizations_events',
