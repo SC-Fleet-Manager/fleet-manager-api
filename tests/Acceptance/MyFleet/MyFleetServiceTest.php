@@ -2,16 +2,20 @@
 
 namespace App\Tests\Acceptance\MyFleet;
 
-use App\Domain\Exception\NotFoundFleetByUserException;
 use App\Application\MyFleet\MyFleetService;
 use App\Application\MyFleet\Output\MyFleetOutput;
 use App\Application\MyFleet\Output\MyFleetShipOutput;
 use App\Application\MyFleet\Output\MyFleetShipsCollectionOutput;
 use App\Application\Repository\FleetRepositoryInterface;
+use App\Domain\Exception\NotFoundFleetByUserException;
+use App\Domain\MyFleet\UserShipTemplate;
+use App\Domain\Service\EntityIdGeneratorInterface;
 use App\Domain\ShipId;
+use App\Domain\ShipTemplateId;
 use App\Domain\UserId;
 use App\Entity\Fleet;
 use App\Infrastructure\Repository\Fleet\InMemoryFleetRepository;
+use App\Infrastructure\Service\InMemoryEntityIdGenerator;
 use App\Tests\Acceptance\KernelTestCase;
 
 class MyFleetServiceTest extends KernelTestCase
@@ -42,19 +46,19 @@ class MyFleetServiceTest extends KernelTestCase
                         id: ShipId::fromString('00000000-0000-0000-0000-000000000010'),
                         model: 'Avenger',
                         imageUrl: null,
-                        quantity: 2,
+                        quantity: 2, templateId: null,
                     ),
                     new MyFleetShipOutput(
                         id: ShipId::fromString('00000000-0000-0000-0000-000000000011'),
                         model: 'Mercury Star Runner',
                         imageUrl: 'https://example.com/mercury.jpg',
-                        quantity: 10,
+                        quantity: 10, templateId: null,
                     ),
                     new MyFleetShipOutput(
                         id: ShipId::fromString('00000000-0000-0000-0000-000000000012'),
                         model: 'Javelin',
                         imageUrl: 'https://example.com/javelin.jpg',
-                        quantity: 1,
+                        quantity: 1, templateId: null,
                     ),
                 ],
                 count: 3,
@@ -106,5 +110,51 @@ class MyFleetServiceTest extends KernelTestCase
         /** @var MyFleetService $service */
         $service = static::$container->get(MyFleetService::class);
         $service->handle(UserId::fromString('00000000-0000-0000-0000-000000000001'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_return_the_template_id_for_inherited_ships(): void
+    {
+        /** @var InMemoryEntityIdGenerator $entityIdGenerator */
+        $entityIdGenerator = static::$container->get(EntityIdGeneratorInterface::class);
+
+        $userId = UserId::fromString('00000000-0000-0000-0000-000000000001');
+        $fleet = new Fleet($userId, new \DateTimeImmutable('2021-01-01T12:00:00+02:00'));
+        $fleet->addShip(ShipId::fromString('00000000-0000-0000-0000-000000000010'), 'Avenger', null, 2, new \DateTimeImmutable('2021-01-01T13:00:00+02:00'));
+        $entityIdGenerator->setUid('00000000-0000-0000-0000-000000000011');
+        $fleet->addShipFromTemplate(new UserShipTemplate(ShipTemplateId::fromString('00000000-0000-0000-0000-000000000020'), 'Gladius', null), 3, new \DateTimeImmutable('2021-01-01T14:00:00+02:00'), $entityIdGenerator);
+
+        /** @var InMemoryFleetRepository $fleetRepository */
+        $fleetRepository = static::$container->get(FleetRepositoryInterface::class);
+        $fleetRepository->setFleets([$fleet]);
+
+        /** @var MyFleetService $service */
+        $service = static::$container->get(MyFleetService::class);
+        $output = $service->handle($userId);
+
+        static::assertEquals(new MyFleetOutput(
+            new MyFleetShipsCollectionOutput(
+                [
+                    new MyFleetShipOutput(
+                        id: ShipId::fromString('00000000-0000-0000-0000-000000000010'),
+                        model: 'Avenger',
+                        imageUrl: null,
+                        quantity: 2,
+                        templateId: null,
+                    ),
+                    new MyFleetShipOutput(
+                        id: ShipId::fromString('00000000-0000-0000-0000-000000000011'),
+                        model: 'Gladius',
+                        imageUrl: null,
+                        quantity: 3,
+                        templateId: ShipTemplateId::fromString('00000000-0000-0000-0000-000000000020'),
+                    ),
+                ],
+                count: 2,
+            ),
+            updatedAt: new \DateTimeImmutable('2021-01-01T12:00:00Z'),
+        ), $output);
     }
 }

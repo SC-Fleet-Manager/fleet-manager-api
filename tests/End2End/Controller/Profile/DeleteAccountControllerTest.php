@@ -21,7 +21,7 @@ class DeleteAccountControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('POST', '/api/profile/delete-account', [], [], [
+        static::xhr('POST', '/api/profile/delete-account', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer ' . static::generateToken('Ioni'),
         ]);

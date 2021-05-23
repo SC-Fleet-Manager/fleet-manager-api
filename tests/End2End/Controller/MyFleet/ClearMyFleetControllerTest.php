@@ -22,7 +22,7 @@ class ClearMyFleetControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('POST', '/api/my-fleet/clear', [], [], [
+        static::xhr('POST', '/api/my-fleet/clear', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ]);
@@ -41,12 +41,12 @@ class ClearMyFleetControllerTest extends WebTestCase
      */
     public function it_should_return_error_if_not_logged(): void
     {
-        static::$client->xmlHttpRequest('POST', '/api/my-fleet/clear', [], [], [
+        static::xhr('POST', '/api/my-fleet/clear', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
 
         static::assertSame(401, static::$client->getResponse()->getStatusCode());
-        $json = json_decode(static::$client->getResponse()->getContent(), true);
+        $json = static::json();
         static::assertSame(['message' => 'Authentication required.'], $json);
     }
 }

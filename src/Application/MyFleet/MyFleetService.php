@@ -25,7 +25,7 @@ class MyFleetService
 
         $shipOutputItems = [];
         foreach ($fleet->getShips() as $ship) {
-            $shipOutputItems[] = new MyFleetShipOutput($ship->getId(), $ship->getModel(), $ship->getImageUrl(), $ship->getQuantity());
+            $shipOutputItems[] = new MyFleetShipOutput($ship->getId(), $ship->getModel(), $ship->getImageUrl(), $ship->getQuantity(), $ship->getTemplateId());
         }
 
         return new MyFleetOutput(

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Domain\MyFleet\UserShipTemplate;
 use App\Domain\ShipId;
+use App\Domain\ShipTemplateId;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Ulid;
 use Webmozart\Assert\Assert;
@@ -90,6 +91,11 @@ class Ship
     public function getQuantity(): int
     {
         return $this->quantity;
+    }
+
+    public function getTemplateId(): ?ShipTemplateId
+    {
+        return $this->templateId !== null ? new ShipTemplateId($this->templateId) : null;
     }
 
     public function update(string $model, ?string $imageUrl, int $quantity): void

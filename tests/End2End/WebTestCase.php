@@ -12,6 +12,7 @@ use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase as BaseWebTestCase;
+use Symfony\Component\DomCrawler\Crawler;
 
 class WebTestCase extends BaseWebTestCase
 {
@@ -53,6 +54,16 @@ class WebTestCase extends BaseWebTestCase
     protected function debugHtml(): void
     {
         file_put_contents(__DIR__.'/../var/debug.html', static::$client->getResponse()->getContent());
+    }
+
+    protected static function xhr(string $method, string $uri, array $parameters = [], array $files = [], array $server = [], string $content = null, bool $changeHistory = true): Crawler
+    {
+        return static::$client->xmlHttpRequest($method, $uri, $parameters, $files, $server, $content, $changeHistory);
+    }
+
+    protected static function json(): array
+    {
+        return json_decode(static::$client->getResponse()->getContent(), true);
     }
 
     /**

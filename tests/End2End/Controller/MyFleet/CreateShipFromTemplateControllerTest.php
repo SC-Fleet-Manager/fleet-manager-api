@@ -21,7 +21,7 @@ class CreateShipFromTemplateControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('POST', '/api/my-fleet/create-ship-from-template', [], [], [
+        static::xhr('POST', '/api/my-fleet/create-ship-from-template', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ], json_encode([

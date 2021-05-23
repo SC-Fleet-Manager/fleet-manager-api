@@ -19,13 +19,13 @@ class HasNewPatchNoteControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('GET', '/api/patch-note/has-new-patch-note', [], [], [
+        static::xhr('GET', '/api/patch-note/has-new-patch-note', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ]);
 
         static::assertSame(200, static::$client->getResponse()->getStatusCode());
-        $json = json_decode(static::$client->getResponse()->getContent(), true);
+        $json = static::json();
         static::assertSame([
             'hasNewPatchNote' => true,
         ], $json);

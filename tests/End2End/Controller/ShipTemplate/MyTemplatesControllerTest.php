@@ -22,13 +22,13 @@ class MyTemplatesControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('GET', '/api/my-ship-templates', [], [], [
+        static::xhr('GET', '/api/my-ship-templates', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ]);
 
         static::assertSame(200, static::$client->getResponse()->getStatusCode());
-        $json = json_decode(static::$client->getResponse()->getContent(), true);
+        $json = static::json();
         static::assertSame([
             'items' => [
                 [

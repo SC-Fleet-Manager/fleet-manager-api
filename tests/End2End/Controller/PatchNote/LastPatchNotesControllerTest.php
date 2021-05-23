@@ -21,13 +21,13 @@ class LastPatchNotesControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('GET', '/api/patch-note/last-patch-notes', [], [], [
+        static::xhr('GET', '/api/patch-note/last-patch-notes', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ]);
 
         static::assertSame(200, static::$client->getResponse()->getStatusCode());
-        $json = json_decode(static::$client->getResponse()->getContent(), true);
+        $json = static::json();
         static::assertSame([
             'patchNotes' => [
                 [

@@ -17,13 +17,13 @@ class ProfileControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('GET', '/api/profile', [], [], [
+        static::xhr('GET', '/api/profile', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer ' . static::generateToken('Ioni'),
         ]);
 
         static::assertSame(200, static::$client->getResponse()->getStatusCode());
-        $json = json_decode(static::$client->getResponse()->getContent(), true);
+        $json = static::json();
         static::assertSame([
             'id' => '00000000-0000-0000-0000-000000000001',
             'auth0Username' => 'Ioni',

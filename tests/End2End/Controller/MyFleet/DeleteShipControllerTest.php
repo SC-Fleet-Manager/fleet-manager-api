@@ -23,7 +23,7 @@ class DeleteShipControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('POST', '/api/my-fleet/delete-ship/00000000-0000-0000-0000-000000000011', [], [], [
+        static::xhr('POST', '/api/my-fleet/delete-ship/00000000-0000-0000-0000-000000000011', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ]);
@@ -64,13 +64,13 @@ class DeleteShipControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('POST', '/api/my-fleet/delete-ship/00000000-0000-0000-0000-000000000011', [], [], [
+        static::xhr('POST', '/api/my-fleet/delete-ship/00000000-0000-0000-0000-000000000011', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ]);
 
         static::assertSame(400, static::$client->getResponse()->getStatusCode());
-        $json = json_decode(static::$client->getResponse()->getContent(), true);
+        $json = static::json();
 
         static::assertSame([
             'error' => 'not_found_fleet',
@@ -84,12 +84,12 @@ class DeleteShipControllerTest extends WebTestCase
      */
     public function it_should_return_error_if_not_logged(): void
     {
-        static::$client->xmlHttpRequest('POST', '/api/my-fleet/delete-ship/00000000-0000-0000-0000-000000000011', [], [], [
+        static::xhr('POST', '/api/my-fleet/delete-ship/00000000-0000-0000-0000-000000000011', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
 
         static::assertSame(401, static::$client->getResponse()->getStatusCode());
-        $json = json_decode(static::$client->getResponse()->getContent(), true);
+        $json = static::json();
         static::assertSame(['message' => 'Authentication required.'], $json);
     }
 }

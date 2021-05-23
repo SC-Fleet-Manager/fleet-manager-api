@@ -18,7 +18,7 @@ class GiveFeedbackControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('POST', '/api/support/give-feedback', [], [], [
+        static::xhr('POST', '/api/support/give-feedback', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('oauth2|discord|1234567890', nickname: 'Ioni_nickname', email: 'ioni@example.com'),
         ], json_encode([
@@ -55,12 +55,12 @@ class GiveFeedbackControllerTest extends WebTestCase
      */
     public function it_should_return_error_if_not_logged(): void
     {
-        static::$client->xmlHttpRequest('POST', '/api/support/give-feedback', [], [], [
+        static::xhr('POST', '/api/support/give-feedback', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
 
         static::assertSame(401, static::$client->getResponse()->getStatusCode());
-        $json = json_decode(static::$client->getResponse()->getContent(), true);
+        $json = static::json();
         static::assertSame(['message' => 'Authentication required.'], $json);
     }
 }

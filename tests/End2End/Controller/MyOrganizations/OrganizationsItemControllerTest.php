@@ -26,13 +26,13 @@ class OrganizationsItemControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('GET', '/api/organizations/00000000-0000-0000-0000-000000000010', [], [], [
+        static::xhr('GET', '/api/organizations/00000000-0000-0000-0000-000000000010', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ]);
 
         static::assertSame(200, static::$client->getResponse()->getStatusCode());
-        $json = json_decode(static::$client->getResponse()->getContent(), true);
+        $json = static::json();
 
         static::assertSame([
             'id' => '00000000-0000-0000-0000-000000000010',
@@ -62,12 +62,12 @@ class OrganizationsItemControllerTest extends WebTestCase
      */
     public function it_should_return_error_if_not_logged(): void
     {
-        static::$client->xmlHttpRequest('GET', '/api/organizations/00000000-0000-0000-0000-000000000010', [], [], [
+        static::xhr('GET', '/api/organizations/00000000-0000-0000-0000-000000000010', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
 
         static::assertSame(401, static::$client->getResponse()->getStatusCode());
-        $json = json_decode(static::$client->getResponse()->getContent(), true);
+        $json = static::json();
         static::assertSame(['message' => 'Authentication required.'], $json);
     }
 }
