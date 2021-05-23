@@ -32,6 +32,9 @@ class OrganizationsMembersControllerTest extends WebTestCase
 
         static::assertSame(200, static::$client->getResponse()->getStatusCode());
         $json = json_decode(static::$client->getResponse()->getContent(), true);
+        usort($json['members'], static function (array $member1, array $member2): int {
+            return $member1['id'] <=> $member2['id'];
+        });
         static::assertSame([
             'members' => [
                 [

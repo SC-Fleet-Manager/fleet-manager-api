@@ -6,6 +6,7 @@ use App\Application\Common\Clock;
 use App\Application\Provider\ListTemplatesProviderInterface;
 use App\Application\Repository\FleetRepositoryInterface;
 use App\Domain\Exception\NotFoundShipTemplateByUserException;
+use App\Domain\Service\EntityIdGeneratorInterface;
 use App\Domain\ShipId;
 use App\Domain\ShipTemplateId;
 use App\Domain\UserId;
@@ -16,6 +17,7 @@ class CreateShipFromTemplateService
     public function __construct(
         private FleetRepositoryInterface $fleetRepository,
         private ListTemplatesProviderInterface $listTemplatesProvider,
+        private EntityIdGeneratorInterface $entityIdGenerator,
         private Clock $clock,
     ) {
     }
@@ -32,7 +34,7 @@ class CreateShipFromTemplateService
             throw new NotFoundShipTemplateByUserException($userId, $templateId);
         }
 
-        $fleet->addShip($shipId, $template->getModel(), $template->getPictureUrl(), $quantity ?? 1, $this->clock->now());
+        $fleet->addShipFromTemplate($template, $quantity ?? 1, $this->clock->now(), $this->entityIdGenerator);
 
         $this->fleetRepository->save($fleet);
     }

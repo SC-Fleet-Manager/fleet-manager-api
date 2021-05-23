@@ -40,6 +40,7 @@ class CreateShipFromTemplateControllerTest extends WebTestCase
             'model' => 'Avenger Titan',
             'image_url' => 'https://example.org/avenger.jpg',
             'quantity' => 3,
+            'template_id' => '00000000-0000-0000-0000-000000000010',
         ], $result);
 
         $result = static::$connection->executeQuery(<<<SQL

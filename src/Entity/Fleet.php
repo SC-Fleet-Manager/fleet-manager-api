@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Domain\Event\UpdatedFleetEvent;
 use App\Domain\Exception\NotFoundShipException;
 use App\Domain\MyFleet\FleetShipImport;
+use App\Domain\MyFleet\UserShipTemplate;
 use App\Domain\Service\EntityIdGeneratorInterface;
 use App\Domain\ShipId;
 use App\Domain\UserId;
@@ -12,7 +13,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Ulid;
-use Webmozart\Assert\Assert;
 
 /**
  * @ORM\Entity
@@ -83,18 +83,22 @@ class Fleet
         $this->updatedAt = \DateTimeImmutable::createFromInterface($updatedAt);
     }
 
-    public function getShipByModel(string $model): ?Ship
+    public function addShipFromTemplate(UserShipTemplate $template, int $quantity, \DateTimeInterface $updatedAt, EntityIdGeneratorInterface $entityIdGenerator): void
     {
-        $collator = new \Collator('en');
-        $collator->setStrength(\Collator::PRIMARY); // â == A
-        $collator->setAttribute(\Collator::ALTERNATE_HANDLING, \Collator::SHIFTED); // ignore punctuations
-        foreach ($this->ships as $ship) {
-            if ($collator->compare($ship->getModel(), $model) === 0) {
-                return $ship;
-            }
-        }
+        $ship = Ship::createFromTemplate($entityIdGenerator->generateEntityId(ShipId::class), $this, $template, $quantity);
+        $this->ships[(string) $ship->getId()] = $ship;
+        $this->events[] = UpdatedFleetEvent::createFromFleet($this);
+        $this->updatedAt = \DateTimeImmutable::createFromInterface($updatedAt);
+    }
 
-        return null;
+    /**
+     * @return Ship[]
+     */
+    public function getShipsByModel(string $model): array
+    {
+        return array_filter($this->ships->toArray(), static function (Ship $ship) use ($model): bool {
+            return $ship->looksModel($model);
+        });
     }
 
     public function deleteShip(ShipId $shipId, \DateTimeInterface $updatedAt): void
@@ -128,13 +132,14 @@ class Fleet
     {
         $addedShips = [];
         foreach ($importedShips as $importedShip) {
-            $ship = $this->getShipByModel($importedShip->model);
-            if ($ship === null) {
+            $ships = $this->getShipsByModel($importedShip->model);
+            if (empty($ships)) {
                 $ship = new Ship($entityIdGenerator->generateEntityId(ShipId::class), $this, $importedShip->model, null, 1);
                 $this->ships[(string) $ship->getId()] = $ship;
                 $addedShips[(string) $ship->getId()] = $ship;
                 continue;
             }
+            $ship = array_shift($ships);
             if (!$onlyMissing || isset($addedShips[(string) $ship->getId()])) {
                 $ship->update($importedShip->model, $ship->getImageUrl(), 1 + $ship->getQuantity());
             }

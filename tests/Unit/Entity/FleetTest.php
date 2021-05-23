@@ -28,7 +28,7 @@ class FleetTest extends TestCase
         $fleet = new Fleet(UserId::fromString('00000000-0000-0000-0000-000000000010'), new \DateTimeImmutable('2021-01-01T10:00:00Z'));
         $fleet->addShip(ShipId::fromString('00000000-0000-0000-0000-000000000001'), 'Avenger', null, 1, new \DateTimeImmutable('2021-01-02T10:00:00Z'));
 
-        static::assertNotNull($fleet->getShipByModel($name));
+        static::assertNotEmpty($fleet->getShipsByModel($name));
     }
 
     public function it_should_return_same_name_ship_provide(): iterable
