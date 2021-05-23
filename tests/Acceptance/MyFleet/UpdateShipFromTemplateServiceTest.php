@@ -2,7 +2,7 @@
 
 namespace App\Tests\Acceptance\MyFleet;
 
-use App\Application\MyFleet\CreateShipFromTemplateService;
+use App\Application\MyFleet\UpdateShipFromTemplateService;
 use App\Application\Provider\ListTemplatesProviderInterface;
 use App\Application\Repository\FleetRepositoryInterface;
 use App\Domain\Event\UpdatedFleetEvent;
@@ -19,42 +19,51 @@ use App\Infrastructure\Service\InMemoryEntityIdGenerator;
 use App\Tests\Acceptance\KernelTestCase;
 use Symfony\Component\Messenger\Transport\InMemoryTransport;
 
-class CreateShipFromTemplateServiceTest extends KernelTestCase
+class UpdateShipFromTemplateServiceTest extends KernelTestCase
 {
     /**
      * @test
      */
-    public function it_should_create_a_ship_based_on_ship_template(): void
+    public function it_should_update_a_ship_based_on_ship_template(): void
     {
         $userId = UserId::fromString('00000000-0000-0000-0000-000000000001');
         $shipId = ShipId::fromString('00000000-0000-0000-0000-000000000010');
         $templateId = ShipTemplateId::fromString('00000000-0000-0000-0000-000000000020');
+        $oldTemplateId = ShipTemplateId::fromString('00000000-0000-0000-0000-000000000021');
 
         /** @var InMemoryListTemplatesProvider $listTemplatesProvider */
         $listTemplatesProvider = static::$container->get(ListTemplatesProviderInterface::class);
         $listTemplatesProvider->setShipTemplateOfUser(
-            new UserShipTemplate($templateId, 'Avenger Titan', 'https://example.com/avenger.jpg'),
+            new UserShipTemplate($templateId, 'Gladius', 'https://example.com/gladius.jpg'),
         );
 
         /** @var InMemoryFleetRepository $fleetRepository */
         $fleetRepository = static::$container->get(FleetRepositoryInterface::class);
         $fleetRepository->setFleets([
-            new Fleet($userId, new \DateTimeImmutable('2021-01-01T12:00:00+02:00')),
+            $fleet = new Fleet($userId, new \DateTimeImmutable('2021-01-01T12:00:00+02:00')),
         ]);
-
         /** @var InMemoryEntityIdGenerator $entityIdGenerator */
         $entityIdGenerator = static::$container->get(EntityIdGeneratorInterface::class);
         $entityIdGenerator->setUid($shipId);
+        $fleet->addShipFromTemplate(
+            new UserShipTemplate($oldTemplateId, 'Avenger Titan', 'https://example.org/avenger.jpg'),
+            2,
+            new \DateTimeImmutable('2021-01-02 10:00:00'),
+            $entityIdGenerator,
+        );
 
-        /** @var CreateShipFromTemplateService $service */
-        $service = static::$container->get(CreateShipFromTemplateService::class);
-        $service->handle($userId, $templateId);
+        $fleet->getAndClearEvents();
+
+        /** @var UpdateShipFromTemplateService $service */
+        $service = static::$container->get(UpdateShipFromTemplateService::class);
+        $service->handle($userId, $shipId, $templateId, 3);
 
         $fleet = $fleetRepository->getFleetByUser($userId);
         static::assertCount(1, $fleet->getShips());
-        static::assertSame('Avenger Titan', $fleet->getShips()[(string) $shipId]->getModel());
-        static::assertSame('https://example.com/avenger.jpg', $fleet->getShips()[(string) $shipId]->getImageUrl());
-        static::assertSame(1, $fleet->getShips()[(string) $shipId]->getQuantity());
+        static::assertSame('Gladius', $fleet->getShips()[(string) $shipId]->getModel());
+        static::assertSame('https://example.com/gladius.jpg', $fleet->getShips()[(string) $shipId]->getImageUrl());
+        static::assertSame(3, $fleet->getShips()[(string) $shipId]->getQuantity());
+        static::assertEquals($templateId, $fleet->getShips()[(string) $shipId]->getTemplateId());
 
         /** @var InMemoryTransport $transport */
         $transport = static::$container->get('messenger.transport.organizations_sub');
@@ -65,7 +74,7 @@ class CreateShipFromTemplateServiceTest extends KernelTestCase
         static::assertEquals(new UpdatedFleetEvent(
             $userId,
             [
-                new UpdatedShip('Avenger Titan', 'https://example.com/avenger.jpg', 1),
+                new UpdatedShip('Gladius', 'https://example.com/gladius.jpg', 3),
             ],
             1,
         ), $message);

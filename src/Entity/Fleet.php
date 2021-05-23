@@ -91,6 +91,19 @@ class Fleet
         $this->updatedAt = \DateTimeImmutable::createFromInterface($updatedAt);
     }
 
+    public function updateShipFromTemplate(ShipId $shipId, UserShipTemplate $template, int $quantity, \DateTimeInterface $updatedAt): void
+    {
+        $ship = $this->getShip($shipId);
+        if ($ship === null) {
+            throw new NotFoundShipException($this->getUserId(), $shipId);
+        }
+
+        $ship->updateFromTemplate($template, $quantity);
+
+        $this->events[] = UpdatedFleetEvent::createFromFleet($this);
+        $this->updatedAt = \DateTimeImmutable::createFromInterface($updatedAt);
+    }
+
     /**
      * @return Ship[]
      */
