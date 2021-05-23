@@ -2,11 +2,11 @@
 
 namespace App\Infrastructure\Controller\MyFleet;
 
-use App\Application\MyFleet\CreateShipFromTemplateService;
+use App\Application\MyFleet\UpdateShipFromTemplateService;
 use App\Domain\ShipId;
 use App\Domain\ShipTemplateId;
 use App\Entity\User;
-use App\Infrastructure\Controller\MyFleet\Input\CreateShipFromTemplateInput;
+use App\Infrastructure\Controller\MyFleet\Input\UpdateShipFromTemplateInput;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OpenApi;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,13 +15,12 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class CreateShipFromTemplateController
+class UpdateShipFromTemplateController
 {
     public function __construct(
-        private CreateShipFromTemplateService $createShipFromTemplateService,
+        private UpdateShipFromTemplateService $updateShipFromTemplateService,
         private Security $security,
         private ValidatorInterface $validator,
         private SerializerInterface $serializer,
@@ -31,28 +30,32 @@ class CreateShipFromTemplateController
     /**
      * @OpenApi\Tag(name="MyFleet")
      * @OpenApi\RequestBody(
-     *     @Model(type=CreateShipFromTemplateInput::class)
+     *     @Model(type=UpdateShipFromTemplateInput::class)
      * )
-     * @OpenApi\Response(response=204, description="Creates a new ship (based on a template) for the logged user's fleet.")
+     * @OpenApi\Response(response=204, description="Updates an existing ship (based on a template) for the logged user's fleet.")
      * @OpenApi\Response(response=400, description="Invalid payload.")
      */
-    #[Route('/api/my-fleet/create-ship-from-template', name: 'my_fleet_create_ship_from_template', methods: ['POST'])]
+    #[Route('/api/my-fleet/update-ship-from-template/{shipId}',
+        name: 'my_fleet_update_ship_from_template',
+        requirements: ['shipId' => ShipId::PATTERN],
+        methods: ['POST']),
+    ]
     public function __invoke(
-        Request $request
-    ): Response
-    {
+        Request $request,
+        string $shipId,
+    ): Response {
         if (!$this->security->isGranted('ROLE_USER')) {
             throw new AccessDeniedException();
         }
 
-        /** @var CreateShipFromTemplateInput $input */
-        $input = $this->serializer->deserialize($request->getContent(), CreateShipFromTemplateInput::class, $request->getContentType());
+        /** @var UpdateShipFromTemplateInput $input */
+        $input = $this->serializer->deserialize($request->getContent(), UpdateShipFromTemplateInput::class, $request->getContentType());
         $this->validator->validate($input);
 
         /** @var User $user */
         $user = $this->security->getUser();
 
-        $this->createShipFromTemplateService->handle($user->getId(), ShipTemplateId::fromString($input->templateId), $input->quantity);
+        $this->updateShipFromTemplateService->handle($user->getId(), ShipId::fromString($shipId), ShipTemplateId::fromString($input->templateId), $input->quantity);
 
         return new Response(null, 204);
     }

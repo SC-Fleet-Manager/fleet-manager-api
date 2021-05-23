@@ -46,14 +46,14 @@ class DisbandOrganizationControllerTest extends WebTestCase
         $result = static::$connection->executeQuery(<<<SQL
                 SELECT * FROM memberships WHERE organization_id = '00000000-0000-0000-0000-000000000010';
             SQL
-        )->fetchAll();
+        )->fetchAllAssociative();
         static::assertEmpty($result, 'Orga members should be deleted.');
 
         $result = static::$connection->executeQuery(<<<SQL
                 SELECT * FROM organization_ships os LEFT JOIN organization_ship_members osm ON osm.organization_ship_id = os.id
                 WHERE organization_fleet_id = '00000000-0000-0000-0000-000000000010';
             SQL
-        )->fetchAll();
+        )->fetchAllAssociative();
         static::assertEmpty($result, 'Orga fleet should be deleted.');
     }
 

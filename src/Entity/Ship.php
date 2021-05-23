@@ -73,6 +73,14 @@ class Ship
         return $ship;
     }
 
+    public function updateFromTemplate(UserShipTemplate $template, int $quantity): void
+    {
+        $this->model = $template->getModel();
+        $this->imageUrl = $template->getPictureUrl();
+        $this->quantity = max(1, $quantity);
+        $this->templateId = $template->getId()->getId();
+    }
+
     public function getId(): ShipId
     {
         return new ShipId($this->id);
