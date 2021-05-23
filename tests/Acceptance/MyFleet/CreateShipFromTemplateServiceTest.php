@@ -8,12 +8,14 @@ use App\Application\Repository\FleetRepositoryInterface;
 use App\Domain\Event\UpdatedFleetEvent;
 use App\Domain\Event\UpdatedShip;
 use App\Domain\MyFleet\UserShipTemplate;
+use App\Domain\Service\EntityIdGeneratorInterface;
 use App\Domain\ShipId;
 use App\Domain\ShipTemplateId;
 use App\Domain\UserId;
 use App\Entity\Fleet;
 use App\Infrastructure\Provider\MyFleet\InMemoryListTemplatesProvider;
 use App\Infrastructure\Repository\Fleet\InMemoryFleetRepository;
+use App\Infrastructure\Service\InMemoryEntityIdGenerator;
 use App\Tests\Acceptance\KernelTestCase;
 use Symfony\Component\Messenger\Transport\InMemoryTransport;
 
@@ -40,13 +42,16 @@ class CreateShipFromTemplateServiceTest extends KernelTestCase
             new Fleet($userId, new \DateTimeImmutable('2021-01-01T12:00:00+02:00')),
         ]);
 
+        /** @var InMemoryEntityIdGenerator $entityIdGenerator */
+        $entityIdGenerator = static::$container->get(EntityIdGeneratorInterface::class);
+        $entityIdGenerator->setUid($shipId);
+
         /** @var CreateShipFromTemplateService $service */
         $service = static::$container->get(CreateShipFromTemplateService::class);
         $service->handle($userId, $shipId, $templateId);
 
         $fleet = $fleetRepository->getFleetByUser($userId);
         static::assertCount(1, $fleet->getShips());
-        static::assertEquals($shipId, $fleet->getShips()[(string) $shipId]->getId());
         static::assertSame('Avenger Titan', $fleet->getShips()[(string) $shipId]->getModel());
         static::assertSame('https://example.com/avenger.jpg', $fleet->getShips()[(string) $shipId]->getImageUrl());
         static::assertSame(1, $fleet->getShips()[(string) $shipId]->getQuantity());

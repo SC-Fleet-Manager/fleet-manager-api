@@ -7,10 +7,12 @@ use App\Application\MyFleet\Input\ImportFleetShip;
 use App\Application\Repository\FleetRepositoryInterface;
 use App\Domain\Event\UpdatedFleetEvent;
 use App\Domain\Event\UpdatedShip;
+use App\Domain\Service\EntityIdGeneratorInterface;
 use App\Domain\ShipId;
 use App\Domain\UserId;
 use App\Entity\Fleet;
 use App\Infrastructure\Repository\Fleet\InMemoryFleetRepository;
+use App\Infrastructure\Service\InMemoryEntityIdGenerator;
 use App\Tests\Acceptance\KernelTestCase;
 use Symfony\Component\Messenger\Transport\InMemoryTransport;
 
@@ -32,6 +34,10 @@ class ImportFleetServiceTest extends KernelTestCase
         $fleetRepository = static::$container->get(FleetRepositoryInterface::class);
         $fleetRepository->setFleets([$fleet]);
 
+        /** @var InMemoryEntityIdGenerator $entityIdGenerator */
+        $entityIdGenerator = static::$container->get(EntityIdGeneratorInterface::class);
+        $entityIdGenerator->setUid('00000000-0000-0000-0000-000000000012');
+
         /** @var ImportFleetService $service */
         $service = static::$container->get(ImportFleetService::class);
         $service->handle($userId, [
@@ -42,11 +48,11 @@ class ImportFleetServiceTest extends KernelTestCase
 
         $fleet = $fleetRepository->getFleetByUser($userId);
         static::assertCount(3, $fleet->getShips());
-        static::assertSame(3, $fleet->getShipByModel('Avenger')->getQuantity());
-        static::assertSame('https://example.com/avenger.jpg', $fleet->getShipByModel('Avenger')->getImageUrl());
-        static::assertSame(1, $fleet->getShipByModel('Javelin')->getQuantity());
-        static::assertSame(2, $fleet->getShipByModel('Mercury Star Runner')->getQuantity());
-        static::assertNull($fleet->getShipByModel('Mercury Star Runner')->getImageUrl());
+        static::assertSame(3, $fleet->getShipsByModel('Avenger')['00000000-0000-0000-0000-000000000010']->getQuantity());
+        static::assertSame('https://example.com/avenger.jpg', $fleet->getShipsByModel('Avenger')['00000000-0000-0000-0000-000000000010']->getImageUrl());
+        static::assertSame(1, $fleet->getShipsByModel('Javelin')['00000000-0000-0000-0000-000000000011']->getQuantity());
+        static::assertSame(2, $fleet->getShipsByModel('Mercury Star Runner')['00000000-0000-0000-0000-000000000012']->getQuantity());
+        static::assertNull($fleet->getShipsByModel('Mercury Star Runner')['00000000-0000-0000-0000-000000000012']->getImageUrl());
 
         /** @var InMemoryTransport $transport */
         $transport = static::$container->get('messenger.transport.organizations_sub');
@@ -80,6 +86,10 @@ class ImportFleetServiceTest extends KernelTestCase
         $fleetRepository = static::$container->get(FleetRepositoryInterface::class);
         $fleetRepository->setFleets([$fleet]);
 
+        /** @var InMemoryEntityIdGenerator $entityIdGenerator */
+        $entityIdGenerator = static::$container->get(EntityIdGeneratorInterface::class);
+        $entityIdGenerator->setUid('00000000-0000-0000-0000-000000000011');
+
         /** @var ImportFleetService $service */
         $service = static::$container->get(ImportFleetService::class);
         $service->handle($userId, [
@@ -90,7 +100,7 @@ class ImportFleetServiceTest extends KernelTestCase
 
         $fleet = $fleetRepository->getFleetByUser($userId);
         static::assertCount(2, $fleet->getShips());
-        static::assertSame(2, $fleet->getShipByModel('Avenger')->getQuantity());
-        static::assertSame(2, $fleet->getShipByModel('Mercury Star Runner')->getQuantity());
+        static::assertSame(2, $fleet->getShipsByModel('Avenger')['00000000-0000-0000-0000-000000000010']->getQuantity());
+        static::assertSame(2, $fleet->getShipsByModel('Mercury Star Runner')['00000000-0000-0000-0000-000000000011']->getQuantity());
     }
 }

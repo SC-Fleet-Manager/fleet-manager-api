@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Domain\MyFleet\UserShipTemplate;
 use App\Domain\ShipId;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Ulid;
@@ -18,6 +19,11 @@ class Ship
      * @ORM\Column(name="id", type="ulid", unique=true)
      */
     private Ulid $id;
+
+    /**
+     * @ORM\Column(name="template_id", type="ulid", nullable=true)
+     */
+    private ?Ulid $templateId = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="Fleet", inversedBy="ships")
@@ -52,6 +58,20 @@ class Ship
         $this->quantity = max(1, $quantity);
     }
 
+    public static function createFromTemplate(ShipId $id, Fleet $fleet, UserShipTemplate $template, int $quantity = 1): self
+    {
+        $ship = new self(
+            $id,
+            $fleet,
+            $template->getModel(),
+            $template->getPictureUrl(),
+            $quantity,
+        );
+        $ship->templateId = $template->getId()->getId();
+
+        return $ship;
+    }
+
     public function getId(): ShipId
     {
         return new ShipId($this->id);
@@ -79,5 +99,14 @@ class Ship
         $this->model = $model;
         $this->imageUrl = $imageUrl;
         $this->quantity = $quantity;
+    }
+
+    public function looksModel(string $model): bool
+    {
+        $collator = new \Collator('en');
+        $collator->setStrength(\Collator::PRIMARY); // â == A
+        $collator->setAttribute(\Collator::ALTERNATE_HANDLING, \Collator::SHIFTED); // ignore punctuations
+
+        return $collator->compare($this->model, $model) === 0;
     }
 }
