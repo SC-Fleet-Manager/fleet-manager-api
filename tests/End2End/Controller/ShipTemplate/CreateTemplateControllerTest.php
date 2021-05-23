@@ -17,7 +17,7 @@ class CreateTemplateControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('POST', '/api/ship-template/create', [], [], [
+        static::xhr('POST', '/api/ship-template/create', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ], json_encode([
@@ -76,7 +76,7 @@ class CreateTemplateControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('POST', '/api/ship-template/create', [], [], [
+        static::xhr('POST', '/api/ship-template/create', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ], json_encode([
@@ -119,7 +119,7 @@ class CreateTemplateControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('POST', '/api/ship-template/create', [], [], [
+        static::xhr('POST', '/api/ship-template/create', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ], json_encode([
@@ -144,7 +144,7 @@ class CreateTemplateControllerTest extends WebTestCase
         ]));
 
         static::assertSame(400, static::$client->getResponse()->getStatusCode());
-        $json = json_decode(static::$client->getResponse()->getContent(), true);
+        $json = static::json();
 
         static::assertSame('invalid_form', $json['error']);
         static::assertSame('model', $json['violations']['violations'][0]['propertyPath']);

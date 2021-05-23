@@ -29,12 +29,12 @@ class NumbersControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('GET', '/api/numbers', [], [], [
+        static::xhr('GET', '/api/numbers', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
 
         static::assertSame(200, static::$client->getResponse()->getStatusCode());
-        $json = json_decode(static::$client->getResponse()->getContent(), true);
+        $json = static::json();
         static::assertArraySubset([
             'users' => 2,
             'fleets' => 3,

@@ -27,13 +27,13 @@ class OrganizationsControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('GET', '/api/organizations', [], [], [
+        static::xhr('GET', '/api/organizations', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ]);
 
         static::assertSame(200, static::$client->getResponse()->getStatusCode());
-        $json = json_decode(static::$client->getResponse()->getContent(), true);
+        $json = static::json();
 
         static::assertCount(20, $json['organizations']);
         static::assertSame('/api/organizations?sinceId=00000000-0000-0000-0000-000000000011', $json['nextUrl']);
@@ -72,13 +72,13 @@ class OrganizationsControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('GET', '/api/organizations?sinceId=00000000-0000-0000-0000-000000000011', [], [], [
+        static::xhr('GET', '/api/organizations?sinceId=00000000-0000-0000-0000-000000000011', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ]);
 
         static::assertSame(200, static::$client->getResponse()->getStatusCode());
-        $json = json_decode(static::$client->getResponse()->getContent(), true);
+        $json = static::json();
 
         static::assertCount(1, $json['organizations']);
         static::assertNull($json['nextUrl']);
@@ -105,13 +105,13 @@ class OrganizationsControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('GET', '/api/organizations?search=Gardienss', [], [], [
+        static::xhr('GET', '/api/organizations?search=Gardienss', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ]);
 
         static::assertSame(200, static::$client->getResponse()->getStatusCode());
-        $json = json_decode(static::$client->getResponse()->getContent(), true);
+        $json = static::json();
 
         static::assertCount(2, $json['organizations']);
         static::assertSame([
@@ -138,12 +138,12 @@ class OrganizationsControllerTest extends WebTestCase
      */
     public function it_should_return_error_if_not_logged(): void
     {
-        static::$client->xmlHttpRequest('GET', '/api/organizations', [], [], [
+        static::xhr('GET', '/api/organizations', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
 
         static::assertSame(401, static::$client->getResponse()->getStatusCode());
-        $json = json_decode(static::$client->getResponse()->getContent(), true);
+        $json = static::json();
         static::assertSame(['message' => 'Authentication required.'], $json);
     }
 }

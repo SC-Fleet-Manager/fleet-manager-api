@@ -22,7 +22,7 @@ class CreateOrganizationControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('POST', '/api/organizations/create', [], [], [
+        static::xhr('POST', '/api/organizations/create', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ], json_encode([
@@ -65,7 +65,7 @@ class CreateOrganizationControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('POST', '/api/organizations/create', [], [], [
+        static::xhr('POST', '/api/organizations/create', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ], json_encode([
@@ -74,7 +74,7 @@ class CreateOrganizationControllerTest extends WebTestCase
         ]));
 
         static::assertSame(400, static::$client->getResponse()->getStatusCode());
-        $json = json_decode(static::$client->getResponse()->getContent(), true);
+        $json = static::json();
 
         static::assertSame('invalid_form', $json['error']);
         static::assertSame('sid', $json['violations']['violations'][0]['propertyPath']);
@@ -103,7 +103,7 @@ class CreateOrganizationControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('POST', '/api/organizations/create', [], [], [
+        static::xhr('POST', '/api/organizations/create', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ], json_encode([
@@ -112,7 +112,7 @@ class CreateOrganizationControllerTest extends WebTestCase
         ]));
 
         static::assertSame(400, static::$client->getResponse()->getStatusCode());
-        $json = json_decode(static::$client->getResponse()->getContent(), true);
+        $json = static::json();
 
         static::assertSame('invalid_form', $json['error']);
         static::assertSame('', $json['violations']['violations'][0]['propertyPath']);
@@ -124,12 +124,12 @@ class CreateOrganizationControllerTest extends WebTestCase
      */
     public function it_should_return_error_if_not_logged(): void
     {
-        static::$client->xmlHttpRequest('POST', '/api/organizations/create', [], [], [
+        static::xhr('POST', '/api/organizations/create', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ]);
 
         static::assertSame(401, static::$client->getResponse()->getStatusCode());
-        $json = json_decode(static::$client->getResponse()->getContent(), true);
+        $json = static::json();
         static::assertSame(['message' => 'Authentication required.'], $json);
     }
 }

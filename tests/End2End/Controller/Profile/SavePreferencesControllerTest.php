@@ -17,7 +17,7 @@ class SavePreferencesControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('POST', '/api/profile/save-preferences', [], [], [
+        static::xhr('POST', '/api/profile/save-preferences', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ], json_encode([
@@ -44,13 +44,14 @@ class SavePreferencesControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('POST', '/api/profile/save-preferences', [], [], [
+        static::xhr('POST', '/api/profile/save-preferences', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ], '{}');
 
         static::assertSame(400, static::$client->getResponse()->getStatusCode());
-        $json = \json_decode(static::$client->getResponse()->getContent(), true);
+        $json = static::json();
+
         static::assertSame('invalid_form', $json['error']);
         static::assertCount(1, $json['violations']['violations']);
         static::assertSame('supporterVisible', $json['violations']['violations'][0]['propertyPath']);

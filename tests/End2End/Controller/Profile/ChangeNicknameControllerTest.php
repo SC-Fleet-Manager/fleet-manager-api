@@ -17,7 +17,7 @@ class ChangeNicknameControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('POST', '/api/profile/change-nickname', [], [], [
+        static::xhr('POST', '/api/profile/change-nickname', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ], json_encode([
@@ -44,7 +44,7 @@ class ChangeNicknameControllerTest extends WebTestCase
             SQL
         );
 
-        static::$client->xmlHttpRequest('POST', '/api/profile/change-nickname', [], [], [
+        static::xhr('POST', '/api/profile/change-nickname', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.static::generateToken('Ioni'),
         ], json_encode([
@@ -52,7 +52,7 @@ class ChangeNicknameControllerTest extends WebTestCase
         ]));
 
         static::assertSame(400, static::$client->getResponse()->getStatusCode());
-        $json = json_decode(static::$client->getResponse()->getContent(), true);
+        $json = static::json();
         static::assertSame('invalid_form', $json['error']);
         static::assertSame('nickname', $json['violations']['violations'][0]['propertyPath']);
         static::assertSame('The nickname must have 2 characters or more.', $json['violations']['violations'][0]['title']);
